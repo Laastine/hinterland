@@ -1,0 +1,6 @@
+[package]
+name = "hacknslash"
+version = "0.1.0"
+authors = ["Mikko Kaistinen <mikko.kaistinen@reaktor.com>"]
+
+[dependencies]
