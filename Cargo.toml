@@ -1,6 +1,8 @@
 [package]
 name = "hacknslash"
 version = "0.1.0"
-authors = ["Mikko Kaistinen <mikko.kaistinen@reaktor.com>"]
+authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 
 [dependencies]
+sdl2 = "0.16.1"
+sdl2_image = "0.16"
