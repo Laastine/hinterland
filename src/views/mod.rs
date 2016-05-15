@@ -4,19 +4,30 @@ use game::gfx::{CopySprite, Sprite};
 use sdl2::pixels::Color;
 
 const PLAYER_SPEED: f64 = 150.0;
-const CHARACTER_W: f64 = 43.0;
-const CHARACTER_H: f64 = 39.0;
+const CHARACTER_W: f64 = 56.0;
+const CHARACTER_H: f64 = 43.0;
+
+const TERRAIN_W: f64 = 102.0;
+const TERRAIN_H: f64 = 67.0;
 
 #[derive(Clone, Copy)]
 enum CharacterFrame {
-  UpNorm   = 0,
-  UpFast   = 1,
-  UpSlow   = 2,
-  MidFast  = 3,
-  MidSlow  = 4,
-  DownNorm = 5,
-  DownFast = 6,
-  DownSlow = 7
+  Down = 0,
+  DownLeft = 1,
+  Left = 2,
+  UpLeft = 3,
+  Up = 4,
+  UpRight = 5,
+  Right = 6,
+  DownRight = 7
+}
+
+#[derive(Clone, Copy)]
+enum TerrainFrame {
+  Sand = 0,
+  Grass = 1,
+  Water = 2,
+  Wood = 3,
 }
 
 struct Character {
@@ -25,21 +36,39 @@ struct Character {
   current: CharacterFrame,
 }
 
+struct TerrainTile {
+  rect: Rectangle,
+  terrain_sprites: Vec<Sprite>,
+  current: TerrainFrame
+}
+
 pub struct GameView {
   player: Character,
+  tiles: TerrainTile,
 }
 
 impl GameView {
   pub fn new(game: &mut Game) -> GameView {
     let spritesheet = Sprite::load(&mut game.renderer, "assets/warrior.png").unwrap();
+    let terrain_spritesheet = Sprite::load(&mut game.renderer, "assets/terrain.png").unwrap();
     let mut sprites = Vec::with_capacity(9);
+    let mut terrain_sprites = Vec::with_capacity(4);
+
+    for x in 0..3 {
+      terrain_sprites.push(terrain_spritesheet.region(Rectangle {
+        w: TERRAIN_W,
+        h: TERRAIN_H,
+        x: TERRAIN_W * x as f64,
+        y: 0.0 as f64,
+      }).unwrap());
+    }
 
     for x in 0..8 {
       sprites.push(spritesheet.region(Rectangle {
         w: CHARACTER_W,
         h: CHARACTER_H,
         x: CHARACTER_W * x as f64,
-        y: 0 as f64,
+        y: 0.0 as f64,
       }).unwrap());
     }
     GameView {
@@ -51,8 +80,18 @@ impl GameView {
           h: CHARACTER_H,
         },
         sprites: sprites,
-        current: CharacterFrame::DownNorm,
-      }
+        current: CharacterFrame::Down,
+      },
+      tiles: TerrainTile {
+        rect: Rectangle {
+          x: 102.0,
+          y: 64.0,
+          w: TERRAIN_W,
+          h: TERRAIN_H,
+        },
+        terrain_sprites: terrain_sprites,
+        current: TerrainFrame::Grass,
+      },
     }
   }
 }
@@ -89,26 +128,30 @@ impl View for GameView {
 
     self.player.rect = self.player.rect.move_inside(movable_region).unwrap();
     self.player.current =
-    if dx == 0.0 && dy < 0.0       { CharacterFrame::UpNorm }
-    else if dx > 0.0 && dy < 0.0   { CharacterFrame::UpFast }
-    else if dx < 0.0 && dy < 0.0   { CharacterFrame::UpSlow }
-    else if dx == 0.0 && dy == 0.0 { CharacterFrame::DownNorm }
-    else if dx > 0.0 && dy == 0.0  { CharacterFrame::MidFast }
-    else if dx < 0.0 && dy == 0.0  { CharacterFrame::MidSlow }
-    else if dx == 0.0 && dy > 0.0  { CharacterFrame::DownNorm }
-    else if dx > 0.0 && dy > 0.0   { CharacterFrame::DownFast }
-    else if dx < 0.0 && dy > 0.0   { CharacterFrame::DownSlow }
+    if dx == 0.0 && dy < 0.0       { CharacterFrame::Up }
+    else if dx > 0.0 && dy < 0.0   { CharacterFrame::DownLeft }
+    else if dx < 0.0 && dy < 0.0   { CharacterFrame::Left }
+    else if dx == 0.0 && dy == 0.0 { CharacterFrame::Down }
+    else if dx > 0.0 && dy == 0.0  { CharacterFrame::UpLeft }
+    else if dx < 0.0 && dy == 0.0  { CharacterFrame::UpRight }
+    else if dx == 0.0 && dy > 0.0  { CharacterFrame::Down }
+    else if dx > 0.0 && dy > 0.0   { CharacterFrame::Right }
+    else if dx < 0.0 && dy > 0.0   { CharacterFrame::DownRight }
     else { unreachable!() };
 
-    game.renderer.set_draw_color(Color::RGB(0, 0, 0));
+    game.renderer.set_draw_color(Color::RGB(120, 120, 120));
     game.renderer.clear();
 
     game.renderer.set_draw_color(Color::RGB(170, 170, 170));
     game.renderer.fill_rect(self.player.rect.to_sdl().unwrap());
 
-    game.renderer.copy_sprite(
-      &self.player.sprites[self.player.current as usize],
-      self.player.rect);
+    game.renderer.copy_sprite(&self.player.sprites[self.player.current as usize], self.player.rect);
+
+    game.renderer.set_draw_color(Color::RGBA(120, 120, 120, 1));
+    game.renderer.fill_rect(self.tiles.rect.to_sdl().unwrap());
+
+    game.renderer.copy_sprite(&self.tiles.terrain_sprites[self.tiles.current as usize], self.tiles.rect);
+
 
     ViewAction::None
   }
