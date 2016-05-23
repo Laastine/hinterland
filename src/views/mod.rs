@@ -129,20 +129,20 @@ impl View for GameView {
     self.player.rect = self.player.rect.move_inside(movable_region).unwrap();
     self.player.current =
     if dx == 0.0 && dy < 0.0       { CharacterFrame::Up }
-    else if dx > 0.0 && dy < 0.0   { CharacterFrame::DownLeft }
-    else if dx < 0.0 && dy < 0.0   { CharacterFrame::Left }
+    else if dx > 0.0 && dy < 0.0   { CharacterFrame::UpRight }
+    else if dx < 0.0 && dy < 0.0   { CharacterFrame::UpLeft }
     else if dx == 0.0 && dy == 0.0 { CharacterFrame::Down }
-    else if dx > 0.0 && dy == 0.0  { CharacterFrame::UpLeft }
-    else if dx < 0.0 && dy == 0.0  { CharacterFrame::UpRight }
+    else if dx > 0.0 && dy == 0.0  { CharacterFrame::Right }
+    else if dx < 0.0 && dy == 0.0  { CharacterFrame::Left }
     else if dx == 0.0 && dy > 0.0  { CharacterFrame::Down }
-    else if dx > 0.0 && dy > 0.0   { CharacterFrame::Right }
-    else if dx < 0.0 && dy > 0.0   { CharacterFrame::DownRight }
+    else if dx > 0.0 && dy > 0.0   { CharacterFrame::DownRight }
+    else if dx < 0.0 && dy > 0.0   { CharacterFrame::DownLeft }
     else { unreachable!() };
 
-    game.renderer.set_draw_color(Color::RGB(120, 120, 120));
+    game.renderer.set_draw_color(Color::RGBA(170, 170, 170, 255));
     game.renderer.clear();
 
-    game.renderer.set_draw_color(Color::RGB(170, 170, 170));
+    game.renderer.set_draw_color(Color::RGBA(0,0,0,255));
     game.renderer.fill_rect(self.player.rect.to_sdl().unwrap());
 
     game.renderer.copy_sprite(&self.player.sprites[self.player.current as usize], self.player.rect);
