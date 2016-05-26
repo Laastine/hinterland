@@ -2,6 +2,7 @@ use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
 use sdl2::pixels::Color;
+use sdl2::render::Renderer;
 
 const PLAYER_SPEED: f64 = 150.0;
 const CHARACTER_W: f64 = 56.0;
@@ -9,6 +10,27 @@ const CHARACTER_H: f64 = 43.0;
 
 const TERRAIN_W: f64 = 102.0;
 const TERRAIN_H: f64 = 67.0;
+
+#[derive(Clone)]
+struct Background {
+  pos: f64,
+  sprite: Sprite,
+}
+
+impl Background {
+  fn render(&mut self, renderer: &mut Renderer) {
+    let size = self.sprite.size();
+
+    let (window_w, window_h) = renderer.output_size().unwrap();
+    let scale = window_h as f64 / size.1;
+    renderer.copy_sprite(&self.sprite, Rectangle {
+      x: 0.0,
+      y: 0.0,
+      w: size.0,
+      h: window_h as f64,
+    })
+  }
+}
 
 #[derive(Clone, Copy)]
 enum CharacterFrame {
@@ -39,12 +61,13 @@ struct Character {
 struct TerrainTile {
   rect: Rectangle,
   terrain_sprites: Vec<Sprite>,
-  current: TerrainFrame
+  current: TerrainFrame,
 }
 
 pub struct GameView {
   player: Character,
   tiles: TerrainTile,
+  background: Background,
 }
 
 impl GameView {
@@ -82,6 +105,7 @@ impl GameView {
         sprites: sprites,
         current: CharacterFrame::Down,
       },
+
       tiles: TerrainTile {
         rect: Rectangle {
           x: 102.0,
@@ -91,6 +115,11 @@ impl GameView {
         },
         terrain_sprites: terrain_sprites,
         current: TerrainFrame::Grass,
+      },
+
+      background: Background {
+        pos: 0.0,
+        sprite: Sprite::load(&mut game.renderer, "assets/background.png").unwrap(),
       },
     }
   }
@@ -139,19 +168,21 @@ impl View for GameView {
     else if dx < 0.0 && dy > 0.0   { CharacterFrame::DownLeft }
     else { unreachable!() };
 
-    game.renderer.set_draw_color(Color::RGBA(170, 170, 170, 255));
+    game.renderer.set_draw_color(Color::RGB(0, 0, 0));
     game.renderer.clear();
 
-    game.renderer.set_draw_color(Color::RGBA(0,0,0,255));
-    game.renderer.fill_rect(self.player.rect.to_sdl().unwrap());
+    // background
+    self.background.render(&mut game.renderer);
 
+    // player
+    game.renderer.set_draw_color(Color::RGB(119,119,119));
+    game.renderer.fill_rect(self.player.rect.to_sdl().unwrap());
     game.renderer.copy_sprite(&self.player.sprites[self.player.current as usize], self.player.rect);
 
+    // tile
     game.renderer.set_draw_color(Color::RGBA(120, 120, 120, 1));
     game.renderer.fill_rect(self.tiles.rect.to_sdl().unwrap());
-
     game.renderer.copy_sprite(&self.tiles.terrain_sprites[self.tiles.current as usize], self.tiles.rect);
-
 
     ViewAction::None
   }
