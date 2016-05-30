@@ -66,7 +66,7 @@ struct TerrainTile {
 
 pub struct GameView {
   player: Character,
-  tiles: TerrainTile,
+  tiles: Vec<TerrainTile>,
   background: Background,
 }
 
@@ -76,6 +76,7 @@ impl GameView {
     let terrain_spritesheet = Sprite::load(&mut game.renderer, "assets/terrain.png").unwrap();
     let mut sprites = Vec::with_capacity(9);
     let mut terrain_sprites = Vec::with_capacity(4);
+    let mut tiles = Vec::with_capacity(4);
 
     for x in 0..3 {
       terrain_sprites.push(terrain_spritesheet.region(Rectangle {
@@ -94,6 +95,20 @@ impl GameView {
         y: 0.0 as f64,
       }).unwrap());
     }
+
+    for x in 0..4 {
+      tiles.push(TerrainTile {
+        rect: Rectangle {
+          x: 102.0 * x as f64,
+          y: 64.0,
+          w: TERRAIN_W,
+          h: TERRAIN_H,
+        },
+        terrain_sprites: terrain_sprites.clone(),
+        current: TerrainFrame::Grass,
+      });
+    }
+
     GameView {
       player: Character {
         rect: Rectangle {
@@ -106,16 +121,7 @@ impl GameView {
         current: CharacterFrame::Down,
       },
 
-      tiles: TerrainTile {
-        rect: Rectangle {
-          x: 102.0,
-          y: 64.0,
-          w: TERRAIN_W,
-          h: TERRAIN_H,
-        },
-        terrain_sprites: terrain_sprites,
-        current: TerrainFrame::Grass,
-      },
+      tiles: tiles,
 
       background: Background {
         pos: 0.0,
@@ -181,9 +187,10 @@ impl View for GameView {
 
     // tile
     game.renderer.set_draw_color(Color::RGBA(120, 120, 120, 1));
-    game.renderer.fill_rect(self.tiles.rect.to_sdl().unwrap());
-    game.renderer.copy_sprite(&self.tiles.terrain_sprites[self.tiles.current as usize], self.tiles.rect);
-
+    for x in 0..4 {
+      game.renderer.fill_rect(self.tiles[x].rect.to_sdl().unwrap());
+      game.renderer.copy_sprite(&self.tiles[x].terrain_sprites[self.tiles[x].current as usize], self.tiles[x].rect);
+    }
     ViewAction::None
   }
 }
