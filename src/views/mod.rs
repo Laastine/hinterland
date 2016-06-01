@@ -11,6 +11,8 @@ const CHARACTER_H: f64 = 43.0;
 const TERRAIN_W: f64 = 102.0;
 const TERRAIN_H: f64 = 67.0;
 
+const TILES_W: usize = 14;
+
 #[derive(Clone)]
 struct Background {
   pos: f64,
@@ -75,8 +77,8 @@ impl GameView {
     let spritesheet = Sprite::load(&mut game.renderer, "assets/warrior.png").unwrap();
     let terrain_spritesheet = Sprite::load(&mut game.renderer, "assets/terrain.png").unwrap();
     let mut sprites = Vec::with_capacity(9);
-    let mut terrain_sprites = Vec::with_capacity(4);
-    let mut tiles = Vec::with_capacity(4);
+    let mut terrain_sprites = Vec::with_capacity(TILES_W);
+    let mut tiles = Vec::with_capacity(TILES_W + 1);
 
     for x in 0..3 {
       terrain_sprites.push(terrain_spritesheet.region(Rectangle {
@@ -96,7 +98,7 @@ impl GameView {
       }).unwrap());
     }
 
-    for x in 0..4 {
+    for x in 0..TILES_W {
       tiles.push(TerrainTile {
         rect: Rectangle {
           x: 102.0 * x as f64,
@@ -117,7 +119,7 @@ impl GameView {
           w: CHARACTER_W,
           h: CHARACTER_H,
         },
-        sprites: sprites,
+        sprites: sprites.clone(),
         current: CharacterFrame::Down,
       },
 
@@ -187,7 +189,7 @@ impl View for GameView {
 
     // tile
     game.renderer.set_draw_color(Color::RGBA(120, 120, 120, 1));
-    for x in 0..4 {
+    for x in 0..TILES_W-1 {
       game.renderer.fill_rect(self.tiles[x].rect.to_sdl().unwrap());
       game.renderer.copy_sprite(&self.tiles[x].terrain_sprites[self.tiles[x].current as usize], self.tiles[x].rect);
     }
