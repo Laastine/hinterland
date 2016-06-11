@@ -6,3 +6,4 @@ authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 [dependencies]
 sdl2 = "0.16.1"
 sdl2_image = "0.16"
+chrono = "0.2"
