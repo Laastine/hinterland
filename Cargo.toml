@@ -7,3 +7,4 @@ authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 sdl2 = "0.16.1"
 sdl2_image = "0.16"
 chrono = "0.2"
+conv = "0.3.3"
