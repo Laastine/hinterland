@@ -1,6 +1,7 @@
 extern crate sdl2;
 extern crate sdl2_image;
 extern crate chrono;
+extern crate conv;
 
 mod game;
 mod views;

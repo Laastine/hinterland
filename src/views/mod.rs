@@ -3,6 +3,7 @@ use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
 use sdl2::pixels::Color;
 use sdl2::render::Renderer;
+use conv::prelude::*;
 use chrono::*;
 
 const PLAYER_SPEED: f64 = 150.0;
@@ -12,8 +13,8 @@ const CHARACTER_H: f64 = 43.0;
 const TERRAIN_W: f64 = 102.0;
 const TERRAIN_H: f64 = 67.0;
 
-const TILES_W: usize = 16;
-const TILES_H: usize = 14;
+const TILES_W: usize = 26;
+const TILES_H: usize = 24;
 
 #[derive(Clone)]
 struct Background {
@@ -80,7 +81,7 @@ impl GameView {
     let terrain_spritesheet = Sprite::load(&mut game.renderer, "assets/terrain.png").unwrap();
     let mut sprites = Vec::with_capacity(9);
     let mut terrain_sprites = Vec::with_capacity(TILES_W);
-    let mut tiles = Vec::with_capacity(TILES_W * TILES_H);
+    let mut tiles = Vec::with_capacity(TILES_W * TILES_H * 2);
 
     for x in 0..3 {
       terrain_sprites.push(terrain_spritesheet.region(Rectangle {
@@ -106,6 +107,19 @@ impl GameView {
           rect: Rectangle {
             x: 102.0 * x as f64,
             y: 64.0 * y as f64,
+            w: TERRAIN_W,
+            h: TERRAIN_H,
+          },
+          terrain_sprites: terrain_sprites.clone(),
+          current: TerrainFrame::Grass,
+        });
+        let x2: f64 = 102.0 * 1.5 as f64;
+        let y2: f64 = 64.0 * 1.5 as f64;
+        println!("x2 y2 {:?} {:?}", x2 ,y2);
+        tiles.push(TerrainTile {
+          rect: Rectangle {
+            x: 102.0 * f64::value_from(x).unwrap() + x2 as f64,
+            y: 64.0 * f64::value_from(y).unwrap() - y2 as f64,
             w: TERRAIN_W,
             h: TERRAIN_H,
           },
@@ -180,28 +194,27 @@ impl View for GameView {
     else if dx < 0.0 && dy > 0.0   { CharacterFrame::DownLeft }
     else { unreachable!() };
 
-    game.renderer.set_draw_color(Color::RGB(0, 0, 0));
+    game.renderer.set_draw_color(Color::RGBA(120, 120, 120, 0));
     game.renderer.clear();
 
     // background
     self.background.render(&mut game.renderer);
 
-    // player
-    game.renderer.set_draw_color(Color::RGB(119,119,119));
-    game.renderer.fill_rect(self.player.rect.to_sdl().unwrap());
-    game.renderer.copy_sprite(&self.player.sprites[self.player.current as usize], self.player.rect);
-
     // tile
-    game.renderer.set_draw_color(Color::RGBA(120, 120, 120, 1));
+    game.renderer.set_draw_color(Color::RGBA(255, 255, 255, 0));
     for x in 0..TILES_W {
       for y in 0..TILES_H {
-        let index = y * TILES_H + x;
+        let index = x * TILES_H + y;
         let local: DateTime<Local> = Local::now();
         println!("{} index {:?}", local, index);
-        game.renderer.fill_rect(self.tiles[index].rect.to_sdl().unwrap());
         game.renderer.copy_sprite(&self.tiles[index].terrain_sprites[self.tiles[index].current as usize], self.tiles[index].rect);
       }
     }
+
+    // player
+    game.renderer.set_draw_color(Color::RGBA(119,119,119,0));
+    game.renderer.copy_sprite(&self.player.sprites[self.player.current as usize], self.player.rect);
+
     ViewAction::None
   }
 }
