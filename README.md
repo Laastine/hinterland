@@ -13,3 +13,5 @@ cargo run
 ## Controls
 
 `WASD`
+
+Tested with Rust 1.9
