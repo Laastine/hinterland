@@ -10,11 +10,11 @@ const PLAYER_SPEED: f64 = 150.0;
 const CHARACTER_W: f64 = 56.0;
 const CHARACTER_H: f64 = 43.0;
 
-const TERRAIN_W: f64 = 102.0;
-const TERRAIN_H: f64 = 67.0;
+const TERRAIN_W: f64 = 100.0;
+const TERRAIN_H: f64 = 50.0;
 
-const TILES_W: usize = 26;
-const TILES_H: usize = 24;
+const TILES_W: usize = 32;
+const TILES_H: usize = 29;
 
 #[derive(Clone)]
 struct Background {
@@ -103,28 +103,28 @@ impl GameView {
 
     for x in 0..TILES_W {
       for y in 0..TILES_H {
+        let x2: f64 = 100.0 * 1.5 as f64;
+        let y2: f64 = 50.0 * 1.5 as f64;
         tiles.push(TerrainTile {
           rect: Rectangle {
-            x: 102.0 * x as f64,
-            y: 64.0 * y as f64,
+            x: 100.0 * x as f64,
+            y: 50.0 * y as f64,
             w: TERRAIN_W,
             h: TERRAIN_H,
           },
           terrain_sprites: terrain_sprites.clone(),
           current: TerrainFrame::Grass,
         });
-        let x2: f64 = 102.0 * 1.5 as f64;
-        let y2: f64 = 64.0 * 1.5 as f64;
-        println!("x2 y2 {:?} {:?}", x2 ,y2);
+
         tiles.push(TerrainTile {
           rect: Rectangle {
-            x: 102.0 * f64::value_from(x).unwrap() + x2 as f64,
-            y: 64.0 * f64::value_from(y).unwrap() - y2 as f64,
+            x: 100.0 * f64::value_from(x).unwrap() - x2 as f64,
+            y: 50.0 * f64::value_from(y).unwrap() - y2 as f64,
             w: TERRAIN_W,
             h: TERRAIN_H,
           },
           terrain_sprites: terrain_sprites.clone(),
-          current: TerrainFrame::Grass,
+          current: TerrainFrame::Sand,
         });
       }
     }

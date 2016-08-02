@@ -38,6 +38,12 @@ impl<'window> Game<'window> {
   }
 }
 
+fn cartesian_to_isometric(pointX: f64, pointY: f64) -> (f64, f64) {
+  let x = pointX - pointY;
+  let y = (pointX + pointY) / 2.0;
+  (x,y)
+}
+
 pub enum ViewAction {
   None,
   Quit,
