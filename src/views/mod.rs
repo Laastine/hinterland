@@ -205,8 +205,6 @@ impl View for GameView {
     for x in 0..TILES_W {
       for y in 0..TILES_H {
         let index = x * TILES_H + y;
-        let local: DateTime<Local> = Local::now();
-        println!("{} index {:?}", local, index);
         game.renderer.copy_sprite(&self.tiles[index].terrain_sprites[self.tiles[index].current as usize], self.tiles[index].rect);
       }
     }
