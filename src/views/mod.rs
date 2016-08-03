@@ -14,7 +14,7 @@ const TERRAIN_W: f64 = 100.0;
 const TERRAIN_H: f64 = 50.0;
 
 const TILES_W: usize = 32;
-const TILES_H: usize = 29;
+const TILES_H: usize = 20;
 
 #[derive(Clone)]
 struct Background {
@@ -118,8 +118,8 @@ impl GameView {
 
         tiles.push(TerrainTile {
           rect: Rectangle {
-            x: 100.0 * f64::value_from(x).unwrap() - x2 as f64,
-            y: 50.0 * f64::value_from(y).unwrap() - y2 as f64,
+            x: 100.0 * f64::value_from((x+1)).unwrap() - x2 as f64,
+            y: 50.0 * f64::value_from((y+1)).unwrap() - y2 as f64,
             w: TERRAIN_W,
             h: TERRAIN_H,
           },
