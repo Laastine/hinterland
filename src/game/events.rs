@@ -52,6 +52,10 @@ macro_rules! struct_events {
               self.now.resize = Some(renderer.output_size().unwrap());
             },
 
+            MouseButtonDown {x: xCoord, y: yCoord, ..} => {
+              println!("Mouse click {} {}", xCoord, yCoord)
+            },
+
             KeyDown { keycode, .. } => match keycode {
               $(
                 Some($k_sdl) => {
