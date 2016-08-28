@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 
 [dependencies]
-sdl2 = "0.16.1"
-sdl2_image = "0.16"
+sdl2 = "0.22.0"
+sdl2_image = "0.22.0"
 chrono = "0.2"
 conv = "0.3.3"
