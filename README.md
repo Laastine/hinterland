@@ -1,6 +1,6 @@
 # Hackandslash
 
-Simple isometric hack and slash game. Currently early experiment version.
+Simple isometric hack and slash game. Currently early experimental version.
 
 ![screenshot](http://laastine.kapsi.fi/kuvat/hackandslash.png)
 
