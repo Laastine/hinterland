@@ -8,11 +8,10 @@ use sdl2::render::Renderer;
 struct_events! {
   keyboard: {
     key_escape: Escape,
-    key_up: Up,
-    key_down: Down,
-    key_left: Left,
-    key_right: Right,
-    key_space: Space
+    key_up: W,
+    key_down: S,
+    key_left: A,
+    key_right: D
   },
   else: {
     quit: Quit { .. }
