@@ -14,4 +14,4 @@ cargo run
 
 `WASD`
 
-Tested with Rust 1.9
+Tested with Rust 1.12.1
