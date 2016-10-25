@@ -181,6 +181,8 @@ impl View for GameView {
       h: game.output_size().1,
     };
 
+    println!("Mouse {:?}", game.events.mouseClick);
+
     self.player.rect = self.player.rect.move_inside(movable_region).unwrap();
     self.player.current =
     if dx == 0.0 && dy < 0.0       { CharacterFrame::Up }

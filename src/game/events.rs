@@ -8,8 +8,8 @@ macro_rules! struct_events {
 
     pub struct ImmediateEvents {
       resize: Option<(u32, u32)>,
-      mouse1: Option<(i32, i32)>,
       $( pub $k_alias : Option<bool> , )*
+      pub mouseClick : Option<(i32, i32)>,
       $( pub $e_alias : bool ),*
     }
 
@@ -17,8 +17,8 @@ macro_rules! struct_events {
       pub fn new() -> ImmediateEvents {
         ImmediateEvents {
           resize: None,
-          mouse1: None,
           $( $k_alias: None , )*
+          mouseClick: None,
           $( $e_alias: false ),*
         }
       }
@@ -28,6 +28,7 @@ macro_rules! struct_events {
       pump: EventPump,
       pub now: ImmediateEvents,
 
+      pub mouseClick: Option<(i32, i32)>,
       $( pub $k_alias: bool ),*
     }
 
@@ -37,6 +38,7 @@ macro_rules! struct_events {
           pump: pump,
           now: ImmediateEvents::new(),
 
+          mouseClick: None,
           $( $k_alias: false ),*
         }
       }
@@ -54,14 +56,14 @@ macro_rules! struct_events {
               self.now.resize = Some(renderer.output_size().unwrap());
             },
 
-            MouseButtonDown {x: xCoord, y: yCoord, ..} => {
-              self.now.mouse1 = Some((xCoord, yCoord));
-              println!("Mouse DOWN at {} {}", xCoord, yCoord);
+            MouseButtonDown { x, y, .. } => {
+              self.now.mouseClick = Some((x, y));
+              self.mouseClick = Some((x, y));
             },
 
-            MouseButtonUp {x: xCoord, y: yCoord, ..} => {
-              self.now.mouse1 = None;
-              println!("Mouse UP at {} {}", xCoord, yCoord);
+            MouseButtonUp { x, y, .. } => {
+              self.now.mouseClick = None;
+              self.mouseClick = None;
             },
 
             KeyDown { keycode, .. } => match keycode {
