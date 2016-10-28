@@ -3,6 +3,7 @@ use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
 use sdl2::pixels::Color;
 use sdl2::render::Renderer;
+use sdl2::rect::Point;
 use conv::prelude::*;
 use chrono::*;
 
@@ -181,8 +182,6 @@ impl View for GameView {
       h: game.output_size().1,
     };
 
-    println!("Mouse {:?}", game.events.mouseClick);
-
     self.player.rect = self.player.rect.move_inside(movable_region).unwrap();
     self.player.current =
     if dx == 0.0 && dy < 0.0       { CharacterFrame::Up }
@@ -197,18 +196,22 @@ impl View for GameView {
     else { unreachable!() };
 
     game.renderer.set_draw_color(Color::RGBA(120, 120, 120, 0));
+    self.background.render(&mut game.renderer);
     game.renderer.clear();
 
-    // background
-    self.background.render(&mut game.renderer);
-
-    // tile
-    game.renderer.set_draw_color(Color::RGBA(255, 255, 255, 0));
     for x in 0..TILES_W {
       for y in 0..TILES_H {
         let index = x * TILES_H + y;
         game.renderer.copy_sprite(&self.tiles[index].terrain_sprites[self.tiles[index].current as usize], self.tiles[index].rect);
       }
+    }
+
+    match game.events.mouseClick {
+      Some(m) => {
+        game.renderer.set_draw_color(Color::RGBA(255, 0, 0, 0));
+        game.renderer.draw_line(Point::new(m.0, m.1 ), Point::new(m.0-10, m.1));
+      },
+      None => {},
     }
 
     // player
