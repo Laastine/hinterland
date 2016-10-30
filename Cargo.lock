@@ -4,6 +4,7 @@ version = "0.1.0"
 dependencies = [
  "chrono 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)",
  "conv 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "json 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sdl2 0.22.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sdl2_image 0.22.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -38,6 +39,11 @@ dependencies = [
 [[package]]
 name = "custom_derive"
 version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "json"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -195,6 +201,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum chrono 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)" = "9213f7cd7c27e95c2b57c49f0e69b1ea65b27138da84a170133fd21b07659c00"
 "checksum conv 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "78ff10625fd0ac447827aa30ea8b861fead473bb60aeb73af6c1c58caf0d1299"
 "checksum custom_derive 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = "ea1262be99f6e841c8ff80887a156a35fadec70b94011900364eaee73d5f8c26"
+"checksum json 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e35b1c427167cf2aca74cff6152263c9fa6c72b2da5d7b0645f01e2d0adf9c72"
 "checksum kernel32-sys 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "7507624b29483431c0ba2d82aece8ca6cdba9382bff4ddd0f7490560c056098d"
 "checksum lazy_static 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "49247ec2a285bb3dcb23cbd9c35193c025e7251bfce77c1d5da97e6362dffe7f"
 "checksum libc 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)" = "23e3757828fa702a20072c37ff47938e9dd331b92fac6e223d26d4b7a55f7ee2"
