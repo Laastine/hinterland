@@ -3,6 +3,7 @@ use std::fs::File;
 use std::error::Error;
 use std::string::String;
 use std::path::Path;
+use json::{JsonValue, parse};
 
 fn read_sprite_file(filename: &str) -> String {
   let path = Path::new(&filename);
@@ -17,3 +18,10 @@ fn read_sprite_file(filename: &str) -> String {
   }
 }
 
+pub fn load_character() -> JsonValue {
+  let character_json = read_sprite_file("./assets/character.json");
+  match parse(&character_json) {
+    Ok(res) => res,
+    Err(e) => panic!("Character JSON parse error {:?}", e),
+  }
+}
