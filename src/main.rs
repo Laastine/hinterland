@@ -10,7 +10,6 @@ mod views;
 mod data;
 
 fn main() {
-  data::load_character();
   ::game::spawn("Hacknslash", |game| {
     Box::new(::views::GameView::new(game))
   });

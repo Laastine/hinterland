@@ -1,6 +1,7 @@
 use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
+use data::load_character;
 use sdl2::pixels::Color;
 use sdl2::render::Renderer;
 use sdl2::rect::Point;
@@ -78,7 +79,8 @@ pub struct GameView {
 
 impl GameView {
   pub fn new(game: &mut Game) -> GameView {
-    let spritesheet = Sprite::load(&mut game.renderer, "assets/warrior.png").unwrap();
+    let spritesheet = Sprite::load(&mut game.renderer, "assets/character.png").unwrap();
+    let character_datapoints = load_character();
     let terrain_spritesheet = Sprite::load(&mut game.renderer, "assets/terrain.png").unwrap();
     let mut sprites = Vec::with_capacity(9);
     let mut terrain_sprites = Vec::with_capacity(TILES_W);
@@ -93,13 +95,9 @@ impl GameView {
       }).unwrap());
     }
 
+
     for x in 0..8 {
-      sprites.push(spritesheet.region(Rectangle {
-        w: CHARACTER_W,
-        h: CHARACTER_H,
-        x: CHARACTER_W * x as f64,
-        y: 0.0 as f64,
-      }).unwrap());
+      sprites.push(spritesheet.region(character_datapoints[x]).unwrap());
     }
 
     for x in 0..TILES_W {
