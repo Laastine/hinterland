@@ -95,7 +95,6 @@ impl GameView {
       }).unwrap());
     }
 
-
     for x in 0..8 {
       sprites.push(spritesheet.region(character_datapoints[x]).unwrap());
     }
