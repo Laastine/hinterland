@@ -41,14 +41,15 @@ impl Background {
 
 #[derive(Clone, Copy)]
 enum CharacterFrame {
-  Down = 0,
-  DownLeft = 1,
-  Left = 2,
-  UpLeft = 3,
-  Up = 4,
-  UpRight = 5,
-  Right = 6,
-  DownRight = 7
+  Still = 0,
+  Right = 1,
+  UpRight = 28,
+  Up = 56,
+  UpLeft = 84,
+  Left = 108,
+  DownLeft = 122,
+  Down = 150,
+  DownRight = 178
 }
 
 #[derive(Clone, Copy)]
@@ -63,6 +64,7 @@ struct Character {
   rect: Rectangle,
   sprites: Vec<Sprite>,
   current: CharacterFrame,
+  animIndex: u32
 }
 
 struct TerrainTile {
@@ -82,7 +84,7 @@ impl GameView {
     let spritesheet = Sprite::load(&mut game.renderer, "assets/character.png").unwrap();
     let character_datapoints = load_character();
     let terrain_spritesheet = Sprite::load(&mut game.renderer, "assets/terrain.png").unwrap();
-    let mut sprites = Vec::with_capacity(9);
+    let mut sprites = Vec::with_capacity(256);
     let mut terrain_sprites = Vec::with_capacity(TILES_W);
     let mut tiles = Vec::with_capacity(TILES_W * TILES_H * 2);
 
@@ -95,7 +97,7 @@ impl GameView {
       }).unwrap());
     }
 
-    for x in 0..8 {
+    for x in 0..194 {
       sprites.push(spritesheet.region(character_datapoints[x]).unwrap());
     }
 
@@ -137,6 +139,7 @@ impl GameView {
         },
         sprites: sprites.clone(),
         current: CharacterFrame::Down,
+        animIndex: 0
       },
 
       tiles: tiles,
@@ -184,7 +187,7 @@ impl View for GameView {
     if dx == 0.0 && dy < 0.0       { CharacterFrame::Up }
     else if dx > 0.0 && dy < 0.0   { CharacterFrame::UpRight }
     else if dx < 0.0 && dy < 0.0   { CharacterFrame::UpLeft }
-    else if dx == 0.0 && dy == 0.0 { CharacterFrame::Down }
+    else if dx == 0.0 && dy == 0.0 { CharacterFrame::Still }
     else if dx > 0.0 && dy == 0.0  { CharacterFrame::Right }
     else if dx < 0.0 && dy == 0.0  { CharacterFrame::Left }
     else if dx == 0.0 && dy > 0.0  { CharacterFrame::Down }
@@ -213,7 +216,12 @@ impl View for GameView {
 
     // player
     game.renderer.set_draw_color(Color::RGBA(119,119,119,0));
-    game.renderer.copy_sprite(&self.player.sprites[self.player.current as usize], self.player.rect);
+
+    game.renderer.copy_sprite(&self.player.sprites[self.player.current as usize + self.player.animIndex as usize], self.player.rect);
+    self.player.animIndex =
+      if dx == 0.0 && dy == 0.0 { 0u32 }
+      else if self.player.animIndex < 13u32 { self.player.animIndex + 1u32 }
+      else { 0u32 };
 
     ViewAction::None
   }
