@@ -1,12 +1,10 @@
 use std::io::prelude::*;
 use std::fs::File;
-use std::error::Error;
 use std::string::String;
 use std::path::Path;
 use std::vec::Vec;
 use game::data::Rectangle;
-use game::gfx::{CopySprite, Sprite};
-use json::{JsonValue, parse};
+use json::{parse};
 
 fn read_sprite_file(filename: &str) -> String {
   let path = Path::new(&filename);
@@ -20,6 +18,7 @@ fn read_sprite_file(filename: &str) -> String {
     Err(_) => panic!("Couldn't read file {}", filename),
   }
 }
+
 
 pub fn load_character() -> Vec<Rectangle> {
   let mut sprites = Vec::with_capacity(256);

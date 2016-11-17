@@ -6,7 +6,6 @@ use sdl2::pixels::Color;
 use sdl2::render::Renderer;
 use sdl2::rect::Point;
 use conv::prelude::*;
-use chrono::*;
 
 const PLAYER_SPEED: f64 = 150.0;
 const CHARACTER_W: f64 = 56.0;
@@ -28,8 +27,7 @@ impl Background {
   fn render(&mut self, renderer: &mut Renderer) {
     let size = self.sprite.size();
 
-    let (window_w, window_h) = renderer.output_size().unwrap();
-    let scale = window_h as f64 / size.1;
+    let (_, window_h) = renderer.output_size().unwrap();
     renderer.copy_sprite(&self.sprite, Rectangle {
       x: 0.0,
       y: 0.0,
@@ -56,15 +54,13 @@ enum CharacterFrame {
 enum TerrainFrame {
   Sand = 0,
   Grass = 1,
-  Water = 2,
-  Wood = 3,
 }
 
 struct Character {
   rect: Rectangle,
   sprites: Vec<Sprite>,
   current: CharacterFrame,
-  animIndex: u32
+  anim_index: u32
 }
 
 struct TerrainTile {
@@ -139,7 +135,7 @@ impl GameView {
         },
         sprites: sprites.clone(),
         current: CharacterFrame::Down,
-        animIndex: 0
+        anim_index: 0
       },
 
       tiles: tiles,
@@ -206,10 +202,10 @@ impl View for GameView {
       }
     }
 
-    match game.events.mouseClick {
+    match game.events.mouse_click {
       Some(m) => {
         game.renderer.set_draw_color(Color::RGBA(255, 0, 0, 0));
-        game.renderer.draw_line(Point::new(m.0, m.1 ), Point::new(m.0-10, m.1));
+        let _ = game.renderer.draw_line(Point::new(m.0, m.1 ), Point::new(m.0 - 10, m.1));
       },
       None => {},
     }
@@ -217,10 +213,10 @@ impl View for GameView {
     // player
     game.renderer.set_draw_color(Color::RGBA(119,119,119,0));
 
-    game.renderer.copy_sprite(&self.player.sprites[self.player.current as usize + self.player.animIndex as usize], self.player.rect);
-    self.player.animIndex =
+    game.renderer.copy_sprite(&self.player.sprites[self.player.current as usize + self.player.anim_index as usize], self.player.rect);
+    self.player.anim_index =
       if dx == 0.0 && dy == 0.0 { 0u32 }
-      else if self.player.animIndex < 13u32 { self.player.animIndex + 1u32 }
+      else if self.player.anim_index < 13u32 { self.player.anim_index + 1u32 }
       else { 0u32 };
 
     ViewAction::None

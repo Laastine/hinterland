@@ -37,12 +37,7 @@ impl<'window> Game<'window> {
   }
 }
 
-fn cartesian_to_isometric(pointX: f64, pointY: f64) -> (f64, f64) {
-  let x = pointX - pointY;
-  let y = (pointX + pointY) / 2.0;
-  (x,y)
-}
-
+#[allow(dead_code)]
 pub enum ViewAction {
   None,
   Quit,
@@ -99,14 +94,11 @@ pub trait View {
       context.events.pump(&mut context.renderer);
 
       match current_view.render(&mut context, elapsed) {
-        ViewAction::None =>
-        context.renderer.present(),
+        ViewAction::None => context.renderer.present(),
 
-        ViewAction::Quit =>
-        break,
+        ViewAction::Quit => break,
 
-        ViewAction::ChangeView(new_view) =>
-        current_view = new_view,
+        ViewAction::ChangeView(new_view) => current_view = new_view,
       }
     }
   }

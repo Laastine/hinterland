@@ -9,7 +9,7 @@ macro_rules! struct_events {
     pub struct ImmediateEvents {
       resize: Option<(u32, u32)>,
       $( pub $k_alias : Option<bool> , )*
-      pub mouseClick : Option<(i32, i32)>,
+      pub mouse_click : Option<(i32, i32)>,
       $( pub $e_alias : bool ),*
     }
 
@@ -18,7 +18,7 @@ macro_rules! struct_events {
         ImmediateEvents {
           resize: None,
           $( $k_alias: None , )*
-          mouseClick: None,
+          mouse_click: None,
           $( $e_alias: false ),*
         }
       }
@@ -28,7 +28,7 @@ macro_rules! struct_events {
       pump: EventPump,
       pub now: ImmediateEvents,
 
-      pub mouseClick: Option<(i32, i32)>,
+      pub mouse_click: Option<(i32, i32)>,
       $( pub $k_alias: bool ),*
     }
 
@@ -38,7 +38,7 @@ macro_rules! struct_events {
           pump: pump,
           now: ImmediateEvents::new(),
 
-          mouseClick: None,
+          mouse_click: None,
           $( $k_alias: false ),*
         }
       }
@@ -57,13 +57,13 @@ macro_rules! struct_events {
             },
 
             MouseButtonDown { x, y, .. } => {
-              self.now.mouseClick = Some((x, y));
-              self.mouseClick = Some((x, y));
+              self.now.mouse_click = Some((x, y));
+              self.mouse_click = Some((x, y));
             },
 
-            MouseButtonUp { x, y, .. } => {
-              self.now.mouseClick = None;
-              self.mouseClick = None;
+            MouseButtonUp {..} => {
+              self.now.mouse_click = None;
+              self.mouse_click = None;
             },
 
             KeyDown { keycode, .. } => match keycode {

@@ -26,6 +26,7 @@ impl Rectangle {
     ymax >= self.y && ymax <= self.y + self.h
   }
 
+  #[allow(dead_code)]
   pub fn overlaps(&self, other: Rectangle) -> bool {
     self.x < other.x + other.w &&
     self.x + self.w > other.x &&
