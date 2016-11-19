@@ -15,3 +15,7 @@ cargo run
 `WASD`
 
 Tested with Rust 1.13
+
+## Licences
+
+Graphics: [character](http://opengameart.org/content/tmim-heroine-bleeds-game-art) Creative Commons V3
