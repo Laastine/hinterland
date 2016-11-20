@@ -174,7 +174,7 @@ impl View for GameView {
     let movable_region = Rectangle {
       x: 0.0,
       y: 0.0,
-      w: game.output_size().0 * 0.70,
+      w: game.output_size().0,
       h: game.output_size().1,
     };
 
