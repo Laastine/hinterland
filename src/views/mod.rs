@@ -169,7 +169,7 @@ impl View for GameView {
     };
 
     self.player.rect.x += dx;
-    self.player.rect.y += (dy / 2.0);
+    self.player.rect.y += dy / 2.0;
 
     let movable_region = Rectangle {
       x: 0.0,
