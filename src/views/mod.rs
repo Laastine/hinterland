@@ -1,11 +1,14 @@
 use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
+use views::background::Background;
 use data::load_character;
 use sdl2::pixels::Color;
 use sdl2::render::Renderer;
 use sdl2::rect::Point;
 use conv::prelude::*;
+
+mod background;
 
 const PLAYER_SPEED: f64 = 150.0;
 const CHARACTER_W: f64 = 56.0;
@@ -16,26 +19,6 @@ const TERRAIN_H: f64 = 50.0;
 
 const TILES_W: usize = 32;
 const TILES_H: usize = 20;
-
-#[derive(Clone)]
-struct Background {
-  pos: f64,
-  sprite: Sprite,
-}
-
-impl Background {
-  fn render(&mut self, renderer: &mut Renderer) {
-    let size = self.sprite.size();
-
-    let (_, window_h) = renderer.output_size().unwrap();
-    renderer.copy_sprite(&self.sprite, Rectangle {
-      x: 0.0,
-      y: 0.0,
-      w: size.0,
-      h: window_h as f64,
-    })
-  }
-}
 
 #[derive(Clone, Copy)]
 enum CharacterFrame {
