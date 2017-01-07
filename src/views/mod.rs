@@ -43,6 +43,7 @@ struct Character {
   rect: Rectangle,
   sprites: Vec<Sprite>,
   current: CharacterFrame,
+  heading: CharacterFrame,
   anim_index: u32
 }
 
@@ -118,6 +119,7 @@ impl GameView {
         },
         sprites: sprites.clone(),
         current: CharacterFrame::Down,
+        heading: CharacterFrame::Down,
         anim_index: 0
       },
 
@@ -166,13 +168,15 @@ impl View for GameView {
     if dx == 0.0 && dy < 0.0       { CharacterFrame::Up }
     else if dx > 0.0 && dy < 0.0   { CharacterFrame::UpRight }
     else if dx < 0.0 && dy < 0.0   { CharacterFrame::UpLeft }
-    else if dx == 0.0 && dy == 0.0 { CharacterFrame::Still }
+    else if dx == 0.0 && dy == 0.0 { self.player.heading }
     else if dx > 0.0 && dy == 0.0  { CharacterFrame::Right }
     else if dx < 0.0 && dy == 0.0  { CharacterFrame::Left }
     else if dx == 0.0 && dy > 0.0  { CharacterFrame::Down }
     else if dx > 0.0 && dy > 0.0   { CharacterFrame::DownRight }
     else if dx < 0.0 && dy > 0.0   { CharacterFrame::DownLeft }
     else { unreachable!() };
+
+    self.player.heading = self.player.current;
 
     game.renderer.set_draw_color(Color::RGBA(120, 120, 120, 0));
     self.background.render(&mut game.renderer);
