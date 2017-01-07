@@ -20,7 +20,6 @@ fn read_sprite_file(filename: &str) -> String {
   }
 }
 
-
 pub fn load_character() -> Vec<Rectangle> {
   let mut sprites = Vec::with_capacity(256);
   let mut sprite_names = Vec::with_capacity(256);
@@ -35,15 +34,15 @@ pub fn load_character() -> Vec<Rectangle> {
     }
   }
   for &ref sprite in &sprite_names {
-    let x = character["frames"][sprite]["frame"]["x"].as_f64();
-    let y = character["frames"][sprite]["frame"]["y"].as_f64();
-    let w = character["frames"][sprite]["frame"]["w"].as_f64();
-    let h = character["frames"][sprite]["frame"]["h"].as_f64();
+    let x = character["frames"][sprite]["frame"]["x"].as_f64().unwrap();
+    let y = character["frames"][sprite]["frame"]["y"].as_f64().unwrap();
+    let w = character["frames"][sprite]["frame"]["w"].as_f64().unwrap();
+    let h = character["frames"][sprite]["frame"]["h"].as_f64().unwrap();
     sprites.push(Rectangle {
-      w: w.unwrap() as f64,
-      h: h.unwrap() as f64,
-      x: x.unwrap() as f64,
-      y: y.unwrap() as f64,
+      w: w,
+      h: h,
+      x: x,
+      y: y,
     });
   }
   sprites
