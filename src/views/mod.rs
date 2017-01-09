@@ -81,6 +81,10 @@ impl GameView {
       sprites.push(spritesheet.region(character_datapoints[x]).unwrap());
     }
 
+    for x in 195..239 {
+      sprites.push(spritesheet.region(character_datapoints[x]).unwrap());
+    }
+
     for x in 0..TILES_W {
       for y in 0..TILES_H {
         let x2: f64 = 100.0 * 1.5 as f64;
@@ -98,8 +102,8 @@ impl GameView {
 
         tiles.push(TerrainTile {
           rect: Rectangle {
-            x: 100.0 * f64::value_from((x+1)).unwrap() - x2 as f64,
-            y: 50.0 * f64::value_from((y+1)).unwrap() - y2 as f64,
+            x: 100.0 * f64::value_from((x + 1)).unwrap() - x2 as f64,
+            y: 50.0 * f64::value_from((y + 1)).unwrap() - y2 as f64,
             w: TERRAIN_W,
             h: TERRAIN_H,
           },
@@ -189,22 +193,19 @@ impl View for GameView {
       }
     }
 
+    game.renderer.set_draw_color(Color::RGBA(119, 119, 119, 0));
     match game.events.mouse_click {
       Some(m) => {
-        game.renderer.set_draw_color(Color::RGBA(255, 0, 0, 0));
-        let _ = game.renderer.draw_line(Point::new(m.0, m.1 ), Point::new(m.0 - 10, m.1));
+        game.renderer.copy_sprite(&self.player.sprites[200], self.player.rect);
       },
-      None => {},
+      None => {
+
+        game.renderer.copy_sprite(&self.player.sprites[self.player.current as usize + self.player.anim_index as usize], self.player.rect);
+        self.player.anim_index =
+          if dx == 0.0 && dy == 0.0 { 0u32 } else if self.player.anim_index < 13u32 { self.player.anim_index + 1u32 } else { 0u32 };
+      },
     }
 
-    // player
-    game.renderer.set_draw_color(Color::RGBA(119,119,119,0));
-
-    game.renderer.copy_sprite(&self.player.sprites[self.player.current as usize + self.player.anim_index as usize], self.player.rect);
-    self.player.anim_index =
-      if dx == 0.0 && dy == 0.0 { 0u32 }
-      else if self.player.anim_index < 13u32 { self.player.anim_index + 1u32 }
-      else { 0u32 };
 
     ViewAction::None
   }
