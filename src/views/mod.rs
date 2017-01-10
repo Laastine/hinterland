@@ -20,6 +20,8 @@ const TERRAIN_H: f64 = 50.0;
 const TILES_W: usize = 32;
 const TILES_H: usize = 20;
 
+const FIRE_SPRITE_START_INDEX: usize = 211;
+
 #[derive(Clone, Copy)]
 enum CharacterFrame {
   Right = 0,
@@ -29,7 +31,15 @@ enum CharacterFrame {
   Left = 4,
   DownLeft = 5,
   Down = 6,
-  DownRight = 7
+  DownRight = 7,
+  FireRight = 8,
+  FireUpRight = 9,
+  FireUp = 10,
+  FireUpLeft = 11,
+  FireLeft = 12,
+  FireDownLeft = 13,
+  FireDown = 14,
+  FireDownRight = 15
 }
 
 #[derive(Clone, Copy)]
@@ -42,8 +52,10 @@ struct Character {
   rect: Rectangle,
   sprites: Vec<Sprite>,
   current: CharacterFrame,
+  current_fire: CharacterFrame,
   heading: CharacterFrame,
-  anim_index: u32
+  move_anim_index: u32,
+  fire_anim_index: u32
 }
 
 struct TerrainTile {
@@ -76,11 +88,11 @@ impl GameView {
       }).unwrap());
     }
 
-    for x in 0..210 {
+    for x in 0..(FIRE_SPRITE_START_INDEX-1) {
       sprites.push(spritesheet.region(character_datapoints[x]).unwrap());
     }
 
-    for x in 211..255 {
+    for x in FIRE_SPRITE_START_INDEX..255 {
       sprites.push(spritesheet.region(character_datapoints[x]).unwrap());
     }
 
@@ -122,8 +134,10 @@ impl GameView {
         },
         sprites: sprites.clone(),
         current: CharacterFrame::Down,
+        current_fire: CharacterFrame::Down,
         heading: CharacterFrame::Down,
-        anim_index: 0
+        move_anim_index: 0,
+        fire_anim_index: 0
       },
 
       tiles: tiles,
@@ -195,14 +209,19 @@ impl View for GameView {
     game.renderer.set_draw_color(Color::RGBA(119, 119, 119, 0));
     match game.events.mouse_click {
       Some(m) => {
-        game.renderer.copy_sprite(&self.player.sprites[220], self.player.rect);
-      },
-      None => {
-        let index = self.player.current as usize * 28 + self.player.anim_index as usize;
+        let index = 211 + self.player.current as usize * 5 + self.player.fire_anim_index as usize;
         game.renderer.copy_sprite(&self.player.sprites[index], self.player.rect);
-        self.player.anim_index =
+        self.player.fire_anim_index =
           if dx == 0.0 && dy == 0.0 { 0u32 }
-          else if self.player.anim_index < 13u32 { self.player.anim_index + 1u32 }
+          else if self.player.fire_anim_index < 4u32 { self.player.fire_anim_index + 1u32 }
+          else { 0u32 };
+    },
+      None => {
+        let index = self.player.current as usize * 28 + self.player.move_anim_index as usize;
+        game.renderer.copy_sprite(&self.player.sprites[index], self.player.rect);
+        self.player.move_anim_index =
+          if dx == 0.0 && dy == 0.0 { 0u32 }
+          else if self.player.move_anim_index < 13u32 { self.player.move_anim_index + 1u32 }
           else { 0u32 };
       },
     }
