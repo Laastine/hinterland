@@ -30,7 +30,7 @@ pub fn load_character() -> Vec<Rectangle> {
     Err(e) => panic!("Character JSON parse error {:?}", e),
   };
   for x in 0..15 {
-    for y in 0..13 {
+    for y in 0..14 {
       move_sprite_names.push(format!("run_{}_{}", x, y));
     }
   }

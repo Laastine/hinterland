@@ -22,15 +22,14 @@ const TILES_H: usize = 20;
 
 #[derive(Clone, Copy)]
 enum CharacterFrame {
-  Still = 0,
-  Right = 1,
-  UpRight = 28,
-  Up = 56,
-  UpLeft = 84,
-  Left = 108,
-  DownLeft = 122,
-  Down = 150,
-  DownRight = 178
+  Right = 0,
+  UpRight = 1,
+  Up = 2,
+  UpLeft = 3,
+  Left = 4,
+  DownLeft = 5,
+  Down = 6,
+  DownRight = 7
 }
 
 #[derive(Clone, Copy)]
@@ -64,7 +63,7 @@ impl GameView {
     let spritesheet = Sprite::load(&mut game.renderer, "assets/character.png").unwrap();
     let character_datapoints = load_character();
     let terrain_spritesheet = Sprite::load(&mut game.renderer, "assets/terrain.png").unwrap();
-    let mut sprites = Vec::with_capacity(256);
+    let mut sprites = Vec::with_capacity(512);
     let mut terrain_sprites = Vec::with_capacity(TILES_W);
     let mut tiles = Vec::with_capacity(TILES_W * TILES_H * 2);
 
@@ -77,11 +76,11 @@ impl GameView {
       }).unwrap());
     }
 
-    for x in 0..194 {
+    for x in 0..210 {
       sprites.push(spritesheet.region(character_datapoints[x]).unwrap());
     }
 
-    for x in 195..239 {
+    for x in 211..255 {
       sprites.push(spritesheet.region(character_datapoints[x]).unwrap());
     }
 
@@ -196,16 +195,17 @@ impl View for GameView {
     game.renderer.set_draw_color(Color::RGBA(119, 119, 119, 0));
     match game.events.mouse_click {
       Some(m) => {
-        game.renderer.copy_sprite(&self.player.sprites[200], self.player.rect);
+        game.renderer.copy_sprite(&self.player.sprites[220], self.player.rect);
       },
       None => {
-
-        game.renderer.copy_sprite(&self.player.sprites[self.player.current as usize + self.player.anim_index as usize], self.player.rect);
+        let index = self.player.current as usize * 28 + self.player.anim_index as usize;
+        game.renderer.copy_sprite(&self.player.sprites[index], self.player.rect);
         self.player.anim_index =
-          if dx == 0.0 && dy == 0.0 { 0u32 } else if self.player.anim_index < 13u32 { self.player.anim_index + 1u32 } else { 0u32 };
+          if dx == 0.0 && dy == 0.0 { 0u32 }
+          else if self.player.anim_index < 13u32 { self.player.anim_index + 1u32 }
+          else { 0u32 };
       },
     }
-
 
     ViewAction::None
   }
