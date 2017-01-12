@@ -6,7 +6,9 @@ use data::load_character;
 use sdl2::pixels::Color;
 use sdl2::render::Renderer;
 use sdl2::rect::Point;
+use sdl2::mixer::{Chunk};
 use conv::prelude::*;
+use std::path::Path;
 
 mod background;
 
@@ -68,13 +70,15 @@ pub struct GameView {
   player: Character,
   tiles: Vec<TerrainTile>,
   background: Background,
+  pistol: Chunk,
 }
 
 impl GameView {
   pub fn new(game: &mut Game) -> GameView {
     let spritesheet = Sprite::load(&mut game.renderer, "assets/character.png").unwrap();
-    let character_datapoints = load_character();
     let terrain_spritesheet = Sprite::load(&mut game.renderer, "assets/terrain.png").unwrap();
+    let pistol_audio = Chunk::from_file(Path::new("assets/audio/pistol.ogg")).unwrap();
+    let character_datapoints = load_character();
     let mut sprites = Vec::with_capacity(512);
     let mut terrain_sprites = Vec::with_capacity(TILES_W);
     let mut tiles = Vec::with_capacity(TILES_W * TILES_H * 2);
@@ -141,6 +145,8 @@ impl GameView {
       },
 
       tiles: tiles,
+
+      pistol: pistol_audio,
 
       background: Background {
         pos: 0.0,
@@ -215,6 +221,9 @@ impl View for GameView {
           if dx == 0.0 && dy == 0.0 { 0u32 }
           else if self.player.fire_anim_index < 4u32 { self.player.fire_anim_index + 1u32 }
           else { 0u32 };
+        if self.player.fire_anim_index == 0 {
+          game.play_sound(&self.pistol);
+        }
     },
       None => {
         let index = self.player.current as usize * 28 + self.player.move_anim_index as usize;

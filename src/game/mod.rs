@@ -4,6 +4,7 @@ pub mod data;
 pub mod gfx;
 
 use sdl2::image::{LoadTexture, INIT_PNG, INIT_JPG};
+use sdl2::mixer::{INIT_OGG, AUDIO_S16LSB, Channel};
 use sdl2::render::Renderer;
 
 struct_events! {
@@ -22,19 +23,35 @@ struct_events! {
 pub struct Game<'window> {
   pub events: Events,
   pub renderer: Renderer<'window>,
+  allocated_channels: i32,
 }
 
 impl<'window> Game<'window> {
   fn new(events: Events, renderer: Renderer<'window>) -> Game<'window> {
+    let allocated_channels = 32i32;
+    ::sdl2::mixer::allocate_channels(allocated_channels);
     Game {
       events: events,
       renderer: renderer,
+      allocated_channels: allocated_channels,
     }
   }
 
   pub fn output_size(&self) -> (f64, f64) {
     let (w, h) = self.renderer.output_size().unwrap();
     (w as f64, h as f64)
+  }
+
+  pub fn play_sound(&mut self, sound: &::sdl2::mixer::Chunk) {
+    match ::sdl2::mixer::Channel::all().play(sound, 0) {
+      Err(_) => {
+        self.allocated_channels *= 2;
+        ::sdl2::mixer::allocate_channels(self.allocated_channels);
+        self.play_sound(sound);
+      },
+
+      _ => {}
+    }
   }
 }
 
@@ -53,6 +70,13 @@ pub fn spawn<F>(title: &str, init: F) where F: Fn(&mut Game) -> Box<View> {
   let video = sdl_context.video().unwrap();
   let mut timer = sdl_context.timer().unwrap();
   let image_context = ::sdl2::image::init(INIT_PNG | INIT_JPG).unwrap();
+  let mixer_context = ::sdl2::mixer::init(INIT_OGG).unwrap();
+
+  let frequency = 44100;
+  let format = AUDIO_S16LSB;
+  let channels = 2;
+  let chunk_size = 1024;
+  let _ = ::sdl2::mixer::open_audio(frequency, format, channels, chunk_size).unwrap();
 
   let window = video.window(title, 1280, 720)
     .position_centered().opengl().resizable()
