@@ -4,7 +4,20 @@ Simple isometric hack and slash game. Currently early experimental version.
 
 ![screenshot](http://laastine.kapsi.fi/kuvat/hackandslash.gif)
 
+
+
+
 ## Build
+
+### SDL2 setup on OSX
+
+```
+brew install sdl2 sdl2_gfx sdl2_image sdl2_ttf
+brew install sdl2_mixer --with-libvorbis
+```
+
+### Get dependencies and execute
+
 ```
 cargo install
 cargo run
@@ -14,7 +27,7 @@ cargo run
 
 `WASD`
 
-Tested with Rust 1.13
+Tested with Rust 1.14
 
 ## Licences
 
