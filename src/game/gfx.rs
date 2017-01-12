@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
 use sdl2::render::{Renderer, Texture};
-use sdl2_image::LoadTexture;
+use sdl2::image::{LoadTexture};
 
 use game::data::Rectangle;
 
@@ -53,7 +53,7 @@ impl Sprite {
   }
 
   pub fn render(&self, renderer: &mut Renderer, dest: Rectangle) {
-    renderer.copy(&mut self.tex.borrow_mut(), self.src.to_sdl(), dest.to_sdl())
+    renderer.copy(&mut self.tex.borrow_mut(), self.src.to_sdl(), dest.to_sdl()).unwrap();
   }
 }
 

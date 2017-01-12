@@ -3,6 +3,7 @@ mod events;
 pub mod data;
 pub mod gfx;
 
+use sdl2::image::{LoadTexture, INIT_PNG, INIT_JPG};
 use sdl2::render::Renderer;
 
 struct_events! {
@@ -37,7 +38,6 @@ impl<'window> Game<'window> {
   }
 }
 
-#[allow(dead_code)]
 pub enum ViewAction {
   None,
   Quit,
@@ -52,7 +52,7 @@ pub fn spawn<F>(title: &str, init: F) where F: Fn(&mut Game) -> Box<View> {
   let sdl_context = ::sdl2::init().unwrap();
   let video = sdl_context.video().unwrap();
   let mut timer = sdl_context.timer().unwrap();
-  let _image_context = ::sdl2_image::init(::sdl2_image::INIT_PNG).unwrap();
+  let image_context = ::sdl2::image::init(INIT_PNG | INIT_JPG).unwrap();
 
   let window = video.window(title, 1280, 720)
     .position_centered().opengl().resizable()
