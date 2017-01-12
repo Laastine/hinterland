@@ -48,11 +48,11 @@ macro_rules! struct_events {
 
         for event in self.pump.poll_iter() {
           use sdl2::event::Event::*;
-          use sdl2::event::WindowEventId::Resized;
+          use sdl2::event::WindowEvent;
           use sdl2::keyboard::Keycode::*;
 
           match event {
-            Window { win_event_id: Resized, .. } => {
+            Window { win_event: Resized, .. } => {
               self.now.resize = Some(renderer.output_size().unwrap());
             },
 
