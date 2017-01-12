@@ -34,8 +34,8 @@ fn manhattan(a: Node, b: Node) -> i32 {
 fn diagonal(a: Node, b: Node) -> i32 {
   let D = 1;
   let D2 = (2 as f64).sqrt() as i32;
-  let d1 = (b.x - a.x);
-  let d2 = (b.x - a.y);
+  let d1 = b.x - a.x;
+  let d2 = b.x - a.y;
   let d1_abs = d1.abs();
   let d2_abs = d2.abs();
   (D * (d1_abs + d2_abs)) + (D2 - 2 * D) * cmp::min(d1_abs, d2_abs)
