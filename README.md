@@ -22,11 +22,11 @@ cargo run
 
 ## Controls
 
-`WASD`
+`WASD + mouse 1`
 
 Tested with Rust 1.14
 
 ## Licences
 
-Graphics: [character](http://opengameart.org/content/tmim-heroine-bleeds-game-art) Creative Commons V3
-Audio: [pistol](http://opengameart.org/content/chaingun-pistol-rifle-shotgun-shots) Creative Commons V3
+* Graphics: [character](http://opengameart.org/content/tmim-heroine-bleeds-game-art) Creative Commons V3
+* Audio: [pistol](http://opengameart.org/content/chaingun-pistol-rifle-shotgun-shots) Creative Commons V3
