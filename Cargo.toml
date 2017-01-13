@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 
 [dependencies.sdl2]
-version = "0.27"
+version = "0.27.3"
 default-features = false
 use_sdl2_mac_framework = ["sdl2/use_mac_framework"]
 features = ["ttf","image","gfx","mixer"]
@@ -12,4 +12,4 @@ features = ["ttf","image","gfx","mixer"]
 [dependencies]
 chrono = "0.2.25"
 conv = "0.3.3"
-json = "0.11.0"
+json = "0.11.4"
