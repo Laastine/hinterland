@@ -176,8 +176,8 @@ impl View for GameView {
       (false, true) => moved,
     };
 
-    self.player.rect.x += dx;
-    self.player.rect.y += dy / 2.0;
+    self.player.rect.x += dx * 1.5;
+    self.player.rect.y += dy * 0.75;
 
     let movable_region = Rectangle {
       x: 0.0,
