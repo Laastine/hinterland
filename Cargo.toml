@@ -6,7 +6,6 @@ authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 [dependencies.sdl2]
 version = "0.27.3"
 default-features = false
-use_sdl2_mac_framework = ["sdl2/use_mac_framework"]
 features = ["ttf","image","gfx","mixer"]
 
 [dependencies]
