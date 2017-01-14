@@ -12,7 +12,8 @@ use std::path::Path;
 
 mod background;
 
-const PLAYER_SPEED: f64 = 150.0;
+const PLAYER_SPEED: f64 = 200.0;
+const ZOOM_SPEED: f32 = 0.01;
 const CHARACTER_W: f64 = 56.0;
 const CHARACTER_H: f64 = 43.0;
 
@@ -34,14 +35,6 @@ enum CharacterFrame {
   DownLeft = 5,
   Down = 6,
   DownRight = 7,
-  FireRight = 8,
-  FireUpRight = 9,
-  FireUp = 10,
-  FireUpLeft = 11,
-  FireLeft = 12,
-  FireDownLeft = 13,
-  FireDown = 14,
-  FireDownRight = 15
 }
 
 #[derive(Clone, Copy)]
@@ -233,6 +226,13 @@ impl View for GameView {
           else if self.player.move_anim_index < 13u32 { self.player.move_anim_index + 1u32 }
           else { 0u32 };
       },
+    };
+
+    let scale = game.renderer.scale();
+    if game.events.zoom_in == true {
+      game.renderer.set_scale(scale.0 + ZOOM_SPEED, scale.1 + ZOOM_SPEED);
+    } else if game.events.zoom_out == true {
+      game.renderer.set_scale(scale.0 - ZOOM_SPEED, scale.1 - ZOOM_SPEED);
     }
 
     ViewAction::None
