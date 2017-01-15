@@ -207,9 +207,7 @@ impl View for GameView {
         let index = 211 + self.player.current as usize * 5 + self.player.fire_anim_index as usize;
         game.renderer.copy_sprite(&self.player.sprites[index], self.player.rect);
         self.player.fire_anim_index =
-          if dx == 0.0 && dy == 0.0 { 0u32 }
-          else if self.player.fire_anim_index < 4u32 { self.player.fire_anim_index + 1u32 }
-          else { 0u32 };
+          if dx == 0.0 && dy == 0.0 { 0u32 } else if self.player.fire_anim_index < 4u32 { self.player.fire_anim_index + 1u32 } else { 0u32 };
         if self.player.fire_anim_index == 0 {
           game.play_sound(&self.pistol);
         }
@@ -218,16 +216,14 @@ impl View for GameView {
         let index = self.player.current as usize * 28 + self.player.move_anim_index as usize;
         game.renderer.copy_sprite(&self.player.sprites[index], self.player.rect);
         self.player.move_anim_index =
-          if dx == 0.0 && dy == 0.0 { 0u32 }
-          else if self.player.move_anim_index < 13u32 { self.player.move_anim_index + 1u32 }
-          else { 0u32 };
+          if dx == 0.0 && dy == 0.0 { 0u32 } else if self.player.move_anim_index < 13u32 { self.player.move_anim_index + 1u32 } else { 0u32 };
       },
     };
 
     let scale = game.renderer.scale();
-    if game.events.zoom_in == true {
+    if game.events.zoom_in == true && scale.0 <= 2.0 && scale.1 <= 2.0 {
       let _ = game.renderer.set_scale(scale.0 + ZOOM_SPEED, scale.1 + ZOOM_SPEED);
-    } else if game.events.zoom_out == true {
+    } else if game.events.zoom_out == true && scale.0 > 0.85 && scale.1 > 0.85 {
       let _ = game.renderer.set_scale(scale.0 - ZOOM_SPEED, scale.1 - ZOOM_SPEED);
     }
 
