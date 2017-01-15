@@ -4,8 +4,6 @@ use game::gfx::{CopySprite, Sprite};
 use views::background::Background;
 use data::load_character;
 use sdl2::pixels::Color;
-use sdl2::render::Renderer;
-use sdl2::rect::Point;
 use sdl2::mixer::{Chunk};
 use conv::prelude::*;
 use std::path::Path;
@@ -47,7 +45,6 @@ struct Character {
   rect: Rectangle,
   sprites: Vec<Sprite>,
   current: CharacterFrame,
-  current_fire: CharacterFrame,
   heading: CharacterFrame,
   move_anim_index: u32,
   fire_anim_index: u32
@@ -131,7 +128,6 @@ impl GameView {
         },
         sprites: sprites.clone(),
         current: CharacterFrame::Down,
-        current_fire: CharacterFrame::Down,
         heading: CharacterFrame::Down,
         move_anim_index: 0,
         fire_anim_index: 0
@@ -207,7 +203,7 @@ impl View for GameView {
 
     game.renderer.set_draw_color(Color::RGBA(119, 119, 119, 0));
     match game.events.mouse_click {
-      Some(m) => {
+      Some(_) => {
         let index = 211 + self.player.current as usize * 5 + self.player.fire_anim_index as usize;
         game.renderer.copy_sprite(&self.player.sprites[index], self.player.rect);
         self.player.fire_anim_index =
@@ -230,9 +226,9 @@ impl View for GameView {
 
     let scale = game.renderer.scale();
     if game.events.zoom_in == true {
-      game.renderer.set_scale(scale.0 + ZOOM_SPEED, scale.1 + ZOOM_SPEED);
+      let _ = game.renderer.set_scale(scale.0 + ZOOM_SPEED, scale.1 + ZOOM_SPEED);
     } else if game.events.zoom_out == true {
-      game.renderer.set_scale(scale.0 - ZOOM_SPEED, scale.1 - ZOOM_SPEED);
+      let _ = game.renderer.set_scale(scale.0 - ZOOM_SPEED, scale.1 - ZOOM_SPEED);
     }
 
     ViewAction::None

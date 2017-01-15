@@ -7,7 +7,6 @@ extern crate json;
 mod game;
 mod views;
 mod data;
-mod logic;
 
 fn main() {
   game::spawn("Hacknslash", |game| {

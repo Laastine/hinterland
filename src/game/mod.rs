@@ -3,8 +3,8 @@ mod events;
 pub mod data;
 pub mod gfx;
 
-use sdl2::image::{LoadTexture, INIT_PNG};
-use sdl2::mixer::{INIT_OGG, AUDIO_S16LSB, Channel};
+use sdl2::image::{INIT_PNG};
+use sdl2::mixer::{INIT_OGG, AUDIO_S16LSB};
 use sdl2::render::Renderer;
 
 struct_events! {
@@ -71,8 +71,8 @@ pub fn spawn<F>(title: &str, init: F) where F: Fn(&mut Game) -> Box<View> {
   let sdl_context = ::sdl2::init().unwrap();
   let video = sdl_context.video().unwrap();
   let mut timer = sdl_context.timer().unwrap();
-  let image_context = ::sdl2::image::init(INIT_PNG).unwrap();
-  let mixer_context = ::sdl2::mixer::init(INIT_OGG).unwrap();
+  let _ = ::sdl2::image::init(INIT_PNG).unwrap();
+  let _ = ::sdl2::mixer::init(INIT_OGG).unwrap();
 
   let frequency = 44100;
   let format = AUDIO_S16LSB;
@@ -120,9 +120,7 @@ pub fn spawn<F>(title: &str, init: F) where F: Fn(&mut Game) -> Box<View> {
 
     match current_view.render(&mut context, elapsed) {
       ViewAction::None => context.renderer.present(),
-
       ViewAction::Quit => break,
-
       ViewAction::ChangeView(new_view) => current_view = new_view,
     }
   }
