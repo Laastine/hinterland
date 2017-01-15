@@ -12,7 +12,7 @@ use std::path::Path;
 
 mod background;
 
-const PLAYER_SPEED: f64 = 200.0;
+const PLAYER_SPEED: f64 = 170.0;
 const ZOOM_SPEED: f32 = 0.01;
 const CHARACTER_W: f64 = 56.0;
 const CHARACTER_H: f64 = 43.0;
@@ -85,7 +85,7 @@ impl GameView {
       }).unwrap());
     }
 
-    for x in 0..(FIRE_SPRITE_START_INDEX-1) {
+    for x in 0..(FIRE_SPRITE_START_INDEX - 1) {
       sprites.push(spritesheet.region(character_datapoints[x]).unwrap());
     }
 
@@ -217,7 +217,7 @@ impl View for GameView {
         if self.player.fire_anim_index == 0 {
           game.play_sound(&self.pistol);
         }
-    },
+      },
       None => {
         let index = self.player.current as usize * 28 + self.player.move_anim_index as usize;
         game.renderer.copy_sprite(&self.player.sprites[index], self.player.rect);
