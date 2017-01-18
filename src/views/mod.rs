@@ -59,7 +59,6 @@ struct TerrainTile {
 pub struct GameView {
   player: Character,
   tiles: Vec<TerrainTile>,
-  background: Background,
   pistol: Chunk,
 }
 
@@ -135,12 +134,7 @@ impl GameView {
 
       tiles: tiles,
 
-      pistol: pistol_audio,
-
-      background: Background {
-        pos: 0.0,
-        sprite: Sprite::load(&mut game.renderer, "assets/background.png").unwrap(),
-      },
+      pistol: pistol_audio
     }
   }
 }
@@ -191,7 +185,6 @@ impl View for GameView {
     self.player.heading = self.player.current;
 
     game.renderer.set_draw_color(Color::RGBA(120, 120, 120, 0));
-    self.background.render(&mut game.renderer);
     game.renderer.clear();
 
     for x in 0..TILES_W {
