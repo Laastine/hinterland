@@ -62,24 +62,56 @@ pub struct GameView {
   pistol: Chunk,
 }
 
+fn get_tiles(game: &Game) -> Vec<TerrainTile> {
+  let terrain_spritesheet = Sprite::load(&game.renderer, "assets/terrain.png").unwrap();
+  let mut terrain_sprites = Vec::with_capacity(TILES_W);
+  let mut tiles = Vec::with_capacity(TILES_W * TILES_H * 2);
+
+  for x in 0..3 {
+    terrain_sprites.push(terrain_spritesheet.region(Rectangle {
+      w: TERRAIN_W,
+      h: TERRAIN_H,
+      x: TERRAIN_W * x as f64,
+      y: 0.0 as f64,
+    }).unwrap());
+  }
+
+  for x in 0..TILES_W {
+    for y in 0..TILES_H {
+      let x2: f64 = 100.0 * 1.5 as f64;
+      let y2: f64 = 50.0 * 1.5 as f64;
+      tiles.push(TerrainTile {
+        rect: Rectangle {
+          x: 100.0 * x as f64,
+          y: 50.0 * y as f64,
+          w: TERRAIN_W,
+          h: TERRAIN_H,
+        },
+        terrain_sprites: terrain_sprites.clone(),
+        current: TerrainFrame::Grass,
+      });
+
+      tiles.push(TerrainTile {
+        rect: Rectangle {
+          x: 100.0 * f64::value_from((x + 1)).unwrap() - x2 as f64,
+          y: 50.0 * f64::value_from((y + 1)).unwrap() - y2 as f64,
+          w: TERRAIN_W,
+          h: TERRAIN_H,
+        },
+        terrain_sprites: terrain_sprites.clone(),
+        current: TerrainFrame::Sand,
+      });
+    }
+  }
+  tiles
+}
+
 impl GameView {
   pub fn new(game: &mut Game) -> GameView {
     let spritesheet = Sprite::load(&mut game.renderer, "assets/character.png").unwrap();
-    let terrain_spritesheet = Sprite::load(&mut game.renderer, "assets/terrain.png").unwrap();
     let pistol_audio = Chunk::from_file(Path::new("assets/audio/pistol.ogg")).unwrap();
     let character_datapoints = load_character();
     let mut sprites = Vec::with_capacity(512);
-    let mut terrain_sprites = Vec::with_capacity(TILES_W);
-    let mut tiles = Vec::with_capacity(TILES_W * TILES_H * 2);
-
-    for x in 0..3 {
-      terrain_sprites.push(terrain_spritesheet.region(Rectangle {
-        w: TERRAIN_W,
-        h: TERRAIN_H,
-        x: TERRAIN_W * x as f64,
-        y: 0.0 as f64,
-      }).unwrap());
-    }
 
     for x in 0..(FIRE_SPRITE_START_INDEX - 1) {
       sprites.push(spritesheet.region(character_datapoints[x]).unwrap());
@@ -87,34 +119,6 @@ impl GameView {
 
     for x in FIRE_SPRITE_START_INDEX..255 {
       sprites.push(spritesheet.region(character_datapoints[x]).unwrap());
-    }
-
-    for x in 0..TILES_W {
-      for y in 0..TILES_H {
-        let x2: f64 = 100.0 * 1.5 as f64;
-        let y2: f64 = 50.0 * 1.5 as f64;
-        tiles.push(TerrainTile {
-          rect: Rectangle {
-            x: 100.0 * x as f64,
-            y: 50.0 * y as f64,
-            w: TERRAIN_W,
-            h: TERRAIN_H,
-          },
-          terrain_sprites: terrain_sprites.clone(),
-          current: TerrainFrame::Grass,
-        });
-
-        tiles.push(TerrainTile {
-          rect: Rectangle {
-            x: 100.0 * f64::value_from((x + 1)).unwrap() - x2 as f64,
-            y: 50.0 * f64::value_from((y + 1)).unwrap() - y2 as f64,
-            w: TERRAIN_W,
-            h: TERRAIN_H,
-          },
-          terrain_sprites: terrain_sprites.clone(),
-          current: TerrainFrame::Sand,
-        });
-      }
     }
 
     GameView {
@@ -132,7 +136,7 @@ impl GameView {
         fire_anim_index: 0
       },
 
-      tiles: tiles,
+      tiles: get_tiles(&game),
 
       pistol: pistol_audio
     }
