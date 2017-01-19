@@ -1,25 +1,19 @@
 use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
-use views::background::Background;
+use views::tilemap::{Tilemap, TerrainTile, TILES_W, TILES_H, TERRAIN_W, TERRAIN_H, get_tiles};
 use data::load_character;
 use sdl2::pixels::Color;
 use sdl2::mixer::{Chunk};
 use conv::prelude::*;
 use std::path::Path;
 
-mod background;
+mod tilemap;
 
 const PLAYER_SPEED: f64 = 170.0;
 const ZOOM_SPEED: f32 = 0.01;
 const CHARACTER_W: f64 = 56.0;
 const CHARACTER_H: f64 = 43.0;
-
-const TERRAIN_W: f64 = 100.0;
-const TERRAIN_H: f64 = 50.0;
-
-const TILES_W: usize = 32;
-const TILES_H: usize = 20;
 
 const FIRE_SPRITE_START_INDEX: usize = 211;
 
@@ -35,12 +29,6 @@ enum CharacterFrame {
   DownRight = 7,
 }
 
-#[derive(Clone, Copy)]
-enum TerrainFrame {
-  Sand = 0,
-  Grass = 1,
-}
-
 struct Character {
   rect: Rectangle,
   sprites: Vec<Sprite>,
@@ -50,60 +38,10 @@ struct Character {
   fire_anim_index: u32
 }
 
-struct TerrainTile {
-  rect: Rectangle,
-  terrain_sprites: Vec<Sprite>,
-  current: TerrainFrame,
-}
-
 pub struct GameView {
   player: Character,
   tiles: Vec<TerrainTile>,
   pistol: Chunk,
-}
-
-fn get_tiles(game: &Game) -> Vec<TerrainTile> {
-  let terrain_spritesheet = Sprite::load(&game.renderer, "assets/terrain.png").unwrap();
-  let mut terrain_sprites = Vec::with_capacity(TILES_W);
-  let mut tiles = Vec::with_capacity(TILES_W * TILES_H * 2);
-
-  for x in 0..3 {
-    terrain_sprites.push(terrain_spritesheet.region(Rectangle {
-      w: TERRAIN_W,
-      h: TERRAIN_H,
-      x: TERRAIN_W * x as f64,
-      y: 0.0 as f64,
-    }).unwrap());
-  }
-
-  for x in 0..TILES_W {
-    for y in 0..TILES_H {
-      let x2: f64 = 100.0 * 1.5 as f64;
-      let y2: f64 = 50.0 * 1.5 as f64;
-      tiles.push(TerrainTile {
-        rect: Rectangle {
-          x: 100.0 * x as f64,
-          y: 50.0 * y as f64,
-          w: TERRAIN_W,
-          h: TERRAIN_H,
-        },
-        terrain_sprites: terrain_sprites.clone(),
-        current: TerrainFrame::Grass,
-      });
-
-      tiles.push(TerrainTile {
-        rect: Rectangle {
-          x: 100.0 * f64::value_from((x + 1)).unwrap() - x2 as f64,
-          y: 50.0 * f64::value_from((y + 1)).unwrap() - y2 as f64,
-          w: TERRAIN_W,
-          h: TERRAIN_H,
-        },
-        terrain_sprites: terrain_sprites.clone(),
-        current: TerrainFrame::Sand,
-      });
-    }
-  }
-  tiles
 }
 
 impl GameView {
