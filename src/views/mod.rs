@@ -154,24 +154,43 @@ impl View for GameView {
 
     let curr_rect = game.renderer.viewport();
 
-    if game.events.move_right == true {
-      let rect = Rectangle {
-        x: f64::value_from(curr_rect.x() + 1).unwrap(),
-        y: 0.0,
-        w: game.output_size().0 * 3.0,
-        h: game.output_size().1 * 3.0,
-      };
-      game.renderer.set_viewport(rect.to_sdl());
-    } else if game.events.move_left == true {
-      let rect = Rectangle {
+    let rect = if game.events.move_right == true {
+      Rectangle {
         x: f64::value_from(curr_rect.x() - 1).unwrap(),
-        y: 0.0,
+        y: f64::value_from(curr_rect.y()).unwrap(),
         w: game.output_size().0 * 3.0,
         h: game.output_size().1 * 3.0,
-      };
-      game.renderer.set_viewport(rect.to_sdl());
-
-    }
+      }
+    } else if game.events.move_left == true {
+       Rectangle {
+        x: f64::value_from(curr_rect.x() + 1).unwrap(),
+        y: f64::value_from(curr_rect.y()).unwrap(),
+        w: game.output_size().0 * 3.0,
+        h: game.output_size().1 * 3.0,
+      }
+    } else if game.events.move_up == true {
+      Rectangle {
+        x: f64::value_from(curr_rect.x()).unwrap(),
+        y: f64::value_from(curr_rect.y() + 1).unwrap(),
+        w: game.output_size().0 * 3.0,
+        h: game.output_size().1 * 3.0,
+      }
+    } else if game.events.move_down == true {
+      Rectangle {
+        x: f64::value_from(curr_rect.x()).unwrap(),
+        y: f64::value_from(curr_rect.y() - 1).unwrap(),
+        w: game.output_size().0 * 3.0,
+        h: game.output_size().1 * 3.0,
+      }
+    } else {
+      Rectangle {
+        x: f64::value_from(curr_rect.x()).unwrap(),
+        y: f64::value_from(curr_rect.y()).unwrap(),
+        w: game.output_size().0 * 3.0,
+        h: game.output_size().1 * 3.0,
+      }
+    };
+    game.renderer.set_viewport(rect.to_sdl());
 
     let scale = game.renderer.scale();
     if game.events.zoom_in == true && scale.0 <= 2.0 && scale.1 <= 2.0 {

@@ -17,7 +17,9 @@ struct_events! {
     zoom_in: KpPlus,
     zoom_out: KpMinus,
     move_right: Right,
-    move_left: Left
+    move_left: Left,
+    move_up: Up,
+    move_down: Down
   },
   else: {
     quit: Quit { .. }
