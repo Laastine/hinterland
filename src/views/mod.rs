@@ -1,7 +1,7 @@
 use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
-use views::tilemap::{Tilemap, TerrainTile, TILES_W, TILES_H, TERRAIN_W, TERRAIN_H, get_tiles};
+use views::tilemap::{Tilemap, TerrainTile, TILES_PCS_W, TILES_PCS_H, TERRAIN_W, TERRAIN_H, get_tiles};
 use data::load_character;
 use sdl2::pixels::Color;
 use sdl2::mixer::{Chunk};
@@ -129,9 +129,9 @@ impl View for GameView {
     game.renderer.set_draw_color(Color::RGBA(120, 120, 120, 0));
     game.renderer.clear();
 
-    for x in 0..TILES_W {
-      for y in 0..TILES_H {
-        let index = x * TILES_H + y;
+    for x in 0..TILES_PCS_W {
+      for y in 0..TILES_PCS_H {
+        let index = x * TILES_PCS_H + y;
         game.renderer.copy_sprite(&self.tiles[index].terrain_sprites[self.tiles[index].current as usize], self.tiles[index].rect);
       }
     }
