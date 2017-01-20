@@ -107,8 +107,8 @@ impl View for GameView {
     let movable_region = Rectangle {
       x: 0.0,
       y: 0.0,
-      w: game.output_size().0,
-      h: game.output_size().1,
+      w: game.output_size().0 * 3.0,
+      h: game.output_size().1 * 3.0,
     };
 
     self.player.rect = self.player.rect.move_inside(movable_region).unwrap();
@@ -126,9 +126,6 @@ impl View for GameView {
 
     self.player.heading = self.player.current;
 
-    game.renderer.set_draw_color(Color::RGBA(120, 120, 120, 0));
-    game.renderer.clear();
-
     for x in 0..TILES_PCS_W {
       for y in 0..TILES_PCS_H {
         let index = x * TILES_PCS_H + y;
@@ -136,7 +133,6 @@ impl View for GameView {
       }
     }
 
-    game.renderer.set_draw_color(Color::RGBA(119, 119, 119, 0));
     match game.events.mouse_click {
       Some(_) => {
         let index = 211 + self.player.current as usize * 5 + self.player.fire_anim_index as usize;
@@ -154,6 +150,28 @@ impl View for GameView {
           if dx == 0.0 && dy == 0.0 { 0u32 } else if self.player.move_anim_index < 13u32 { self.player.move_anim_index + 1u32 } else { 0u32 };
       },
     };
+
+
+    let curr_rect = game.renderer.viewport();
+
+    if game.events.move_right == true {
+      let rect = Rectangle {
+        x: f64::value_from(curr_rect.x() + 1).unwrap(),
+        y: 0.0,
+        w: game.output_size().0 * 3.0,
+        h: game.output_size().1 * 3.0,
+      };
+      game.renderer.set_viewport(rect.to_sdl());
+    } else if game.events.move_left == true {
+      let rect = Rectangle {
+        x: f64::value_from(curr_rect.x() - 1).unwrap(),
+        y: 0.0,
+        w: game.output_size().0 * 3.0,
+        h: game.output_size().1 * 3.0,
+      };
+      game.renderer.set_viewport(rect.to_sdl());
+
+    }
 
     let scale = game.renderer.scale();
     if game.events.zoom_in == true && scale.0 <= 2.0 && scale.1 <= 2.0 {
