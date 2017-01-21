@@ -156,14 +156,14 @@ impl View for GameView {
 
     let rect = if game.events.move_right == true {
       Rectangle {
-        x: f64::value_from(curr_rect.x() - 1).unwrap(),
+        x: f64::value_from(curr_rect.x() - 3).unwrap(),
         y: f64::value_from(curr_rect.y()).unwrap(),
         w: game.output_size().0 * 3.0,
         h: game.output_size().1 * 3.0,
       }
     } else if game.events.move_left == true {
        Rectangle {
-        x: f64::value_from(curr_rect.x() + 1).unwrap(),
+        x: f64::value_from(curr_rect.x() + 3).unwrap(),
         y: f64::value_from(curr_rect.y()).unwrap(),
         w: game.output_size().0 * 3.0,
         h: game.output_size().1 * 3.0,
@@ -171,14 +171,14 @@ impl View for GameView {
     } else if game.events.move_up == true {
       Rectangle {
         x: f64::value_from(curr_rect.x()).unwrap(),
-        y: f64::value_from(curr_rect.y() + 1).unwrap(),
+        y: f64::value_from(curr_rect.y() + 3).unwrap(),
         w: game.output_size().0 * 3.0,
         h: game.output_size().1 * 3.0,
       }
     } else if game.events.move_down == true {
       Rectangle {
         x: f64::value_from(curr_rect.x()).unwrap(),
-        y: f64::value_from(curr_rect.y() - 1).unwrap(),
+        y: f64::value_from(curr_rect.y() - 3).unwrap(),
         w: game.output_size().0 * 3.0,
         h: game.output_size().1 * 3.0,
       }
