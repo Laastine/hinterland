@@ -3,6 +3,7 @@ use game::{Game};
 use game::data::Rectangle;
 use sdl2::render::Renderer;
 use conv::prelude::*;
+use sdl2::rect::Rect as SdlRect;
 
 pub const TERRAIN_W: f64 = 500.0;
 pub const TERRAIN_H: f64 = 250.0;
@@ -68,6 +69,45 @@ pub fn get_tiles(game: &Game) -> Vec<TerrainTile> {
     }
   }
   tiles
+}
+
+pub fn viewport_move(game: &Game, curr_rect: SdlRect) -> Rectangle {
+  if game.events.move_right == true {
+    Rectangle {
+      x: f64::value_from(curr_rect.x() - 3).unwrap(),
+      y: f64::value_from(curr_rect.y()).unwrap(),
+      w: game.output_size().0 * 3.0,
+      h: game.output_size().1 * 3.0,
+    }
+  } else if game.events.move_left == true {
+    Rectangle {
+      x: f64::value_from(curr_rect.x() + 3).unwrap(),
+      y: f64::value_from(curr_rect.y()).unwrap(),
+      w: game.output_size().0 * 3.0,
+      h: game.output_size().1 * 3.0,
+    }
+  } else if game.events.move_up == true {
+    Rectangle {
+      x: f64::value_from(curr_rect.x()).unwrap(),
+      y: f64::value_from(curr_rect.y() + 3).unwrap(),
+      w: game.output_size().0 * 3.0,
+      h: game.output_size().1 * 3.0,
+    }
+  } else if game.events.move_down == true {
+    Rectangle {
+      x: f64::value_from(curr_rect.x()).unwrap(),
+      y: f64::value_from(curr_rect.y() - 3).unwrap(),
+      w: game.output_size().0 * 3.0,
+      h: game.output_size().1 * 3.0,
+    }
+  } else {
+    Rectangle {
+      x: f64::value_from(curr_rect.x()).unwrap(),
+      y: f64::value_from(curr_rect.y()).unwrap(),
+      w: game.output_size().0 * 3.0,
+      h: game.output_size().1 * 3.0,
+    }
+  }
 }
 
 #[derive(Clone)]

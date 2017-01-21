@@ -1,7 +1,7 @@
 use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
-use views::tilemap::{Tilemap, TerrainTile, TILES_PCS_W, TILES_PCS_H, TERRAIN_W, TERRAIN_H, get_tiles};
+use views::tilemap::{Tilemap, TerrainTile, TILES_PCS_W, TILES_PCS_H, TERRAIN_W, TERRAIN_H, get_tiles, viewport_move};
 use data::load_character;
 use sdl2::pixels::Color;
 use sdl2::mixer::{Chunk};
@@ -151,45 +151,8 @@ impl View for GameView {
       },
     };
 
-
     let curr_rect = game.renderer.viewport();
-
-    let rect = if game.events.move_right == true {
-      Rectangle {
-        x: f64::value_from(curr_rect.x() - 3).unwrap(),
-        y: f64::value_from(curr_rect.y()).unwrap(),
-        w: game.output_size().0 * 3.0,
-        h: game.output_size().1 * 3.0,
-      }
-    } else if game.events.move_left == true {
-       Rectangle {
-        x: f64::value_from(curr_rect.x() + 3).unwrap(),
-        y: f64::value_from(curr_rect.y()).unwrap(),
-        w: game.output_size().0 * 3.0,
-        h: game.output_size().1 * 3.0,
-      }
-    } else if game.events.move_up == true {
-      Rectangle {
-        x: f64::value_from(curr_rect.x()).unwrap(),
-        y: f64::value_from(curr_rect.y() + 3).unwrap(),
-        w: game.output_size().0 * 3.0,
-        h: game.output_size().1 * 3.0,
-      }
-    } else if game.events.move_down == true {
-      Rectangle {
-        x: f64::value_from(curr_rect.x()).unwrap(),
-        y: f64::value_from(curr_rect.y() - 3).unwrap(),
-        w: game.output_size().0 * 3.0,
-        h: game.output_size().1 * 3.0,
-      }
-    } else {
-      Rectangle {
-        x: f64::value_from(curr_rect.x()).unwrap(),
-        y: f64::value_from(curr_rect.y()).unwrap(),
-        w: game.output_size().0 * 3.0,
-        h: game.output_size().1 * 3.0,
-      }
-    };
+    let rect = viewport_move(&game, curr_rect);
     game.renderer.set_viewport(rect.to_sdl());
 
     let scale = game.renderer.scale();
