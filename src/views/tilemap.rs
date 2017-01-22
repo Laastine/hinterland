@@ -27,6 +27,18 @@ pub struct TerrainTile {
   pub current: TerrainFrame,
 }
 
+#[derive(Clone)]
+pub struct Tilemap {
+  pub pos: f64,
+  pub sprite: Sprite,
+}
+
+pub fn cartesian_to_isometric(point_x: i32, point_y: i32) -> (i32, i32) {
+  let x = point_x - point_y;
+  let y = (point_x + point_y) / 2;
+  (x,y)
+}
+
 pub fn get_tiles(game: &Game) -> Vec<TerrainTile> {
   let terrain_spritesheet = Sprite::load(&game.renderer, "assets/terrain.png").unwrap();
   let mut terrain_sprites = Vec::with_capacity(TILES_PCS_W );
@@ -108,10 +120,4 @@ pub fn viewport_move(game: &Game, curr_rect: SdlRect) -> Rectangle {
       h: game.output_size().1 * 3.0,
     }
   }
-}
-
-#[derive(Clone)]
-pub struct Tilemap {
-  pub pos: f64,
-  pub sprite: Sprite,
 }
