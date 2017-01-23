@@ -2,6 +2,7 @@ use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
 use views::tilemap::{Tilemap, TerrainTile, TILES_PCS_W, TILES_PCS_H, TERRAIN_W, TERRAIN_H, get_tiles, viewport_move};
+use views::background::{Background};
 use data::load_character;
 use sdl2::pixels::Color;
 use sdl2::mixer::{Chunk};
@@ -9,6 +10,7 @@ use conv::prelude::*;
 use std::path::Path;
 
 mod tilemap;
+mod background;
 
 const PLAYER_SPEED: f64 = 170.0;
 const ZOOM_SPEED: f32 = 0.01;
@@ -41,6 +43,7 @@ struct Character {
 pub struct GameView {
   player: Character,
   tiles: Vec<TerrainTile>,
+  background: Background,
   pistol: Chunk,
 }
 
@@ -76,7 +79,12 @@ impl GameView {
 
       tiles: get_tiles(&game),
 
-      pistol: pistol_audio
+      pistol: pistol_audio,
+
+      background: Background {
+        pos: 0.0,
+        sprite: Sprite::load(&mut game.renderer, "assets/background.png").unwrap(),
+      }
     }
   }
 }
@@ -125,6 +133,7 @@ impl View for GameView {
     else { unreachable!() };
 
     self.player.heading = self.player.current;
+    self.background.render(&mut game.renderer);
 
     for x in 0..TILES_PCS_W {
       for y in 0..TILES_PCS_H {
