@@ -8,8 +8,8 @@ use sdl2::rect::Rect as SdlRect;
 pub const TERRAIN_W: f64 = 500.0;
 pub const TERRAIN_H: f64 = 250.0;
 
-pub const TILES_PCS_W: usize = 160;
-pub const TILES_PCS_H: usize = 100;
+pub const TILES_PCS_W: usize = 18;
+pub const TILES_PCS_H: usize = 36;
 
 const TILES_W: f64 = 100.0;
 const TILES_H: f64 = 50.0;
@@ -33,10 +33,17 @@ pub struct Tilemap {
   pub sprite: Sprite,
 }
 
-pub fn cartesian_to_isometric(point_x: i32, point_y: i32) -> (i32, i32) {
-  let x = point_x - point_y;
-  let y = (point_x + point_y) / 2;
-  (x,y)
+#[derive(Clone)]
+pub struct Point {
+  x: f64,
+  y: f64,
+}
+
+pub fn cartesian_to_isometric(point_x: f64, point_y: f64) -> Point {
+  Point {
+    x: (point_x - point_y) / 2.0,
+    y: (point_x + point_y) / 4.0
+  }
 }
 
 pub fn get_tiles(game: &Game) -> Vec<TerrainTile> {
@@ -55,8 +62,7 @@ pub fn get_tiles(game: &Game) -> Vec<TerrainTile> {
 
   for x in 0..TILES_PCS_W {
     for y in 0..TILES_PCS_H {
-      let x2: f64 = TILES_W * 1.5 as f64;
-      let y2: f64 = TILES_H * 1.5 as f64;
+      let point = cartesian_to_isometric(TILES_W * x as f64, TILES_H * y as f64);
       tiles.push(TerrainTile {
         rect: Rectangle {
           x: TILES_W * x as f64,
@@ -66,17 +72,6 @@ pub fn get_tiles(game: &Game) -> Vec<TerrainTile> {
         },
         terrain_sprites: terrain_sprites.clone(),
         current: TerrainFrame::Grass,
-      });
-
-      tiles.push(TerrainTile {
-        rect: Rectangle {
-          x: TILES_W * f64::value_from((x + 1)).unwrap() - x2 as f64,
-          y: TILES_H * f64::value_from((y + 1)).unwrap() - y2 as f64,
-          w: TILES_W,
-          h: TILES_H,
-        },
-        terrain_sprites: terrain_sprites.clone(),
-        current: TerrainFrame::Sand,
       });
     }
   }
