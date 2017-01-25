@@ -17,6 +17,9 @@ const ZOOM_SPEED: f32 = 0.01;
 const CHARACTER_W: f64 = 56.0;
 const CHARACTER_H: f64 = 43.0;
 
+pub const SCREEN_WIDTH: f64 = 1280.0;
+pub const SCREEN_HEIGHT: f64 = 720.0;
+
 const FIRE_SPRITE_START_INDEX: usize = 211;
 
 #[derive(Clone, Copy)]
@@ -65,8 +68,8 @@ impl GameView {
     GameView {
       player: Character {
         rect: Rectangle {
-          x: 64.0,
-          y: 64.0,
+          x: SCREEN_WIDTH * 0.5,
+          y: SCREEN_HEIGHT * 0.4,
           w: CHARACTER_W,
           h: CHARACTER_H,
         },

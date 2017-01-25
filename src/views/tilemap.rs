@@ -1,6 +1,7 @@
 use game::gfx::{CopySprite, Sprite};
 use game::{Game};
 use game::data::Rectangle;
+use views::{SCREEN_WIDTH};
 use sdl2::render::Renderer;
 use conv::prelude::*;
 use sdl2::rect::Rect as SdlRect;
@@ -65,8 +66,8 @@ pub fn get_tiles(game: &Game) -> Vec<TerrainTile> {
       let point = cartesian_to_isometric(TILES_W * x as f64, TILES_H * y as f64);
       tiles.push(TerrainTile {
         rect: Rectangle {
-          x: TILES_W * x as f64,
-          y: TILES_H * y as f64,
+          x: point.x + (SCREEN_WIDTH * 0.47),
+          y: point.y,
           w: TILES_W,
           h: TILES_H,
         },
