@@ -47,8 +47,8 @@ pub fn cartesian_to_isometric(point_x: f64, point_y: f64) -> Point {
 }
 
 pub fn get_tiles(game: &Game) -> Vec<TerrainTile> {
-  let terrain_spritesheet = Sprite::load(&game.renderer, "assets/terrain.png").unwrap();
-  let mut terrain_sprites = Vec::with_capacity(TILES_PCS_W );
+  let terrain_spritesheet = Sprite::load(&game.renderer, "assets/tiles.png").unwrap();
+  let mut terrain_sprites = Vec::with_capacity(TILES_PCS_W);
   let mut tiles = Vec::with_capacity(TILES_PCS_W * TILES_PCS_H * 2);
 
   for x in 0..3 {
