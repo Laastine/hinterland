@@ -118,8 +118,8 @@ impl View for GameView {
     let movable_region = Rectangle {
       x: 0.0,
       y: 0.0,
-      w: game.output_size().0 * 3.0,
-      h: game.output_size().1 * 3.0,
+      w: game.output_size().0,
+      h: game.output_size().1,
     };
 
     self.player.rect = self.player.rect.move_inside(movable_region).unwrap();
