@@ -11,13 +11,11 @@ pub struct Background {
 impl Background {
   pub fn render(&mut self, renderer: &mut Renderer) {
     let size = self.sprite.size();
-
-    let (_, window_h) = renderer.output_size().unwrap();
     renderer.copy_sprite(&self.sprite, Rectangle {
       x: 0.0,
       y: 0.0,
-      w: size.0,
-      h: window_h as f64,
+      w: size.0 * 10.0,
+      h: size.0 * 10.0,
     })
   }
 }

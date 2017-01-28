@@ -122,6 +122,12 @@ impl View for GameView {
       h: game.output_size().1,
     };
 
+    let curr_rect = game.renderer.viewport();
+    let rect = viewport_move(&game, curr_rect);
+    game.renderer.set_viewport(rect.to_sdl());
+
+    self.background.render(&mut game.renderer);
+
     self.player.rect = self.player.rect.move_inside(movable_region).unwrap();
     self.player.current =
     if dx == 0.0 && dy < 0.0       { CharacterFrame::Up }
@@ -136,7 +142,6 @@ impl View for GameView {
     else { unreachable!() };
 
     self.player.heading = self.player.current;
-    self.background.render(&mut game.renderer);
 
     for x in 0..TILES_PCS_W {
       for y in 0..TILES_PCS_H {
@@ -162,10 +167,6 @@ impl View for GameView {
           if dx == 0.0 && dy == 0.0 { 0u32 } else if self.player.move_anim_index < 13u32 { self.player.move_anim_index + 1u32 } else { 0u32 };
       },
     };
-
-    let curr_rect = game.renderer.viewport();
-    let rect = viewport_move(&game, curr_rect);
-    game.renderer.set_viewport(rect.to_sdl());
 
     let scale = game.renderer.scale();
     if game.events.zoom_in == true && scale.0 <= 2.0 && scale.1 <= 2.0 {
