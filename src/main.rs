@@ -3,6 +3,7 @@ extern crate chrono;
 extern crate conv;
 #[macro_use]
 extern crate json;
+extern crate tiled;
 
 mod game;
 mod views;

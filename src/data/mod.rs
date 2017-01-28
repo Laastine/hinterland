@@ -4,8 +4,9 @@ use std::string::String;
 use std::path::Path;
 use std::vec::Vec;
 use json::{parse};
-
 use game::data::Rectangle;
+
+mod map_data;
 
 fn read_sprite_file(filename: &str) -> String {
   let path = Path::new(&filename);
