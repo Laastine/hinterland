@@ -12,3 +12,4 @@ features = ["ttf","image","gfx","mixer"]
 chrono = "0.2.25"
 conv = "0.3.3"
 json = "0.11.4"
+tiled = "0.3.0"
