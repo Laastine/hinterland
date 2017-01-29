@@ -12,8 +12,8 @@ impl Background {
   pub fn render(&mut self, renderer: &mut Renderer) {
     let size = self.sprite.size();
     renderer.copy_sprite(&self.sprite, Rectangle {
-      x: 0.0,
-      y: 0.0,
+      x: -40.0,
+      y: -40.0,
       w: size.0 * 10.0,
       h: size.0 * 10.0,
     })

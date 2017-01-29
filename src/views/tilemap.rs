@@ -87,14 +87,14 @@ pub fn viewport_move(game: &Game, curr_rect: SdlRect) -> Rectangle {
       w: game.output_size().0 * 3.0,
       h: game.output_size().1 * 3.0,
     }
-  } else if game.events.move_left == true {
+  } else if game.events.move_left == true && curr_rect.x() < 0  {
     Rectangle {
       x: f64::value_from(curr_rect.x() + 3).unwrap(),
       y: f64::value_from(curr_rect.y()).unwrap(),
       w: game.output_size().0 * 3.0,
       h: game.output_size().1 * 3.0,
     }
-  } else if game.events.move_up == true {
+  } else if game.events.move_up == true && curr_rect.y() < 0 {
     Rectangle {
       x: f64::value_from(curr_rect.x()).unwrap(),
       y: f64::value_from(curr_rect.y() + 3).unwrap(),
