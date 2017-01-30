@@ -3,7 +3,7 @@ use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
 use views::tilemap::{Tilemap, TerrainTile, TILES_PCS_W, TILES_PCS_H, TERRAIN_W, TERRAIN_H, get_tiles, viewport_move};
 use views::background::{Background};
-use data::load_character;
+use data::{load_character, load_map_file, get_tile};
 use sdl2::pixels::Color;
 use sdl2::mixer::{Chunk};
 use conv::prelude::*;
@@ -55,6 +55,8 @@ impl GameView {
     let spritesheet = Sprite::load(&mut game.renderer, "assets/character.png").unwrap();
     let pistol_audio = Chunk::from_file(Path::new("assets/audio/pistol.ogg")).unwrap();
     let character_datapoints = load_character();
+    let gid = load_map_file("assets/foo.tmx");
+    let foo = get_tile(gid, 0, 1, 1);
     let mut sprites = Vec::with_capacity(512);
 
     for x in 0..(FIRE_SPRITE_START_INDEX - 1) {

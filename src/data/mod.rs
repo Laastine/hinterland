@@ -3,10 +3,38 @@ use std::fs::File;
 use std::string::String;
 use std::path::Path;
 use std::vec::Vec;
-use json::{parse};
+use json;
 use game::data::Rectangle;
+use std::io::{BufReader};
+use tiled::{Map, Tileset};
+use tiled;
 
-mod map_data;
+pub fn load_map_file(filename: &str) -> Map {
+  let mut file = match File::open(&Path::new(&filename)) {
+    Ok(f) => f,
+    Err(e) => panic!("File {} not found: {}", filename, e),
+  };
+  let reader = BufReader::new(file);
+  match tiled::parse(reader) {
+    Ok(m) => m,
+    Err(e) => panic!("Map parse error {:?}", e)
+  }
+}
+
+pub fn get_tile(map: Map, layer_index: usize, x: usize, y: usize) -> Option<u32> {
+  let layer = match map.layers.get(layer_index) {
+    None => panic!("layer_index value out of index {:?}", map.layers),
+    Some(ref l) => *l
+  };
+  let y_index = match layer.tiles.iter().nth(x) {
+    None => panic!("x value out of index {:?}", map.layers[0]),
+    Some(ref y) => *y
+  };
+  match y_index.get(y) {
+    None => panic!("y value out of index {:?}", layer.tiles[x]),
+    Some(ref val) => Some(**val)
+  }
+}
 
 fn read_sprite_file(filename: &str) -> String {
   let path = Path::new(&filename);
@@ -26,7 +54,7 @@ pub fn load_character() -> Vec<Rectangle> {
   let mut move_sprite_names = Vec::with_capacity(256);
   let mut fire_sprite_names = Vec::with_capacity(256);
   let character_json = read_sprite_file("./assets/character.json");
-  let character = match parse(&character_json) {
+  let character = match json::parse(&character_json) {
     Ok(res) => res,
     Err(e) => panic!("Character JSON parse error {:?}", e),
   };
