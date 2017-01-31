@@ -3,9 +3,10 @@ use std::fs::File;
 use std::string::String;
 use std::path::Path;
 use std::vec::Vec;
+use std::io::{BufReader};
 use json;
 use game::data::Rectangle;
-use std::io::{BufReader};
+use views::{TerrainFrame};
 use tiled::{Map, Tileset};
 use tiled;
 
@@ -21,7 +22,7 @@ pub fn load_map_file(filename: &str) -> Map {
   }
 }
 
-pub fn get_tile(map: Map, layer_index: usize, x: usize, y: usize) -> Option<u32> {
+pub fn get_tile(map: &Map, layer_index: usize, x: usize, y: usize) -> u32 {
   let layer = match map.layers.get(layer_index) {
     None => panic!("layer_index value out of index {:?}", map.layers),
     Some(ref l) => *l
@@ -32,7 +33,7 @@ pub fn get_tile(map: Map, layer_index: usize, x: usize, y: usize) -> Option<u32>
   };
   match y_index.get(y) {
     None => panic!("y value out of index {:?}", layer.tiles[x]),
-    Some(ref val) => Some(**val)
+    Some(ref val) => **val
   }
 }
 

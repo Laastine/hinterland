@@ -3,7 +3,7 @@ use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
 use views::tilemap::{Tilemap, TerrainTile, TILES_PCS_W, TILES_PCS_H, TERRAIN_W, TERRAIN_H, get_tiles, viewport_move};
 use views::background::{Background};
-use data::{load_character, load_map_file, get_tile};
+use data::{load_character};
 use sdl2::pixels::Color;
 use sdl2::mixer::{Chunk};
 use conv::prelude::*;
@@ -21,6 +21,14 @@ pub const SCREEN_WIDTH: f64 = 1280.0;
 pub const SCREEN_HEIGHT: f64 = 720.0;
 
 const FIRE_SPRITE_START_INDEX: usize = 211;
+
+#[derive(Clone, Copy, Debug)]
+pub enum TerrainFrame {
+  Sand = 2,
+  Grass = 5,
+  Water = 8,
+  Wood = 3
+}
 
 #[derive(Clone, Copy)]
 enum CharacterFrame {
@@ -55,8 +63,6 @@ impl GameView {
     let spritesheet = Sprite::load(&mut game.renderer, "assets/character.png").unwrap();
     let pistol_audio = Chunk::from_file(Path::new("assets/audio/pistol.ogg")).unwrap();
     let character_datapoints = load_character();
-    let gid = load_map_file("assets/foo.tmx");
-    let foo = get_tile(gid, 0, 1, 1);
     let mut sprites = Vec::with_capacity(512);
 
     for x in 0..(FIRE_SPRITE_START_INDEX - 1) {
@@ -144,14 +150,12 @@ impl View for GameView {
     else { unreachable!() };
 
     self.player.heading = self.player.current;
-
     for x in 0..TILES_PCS_W {
       for y in 0..TILES_PCS_H {
         let index = x * TILES_PCS_H + y;
         game.renderer.copy_sprite(&self.tiles[index].terrain_sprites[self.tiles[index].current as usize], self.tiles[index].rect);
       }
     }
-
     match game.events.mouse_click {
       Some(_) => {
         let index = 211 + self.player.current as usize * 5 + self.player.fire_anim_index as usize;
@@ -169,7 +173,7 @@ impl View for GameView {
           if dx == 0.0 && dy == 0.0 { 0u32 } else if self.player.move_anim_index < 13u32 { self.player.move_anim_index + 1u32 } else { 0u32 };
       },
     };
-
+    println!("3");
     let scale = game.renderer.scale();
     if game.events.zoom_in == true && scale.0 <= 2.0 && scale.1 <= 2.0 {
       let _ = game.renderer.set_scale(scale.0 + ZOOM_SPEED, scale.1 + ZOOM_SPEED);
