@@ -62,7 +62,6 @@ pub fn get_tiles(game: &Game) -> Vec<TerrainTile> {
   for x in 0..TILES_PCS_W {
     for y in 0..TILES_PCS_H {
       let point = cartesian_to_isometric(TILES_W * x as f64, TILES_H * y as f64);
-      let tile_index = get_tile(&map, 0, x, y);
       tiles.push(TerrainTile {
         rect: Rectangle {
           x: point.x + (SCREEN_WIDTH / 2.0),
@@ -71,7 +70,7 @@ pub fn get_tiles(game: &Game) -> Vec<TerrainTile> {
           h: TILES_H,
         },
         terrain_sprites: terrain_sprites.clone(),
-        current: get_tile(&map, 0, x, y),
+        current: get_tile(&map, 0, y, x),
       });
     }
   }
