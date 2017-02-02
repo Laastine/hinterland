@@ -24,7 +24,7 @@ cargo run
 
 `WASD + mouse 1`
 
-Tested with Rust 1.14
+Tested with Rust 1.15
 
 ## Licences
 
