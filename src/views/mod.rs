@@ -1,12 +1,10 @@
 use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
-use views::tilemap::{Tilemap, TerrainTile, TILES_PCS_W, TILES_PCS_H, TERRAIN_W, TERRAIN_H, get_tiles, viewport_move};
+use views::tilemap::{TerrainTile, TILES_PCS_W, TILES_PCS_H, get_tiles, viewport_move};
 use views::background::{Background};
 use data::{load_character};
-use sdl2::pixels::Color;
 use sdl2::mixer::{Chunk};
-use conv::prelude::*;
 use std::path::Path;
 
 mod tilemap;
@@ -21,14 +19,6 @@ pub const SCREEN_WIDTH: f64 = 1280.0;
 pub const SCREEN_HEIGHT: f64 = 720.0;
 
 const FIRE_SPRITE_START_INDEX: usize = 211;
-
-#[derive(Clone, Copy, Debug)]
-pub enum TerrainFrame {
-  Sand = 2,
-  Grass = 5,
-  Water = 8,
-  Wood = 3
-}
 
 #[derive(Clone, Copy)]
 enum CharacterFrame {

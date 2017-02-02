@@ -1,14 +1,10 @@
-use game::gfx::{CopySprite, Sprite};
+use game::gfx::{Sprite};
 use game::{Game};
 use game::data::Rectangle;
-use views::{SCREEN_WIDTH, TerrainFrame};
+use views::{SCREEN_WIDTH};
 use data::{load_map_file, get_tile};
-use sdl2::render::Renderer;
 use conv::prelude::*;
 use sdl2::rect::Rect as SdlRect;
-
-pub const TERRAIN_W: f64 = 500.0;
-pub const TERRAIN_H: f64 = 250.0;
 
 pub const TILES_PCS_W: usize = 16;
 pub const TILES_PCS_H: usize = 16;

@@ -6,12 +6,11 @@ use std::vec::Vec;
 use std::io::{BufReader};
 use json;
 use game::data::Rectangle;
-use views::{TerrainFrame};
-use tiled::{Map, Tileset};
+use tiled::{Map};
 use tiled;
 
 pub fn load_map_file(filename: &str) -> Map {
-  let mut file = match File::open(&Path::new(&filename)) {
+  let file = match File::open(&Path::new(&filename)) {
     Ok(f) => f,
     Err(e) => panic!("File {} not found: {}", filename, e),
   };
