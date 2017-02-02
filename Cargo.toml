@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 
 [dependencies.sdl2]
-version = "0.27.3"
+version = "0.28.0"
 default-features = false
 features = ["ttf","image","gfx","mixer"]
 
