@@ -1,7 +1,7 @@
 use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
-use views::tilemap::{TerrainTile, TILES_PCS_W, TILES_PCS_H, get_tiles, viewport_move};
+use views::tilemap::{TerrainTile, TerrainSpriteSheet, TILES_PCS_W, TILES_PCS_H, get_tiles, viewport_move};
 use views::background::{Background};
 use data::{load_character};
 use sdl2::mixer::{Chunk};
@@ -44,6 +44,7 @@ struct Character {
 pub struct GameView {
   player: Character,
   tiles: Vec<TerrainTile>,
+  spritesheet: Vec<Sprite>,
   background: Background,
   pistol: Chunk,
 }
@@ -78,7 +79,9 @@ impl GameView {
         fire_anim_index: 0
       },
 
-      tiles: get_tiles(&game),
+      tiles: get_tiles(),
+
+      spritesheet: TerrainSpriteSheet::new(&game),
 
       pistol: pistol_audio,
 
@@ -143,7 +146,7 @@ impl View for GameView {
     for x in 0..TILES_PCS_W {
       for y in 0..TILES_PCS_H {
         let index = x * TILES_PCS_H + y;
-        game.renderer.copy_sprite(&self.tiles[index].terrain_sprites[self.tiles[index].current as usize], self.tiles[index].rect);
+        game.renderer.copy_sprite(&self.spritesheet[self.tiles[index].current as usize], self.tiles[index].rect);
       }
     }
     match game.events.mouse_click {

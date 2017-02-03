@@ -15,7 +15,6 @@ const TILES_H: f64 = 32.0;
 #[derive(Clone)]
 pub struct TerrainTile {
   pub rect: Rectangle,
-  pub terrain_sprites: Vec<Sprite>,
   pub current: u32,
 }
 
@@ -38,22 +37,33 @@ pub fn cartesian_to_isometric(point_x: f64, point_y: f64) -> Point {
   }
 }
 
-pub fn get_tiles(game: &Game) -> Vec<TerrainTile> {
-  let map = load_map_file("assets/tilemap.tmx");
-  let terrain_spritesheet = Sprite::load(&game.renderer, "assets/terrain.png").unwrap();
-  let mut terrain_sprites = Vec::with_capacity(32 * 32);
-  let mut tiles = Vec::with_capacity(map.width as usize * map.height as usize * 2);
+pub struct TerrainSpriteSheet {
+  pub terrain_spritesheet: Vec<Sprite>
+}
 
-  for x in 0..(map.tile_width-1) {
-    for y in 0..(map.tile_height-1) {
-      terrain_sprites.push(terrain_spritesheet.region(Rectangle {
-        w: TILES_W,
-        h: TILES_H,
-        x: TILES_W * y as f64,
-        y: TILES_H * x as f64,
-      }).unwrap());
+impl TerrainSpriteSheet {
+  pub fn new(game: &Game) -> Vec<Sprite> {
+    let map = load_map_file("assets/tilemap.tmx");
+    let terrain_spritesheet = Sprite::load(&game.renderer, "assets/terrain.png").unwrap();
+    let mut terrain_sprites = Vec::with_capacity(32 * 32);
+
+    for x in 0..(map.tile_width-1) {
+      for y in 0..(map.tile_height-1) {
+        terrain_sprites.push(terrain_spritesheet.region(Rectangle {
+          w: TILES_W,
+          h: TILES_H,
+          x: TILES_W * y as f64,
+          y: TILES_H * x as f64,
+        }).unwrap());
+      }
     }
+    terrain_sprites
   }
+}
+
+pub fn get_tiles() -> Vec<TerrainTile> {
+  let map = load_map_file("assets/tilemap.tmx");
+  let mut tiles = Vec::with_capacity(map.width as usize * map.height as usize * 2);
 
   for x in 0..TILES_PCS_W {
     for y in 0..TILES_PCS_H {
@@ -65,7 +75,6 @@ pub fn get_tiles(game: &Game) -> Vec<TerrainTile> {
           w: TILES_W,
           h: TILES_H,
         },
-        terrain_sprites: terrain_sprites.clone(),
         current: get_tile(&map, 0, y, x),
       });
     }
