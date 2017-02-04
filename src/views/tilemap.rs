@@ -6,11 +6,11 @@ use data::{load_map_file, get_tile};
 use conv::prelude::*;
 use sdl2::rect::Rect as SdlRect;
 
-pub const TILES_PCS_W: usize = 16;
-pub const TILES_PCS_H: usize = 16;
+pub const TILES_PCS_W: usize = 32;
+pub const TILES_PCS_H: usize = 32;
 
-pub const TILESHEET_PCS_W: usize = 15;
-pub const TILESHEET_PCS_H: usize = 15;
+pub const TILESHEET_PCS_W: usize = TILES_PCS_W-1;
+pub const TILESHEET_PCS_H: usize = TILES_PCS_H-1;
 const TRANSLATE_X_CONST: f64 = (SCREEN_WIDTH / 2.0);
 
 const TILES_W: f64 = 32.0;
