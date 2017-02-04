@@ -1,7 +1,7 @@
 use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
-use views::tilemap::{TerrainTile, TerrainSpriteSheet, TILES_PCS_W, TILES_PCS_H, get_tiles, viewport_move};
+use views::tilemap::{TerrainTile, TerrainSpriteSheet, TILES_PCS_W, TILES_PCS_H, TILESHEET_PCS_W, TILESHEET_PCS_H, get_tiles, viewport_move};
 use views::background::{Background};
 use data::{load_character};
 use sdl2::mixer::{Chunk};
@@ -146,9 +146,10 @@ impl View for GameView {
     for x in 0..TILES_PCS_W {
       for y in 0..TILES_PCS_H {
         let index = x * TILES_PCS_H + y;
-        game.renderer.copy_sprite(&self.sprite_sheet[self.tiles[index].current as usize], self.tiles[index].rect);
+        game.renderer.copy_sprite(&self.sprite_sheet[(self.tiles[index].current-1) as usize], self.tiles[index].rect);
       }
     }
+
     match game.events.mouse_click {
       Some(_) => {
         let index = 211 + self.player.current as usize * 5 + self.player.fire_anim_index as usize;

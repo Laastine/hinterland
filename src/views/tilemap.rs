@@ -9,6 +9,10 @@ use sdl2::rect::Rect as SdlRect;
 pub const TILES_PCS_W: usize = 16;
 pub const TILES_PCS_H: usize = 16;
 
+pub const TILESHEET_PCS_W: usize = 15;
+pub const TILESHEET_PCS_H: usize = 15;
+const TRANSLATE_X_CONST: f64 = (SCREEN_WIDTH / 2.0);
+
 const TILES_W: f64 = 32.0;
 const TILES_H: f64 = 32.0;
 
@@ -45,15 +49,15 @@ impl TerrainSpriteSheet {
   pub fn new(game: &Game) -> Vec<Sprite> {
     let map = load_map_file("assets/tilemap.tmx");
     let terrain_spritesheet = Sprite::load(&game.renderer, "assets/terrain.png").unwrap();
-    let mut terrain_sprites = Vec::with_capacity(32 * 32);
+    let mut terrain_sprites = Vec::with_capacity(TILESHEET_PCS_W * TILESHEET_PCS_H * 2);
 
-    for x in 0..(map.tile_width-1) {
-      for y in 0..(map.tile_height-1) {
+    for y in 0..(map.tile_width) {
+      for x in 0..(map.tile_height) {
         terrain_sprites.push(terrain_spritesheet.region(Rectangle {
           w: TILES_W,
           h: TILES_H,
-          x: TILES_W * y as f64,
-          y: TILES_H * x as f64,
+          x: TILES_W * x as f64,
+          y: TILES_H * y as f64,
         }).unwrap());
       }
     }
@@ -70,7 +74,7 @@ pub fn get_tiles() -> Vec<TerrainTile> {
       let point = cartesian_to_isometric(TILES_W * x as f64, TILES_H * y as f64);
       tiles.push(TerrainTile {
         rect: Rectangle {
-          x: point.x + (SCREEN_WIDTH / 2.0),
+          x: point.x + TRANSLATE_X_CONST,
           y: point.y,
           w: TILES_W,
           h: TILES_H,

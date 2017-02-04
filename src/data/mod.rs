@@ -34,7 +34,7 @@ pub fn get_tile(map: &Map, layer_index: usize, x: usize, y: usize) -> u32 {
     None => panic!("y value out of index {:?}", layer.tiles[y]),
     Some(ref val) => **val
   };
-  val+2u32
+  val
 }
 
 fn read_sprite_file(filename: &str) -> String {
