@@ -75,7 +75,7 @@ pub fn get_tiles() -> Vec<TerrainTile> {
           w: TILES_W,
           h: TILES_H,
         },
-        current: get_tile(&map, 0, y, x),
+        current: get_tile(&map, 0, x, y),
       });
     }
   }
