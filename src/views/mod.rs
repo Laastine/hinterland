@@ -44,7 +44,7 @@ struct Character {
 pub struct GameView {
   player: Character,
   tiles: Vec<TerrainTile>,
-  spritesheet: Vec<Sprite>,
+  sprite_sheet: Vec<Sprite>,
   background: Background,
   pistol: Chunk,
 }
@@ -81,7 +81,7 @@ impl GameView {
 
       tiles: get_tiles(),
 
-      spritesheet: TerrainSpriteSheet::new(&game),
+      sprite_sheet: TerrainSpriteSheet::new(&game),
 
       pistol: pistol_audio,
 
@@ -146,7 +146,7 @@ impl View for GameView {
     for x in 0..TILES_PCS_W {
       for y in 0..TILES_PCS_H {
         let index = x * TILES_PCS_H + y;
-        game.renderer.copy_sprite(&self.spritesheet[self.tiles[index].current as usize], self.tiles[index].rect);
+        game.renderer.copy_sprite(&self.sprite_sheet[self.tiles[index].current as usize], self.tiles[index].rect);
       }
     }
     match game.events.mouse_click {
