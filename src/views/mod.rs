@@ -15,6 +15,9 @@ const ZOOM_SPEED: f32 = 0.01;
 const CHARACTER_W: f64 = 56.0;
 const CHARACTER_H: f64 = 43.0;
 
+const CHARACTER_POS_W: f64 = SCREEN_WIDTH * 0.5;
+const CHARACTER_POS_H: f64 = SCREEN_HEIGHT * 0.4;
+
 pub const SCREEN_WIDTH: f64 = 1280.0;
 pub const SCREEN_HEIGHT: f64 = 720.0;
 
@@ -67,8 +70,8 @@ impl GameView {
     GameView {
       player: Character {
         rect: Rectangle {
-          x: SCREEN_WIDTH * 0.5,
-          y: SCREEN_HEIGHT * 0.4,
+          x: CHARACTER_POS_W,
+          y: CHARACTER_POS_H,
           w: CHARACTER_W,
           h: CHARACTER_H,
         },
