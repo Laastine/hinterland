@@ -2,6 +2,7 @@
 mod events;
 pub mod data;
 pub mod gfx;
+pub mod constants;
 
 use sdl2::image::{INIT_PNG};
 use sdl2::mixer::{INIT_OGG, AUDIO_S16LSB};

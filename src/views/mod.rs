@@ -1,7 +1,8 @@
 use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
-use views::tilemap::{TerrainTile, TerrainSpriteSheet, TILES_PCS_W, TILES_PCS_H, get_tiles, viewport_move};
+use game::constants::{CHARACTER_POS_W, CHARACTER_POS_H, TILES_PCS_W, TILES_PCS_H, PLAYER_SPEED, ZOOM_SPEED, CHARACTER_W, CHARACTER_H, FIRE_SPRITE_START_INDEX};
+use views::tilemap::{TerrainTile, TerrainSpriteSheet, get_tiles, viewport_move};
 use views::background::{Background};
 use data::{load_character};
 use sdl2::mixer::{Chunk};
@@ -9,19 +10,6 @@ use std::path::Path;
 
 mod tilemap;
 mod background;
-
-const PLAYER_SPEED: f64 = 170.0;
-const ZOOM_SPEED: f32 = 0.01;
-const CHARACTER_W: f64 = 56.0;
-const CHARACTER_H: f64 = 43.0;
-
-const CHARACTER_POS_W: f64 = SCREEN_WIDTH * 0.5;
-const CHARACTER_POS_H: f64 = SCREEN_HEIGHT * 0.4;
-
-pub const SCREEN_WIDTH: f64 = 1280.0;
-pub const SCREEN_HEIGHT: f64 = 720.0;
-
-const FIRE_SPRITE_START_INDEX: usize = 211;
 
 #[derive(Clone, Copy)]
 enum CharacterFrame {
@@ -106,18 +94,18 @@ impl View for GameView {
     let moved = if diagonal { 1.0 / 2.0f64.sqrt() } else { 1.0 } * PLAYER_SPEED * elapsed;
     let dx = match (game.events.key_left, game.events.key_right) {
       (true, true) | (false, false) => 0.0,
-      (true, false) => -moved,
-      (false, true) => moved,
+      (true, false) => -moved * 1.5,
+      (false, true) => moved * 1.5,
     };
 
     let dy = match (game.events.key_up, game.events.key_down) {
       (true, true) | (false, false) => 0.0,
-      (true, false) => -moved,
-      (false, true) => moved,
+      (true, false) => -moved * 0.75,
+      (false, true) => moved * 0.75,
     };
 
-    self.player.rect.x += dx * 1.5;
-    self.player.rect.y += dy * 0.75;
+    self.player.rect.x += dx;
+    self.player.rect.y += dy;
 
     let movable_region = Rectangle {
       x: 0.0,
@@ -127,7 +115,7 @@ impl View for GameView {
     };
 
     let curr_rect = game.renderer.viewport();
-    let rect = viewport_move(&game, curr_rect, dx*1.5, dy*0.75);
+    let rect = viewport_move(&game, curr_rect, dx, dy);
     game.renderer.set_viewport(rect.to_sdl());
 
     self.background.render(&mut game.renderer);
