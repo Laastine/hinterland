@@ -11,7 +11,8 @@ pub const TILES_PCS_H: usize = 32;
 
 pub const TILESHEET_PCS_W: usize = TILES_PCS_W - 1;
 pub const TILESHEET_PCS_H: usize = TILES_PCS_H - 1;
-const TRANSLATE_X_CONST: f64 = (SCREEN_WIDTH / 2.0);
+const TRANSLATE_X_CONST: f64 = SCREEN_WIDTH * 0.8;
+const TRANSLATE_Y_CONST: f64 = 0.0;
 
 const TILES_W: f64 = 32.0;
 const TILES_H: f64 = 32.0;
@@ -75,7 +76,7 @@ pub fn get_tiles() -> Vec<TerrainTile> {
       tiles.push(TerrainTile {
         rect: Rectangle {
           x: point.x + TRANSLATE_X_CONST,
-          y: point.y,
+          y: point.y + TRANSLATE_Y_CONST,
           w: TILES_W,
           h: TILES_H,
         },
