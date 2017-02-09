@@ -9,8 +9,8 @@ use sdl2::rect::Rect as SdlRect;
 pub const TILES_PCS_W: usize = 32;
 pub const TILES_PCS_H: usize = 32;
 
-pub const TILESHEET_PCS_W: usize = TILES_PCS_W-1;
-pub const TILESHEET_PCS_H: usize = TILES_PCS_H-1;
+pub const TILESHEET_PCS_W: usize = TILES_PCS_W - 1;
+pub const TILESHEET_PCS_H: usize = TILES_PCS_H - 1;
 const TRANSLATE_X_CONST: f64 = (SCREEN_WIDTH / 2.0);
 
 const TILES_W: f64 = 32.0;
@@ -86,41 +86,11 @@ pub fn get_tiles() -> Vec<TerrainTile> {
   tiles
 }
 
-pub fn viewport_move(game: &Game, curr_rect: SdlRect) -> Rectangle {
-  if game.events.move_right == true {
-    Rectangle {
-      x: f64::value_from(curr_rect.x() - 3).unwrap(),
-      y: f64::value_from(curr_rect.y()).unwrap(),
-      w: game.output_size().0 * 3.0,
-      h: game.output_size().1 * 3.0,
-    }
-  } else if game.events.move_left == true && curr_rect.x() < 0  {
-    Rectangle {
-      x: f64::value_from(curr_rect.x() + 3).unwrap(),
-      y: f64::value_from(curr_rect.y()).unwrap(),
-      w: game.output_size().0 * 3.0,
-      h: game.output_size().1 * 3.0,
-    }
-  } else if game.events.move_up == true && curr_rect.y() < 0 {
-    Rectangle {
-      x: f64::value_from(curr_rect.x()).unwrap(),
-      y: f64::value_from(curr_rect.y() + 3).unwrap(),
-      w: game.output_size().0 * 3.0,
-      h: game.output_size().1 * 3.0,
-    }
-  } else if game.events.move_down == true {
-    Rectangle {
-      x: f64::value_from(curr_rect.x()).unwrap(),
-      y: f64::value_from(curr_rect.y() - 3).unwrap(),
-      w: game.output_size().0 * 3.0,
-      h: game.output_size().1 * 3.0,
-    }
-  } else {
-    Rectangle {
-      x: f64::value_from(curr_rect.x()).unwrap(),
-      y: f64::value_from(curr_rect.y()).unwrap(),
-      w: game.output_size().0 * 3.0,
-      h: game.output_size().1 * 3.0,
-    }
+pub fn viewport_move(game: &Game, curr_rect: SdlRect, dx: f64, dy: f64) -> Rectangle {
+  Rectangle {
+    x: f64::value_from(curr_rect.x()).unwrap() - dx,
+    y: f64::value_from(curr_rect.y()).unwrap() - dy,
+    w: game.output_size().0 * 3.0,
+    h: game.output_size().1 * 3.0,
   }
 }

@@ -1,7 +1,7 @@
 use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
-use views::tilemap::{TerrainTile, TerrainSpriteSheet, TILES_PCS_W, TILES_PCS_H, TILESHEET_PCS_W, TILESHEET_PCS_H, get_tiles, viewport_move};
+use views::tilemap::{TerrainTile, TerrainSpriteSheet, TILES_PCS_W, TILES_PCS_H, get_tiles, viewport_move};
 use views::background::{Background};
 use data::{load_character};
 use sdl2::mixer::{Chunk};
@@ -127,7 +127,7 @@ impl View for GameView {
     };
 
     let curr_rect = game.renderer.viewport();
-    let rect = viewport_move(&game, curr_rect);
+    let rect = viewport_move(&game, curr_rect, dx*1.5, dy*0.75);
     game.renderer.set_viewport(rect.to_sdl());
 
     self.background.render(&mut game.renderer);
