@@ -42,8 +42,8 @@ pub struct TerrainSpriteSheet {
 
 impl TerrainSpriteSheet {
   pub fn new(game: &Game) -> Vec<Sprite> {
-    let map = load_map_file("assets/tilemap.tmx");
-    let terrain_spritesheet = Sprite::load(&game.renderer, "assets/terrain.png").unwrap();
+    let map = load_map_file("assets/maps/tilemap.tmx");
+    let terrain_spritesheet = Sprite::load(&game.renderer, "assets/maps/terrain.png").unwrap();
     let mut terrain_sprites = Vec::with_capacity(TILESHEET_PCS_W * TILESHEET_PCS_H * 2);
 
     for y in 0..(map.tile_width) {
@@ -61,7 +61,7 @@ impl TerrainSpriteSheet {
 }
 
 pub fn get_tiles() -> Vec<TerrainTile> {
-  let map = load_map_file("assets/tilemap.tmx");
+  let map = load_map_file("assets/maps/tilemap.tmx");
   let mut tiles = Vec::with_capacity(map.width as usize * map.height as usize * 2);
 
   for x in 0..TILES_PCS_W {
