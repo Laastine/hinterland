@@ -146,7 +146,7 @@ impl View for GameView {
         let index = 211 + self.player.current as usize * 5 + self.player.fire_anim_index as usize;
         game.renderer.copy_sprite(&self.player.sprites[index], self.player.rect);
         self.player.fire_anim_index =
-          if dx == 0.0 && dy == 0.0 { 0u32 } else if self.player.fire_anim_index < 4u32 { self.player.fire_anim_index + 1u32 } else { 0u32 };
+          if self.player.fire_anim_index < 4u32 { self.player.fire_anim_index + 1u32 } else { 0u32 };
         if self.player.fire_anim_index == 0 {
           game.play_sound(&self.pistol);
         }
