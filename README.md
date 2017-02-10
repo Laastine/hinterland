@@ -15,7 +15,7 @@ brew install sdl2_mixer --with-libvorbis
 
 ### Get dependencies and execute
 
-```
+```bash
 cargo install
 cargo run
 ```
@@ -24,7 +24,7 @@ cargo run
 
 `WASD + mouse 1`
 
-Tested with Rust 1.15
+Tested with Rust 1.15.1
 
 ## Licences
 
