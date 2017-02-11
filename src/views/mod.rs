@@ -4,47 +4,70 @@ use game::gfx::{CopySprite, Sprite};
 use game::constants::{TILES_PCS_W, TILES_PCS_H, PLAYER_SPEED, ZOOM_SPEED, FIRE_SPRITE_START_INDEX};
 use views::tilemap::{TerrainTile, TerrainSpriteSheet, get_tiles, viewport_move};
 use views::background::{Background};
-use views::character::{Character, CharacterFrame};
-use data::{load_character};
+use views::character::{Character};
+use views::zombie::{Zombie};
+use data::{load_character, load_zombie};
 use sdl2::mixer::{Chunk};
 use std::path::Path;
 
 mod character;
+mod zombie;
 mod tilemap;
 mod background;
+
+#[derive(Clone, Copy)]
+pub enum Orientation {
+  Right = 0,
+  UpRight = 1,
+  Up = 2,
+  UpLeft = 3,
+  Left = 4,
+  DownLeft = 5,
+  Down = 6,
+  DownRight = 7,
+}
 
 pub struct GameView {
   player: Character,
   tiles: Vec<TerrainTile>,
   sprite_sheet: Vec<Sprite>,
   background: Background,
+  zombie: Zombie,
   pistol: Chunk,
 }
 
 impl GameView {
   pub fn new(game: &mut Game) -> GameView {
     let pistol_audio_path = "assets/audio/pistol.ogg";
-    let spritesheet = Sprite::load(&mut game.renderer, "assets/character.png").unwrap();
+    let character_spritesheet = Sprite::load(&mut game.renderer, "assets/character.png").unwrap();
+    let zombie_spritesheet = Sprite::load(&mut game.renderer, "assets/zombie.png").unwrap();
     let pistol_audio = match Chunk::from_file(Path::new(pistol_audio_path)) {
       Ok(f) => f,
       Err(e) => panic!("File {} not found: {}", pistol_audio_path, e),
     };
     let character_datapoints = load_character();
-    let mut sprites = Vec::with_capacity(512);
+    let zombie_datapoints = load_zombie();
+    let mut character_sprites = Vec::with_capacity(512);
+    let mut zombie_sprites = Vec::with_capacity(512);
 
     for x in 0..(FIRE_SPRITE_START_INDEX - 1) {
-      sprites.push(spritesheet.region(character_datapoints[x]).unwrap());
+      character_sprites.push(character_spritesheet.region(character_datapoints[x]).unwrap());
     }
 
     for x in FIRE_SPRITE_START_INDEX..255 {
-      sprites.push(spritesheet.region(character_datapoints[x]).unwrap());
+      character_sprites.push(character_spritesheet.region(character_datapoints[x]).unwrap());
+    }
+
+    for x in 0..(zombie_datapoints.len() - 1) {
+      zombie_sprites.push(zombie_spritesheet.region(zombie_datapoints[x]).unwrap());
     }
 
     GameView {
-      player: Character::new(sprites),
+      player: Character::new(character_sprites),
       tiles: get_tiles(),
       sprite_sheet: TerrainSpriteSheet::new(&game),
       pistol: pistol_audio,
+      zombie: Zombie::new(zombie_sprites),
       background: Background {
         pos: 0.0,
         sprite: Sprite::load(&mut game.renderer, "assets/background.png").unwrap(),
@@ -91,15 +114,15 @@ impl View for GameView {
 
     self.player.rect = self.player.rect.move_inside(movable_region).unwrap();
     self.player.current =
-    if dx == 0.0 && dy < 0.0       { CharacterFrame::Up }
-    else if dx > 0.0 && dy < 0.0   { CharacterFrame::UpRight }
-    else if dx < 0.0 && dy < 0.0   { CharacterFrame::UpLeft }
+    if dx == 0.0 && dy < 0.0       { Orientation::Up }
+    else if dx > 0.0 && dy < 0.0   { Orientation::UpRight }
+    else if dx < 0.0 && dy < 0.0   { Orientation::UpLeft }
     else if dx == 0.0 && dy == 0.0 { self.player.heading }
-    else if dx > 0.0 && dy == 0.0  { CharacterFrame::Right }
-    else if dx < 0.0 && dy == 0.0  { CharacterFrame::Left }
-    else if dx == 0.0 && dy > 0.0  { CharacterFrame::Down }
-    else if dx > 0.0 && dy > 0.0   { CharacterFrame::DownRight }
-    else if dx < 0.0 && dy > 0.0   { CharacterFrame::DownLeft }
+    else if dx > 0.0 && dy == 0.0  { Orientation::Right }
+    else if dx < 0.0 && dy == 0.0  { Orientation::Left }
+    else if dx == 0.0 && dy > 0.0  { Orientation::Down }
+    else if dx > 0.0 && dy > 0.0   { Orientation::DownRight }
+    else if dx < 0.0 && dy > 0.0   { Orientation::DownLeft }
     else { unreachable!() };
 
     self.player.heading = self.player.current;
@@ -109,6 +132,7 @@ impl View for GameView {
         game.renderer.copy_sprite(&self.sprite_sheet[(self.tiles[index].current-1) as usize], self.tiles[index].rect);
       }
     }
+    self.zombie.render(&mut game.renderer);
 
     match game.events.mouse_click {
       Some(_) => {

@@ -98,3 +98,32 @@ pub fn load_character() -> Vec<Rectangle> {
   sprites
 }
 
+pub fn load_zombie() -> Vec<Rectangle> {
+  let mut sprites = Vec::with_capacity(512);
+  let mut idle_sprite_names = Vec::with_capacity(256);
+  let character_json = read_sprite_file("./assets/zombie.json");
+  let zombie = match json::parse(&character_json) {
+    Ok(res) => res,
+    Err(e) => panic!("Character JSON parse error {:?}", e),
+  };
+
+  for x in 0..7 {
+    for y in 0..3 {
+      idle_sprite_names.push(format!("idle_{}_{}", x, y));
+    }
+  }
+
+  for &ref idle_sprite in &idle_sprite_names {
+    let x = zombie["frames"][idle_sprite]["frame"]["x"].as_f64().unwrap();
+    let y = zombie["frames"][idle_sprite]["frame"]["y"].as_f64().unwrap();
+    let w = zombie["frames"][idle_sprite]["frame"]["w"].as_f64().unwrap();
+    let h = zombie["frames"][idle_sprite]["frame"]["h"].as_f64().unwrap();
+    sprites.push(Rectangle {
+      w: w,
+      h: h,
+      x: x,
+      y: y,
+    });
+  }
+  sprites
+}
