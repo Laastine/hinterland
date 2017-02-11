@@ -1,6 +1,7 @@
 use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
+use std::result::Result;
 use sdl2::render::{Renderer, Texture};
 use sdl2::image::{LoadTexture};
 
@@ -28,7 +29,10 @@ impl Sprite {
   }
 
   pub fn load(renderer: &Renderer, path: &str) -> Option<Sprite> {
-    renderer.load_texture(Path::new(path)).ok().map(Sprite::new)
+    match renderer.load_texture(Path::new(path)).ok() {
+      Some(f) => Some(f).map(Sprite::new),
+      None => panic!("File not fount {}", path),
+    }
   }
 
   pub fn size(&self) -> (f64, f64) {
