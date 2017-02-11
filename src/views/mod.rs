@@ -42,8 +42,12 @@ pub struct GameView {
 
 impl GameView {
   pub fn new(game: &mut Game) -> GameView {
+    let pistol_audio_path = "assets/audio/pistol.ogg";
     let spritesheet = Sprite::load(&mut game.renderer, "assets/character.png").unwrap();
-    let pistol_audio = Chunk::from_file(Path::new("assets/audio/pistol.ogg")).unwrap();
+    let pistol_audio = match Chunk::from_file(Path::new(pistol_audio_path)) {
+      Ok(f) => f,
+      Err(e) => panic!("File {} not found: {}", pistol_audio_path, e),
+    };
     let character_datapoints = load_character();
     let mut sprites = Vec::with_capacity(512);
 
