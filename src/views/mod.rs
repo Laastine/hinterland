@@ -1,36 +1,17 @@
 use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
-use game::constants::{CHARACTER_POS_W, CHARACTER_POS_H, TILES_PCS_W, TILES_PCS_H, PLAYER_SPEED, ZOOM_SPEED, CHARACTER_W, CHARACTER_H, FIRE_SPRITE_START_INDEX};
+use game::constants::{TILES_PCS_W, TILES_PCS_H, PLAYER_SPEED, ZOOM_SPEED, FIRE_SPRITE_START_INDEX};
 use views::tilemap::{TerrainTile, TerrainSpriteSheet, get_tiles, viewport_move};
 use views::background::{Background};
+use views::character::{Character, CharacterFrame};
 use data::{load_character};
 use sdl2::mixer::{Chunk};
 use std::path::Path;
 
+mod character;
 mod tilemap;
 mod background;
-
-#[derive(Clone, Copy)]
-enum CharacterFrame {
-  Right = 0,
-  UpRight = 1,
-  Up = 2,
-  UpLeft = 3,
-  Left = 4,
-  DownLeft = 5,
-  Down = 6,
-  DownRight = 7,
-}
-
-struct Character {
-  rect: Rectangle,
-  sprites: Vec<Sprite>,
-  current: CharacterFrame,
-  heading: CharacterFrame,
-  move_anim_index: u32,
-  fire_anim_index: u32
-}
 
 pub struct GameView {
   player: Character,
@@ -60,19 +41,7 @@ impl GameView {
     }
 
     GameView {
-      player: Character {
-        rect: Rectangle {
-          x: CHARACTER_POS_W,
-          y: CHARACTER_POS_H,
-          w: CHARACTER_W,
-          h: CHARACTER_H,
-        },
-        sprites: sprites.clone(),
-        current: CharacterFrame::Down,
-        heading: CharacterFrame::Down,
-        move_anim_index: 0,
-        fire_anim_index: 0
-      },
+      player: Character::new(sprites),
       tiles: get_tiles(),
       sprite_sheet: TerrainSpriteSheet::new(&game),
       pistol: pistol_audio,

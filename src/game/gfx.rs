@@ -1,7 +1,6 @@
 use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
-use std::result::Result;
 use sdl2::render::{Renderer, Texture};
 use sdl2::image::{LoadTexture};
 
