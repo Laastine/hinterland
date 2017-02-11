@@ -69,13 +69,9 @@ impl GameView {
         move_anim_index: 0,
         fire_anim_index: 0
       },
-
       tiles: get_tiles(),
-
       sprite_sheet: TerrainSpriteSheet::new(&game),
-
       pistol: pistol_audio,
-
       background: Background {
         pos: 0.0,
         sprite: Sprite::load(&mut game.renderer, "assets/background.png").unwrap(),
