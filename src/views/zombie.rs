@@ -1,19 +1,20 @@
-use game::gfx::{Sprite, CopySprite};
+use game::gfx::{Sprite, CopySprite, AnimatedSprite};
 use game::data::Rectangle;
 use game::constants::{ZOMBIE_POS_W, ZOMBIE_POS_H, ZOMBIE_W, ZOMBIE_H};
 use sdl2::render::Renderer;
 use views::{Orientation};
+use data::{load_zombie};
 
 pub struct Zombie {
+  pub sprite: AnimatedSprite,
   pub rect: Rectangle,
-  pub sprites: Vec<Sprite>,
   pub current: Orientation,
   pub heading: Orientation,
   pub idle_anim_index: u32,
 }
 
 impl Zombie {
-  pub fn new(sprites: Vec<Sprite>) -> Zombie {
+  pub fn new(renderer: &mut Renderer) -> Zombie {
     Zombie {
       rect: Rectangle {
         x: ZOMBIE_POS_W,
@@ -21,15 +22,32 @@ impl Zombie {
         w: ZOMBIE_W,
         h: ZOMBIE_H,
       },
-      sprites: sprites.clone(),
+      sprite: Zombie::get_sprite(renderer, 10.0),
       current: Orientation::Down,
       heading: Orientation::Down,
       idle_anim_index: 0,
     }
   }
 
+  fn get_sprite(renderer: &mut Renderer, fps: f64) -> AnimatedSprite {
+    let zombie_spritesheet = Sprite::load(&renderer, "assets/zombie.png").unwrap();
+    let mut zombie_sprites = Vec::with_capacity(512);
+    let zombie_datapoints = load_zombie();
+
+    for x in 0..(zombie_datapoints.len() - 1) {
+      zombie_sprites.push(zombie_spritesheet.region(zombie_datapoints[x]).unwrap());
+    }
+
+    AnimatedSprite::with_fps(zombie_sprites, fps)
+  }
+
+
+  pub fn update(&mut self, dt: f64) {
+    self.rect.x -= dt;
+    self.sprite.add_time(dt);
+  }
+
   pub fn render(&mut self, renderer: &mut Renderer) {
-    self.idle_anim_index = if self.idle_anim_index < 3 { self.idle_anim_index + 1 } else { 0 };
-    renderer.copy_sprite(&self.sprites[self.idle_anim_index as usize], self.rect);
+    renderer.copy_sprite(&self.sprite, self.rect);
   }
 }

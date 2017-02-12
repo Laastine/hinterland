@@ -6,10 +6,20 @@ use sdl2::image::{LoadTexture};
 
 use game::data::Rectangle;
 
+pub trait Renderable {
+  fn render(&self, renderer: &mut Renderer, dest: Rectangle);
+}
+
 #[derive(Clone)]
 pub struct Sprite {
-  tex: Rc<RefCell<Texture>>,
+  texture: Rc<RefCell<Texture>>,
   src: Rectangle,
+}
+
+impl Renderable for Sprite {
+  fn render(&self, renderer: &mut Renderer, dest: Rectangle) {
+    renderer.copy(&mut self.texture.borrow_mut(), self.src.to_sdl(), dest.to_sdl());
+  }
 }
 
 impl Sprite {
@@ -17,7 +27,7 @@ impl Sprite {
     let tex_query = texture.query();
 
     Sprite {
-      tex: Rc::new(RefCell::new(texture)),
+      texture: Rc::new(RefCell::new(texture)),
       src: Rectangle {
         w: tex_query.width as f64,
         h: tex_query.height as f64,
@@ -47,7 +57,7 @@ impl Sprite {
 
     if self.src.contains(new_src) {
       Some(Sprite {
-        tex: self.tex.clone(),
+        texture: self.texture.clone(),
         src: new_src,
       })
     } else {
@@ -56,16 +66,62 @@ impl Sprite {
   }
 
   pub fn render(&self, renderer: &mut Renderer, dest: Rectangle) {
-    renderer.copy(&mut self.tex.borrow_mut(), self.src.to_sdl(), dest.to_sdl()).unwrap();
+    renderer.copy(&mut self.texture.borrow_mut(), self.src.to_sdl(), dest.to_sdl()).unwrap();
   }
 }
 
-pub trait CopySprite {
-  fn copy_sprite(&mut self, sprite: &Sprite, dest: Rectangle);
+#[derive(Clone)]
+pub struct AnimatedSprite {
+  sprites: Rc<Vec<Sprite>>,
+  frame_delay: f64,
+  current_time: f64,
 }
 
-impl<'window> CopySprite for Renderer<'window> {
-  fn copy_sprite(&mut self, sprite: &Sprite, dest: Rectangle) {
-   sprite.render(self, dest);
- }
+impl AnimatedSprite {
+  pub fn new(sprites: Vec<Sprite>, frame_delay: f64) -> AnimatedSprite {
+    AnimatedSprite {
+      sprites: Rc::new(sprites),
+      frame_delay: frame_delay,
+      current_time: 0.0,
+    }
+  }
+
+  pub fn with_fps(sprites: Vec<Sprite>, fps: f64) -> AnimatedSprite {
+    if fps <= 0.0 {
+      panic!("Passed non positive value to AnimatedSprite::with_fps");
+    }
+
+    AnimatedSprite::new(sprites, 1.0 / fps)
+  }
+
+  pub fn frames(&self) -> usize {
+    self.sprites.len()
+  }
+
+  pub fn add_time(&mut self, dt: f64) {
+    self.current_time += dt;
+    if self.current_time < 0.0 {
+      self.current_time = (self.frames() - 1) as f64 * self.frame_delay;
+    }
+  }
+}
+
+impl Renderable for AnimatedSprite {
+  fn render(&self, renderer: &mut Renderer, dest: Rectangle) {
+    let current_frame =
+    (self.current_time / self.frame_delay) as usize % self.frames();
+
+    let sprite = &self.sprites[current_frame];
+    sprite.render(renderer, dest);
+  }
+}
+
+pub trait CopySprite<T> {
+  fn copy_sprite(&mut self, sprite: &T, dest: Rectangle);
+}
+
+impl<'w, T: Renderable> CopySprite<T> for Renderer<'w> {
+  fn copy_sprite(&mut self, renderable: &T, dest: Rectangle) {
+    renderable.render(self, dest);
+  }
 }

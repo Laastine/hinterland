@@ -6,7 +6,7 @@ use views::tilemap::{TerrainTile, TerrainSpriteSheet, get_tiles, viewport_move};
 use views::background::{Background};
 use views::character::{Character};
 use views::zombie::{Zombie};
-use data::{load_character, load_zombie};
+use data::{load_character};
 use sdl2::mixer::{Chunk};
 use std::path::Path;
 
@@ -40,15 +40,12 @@ impl GameView {
   pub fn new(game: &mut Game) -> GameView {
     let pistol_audio_path = "assets/audio/pistol.ogg";
     let character_spritesheet = Sprite::load(&mut game.renderer, "assets/character.png").unwrap();
-    let zombie_spritesheet = Sprite::load(&mut game.renderer, "assets/zombie.png").unwrap();
     let pistol_audio = match Chunk::from_file(Path::new(pistol_audio_path)) {
       Ok(f) => f,
       Err(e) => panic!("File {} not found: {}", pistol_audio_path, e),
     };
     let character_datapoints = load_character();
-    let zombie_datapoints = load_zombie();
     let mut character_sprites = Vec::with_capacity(512);
-    let mut zombie_sprites = Vec::with_capacity(512);
 
     for x in 0..(FIRE_SPRITE_START_INDEX - 1) {
       character_sprites.push(character_spritesheet.region(character_datapoints[x]).unwrap());
@@ -58,16 +55,12 @@ impl GameView {
       character_sprites.push(character_spritesheet.region(character_datapoints[x]).unwrap());
     }
 
-    for x in 0..(zombie_datapoints.len() - 1) {
-      zombie_sprites.push(zombie_spritesheet.region(zombie_datapoints[x]).unwrap());
-    }
-
     GameView {
       player: Character::new(character_sprites),
       tiles: get_tiles(),
       sprite_sheet: TerrainSpriteSheet::new(&game),
       pistol: pistol_audio,
-      zombie: Zombie::new(zombie_sprites),
+      zombie: Zombie::new(&mut game.renderer),
       background: Background {
         pos: 0.0,
         sprite: Sprite::load(&mut game.renderer, "assets/background.png").unwrap(),
@@ -132,6 +125,7 @@ impl View for GameView {
         game.renderer.copy_sprite(&self.sprite_sheet[(self.tiles[index].current-1) as usize], self.tiles[index].rect);
       }
     }
+    self.zombie.update(elapsed);
     self.zombie.render(&mut game.renderer);
 
     match game.events.mouse_click {
