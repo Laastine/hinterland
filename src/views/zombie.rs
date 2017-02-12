@@ -1,6 +1,6 @@
 use game::gfx::{Sprite, CopySprite, AnimatedSprite};
 use game::data::Rectangle;
-use game::constants::{ZOMBIE_POS_W, ZOMBIE_POS_H, ZOMBIE_W, ZOMBIE_H};
+use game::constants::{ZOMBIE_POS_W, ZOMBIE_POS_H, ZOMBIE_W, ZOMBIE_H, ZOMBIE_PATH};
 use sdl2::render::Renderer;
 use views::{Orientation};
 use data::{load_zombie};
@@ -30,7 +30,7 @@ impl Zombie {
   }
 
   fn get_sprite(renderer: &mut Renderer, fps: f64) -> AnimatedSprite {
-    let zombie_spritesheet = Sprite::load(&renderer, "assets/zombie.png").unwrap();
+    let zombie_spritesheet = Sprite::load(&renderer, ZOMBIE_PATH).unwrap();
     let mut zombie_sprites = Vec::with_capacity(512);
     let zombie_datapoints = load_zombie();
 
