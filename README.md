@@ -30,5 +30,6 @@ Tested with Rust 1.15.1
 ## Licences
 
 * Character: [graphics](http://opengameart.org/content/tmim-heroine-bleeds-game-art) Creative Commons V3
+* Zombie [zombie](http://opengameart.org/content/zombie-sprites) Creative Commons V3
 * Audio: [pistol](http://opengameart.org/content/chaingun-pistol-rifle-shotgun-shots) Creative Commons V3
 * Map: [graphics](http://opengameart.org/content/tiled-terrains) GPL + Creative Commons V3
