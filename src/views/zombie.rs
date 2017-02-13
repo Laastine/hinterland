@@ -41,10 +41,9 @@ impl Zombie {
     AnimatedSprite::with_fps(zombie_sprites, fps)
   }
 
-
-
   pub fn update(&mut self, dt: f64) {
     self.sprite.add_time(dt);
+    self.sprite.set_curr_frames(0, 4);
   }
 
   pub fn render(&mut self, renderer: &mut Renderer) {
