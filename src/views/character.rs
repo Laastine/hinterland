@@ -5,6 +5,7 @@ use game::constants::{CHARACTER_POS_W, CHARACTER_POS_H, CHARACTER_W, CHARACTER_H
 use views::{Orientation};
 use data::{load_character};
 
+#[derive(PartialEq)]
 pub enum Stance {
   Running = 0,
   Firing = 1,
@@ -69,7 +70,7 @@ impl Character {
 
     self.heading = self.current;
 
-    if dx == 0.0 && dy == 0.0 {
+    if dx == 0.0 && dy == 0.0 && stance != Stance::Firing {
       let index = self.heading as usize * 28;
       self.sprites.set_curr_frames(index, index+1);
     } else {
