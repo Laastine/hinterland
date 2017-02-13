@@ -18,7 +18,7 @@ pub struct Sprite {
 
 impl Renderable for Sprite {
   fn render(&self, renderer: &mut Renderer, dest: Rectangle) {
-    renderer.copy(&mut self.texture.borrow_mut(), self.src.to_sdl(), dest.to_sdl());
+    renderer.copy(&mut self.texture.borrow_mut(), self.src.to_sdl(), dest.to_sdl()).unwrap();
   }
 }
 
