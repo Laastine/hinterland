@@ -2,12 +2,11 @@ use std::fmt::{Display, Formatter, Result};
 use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
-use game::constants::{TILES_PCS_W, TILES_PCS_H, PLAYER_SPEED, ZOOM_SPEED, FIRE_SPRITE_START_INDEX};
+use game::constants::{TILES_PCS_W, TILES_PCS_H, PLAYER_SPEED, ZOOM_SPEED};
 use views::tilemap::{TerrainTile, TerrainSpriteSheet, get_tiles, viewport_move};
 use views::background::{Background};
-use views::character::{Character};
+use views::character::{Character, Stance};
 use views::zombie::{Zombie};
-use data::{load_character};
 use sdl2::mixer::{Chunk};
 use std::path::Path;
 
@@ -45,35 +44,25 @@ impl Display for Orientation {
 }
 
 pub struct GameView {
-  player: Character,
+  character: Character,
   tiles: Vec<TerrainTile>,
   sprite_sheet: Vec<Sprite>,
   background: Background,
   zombie: Zombie,
   pistol: Chunk,
+  index: usize,
 }
 
 impl GameView {
   pub fn new(game: &mut Game) -> GameView {
     let pistol_audio_path = "assets/audio/pistol.ogg";
-    let character_spritesheet = Sprite::load(&mut game.renderer, "assets/character.png").unwrap();
     let pistol_audio = match Chunk::from_file(Path::new(pistol_audio_path)) {
       Ok(f) => f,
       Err(e) => panic!("File {} not found: {}", pistol_audio_path, e),
     };
-    let character_datapoints = load_character();
-    let mut character_sprites = Vec::with_capacity(512);
-
-    for x in 0..(FIRE_SPRITE_START_INDEX - 1) {
-      character_sprites.push(character_spritesheet.region(character_datapoints[x]).unwrap());
-    }
-
-    for x in FIRE_SPRITE_START_INDEX..255 {
-      character_sprites.push(character_spritesheet.region(character_datapoints[x]).unwrap());
-    }
 
     GameView {
-      player: Character::new(character_sprites),
+      character: Character::new(&mut game.renderer),
       tiles: get_tiles(),
       sprite_sheet: TerrainSpriteSheet::new(&game),
       pistol: pistol_audio,
@@ -81,7 +70,8 @@ impl GameView {
       background: Background {
         pos: 0.0,
         sprite: Sprite::load(&mut game.renderer, "assets/background.png").unwrap(),
-      }
+      },
+      index: 0,
     }
   }
 }
@@ -106,8 +96,8 @@ impl View for GameView {
       (false, true) => moved * 0.75,
     };
 
-    self.player.rect.x += dx;
-    self.player.rect.y += dy;
+    self.character.rect.x += dx;
+    self.character.rect.y += dy;
 
     let movable_region = Rectangle {
       x: 0.0,
@@ -122,46 +112,31 @@ impl View for GameView {
 
     self.background.render(&mut game.renderer);
 
-    self.player.rect = self.player.rect.move_inside(movable_region).unwrap();
-    self.player.current =
-    if dx == 0.0 && dy < 0.0       { Orientation::Up }
-    else if dx > 0.0 && dy < 0.0   { Orientation::UpRight }
-    else if dx < 0.0 && dy < 0.0   { Orientation::UpLeft }
-    else if dx == 0.0 && dy == 0.0 { self.player.heading }
-    else if dx > 0.0 && dy == 0.0  { Orientation::Right }
-    else if dx < 0.0 && dy == 0.0  { Orientation::Left }
-    else if dx == 0.0 && dy > 0.0  { Orientation::Down }
-    else if dx > 0.0 && dy > 0.0   { Orientation::DownRight }
-    else if dx < 0.0 && dy > 0.0   { Orientation::DownLeft }
-    else { unreachable!() };
+    self.character.rect = self.character.rect.move_inside(movable_region).unwrap();
 
-    self.player.heading = self.player.current;
     for x in 0..TILES_PCS_W {
       for y in 0..TILES_PCS_H {
         let index = x * TILES_PCS_H + y;
         game.renderer.copy_sprite(&self.sprite_sheet[(self.tiles[index].current-1) as usize], self.tiles[index].rect);
       }
     }
+
     self.zombie.update(elapsed);
     self.zombie.render(&mut game.renderer);
 
     match game.events.mouse_click {
       Some(_) => {
-        let index = 211 + self.player.current as usize * 5 + self.player.fire_anim_index as usize;
-        game.renderer.copy_sprite(&self.player.sprites[index], self.player.rect);
-        self.player.fire_anim_index =
-          if self.player.fire_anim_index < 4u32 { self.player.fire_anim_index + 1u32 } else { 0u32 };
-        if self.player.fire_anim_index == 0 {
+        if self.index == 0 {
           game.play_sound(&self.pistol);
         }
+        self.index = if self.index < 4 { self.index + 1 } else { 0 };
+        self.character.update(elapsed, dx, dy, Stance::Firing);
       },
       None => {
-        let index = self.player.current as usize * 28 + self.player.move_anim_index as usize;
-        game.renderer.copy_sprite(&self.player.sprites[index], self.player.rect);
-        self.player.move_anim_index =
-          if dx == 0.0 && dy == 0.0 { 0u32 } else if self.player.move_anim_index < 13u32 { self.player.move_anim_index + 1u32 } else { 0u32 };
+        self.character.update(elapsed, dx, dy, Stance::Running);
       },
     };
+    self.character.render(&mut game.renderer);
 
     let scale = game.renderer.scale();
     if game.events.zoom_in == true && scale.0 <= 2.0 && scale.1 <= 2.0 {

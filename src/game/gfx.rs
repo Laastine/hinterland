@@ -72,7 +72,9 @@ impl Sprite {
 
 #[derive(Clone)]
 pub struct AnimatedSprite {
-  sprites: Rc<Vec<Sprite>>,
+  sprites: Vec<Sprite>,
+  start_index: usize,
+  end_index: usize,
   frame_delay: f64,
   current_time: f64,
 }
@@ -80,8 +82,10 @@ pub struct AnimatedSprite {
 impl AnimatedSprite {
   pub fn new(sprites: Vec<Sprite>, frame_delay: f64) -> AnimatedSprite {
     AnimatedSprite {
-      sprites: Rc::new(sprites),
+      sprites: sprites,
       frame_delay: frame_delay,
+      start_index: 0,
+      end_index: 1,
       current_time: 0.0,
     }
   }
@@ -94,8 +98,13 @@ impl AnimatedSprite {
     AnimatedSprite::new(sprites, 1.0 / fps)
   }
 
+  pub fn set_curr_frames(&mut self, start_index: usize, end_index: usize) {
+    self.start_index = start_index;
+    self.end_index = end_index;
+  }
+
   pub fn frames(&self) -> usize {
-    self.sprites.len()
+    self.end_index - self.start_index
   }
 
   pub fn add_time(&mut self, dt: f64) {
@@ -110,8 +119,8 @@ impl Renderable for AnimatedSprite {
   fn render(&self, renderer: &mut Renderer, dest: Rectangle) {
     let current_frame =
     (self.current_time / self.frame_delay) as usize % self.frames();
-
-    let sprite = &self.sprites[current_frame];
+    let curr_sprites = &self.sprites[self.start_index..self.end_index];
+    let sprite = &curr_sprites[current_frame];
     sprite.render(renderer, dest);
   }
 }

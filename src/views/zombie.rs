@@ -22,14 +22,14 @@ impl Zombie {
         w: ZOMBIE_W,
         h: ZOMBIE_H,
       },
-      sprite: Zombie::get_sprite(renderer, 10.0),
+      sprite: Zombie::get_sprites(renderer, 10.0),
       current: Orientation::Down,
       heading: Orientation::Down,
       idle_anim_index: 0,
     }
   }
 
-  fn get_sprite(renderer: &mut Renderer, fps: f64) -> AnimatedSprite {
+  fn get_sprites(renderer: &mut Renderer, fps: f64) -> AnimatedSprite {
     let zombie_spritesheet = Sprite::load(&renderer, ZOMBIE_PATH).unwrap();
     let mut zombie_sprites = Vec::with_capacity(512);
     let zombie_datapoints = load_zombie();
@@ -42,8 +42,8 @@ impl Zombie {
   }
 
 
+
   pub fn update(&mut self, dt: f64) {
-    self.rect.x -= dt;
     self.sprite.add_time(dt);
   }
 
