@@ -2,7 +2,7 @@
 
 Simple isometric hack and slash game. Currently early experimental version.
 
-![screenshot](http://laastine.kapsi.fi/kuvat/hackandslash.gif?cache=2)
+![screenshot](http://laastine.kapsi.fi/kuvat/hackandslash.gif?cache=4)
 
 ## Build
 
