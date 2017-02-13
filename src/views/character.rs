@@ -69,14 +69,19 @@ impl Character {
 
     self.heading = self.current;
 
-    match stance {
-      Stance::Running => {
-        let index = self.current as usize * 28;
-        self.sprites.set_curr_frames(index, index+13);
-      },
-      Stance::Firing => {
-        let index = FIRE_SPRITE_START_INDEX + self.current as usize * 5;
-        self.sprites.set_curr_frames(index, index+4);
+    if dx == 0.0 && dy == 0.0 {
+      let index = self.heading as usize * 28;
+      self.sprites.set_curr_frames(index, index+1);
+    } else {
+      match stance {
+        Stance::Running => {
+          let index = self.current as usize * 28;
+          self.sprites.set_curr_frames(index, index+13);
+        },
+        Stance::Firing => {
+          let index = FIRE_SPRITE_START_INDEX + self.current as usize * 5;
+          self.sprites.set_curr_frames(index, index+4);
+        }
       }
     }
   }
