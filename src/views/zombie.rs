@@ -43,7 +43,7 @@ impl Zombie {
 
   pub fn update(&mut self, dt: f64) {
     self.sprite.add_time(dt);
-    self.sprite.set_curr_frames(0, 4);
+    self.sprite.set_curr_frames(0, 40);
   }
 
   pub fn render(&mut self, renderer: &mut Renderer) {
