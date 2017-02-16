@@ -1,7 +1,7 @@
 use sdl2::render::Renderer;
 use game::gfx::{Sprite, CopySprite, AnimatedSprite};
 use game::data::Rectangle;
-use game::constants::{PLAYER_PATH, CHARACTER_POS_W, CHARACTER_POS_H, CHARACTER_W, CHARACTER_H, FIRE_SPRITE_START_INDEX};
+use game::constants::{CHARACTER_PATH, CHARACTER_POS_W, CHARACTER_POS_H, CHARACTER_W, CHARACTER_H, FIRE_SPRITE_START_INDEX};
 use views::{Orientation};
 use data::{load_character};
 
@@ -38,7 +38,7 @@ impl Character {
   }
 
   fn get_sprite(renderer: &mut Renderer, fps: f64) -> AnimatedSprite {
-    let character_spritesheet = Sprite::load(&renderer, PLAYER_PATH).unwrap();
+    let character_spritesheet = Sprite::load(&renderer, CHARACTER_PATH).unwrap();
 
     let character_datapoints = load_character();
     let mut character_sprites = Vec::with_capacity(512);
