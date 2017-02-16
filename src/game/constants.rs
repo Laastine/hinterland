@@ -26,4 +26,9 @@ pub const ZOMBIE_POS_H: f64 = SCREEN_HEIGHT * 0.2;
 
 //Assets
 pub const ZOMBIE_PATH: &'static str = "assets/zombie.png";
+pub const ZOMBIE_JSON_PATH: &'static str = "assets/zombie.json";
+pub const PLAYER_PATH: &'static str = "assets/character.png";
+pub const PLAYER_JSON_PATH: &'static str = "assets/character.json";
+pub const BACKGROUND_PATH: &'static str = "assets/background.png";
+pub const PISTOL_AUDIO_PATH: &'static str = "assets/audio/pistol.ogg";
 

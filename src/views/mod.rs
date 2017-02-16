@@ -2,7 +2,7 @@ use std::fmt::{Display, Formatter, Result};
 use game::{Game, View, ViewAction};
 use game::data::Rectangle;
 use game::gfx::{CopySprite, Sprite};
-use game::constants::{TILES_PCS_W, TILES_PCS_H, PLAYER_SPEED, ZOOM_SPEED};
+use game::constants::{BACKGROUND_PATH, PISTOL_AUDIO_PATH, TILES_PCS_W, TILES_PCS_H, PLAYER_SPEED, ZOOM_SPEED};
 use views::tilemap::{TerrainTile, TerrainSpriteSheet, get_tiles, viewport_move};
 use views::background::{Background};
 use views::character::{Character, Stance};
@@ -55,10 +55,9 @@ pub struct GameView {
 
 impl GameView {
   pub fn new(game: &mut Game) -> GameView {
-    let pistol_audio_path = "assets/audio/pistol.ogg";
-    let pistol_audio = match Chunk::from_file(Path::new(pistol_audio_path)) {
+    let pistol_audio = match Chunk::from_file(Path::new(PISTOL_AUDIO_PATH)) {
       Ok(f) => f,
-      Err(e) => panic!("File {} not found: {}", pistol_audio_path, e),
+      Err(e) => panic!("File {} not found: {}", PISTOL_AUDIO_PATH, e),
     };
 
     GameView {
@@ -69,7 +68,7 @@ impl GameView {
       zombie: Zombie::new(&mut game.renderer),
       background: Background {
         pos: 0.0,
-        sprite: Sprite::load(&mut game.renderer, "assets/background.png").unwrap(),
+        sprite: Sprite::load(&mut game.renderer, BACKGROUND_PATH).unwrap(),
       },
       index: 0,
     }

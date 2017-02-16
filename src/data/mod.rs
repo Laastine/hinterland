@@ -5,6 +5,7 @@ use std::path::Path;
 use std::vec::Vec;
 use std::io::{BufReader};
 use json;
+use game::constants::{PLAYER_JSON_PATH, ZOMBIE_JSON_PATH};
 use game::data::Rectangle;
 use tiled::{Map};
 use tiled;
@@ -54,7 +55,7 @@ pub fn load_character() -> Vec<Rectangle> {
   let mut sprites = Vec::with_capacity(512);
   let mut move_sprite_names = Vec::with_capacity(256);
   let mut fire_sprite_names = Vec::with_capacity(256);
-  let character_json = read_sprite_file("./assets/character.json");
+  let character_json = read_sprite_file(PLAYER_JSON_PATH);
   let character = match json::parse(&character_json) {
     Ok(res) => res,
     Err(e) => panic!("Character JSON parse error {:?}", e),
@@ -94,7 +95,7 @@ pub fn load_zombie() -> Vec<Rectangle> {
   let mut sprites = Vec::with_capacity(256);
   let mut idle_sprite_names = Vec::with_capacity(64);
   let mut walk_sprite_names = Vec::with_capacity(64);
-  let character_json = read_sprite_file("./assets/zombie.json");
+  let character_json = read_sprite_file(ZOMBIE_JSON_PATH);
   let zombie = match json::parse(&character_json) {
     Ok(res) => res,
     Err(e) => panic!("Character JSON parse error {:?}", e),
