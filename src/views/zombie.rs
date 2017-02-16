@@ -22,7 +22,7 @@ impl Zombie {
         w: ZOMBIE_W,
         h: ZOMBIE_H,
       },
-      sprite: Zombie::get_sprites(renderer, 10.0),
+      sprite: Zombie::get_sprites(renderer, 8.0),
       current: Orientation::Down,
       heading: Orientation::Down,
       idle_anim_index: 0,
@@ -43,7 +43,9 @@ impl Zombie {
 
   pub fn update(&mut self, dt: f64) {
     self.sprite.add_time(dt);
-    self.sprite.set_curr_frames(0, 40);
+    self.sprite.set_curr_frames(34, 38);
+    self.rect.x += dt * 40.0;
+    self.rect.y += dt * 20.0;
   }
 
   pub fn render(&mut self, renderer: &mut Renderer) {

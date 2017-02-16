@@ -21,8 +21,8 @@ pub const CHARACTER_POS_H: f64 = SCREEN_HEIGHT * 0.4;
 pub const ZOMBIE_W: f64 = 56.0;
 pub const ZOMBIE_H: f64 = 28.0;
 
-pub const ZOMBIE_POS_W: f64 = SCREEN_WIDTH * 0.5;
-pub const ZOMBIE_POS_H: f64 = SCREEN_HEIGHT * 0.5;
+pub const ZOMBIE_POS_W: f64 = SCREEN_WIDTH * 0.7;
+pub const ZOMBIE_POS_H: f64 = SCREEN_HEIGHT * 0.2;
 
 //Assets
 pub const ZOMBIE_PATH: &'static str = "assets/zombie.png";
