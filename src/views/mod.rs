@@ -1,3 +1,5 @@
+use sdl2::mixer::{Chunk};
+use std::path::Path;
 use std::fmt::{Display, Formatter, Result};
 use game::{Game, View, ViewAction};
 use game::data::Rectangle;
@@ -7,9 +9,9 @@ use views::tilemap::{TerrainTile, TerrainSpriteSheet, get_tiles, viewport_move};
 use views::background::{Background};
 use views::character::{Character, Stance};
 use views::zombie::{Zombie};
-use sdl2::mixer::{Chunk};
-use std::path::Path;
+use views::bullet::{Projectile};
 
+mod bullet;
 mod character;
 mod zombie;
 mod tilemap;
@@ -51,6 +53,7 @@ impl Display for Orientation {
 
 pub struct GameView {
   character: Character,
+  bullets: Vec<Box<Projectile>>,
   tiles: Vec<TerrainTile>,
   sprite_sheet: Vec<Sprite>,
   background: Background,
@@ -77,6 +80,7 @@ impl GameView {
         sprite: Sprite::load(&mut game.renderer, BACKGROUND_PATH).unwrap(),
       },
       index: 0,
+      bullets: vec![],
     }
   }
 }
@@ -107,8 +111,8 @@ impl View for GameView {
     let movable_region = Rectangle {
       x: 0.0,
       y: 0.0,
-      w: game.output_size().0 * 2.0,
-      h: game.output_size().1 * 2.0,
+      w: game.output_size().0,
+      h: game.output_size().1,
     };
 
     let curr_rect = game.renderer.viewport();
@@ -129,6 +133,14 @@ impl View for GameView {
     self.zombie.update(elapsed);
     self.zombie.render(&mut game.renderer);
 
+    let old_bullets = ::std::mem::replace(&mut self.bullets, vec![]);
+
+    self.bullets =
+      old_bullets.into_iter()
+        .filter_map(|bullet| bullet.update(game, elapsed))
+        .collect();
+
+
     match game.events.mouse_click {
       Some(_) => {
         if self.index == 0 {
@@ -136,12 +148,17 @@ impl View for GameView {
         }
         self.index = if self.index < 4 { self.index + 1 } else { 0 };
         self.character.update(elapsed, dx, dy, Stance::Firing);
+        self.bullets.append(&mut self.character.fire_bullets());
       },
       None => {
         self.character.update(elapsed, dx, dy, Stance::Running);
       },
     };
     self.character.render(&mut game.renderer);
+
+    for bullet in &self.bullets {
+      bullet.render(game);
+    }
 
     let scale = game.renderer.scale();
     if game.events.zoom_in == true && scale.0 <= 2.0 && scale.1 <= 2.0 {

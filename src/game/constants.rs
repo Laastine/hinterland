@@ -24,6 +24,10 @@ pub const ZOMBIE_H: f64 = 28.0;
 pub const ZOMBIE_POS_W: f64 = SCREEN_WIDTH * 0.7;
 pub const ZOMBIE_POS_H: f64 = SCREEN_HEIGHT * 0.2;
 
+pub const BULLET_W: f64 = 2.0;
+pub const BULLET_H: f64 = 2.0;
+pub const BULLET_SPEED: f64 = 800.0;
+
 //Assets
 pub const ZOMBIE_PATH: &'static str = "assets/zombie.png";
 pub const ZOMBIE_JSON_PATH: &'static str = "assets/zombie.json";
@@ -31,4 +35,4 @@ pub const CHARACTER_PATH: &'static str = "assets/character.png";
 pub const CHARACTER_JSON_PATH: &'static str = "assets/character.json";
 pub const BACKGROUND_PATH: &'static str = "assets/background.png";
 pub const PISTOL_AUDIO_PATH: &'static str = "assets/audio/pistol.ogg";
-pub const MAP_FILE_PATH: &'static str = "assets/maps/terrain.tmx";
+pub const MAP_FILE_PATH: &'static str = "assets/maps/tilemap.tmx";

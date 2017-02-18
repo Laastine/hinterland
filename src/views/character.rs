@@ -3,6 +3,7 @@ use game::gfx::{Sprite, CopySprite, AnimatedSprite};
 use game::data::Rectangle;
 use game::constants::{CHARACTER_PATH, CHARACTER_POS_W, CHARACTER_POS_H, CHARACTER_W, CHARACTER_H, FIRE_SPRITE_START_INDEX};
 use views::{Orientation};
+use views::bullet::{Projectile, Bullet};
 use data::{load_character};
 
 #[derive(PartialEq)]
@@ -35,6 +36,10 @@ impl Character {
       move_anim_index: 0,
       fire_anim_index: 0,
     }
+  }
+
+  pub fn fire_bullets(&self) -> Vec<Box<Projectile>> {
+    vec![Box::new(Bullet::new(self.rect))]
   }
 
   fn get_sprite(renderer: &mut Renderer, fps: f64) -> AnimatedSprite {

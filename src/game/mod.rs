@@ -42,7 +42,7 @@ impl<'window> Game<'window> {
 
   pub fn output_size(&self) -> (f64, f64) {
     let (w, h) = self.renderer.output_size().unwrap();
-    (w as f64, h as f64)
+    (w as f64 * 2.0, h as f64 * 2.0)
   }
 
   pub fn play_sound(&mut self, sound: &::sdl2::mixer::Chunk) {

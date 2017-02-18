@@ -6,6 +6,7 @@ use data::{load_map_file, get_tile};
 use views::Point;
 use conv::prelude::*;
 use sdl2::rect::Rect as SdlRect;
+
 const TRANSLATE_X_CONST: f64 = SCREEN_WIDTH * 0.8;
 const TRANSLATE_Y_CONST: f64 = 0.0;
 
