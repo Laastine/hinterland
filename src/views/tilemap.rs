@@ -1,7 +1,7 @@
 use game::gfx::{Sprite};
 use game::{Game};
 use game::data::Rectangle;
-use game::constants::{SCREEN_WIDTH, TILESHEET_PCS_W, TILESHEET_PCS_H, TILES_PCS_W, TILES_PCS_H};
+use game::constants::{SCREEN_WIDTH, TILESHEET_PCS_W, TILESHEET_PCS_H, TILES_PCS_W, TILES_PCS_H, MAP_FILE_PATH};
 use data::{load_map_file, get_tile};
 use conv::prelude::*;
 use sdl2::rect::Rect as SdlRect;
@@ -42,7 +42,7 @@ pub struct TerrainSpriteSheet {
 
 impl TerrainSpriteSheet {
   pub fn new(game: &Game) -> Vec<Sprite> {
-    let map = load_map_file("assets/maps/tilemap.tmx");
+    let map = load_map_file(MAP_FILE_PATH);
     let terrain_spritesheet = Sprite::load(&game.renderer, "assets/maps/terrain.png").unwrap();
     let mut terrain_sprites = Vec::with_capacity(TILESHEET_PCS_W * TILESHEET_PCS_H * 2);
 
@@ -61,7 +61,7 @@ impl TerrainSpriteSheet {
 }
 
 pub fn get_tiles() -> Vec<TerrainTile> {
-  let map = load_map_file("assets/maps/tilemap.tmx");
+  let map = load_map_file(MAP_FILE_PATH);
   let mut tiles = Vec::with_capacity(map.width as usize * map.height as usize * 2);
 
   for x in 0..TILES_PCS_W {
