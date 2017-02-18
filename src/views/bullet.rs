@@ -2,6 +2,7 @@ use sdl2::pixels::Color;
 use game::data::Rectangle;
 use game::{Game};
 use game::constants::{BULLET_W, BULLET_H, BULLET_SPEED};
+use views::Orientation;
 
 #[derive(Clone, Debug)]
 pub struct Bullet {
@@ -22,7 +23,7 @@ impl Bullet {
 }
 
 pub trait Projectile {
-  fn update(self: Box<Self>, game: &mut Game, dt: f64) -> Option<Box<Projectile>>;
+  fn update(self: Box<Self>, game: &mut Game, orientation: Orientation, dt: f64) -> Option<Box<Projectile>>;
 
   fn render(&self, game: &mut Game);
 
@@ -30,9 +31,40 @@ pub trait Projectile {
 }
 
 impl Projectile for Bullet {
-  fn update(mut self: Box<Self>, game: &mut Game, dt: f64) -> Option<Box<Projectile>> {
+  fn update(mut self: Box<Self>, game: &mut Game, orientation: Orientation, dt: f64) -> Option<Box<Projectile>> {
     let (w, h) = game.output_size();
-    self.rect.x += BULLET_SPEED * dt;
+
+    match orientation {
+      Orientation::Right => {
+        self.rect.x += BULLET_SPEED * dt;
+      },
+      Orientation::UpRight => {
+        self.rect.x += BULLET_SPEED * dt / 2.0;
+        self.rect.y -= BULLET_SPEED * dt;
+      },
+      Orientation::Up => {
+        self.rect.y -= BULLET_SPEED * dt / 2.0;
+      },
+      Orientation::UpLeft => {
+        self.rect.x -= BULLET_SPEED * dt / 2.0;
+        self.rect.y -= BULLET_SPEED * dt;
+      },
+      Orientation::Left => {
+        self.rect.x -= BULLET_SPEED * dt;
+      },
+      Orientation::DownLeft => {
+        self.rect.x -= BULLET_SPEED * dt;
+        self.rect.y += BULLET_SPEED * dt / 2.0;
+      },
+      Orientation::Down => {
+        self.rect.y += BULLET_SPEED * dt;
+      },
+      Orientation::DownRight => {
+        self.rect.x += BULLET_SPEED * dt;
+        self.rect.y += BULLET_SPEED * dt / 2.0;
+      }
+    }
+
     if self.rect.x > w || self.rect.x < 0.0 ||
       self.rect.y > h || self.rect.y < 0.0 {
       None
