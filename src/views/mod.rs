@@ -15,6 +15,12 @@ mod zombie;
 mod tilemap;
 mod background;
 
+#[derive(Clone)]
+pub struct Point {
+  x: f64,
+  y: f64,
+}
+
 #[derive(Clone, Copy, Debug)]
 pub enum Orientation {
   Right = 0,

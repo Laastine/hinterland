@@ -3,6 +3,7 @@ use game::{Game};
 use game::data::Rectangle;
 use game::constants::{SCREEN_WIDTH, TILESHEET_PCS_W, TILESHEET_PCS_H, TILES_PCS_W, TILES_PCS_H, MAP_FILE_PATH};
 use data::{load_map_file, get_tile};
+use views::Point;
 use conv::prelude::*;
 use sdl2::rect::Rect as SdlRect;
 const TRANSLATE_X_CONST: f64 = SCREEN_WIDTH * 0.8;
@@ -21,12 +22,6 @@ pub struct TerrainTile {
 pub struct Tilemap {
   pub pos: f64,
   pub sprite: Sprite,
-}
-
-#[derive(Clone)]
-pub struct Point {
-  x: f64,
-  y: f64,
 }
 
 pub fn cartesian_to_isometric(point_x: f64, point_y: f64) -> Point {
