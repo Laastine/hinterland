@@ -5,7 +5,7 @@ dependencies = [
  "chrono 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)",
  "conv 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "json 0.11.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "sdl2 0.28.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sdl2 0.29.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tiled 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -140,7 +140,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "sdl2"
-version = "0.28.0"
+version = "0.29.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -219,7 +219,7 @@ dependencies = [
 "checksum num-traits 0.1.36 (registry+https://github.com/rust-lang/crates.io-index)" = "a16a42856a256b39c6d3484f097f6713e14feacd9bfb02290917904fae46c81c"
 "checksum rand 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)" = "022e0636ec2519ddae48154b028864bdce4eaf7d35226ab8e65c611be97b189d"
 "checksum redox_syscall 0.1.16 (registry+https://github.com/rust-lang/crates.io-index)" = "8dd35cc9a8bdec562c757e3d43c1526b5c6d2653e23e2315065bc25556550753"
-"checksum sdl2 0.28.0 (registry+https://github.com/rust-lang/crates.io-index)" = "29301273acc73295e4864a069bf9ad791ef0f819f4fc2a4653aa55818f1cbb05"
+"checksum sdl2 0.29.0 (registry+https://github.com/rust-lang/crates.io-index)" = "f19efbd3c828d45e721636b377bd663f2075beaafcd9ec7f299563fede1482f7"
 "checksum sdl2-sys 0.27.2 (registry+https://github.com/rust-lang/crates.io-index)" = "37cfe343db4cd2159cab098096fff52e92d513c2a5b1ee06abbfd5db5323a64d"
 "checksum tiled 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "c5c50743f744efd8c6a33944fc2424a10be37a169171d553a96a60e599c83502"
 "checksum time 0.1.36 (registry+https://github.com/rust-lang/crates.io-index)" = "211b63c112206356ef1ff9b19355f43740fc3f85960c598a93d3a3d3ba7beade"
