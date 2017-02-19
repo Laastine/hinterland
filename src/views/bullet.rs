@@ -112,7 +112,7 @@ impl Projectile for Bullet {
   }
 
   fn render(&self, game: &mut Game) {
-    game.renderer.set_draw_color(Color::RGBA(50, 50, 50, 0));
+    game.renderer.set_draw_color(Color::RGBA(70, 70, 70, 0));
     game.renderer.fill_rect(self.rect.to_sdl().unwrap());
   }
 
