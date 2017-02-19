@@ -2,7 +2,7 @@ use sdl2::pixels::Color;
 use game::data::Rectangle;
 use game::{Game};
 use game::constants::{BULLET_W, BULLET_H, BULLET_SPEED};
-use views::Orientation;
+use views::{Orientation, Point};
 
 #[derive(Clone, Debug)]
 pub struct Bullet {
@@ -10,11 +10,47 @@ pub struct Bullet {
 }
 
 impl Bullet {
-  pub fn new(point: Rectangle) -> Bullet {
+  pub fn new(point: Rectangle, orientation: Orientation) -> Bullet {
+    let mut correction = Point { x: 0.0, y: 0.0 };
+    match orientation {
+      Orientation::Right => {
+        correction.x = point.x + 55.0;
+        correction.y = point.y + 5.0;
+      },
+      Orientation::UpRight => {
+        correction.x = point.x + 50.0;
+        correction.y = point.y + 5.0;
+      },
+      Orientation::Up => {
+        correction.x = point.x + 48.0;
+        correction.y = point.y;
+      },
+      Orientation::UpLeft => {
+        correction.x = point.x + 50.0;
+        correction.y = point.y + 10.0;
+      },
+      Orientation::Left => {
+        correction.x = point.x + 40.0;
+        correction.y = point.y + 5.0;
+      },
+      Orientation::DownLeft => {
+        correction.x = point.x + 40.0;
+        correction.y = point.y;
+      },
+      Orientation::Down => {
+        correction.x = point.x + 30.0;
+        correction.y = point.y + 20.0;
+      },
+      Orientation::DownRight => {
+        correction.x = point.x + 60.0;
+        correction.y = point.y + 20.0;
+      }
+    }
+
     Bullet {
       rect: Rectangle {
-        x: point.x,
-        y: point.y,
+        x: correction.x,
+        y: correction.y,
         w: BULLET_W,
         h: BULLET_H,
       }
