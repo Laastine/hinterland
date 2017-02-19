@@ -7,6 +7,7 @@ use views::{Orientation, Point};
 #[derive(Clone, Debug)]
 pub struct Bullet {
   pub rect: Rectangle,
+  pub direction: Orientation
 }
 
 impl Bullet {
@@ -53,13 +54,14 @@ impl Bullet {
         y: correction.y,
         w: BULLET_W,
         h: BULLET_H,
-      }
+      },
+      direction: orientation
     }
   }
 }
 
 pub trait Projectile {
-  fn update(self: Box<Self>, game: &mut Game, orientation: Orientation, dt: f64) -> Option<Box<Projectile>>;
+  fn update(self: Box<Self>, game: &mut Game, dt: f64) -> Option<Box<Projectile>>;
 
   fn render(&self, game: &mut Game);
 
@@ -67,10 +69,10 @@ pub trait Projectile {
 }
 
 impl Projectile for Bullet {
-  fn update(mut self: Box<Self>, game: &mut Game, orientation: Orientation, dt: f64) -> Option<Box<Projectile>> {
+  fn update(mut self: Box<Self>, game: &mut Game, dt: f64) -> Option<Box<Projectile>> {
     let (w, h) = game.output_size();
 
-    match orientation {
+    match self.direction {
       Orientation::Right => {
         self.rect.x += BULLET_SPEED * dt;
       },

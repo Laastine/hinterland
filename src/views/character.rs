@@ -39,7 +39,7 @@ impl Character {
   }
 
   pub fn fire_bullets(&self) -> Vec<Box<Projectile>> {
-    vec![Box::new(Bullet::new(self.rect))]
+    vec![Box::new(Bullet::new(self.rect, self.current))]
   }
 
   fn get_sprite(renderer: &mut Renderer, fps: f64) -> AnimatedSprite {

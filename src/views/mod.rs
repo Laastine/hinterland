@@ -137,7 +137,7 @@ impl View for GameView {
 
     self.bullets =
       old_bullets.into_iter()
-        .filter_map(|bullet| bullet.update(game, self.character.current, elapsed))
+        .filter_map(|bullet| bullet.update(game, elapsed))
         .collect();
 
 
