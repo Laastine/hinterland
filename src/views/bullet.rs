@@ -77,15 +77,15 @@ impl Projectile for Bullet {
         self.rect.x += BULLET_SPEED * dt;
       },
       Orientation::UpRight => {
-        self.rect.x += BULLET_SPEED * dt / 2.0;
-        self.rect.y -= BULLET_SPEED * dt;
+        self.rect.x += BULLET_SPEED * dt;
+        self.rect.y -= BULLET_SPEED * dt / 2.0;
       },
       Orientation::Up => {
         self.rect.y -= BULLET_SPEED * dt / 2.0;
       },
       Orientation::UpLeft => {
-        self.rect.x -= BULLET_SPEED * dt / 2.0;
-        self.rect.y -= BULLET_SPEED * dt;
+        self.rect.x -= BULLET_SPEED * dt;
+        self.rect.y -= BULLET_SPEED * dt / 2.0;
       },
       Orientation::Left => {
         self.rect.x -= BULLET_SPEED * dt;
