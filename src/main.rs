@@ -1,5 +1,4 @@
 extern crate sdl2;
-extern crate chrono;
 extern crate conv;
 #[macro_use]
 extern crate json;
