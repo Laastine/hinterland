@@ -1,11 +1,11 @@
+use sdl2::rect::Rect as SdlRect;
+use conv::prelude::*;
+use data::{load_map_file, get_tile};
 use game::gfx::{Sprite};
 use game::{Game};
 use game::data::Rectangle;
 use game::constants::{SCREEN_WIDTH, TILESHEET_PCS_W, TILESHEET_PCS_H, TILES_PCS_W, TILES_PCS_H, MAP_FILE_PATH};
-use data::{load_map_file, get_tile};
 use views::Point;
-use conv::prelude::*;
-use sdl2::rect::Rect as SdlRect;
 
 const TRANSLATE_X_CONST: f64 = SCREEN_WIDTH * 0.8;
 const TRANSLATE_Y_CONST: f64 = 0.0;

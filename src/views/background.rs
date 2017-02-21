@@ -1,6 +1,6 @@
+use sdl2::render::Renderer;
 use game::gfx::{CopySprite, Sprite};
 use game::data::Rectangle;
-use sdl2::render::Renderer;
 
 #[derive(Clone)]
 pub struct Background {

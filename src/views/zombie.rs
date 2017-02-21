@@ -1,9 +1,9 @@
+use sdl2::render::Renderer;
+use data::{load_zombie};
 use game::gfx::{Sprite, CopySprite, AnimatedSprite};
 use game::data::Rectangle;
 use game::constants::{ZOMBIE_POS_W, ZOMBIE_POS_H, ZOMBIE_W, ZOMBIE_H, ZOMBIE_PATH};
-use sdl2::render::Renderer;
 use views::{Orientation};
-use data::{load_zombie};
 
 pub struct Zombie {
   pub sprite: AnimatedSprite,

@@ -1,12 +1,12 @@
+use sdl2::image::{INIT_PNG};
+use sdl2::mixer::{INIT_OGG, AUDIO_S16LSB};
+use sdl2::render::Renderer;
+
 #[macro_use]
 mod events;
 pub mod data;
 pub mod gfx;
 pub mod constants;
-
-use sdl2::image::{INIT_PNG};
-use sdl2::mixer::{INIT_OGG, AUDIO_S16LSB};
-use sdl2::render::Renderer;
 
 struct_events! {
   keyboard: {

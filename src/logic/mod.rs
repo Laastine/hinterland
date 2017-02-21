@@ -1,5 +1,4 @@
 use std::cmp;
-
 use logic::gridnode::GridNode;
 
 mod gridnode;
