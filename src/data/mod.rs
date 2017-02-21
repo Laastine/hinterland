@@ -24,15 +24,15 @@ pub fn load_map_file(filename: &str) -> Map {
 
 pub fn get_tile(map: &Map, layer_index: usize, x: usize, y: usize) -> u32 {
   let layer = match map.layers.get(layer_index) {
-    None => panic!("layer_index value out of index {:?}", map.layers),
+    None => panic!("Layer_index value out of index {:?}", map.layers),
     Some(ref l) => *l
   };
   let y_index = match layer.tiles.iter().nth(y) {
-    None => panic!("x value out of index {:?}", map.layers[0]),
+    None => panic!("X value out of index {:?}", map.layers[0]),
     Some(ref x) => *x
   };
   let val = match y_index.get(x) {
-    None => panic!("y value out of index {:?}", layer.tiles[y]),
+    None => panic!("Y value out of index {:?}", layer.tiles[y]),
     Some(ref val) => **val
   };
   val
@@ -60,6 +60,7 @@ pub fn load_character() -> Vec<Rectangle> {
     Ok(res) => res,
     Err(e) => panic!("Character JSON parse error {:?}", e),
   };
+
   for x in 0..15 {
     for y in 0..14 {
       move_sprite_names.push(format!("run_{}_{}", x, y));
