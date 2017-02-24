@@ -57,7 +57,7 @@ pub struct GameView {
   tiles: Vec<TerrainTile>,
   sprite_sheet: Vec<Sprite>,
   background: Background,
-  zombie: Zombie,
+  zombies: Vec<Zombie>,
   pistol: Chunk,
   index: usize,
 }
@@ -74,7 +74,7 @@ impl GameView {
       tiles: get_tiles(),
       sprite_sheet: TerrainSpriteSheet::new(&game),
       pistol: pistol_audio,
-      zombie: Zombie::new(&mut game.renderer),
+      zombies: vec![Zombie::new(&mut game.renderer)],
       background: Background {
         pos: 0.0,
         sprite: Sprite::load(&mut game.renderer, BACKGROUND_PATH).unwrap(),
@@ -126,12 +126,18 @@ impl View for GameView {
     for x in 0..TILES_PCS_W {
       for y in 0..TILES_PCS_H {
         let index = x * TILES_PCS_H + y;
-        game.renderer.copy_sprite(&self.sprite_sheet[(self.tiles[index].current-1) as usize], self.tiles[index].rect);
+        game.renderer.copy_sprite(&self.sprite_sheet[(self.tiles[index].current - 1) as usize], self.tiles[index].rect);
       }
     }
 
-    self.zombie.update(elapsed);
-    self.zombie.render(&mut game.renderer);
+    self.zombies = ::std::mem::replace(&mut self.zombies, vec![])
+      .into_iter()
+      .filter_map(|z| z.update(elapsed))
+      .collect();
+
+    for zombie in &mut self.zombies {
+      zombie.render(&mut game.renderer);
+    }
 
     let old_bullets = ::std::mem::replace(&mut self.bullets, vec![]);
 
@@ -139,7 +145,6 @@ impl View for GameView {
       old_bullets.into_iter()
         .filter_map(|bullet| bullet.update(game, elapsed))
         .collect();
-
 
     match game.events.mouse_click {
       Some(_) => {
