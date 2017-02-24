@@ -1,8 +1,9 @@
 use sdl2::mixer::{Chunk};
 use std::path::Path;
+use std::mem::replace;
 use std::fmt::{Display, Formatter, Result};
 use game::{Game, View, ViewAction};
-use game::data::Rectangle;
+use game::data::{Rectangle, MaybeAlive};
 use game::gfx::{CopySprite, Sprite};
 use game::constants::{BACKGROUND_PATH, PISTOL_AUDIO_PATH, TILES_PCS_W, TILES_PCS_H, PLAYER_SPEED, ZOOM_SPEED};
 use views::tilemap::{TerrainTile, TerrainSpriteSheet, get_tiles, viewport_move};
@@ -130,21 +131,46 @@ impl View for GameView {
       }
     }
 
-    self.zombies = ::std::mem::replace(&mut self.zombies, vec![])
+    self.bullets =
+      replace(&mut self.bullets, vec![])
+        .into_iter()
+        .filter_map(|b| b.update(game, elapsed))
+        .collect();
+
+    let mut transition_bullets: Vec<_> =
+      replace(&mut self.bullets, vec![])
+        .into_iter()
+        .map(|b| MaybeAlive { alive: true, value: b })
+        .collect();
+
+    self.zombies =
+      replace(&mut self.zombies, vec![])
+        .into_iter()
+        .filter_map(|z| {
+          let mut zombie_alive = true;
+
+          for bullet in &mut transition_bullets {
+            if z.rect().overlaps(bullet.value.rect()) {
+              zombie_alive = false;
+            }
+          }
+
+          if zombie_alive {
+            Some(z)
+          } else {
+            None
+          }
+        })
+        .collect();
+
+    self.bullets = transition_bullets.into_iter()
+      .filter_map(MaybeAlive::as_option)
+      .collect();
+
+    self.zombies = replace(&mut self.zombies, vec![])
       .into_iter()
       .filter_map(|z| z.update(elapsed))
       .collect();
-
-    for zombie in &mut self.zombies {
-      zombie.render(&mut game.renderer);
-    }
-
-    let old_bullets = ::std::mem::replace(&mut self.bullets, vec![]);
-
-    self.bullets =
-      old_bullets.into_iter()
-        .filter_map(|bullet| bullet.update(game, elapsed))
-        .collect();
 
     match game.events.mouse_click {
       Some(_) => {
@@ -159,6 +185,11 @@ impl View for GameView {
         self.character.update(elapsed, dx, dy, Stance::Running);
       },
     };
+
+    for zombie in &mut self.zombies {
+      zombie.render(&mut game.renderer);
+    }
+
     self.character.render(&mut game.renderer);
 
     for bullet in &self.bullets {

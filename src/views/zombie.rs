@@ -52,4 +52,8 @@ impl Zombie {
   pub fn render(&mut self, renderer: &mut Renderer) {
     renderer.copy_sprite(&self.sprite, self.rect);
   }
+
+  pub fn rect(&self) -> Rectangle {
+    self.rect
+  }
 }

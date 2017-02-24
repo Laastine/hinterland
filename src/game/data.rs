@@ -26,7 +26,6 @@ impl Rectangle {
     ymax >= self.y && ymax <= self.y + self.h
   }
 
-  #[allow(dead_code)]
   pub fn overlaps(&self, other: Rectangle) -> bool {
     self.x < other.x + other.w &&
     self.x + self.w > other.x &&
@@ -51,3 +50,19 @@ impl Rectangle {
     })
   }
 }
+
+pub struct MaybeAlive<T> {
+  pub alive: bool,
+  pub value: T,
+}
+
+impl<T> MaybeAlive<T> {
+  pub fn as_option(self) -> Option<T> {
+    if self.alive {
+      Some(self.value)
+    } else {
+      None
+    }
+  }
+}
+
