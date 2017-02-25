@@ -17,7 +17,7 @@ impl Init for Graph {
 }
 
 trait Neighbors {
-  fn get_neighbors(&self) -> Vec<GridNode>;
+  fn get_neighbors(&self, node: GridNode) -> Vec<GridNode>;
 }
 
 trait Dirty {
@@ -73,13 +73,9 @@ impl ToString for Neighbors {
       });
       graph_string.push(rowDebug.join(" "))
     });
-    graph_string.join("\n")
+    for s in &graph_string {
+      format!("{}{},", x, ",").unwrap();
+    }
   }
 }
 
-fn join(&self: String, separator: &str) {
-  for x in foo {
-    write!(self, "{}{},", x, separator).unwrap();
-  }
-  self.pop()
-}
