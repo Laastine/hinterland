@@ -54,6 +54,10 @@ impl TerrainSpriteSheet {
     }
     terrain_sprites
   }
+
+  pub fn get_tile(x: u32, y: u32) -> Point {
+    cartesian_to_isometric(TILES_W * x as f64, TILES_H * y as f64)
+  }
 }
 
 pub fn get_tiles() -> Vec<TerrainTile> {
