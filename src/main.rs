@@ -9,7 +9,7 @@ mod views;
 mod data;
 
 fn main() {
-  game::spawn("Hacknslash", |game| {
+  game::spawn("Zombie shooter", |game| {
     Box::new(views::GameView::new(game))
   });
 }

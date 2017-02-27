@@ -1,6 +1,6 @@
-# Hackandslash
+# Zombie shooter
 
-Simple isometric hack and slash game. Currently early experimental version.
+Simple isometric game written in Rust.
 
 ![screenshot](http://laastine.kapsi.fi/kuvat/hackandslash.gif?cache=4)
 
