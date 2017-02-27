@@ -25,7 +25,7 @@ cargo run
 
 Tested with Rust 1.15.1
 
-## Licences
+## Asset licences
 
 * Character: [graphics](http://opengameart.org/content/tmim-heroine-bleeds-game-art) Creative Commons V3
 * Zombie [zombie](http://opengameart.org/content/zombie-sprites) Creative Commons V3
