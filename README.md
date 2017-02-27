@@ -9,9 +9,7 @@ Simple isometric hack and slash game. Currently early experimental version.
 ### SDL2 setup on OSX
 
 ```bash
-brew install rust
-brew install sdl2 sdl2_gfx sdl2_image sdl2_ttf
-brew install sdl2_mixer --with-libvorbis
+brew install rust sdl2 sdl2_gfx sdl2_image sdl2_ttf sdl2_mixer --with-libvorbis
 ```
 
 ### Get dependencies and execute
