@@ -22,7 +22,7 @@ pub fn load_map_file(filename: &str) -> Map {
   }
 }
 
-pub fn get_tile(map: &Map, layer_index: usize, x: usize, y: usize) -> u32 {
+pub fn get_map_tile(map: &Map, layer_index: usize, x: usize, y: usize) -> u32 {
   let layer = match map.layers.get(layer_index) {
     None => panic!("Layer_index value out of index {:?}", map.layers),
     Some(ref l) => *l

@@ -1,6 +1,6 @@
 use sdl2::rect::Rect as SdlRect;
 use conv::prelude::*;
-use data::{load_map_file, get_tile};
+use data::{load_map_file, get_map_tile};
 use game::gfx::{Sprite};
 use game::{Game};
 use game::data::Rectangle;
@@ -54,10 +54,6 @@ impl TerrainSpriteSheet {
     }
     terrain_sprites
   }
-
-  pub fn get_tile(x: u32, y: u32) -> Point {
-    cartesian_to_isometric(TILES_W * x as f64, TILES_H * y as f64)
-  }
 }
 
 pub fn get_tiles() -> Vec<TerrainTile> {
@@ -74,7 +70,7 @@ pub fn get_tiles() -> Vec<TerrainTile> {
           w: TILES_W,
           h: TILES_H,
         },
-        current: get_tile(&map, 0, x, y),
+        current: get_map_tile(&map, 0, x, y),
       });
     }
   }
