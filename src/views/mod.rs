@@ -6,7 +6,7 @@ use game::{Game, View, ViewAction};
 use game::data::{Rectangle, MaybeAlive};
 use game::gfx::{CopySprite, Sprite};
 use game::constants::{BACKGROUND_PATH, PISTOL_AUDIO_PATH, TILES_PCS_W, TILES_PCS_H, PLAYER_SPEED, ZOOM_SPEED};
-use views::tilemap::{TerrainTile, TerrainSpriteSheet, get_tiles, viewport_move};
+use views::tilemap::{TerrainTile, TerrainSpriteSheet, get_tiles, viewport_move, mapGlobalCoordinatesToGame};
 use views::background::{Background};
 use views::character::{Character, Stance};
 use views::zombie::{Zombie};
@@ -18,7 +18,7 @@ mod zombie;
 mod tilemap;
 mod background;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Point {
   x: f64,
   y: f64,
@@ -191,6 +191,10 @@ impl View for GameView {
     }
 
     self.character.render(&mut game.renderer);
+
+    let point = mapGlobalCoordinatesToGame(self.character.rect.x, self.character.rect.y);
+    println!("point {:?}", point);
+
 
     for bullet in &self.bullets {
       bullet.render(game);

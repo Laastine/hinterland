@@ -32,6 +32,13 @@ pub fn cartesian_to_isometric(point_x: f64, point_y: f64) -> Point {
   }
 }
 
+pub fn mapGlobalCoordinatesToGame(x_coord: f64, y_coord: f64) -> Point {
+  Point {
+    x: (x_coord / (TILES_W) + y_coord / (TILES_H)).trunc(),
+    y: (y_coord / (TILES_H) - (x_coord / TILES_H)).trunc()
+  }
+}
+
 pub struct TerrainSpriteSheet {
   pub terrain_spritesheet: Vec<Sprite>
 }
