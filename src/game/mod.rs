@@ -7,6 +7,7 @@ mod events;
 pub mod data;
 pub mod gfx;
 pub mod constants;
+pub mod graphics;
 
 struct_events! {
   keyboard: {
