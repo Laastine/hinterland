@@ -15,8 +15,7 @@ use cgmath::{Point3, Vector3};
 use cgmath::{Transform};
 use views::Point;
 use data::{load_map_file, get_map_tile};
-use game::constants::{MAP_FILE_PATH};
-
+use game::constants::{MAP_FILE_PATH, TILES_PCS_W, TILES_PCS_H};
 use genmesh::{Vertices, Triangulate};
 use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
 
@@ -307,22 +306,14 @@ impl<R: gfx::Resources> TileMap<R> {
 }
 
 fn populate_tilemap<R>(tilemap: &mut TileMap<R>, tilemap_size: [usize; 2]) where R: gfx::Resources {
-  // paper in with dummy data
   for ypos in 0..tilemap_size[1] {
     for xpos in 0..tilemap_size[0] {
       tilemap.set_tile(xpos, ypos, [1.0, 4.0, 0.0, 0.0]);
     }
   }
 
-  // HERE 2
   let tiledata = [9.0, 9.0, 0.0, 0.0];
   let map = load_map_file(MAP_FILE_PATH);
-//  get_map_tile(map, )
-//  for x in 0..1 {
-//    for y in 0..1 {
-//      tilemap.set_tile(x, y, tiledata);
-//    }
-//  }
 }
 
 #[derive(Clone)]
@@ -362,10 +353,9 @@ impl<R: Resources> Application<R> for TileMap<R> {
     };
 
     // set up charmap plane and configure its tiles
-    // HERE 1
-    let tilemap_size = [20, 20];
-    let tilemap_dimensions = [8, 8];
-    let tile_size = 64;
+    let tilemap_size = [32, 32];
+    let tilemap_dimensions = [TILES_PCS_W, TILES_PCS_H];
+    let tile_size = 42;
 
     let mut tiles = Vec::new();
     for _ in 0..tilemap_size[0] * tilemap_size[1] {
@@ -424,14 +414,12 @@ impl<R: Resources> Application<R> for TileMap<R> {
     use winit::ElementState::Pressed;
     let i = self.input.clone();
     match event {
-      // zooming in/out
       KeyboardInput(Pressed, _, Some(Key::Equals)) => {
         self.input.distance -= i.move_amt;
       }
       KeyboardInput(Pressed, _, Some(Key::Minus)) => {
         self.input.distance += i.move_amt;
       }
-      // panning around
       KeyboardInput(Pressed, _, Some(Key::Up)) => {
         self.input.y_pos -= i.move_amt;
       }
@@ -443,18 +431,6 @@ impl<R: Resources> Application<R> for TileMap<R> {
       }
       KeyboardInput(Pressed, _, Some(Key::Right)) => {
         self.input.x_pos += i.move_amt;
-      }
-      KeyboardInput(Pressed, _, Some(Key::W)) => {
-        self.apply_y_offset(i.offset_amt);
-      }
-      KeyboardInput(Pressed, _, Some(Key::S)) => {
-        self.apply_y_offset(-i.offset_amt);
-      }
-      KeyboardInput(Pressed, _, Some(Key::D)) => {
-        self.apply_x_offset(i.offset_amt);
-      }
-      KeyboardInput(Pressed, _, Some(Key::A)) => {
-        self.apply_x_offset(-i.offset_amt);
       }
       _ => ()
     }
