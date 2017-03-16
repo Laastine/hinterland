@@ -237,64 +237,6 @@ impl<R: gfx::Resources> TileMap<R> {
     }
   }
 
-  pub fn apply_x_offset(&mut self, offset_amt: f32) {
-    let mut new_offset = self.tilemap_plane.tm_stuff.offsets[0] + offset_amt;
-    let curr_focus = self.focus_coords;
-    let new_x = if new_offset < 0.0 {
-      // move down
-      if self.focus_coords[0] == 0 {
-        new_offset = 0.0;
-        0
-      } else {
-        new_offset = self.tile_size + new_offset as f32;
-        self.focus_coords[0] - 1
-      }
-    } else if self.focus_coords[0] == self.limit_coords[0] {
-      // at top, no more offset
-      new_offset = 0.0;
-      self.focus_coords[0]
-    } else if new_offset >= self.tile_size {
-      new_offset = new_offset - self.tile_size as f32;
-      self.focus_coords[0] + 1
-    } else {
-      // no move
-      self.focus_coords[0]
-    };
-    if new_x != self.focus_coords[0] {
-      self.set_focus([new_x, curr_focus[1]]);
-    }
-    self.tilemap_plane.update_x_offset(new_offset);
-  }
-
-  pub fn apply_y_offset(&mut self, offset_amt: f32) {
-    let mut new_offset = self.tilemap_plane.tm_stuff.offsets[1] + offset_amt;
-    let curr_focus = self.focus_coords;
-    let new_y = if new_offset < 0.0 {
-      // move down
-      if self.focus_coords[1] == 0 {
-        new_offset = 0.0;
-        0
-      } else {
-        new_offset = self.tile_size + new_offset as f32;
-        self.focus_coords[1] - 1
-      }
-    } else if self.focus_coords[1] == (self.tilemap_size[1] - self.charmap_size[1]) {
-      // at top, no more offset
-      new_offset = 0.0;
-      self.focus_coords[1]
-    } else if new_offset >= self.tile_size {
-      new_offset = new_offset - self.tile_size as f32;
-      self.focus_coords[1] + 1
-    } else {
-      // no move
-      self.focus_coords[1]
-    };
-    if new_y != self.focus_coords[1] {
-      self.set_focus([curr_focus[0], new_y]);
-    }
-    self.tilemap_plane.update_y_offset(new_offset);
-  }
-
   fn calc_index(&self, xpos: usize, ypos: usize) -> usize {
     (ypos * self.tilemap_size[0]) + xpos
   }
