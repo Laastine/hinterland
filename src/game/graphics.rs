@@ -19,6 +19,9 @@ use data::{load_map_file, get_map_tile};
 use game::constants::{MAP_FILE_PATH, TILES_PCS_W, TILES_PCS_H};
 use genmesh::{Vertices, Triangulate};
 use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
+use winit::VirtualKeyCode as Key;
+use winit::Event::KeyboardInput;
+use winit::ElementState::Pressed;
 
 const TILEMAP_BUF_LENGTH: usize = 4096;
 
@@ -352,9 +355,6 @@ impl<R: Resources> Application<R> for TileMap<R> {
   }
 
   fn on(&mut self, event: winit::Event) {
-    use winit::VirtualKeyCode as Key;
-    use winit::Event::KeyboardInput;
-    use winit::ElementState::Pressed;
     let i = self.input.clone();
     match event {
       KeyboardInput(Pressed, _, Some(Key::Equals)) => {
