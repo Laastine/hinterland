@@ -268,7 +268,6 @@ struct InputState {
   x_pos: f32,
   y_pos: f32,
   move_amt: f32,
-  offset_amt: f32,
 }
 
 pub struct TileMap<R> where R: gfx::Resources {
@@ -329,7 +328,6 @@ impl<R: Resources> Application<R> for TileMap<R> {
         x_pos: 0.0,
         y_pos: 0.0,
         move_amt: 10.0,
-        offset_amt: 1.0,
       },
     };
 
