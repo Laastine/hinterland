@@ -1,5 +1,6 @@
 #[macro_use]
 use std::io::Cursor;
+use std::process;
 use gfx;
 use gfx_app;
 use image;
@@ -373,6 +374,9 @@ impl<R: Resources> Application<R> for TileMap<R> {
       }
       KeyboardInput(Pressed, _, Some(Key::Right)) => {
         self.input.x_pos += i.move_amt;
+      }
+      KeyboardInput(Pressed, _, Some(Key::Escape)) => {
+        process::exit(0);
       }
       _ => ()
     }
