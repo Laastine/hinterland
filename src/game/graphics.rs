@@ -42,13 +42,13 @@ gfx_defines! {
         data: [f32; 4] = "data",
     }
 
-    constant ProjectionStuff {
+    constant Projection {
         model: [[f32; 4]; 4] = "u_Model",
         view: [[f32; 4]; 4] = "u_View",
         proj: [[f32; 4]; 4] = "u_Proj",
     }
 
-    constant TilemapStuff {
+    constant TilemapSettings {
         world_size: [f32; 4] = "u_WorldSize",
         tilesheet_size: [f32; 4] = "u_TilesheetSize",
         offsets: [f32; 2] = "u_TileOffsets",
@@ -61,9 +61,9 @@ gfx_defines! {
 
     pipeline pipe {
         vbuf: VertexBuffer<VertexData> = (),
-        projection_cb: ConstantBuffer<ProjectionStuff> = "b_VsLocals",
+        projection_cb: ConstantBuffer<Projection> = "b_VsLocals",
         tilemap: ConstantBuffer<TileMapData> = "b_TileMap",
-        tilemap_cb: ConstantBuffer<TilemapStuff> = "b_PsLocals",
+        tilemap_cb: ConstantBuffer<TilemapSettings> = "b_PsLocals",
         tilesheet: TextureSampler<[f32; 4]> = "t_TileSheet",
         out_color: RenderTarget<Rgba8> = "Target0",
         out_depth: DepthTarget<DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
@@ -83,10 +83,10 @@ impl TileMapData {
 pub struct TileMapPlane<R> where R: Resources {
   pub params: pipe::Data<R>,
   pub slice: gfx::Slice<R>,
-  proj_stuff: ProjectionStuff,
-  proj_dirty: bool,
-  tm_stuff: TilemapStuff,
-  tm_dirty: bool,
+  projection: Projection,
+  is_projection_dirty: bool,
+  tilemap_settings: TilemapSettings,
+  is_tilemap_dirty: bool,
   pub data: Vec<TileMapData>,
 }
 
@@ -131,12 +131,12 @@ impl<R> TileMapPlane<R> where R: Resources {
       .map(|i| i as u32)
       .collect();
 
-    let (vbuf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
+    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
 
     let tile_texture = load_texture(factory, tilesheet_bytes).unwrap();
 
     let params = pipe::Data {
-      vbuf: vbuf,
+      vbuf: vertex_buf,
       projection_cb: factory.create_constant_buffer(1),
       tilemap: factory.create_constant_buffer(TILEMAP_BUF_LENGTH),
       tilemap_cb: factory.create_constant_buffer(1),
@@ -160,18 +160,18 @@ impl<R> TileMapPlane<R> where R: Resources {
     TileMapPlane {
       slice: slice,
       params: params,
-      proj_stuff: ProjectionStuff {
+      projection: Projection {
         model: Matrix4::identity().into(),
         view: view.mat.into(),
         proj: cgmath::perspective(cgmath::deg(60.0f32), targets.aspect_ratio, 0.1, 4000.0).into(),
       },
-      proj_dirty: true,
-      tm_stuff: TilemapStuff {
+      is_projection_dirty: true,
+      tilemap_settings: TilemapSettings {
         world_size: [width as f32, height as f32, tile_size as f32, 0.0],
         tilesheet_size: [tilesheet_width as f32, tilesheet_height as f32, tilesheet_total_width as f32, tilesheet_total_height as f32],
         offsets: [0.0, 0.0],
       },
-      tm_dirty: true,
+      is_tilemap_dirty: true,
       data: charmap_data,
     }
   }
@@ -179,21 +179,21 @@ impl<R> TileMapPlane<R> where R: Resources {
   fn resize(&mut self, targets: WindowTargets<R>) {
     self.params.out_color = targets.color;
     self.params.out_depth = targets.depth;
-    self.proj_stuff.proj = cgmath::perspective(cgmath::deg(60.0f32), targets.aspect_ratio, 0.1, 4000.0).into();
-    self.proj_dirty = true;
+    self.projection.proj = cgmath::perspective(cgmath::deg(60.0f32), targets.aspect_ratio, 0.1, 4000.0).into();
+    self.is_projection_dirty = true;
   }
 
   fn prepare_buffers<C>(&mut self, encoder: &mut gfx::Encoder<R, C>, update_data: bool) where C: gfx::CommandBuffer<R> {
     if update_data {
       encoder.update_buffer(&self.params.tilemap, &self.data, 0).unwrap();
     }
-    if self.proj_dirty {
-      encoder.update_constant_buffer(&self.params.projection_cb, &self.proj_stuff);
-      self.proj_dirty = false;
+    if self.is_projection_dirty {
+      encoder.update_constant_buffer(&self.params.projection_cb, &self.projection);
+      self.is_projection_dirty = false;
     }
-    if self.tm_dirty {
-      encoder.update_constant_buffer(&self.params.tilemap_cb, &self.tm_stuff);
-      self.tm_dirty = false;
+    if self.is_tilemap_dirty {
+      encoder.update_constant_buffer(&self.params.tilemap_cb, &self.tilemap_settings);
+      self.is_tilemap_dirty = false;
     }
   }
 
@@ -204,18 +204,18 @@ impl<R> TileMapPlane<R> where R: Resources {
   }
 
   pub fn update_view(&mut self, view: &AffineMatrix3<f32>) {
-    self.proj_stuff.view = view.mat.into();
-    self.proj_dirty = true;
+    self.projection.view = view.mat.into();
+    self.is_projection_dirty = true;
   }
 
-  pub fn update_x_offset(&mut self, amt: f32) {
-    self.tm_stuff.offsets[0] = amt;
-    self.tm_dirty = true;
+  pub fn update_x_offset(&mut self, amount: f32) {
+    self.tilemap_settings.offsets[0] = amount;
+    self.is_tilemap_dirty = true;
   }
 
-  pub fn update_y_offset(&mut self, amt: f32) {
-    self.tm_stuff.offsets[1] = amt;
-    self.tm_dirty = true;
+  pub fn update_y_offset(&mut self, amount: f32) {
+    self.tilemap_settings.offsets[1] = amount;
+    self.is_tilemap_dirty = true;
   }
 }
 
