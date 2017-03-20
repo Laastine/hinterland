@@ -4,6 +4,8 @@ use sdl2::render::Renderer;
 
 #[macro_use]
 mod events;
+#[macro_use]
+pub mod gfx_macros;
 pub mod data;
 pub mod gfx;
 pub mod constants;

@@ -21,5 +21,5 @@ mod data;
 fn main() {
   use gfx_app::Application;
   let wb = winit::WindowBuilder::new().with_title("Zombie shooter");
-  game::graphics::TileMap::launch_default(wb);
+  views::TileMap::launch_default(wb);
 }

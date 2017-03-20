@@ -1,12 +1,13 @@
 #[macro_use]
+use game::gfx_macros::{TilemapSettings, Projection, VertexData, pipe, TileMapData};
+#[macro_use]
 use std::io::Cursor;
-use std::process;
 use gfx;
 use gfx_app;
 use image;
 use cgmath;
 use winit;
-use gfx_app::{Application, WindowTargets};
+use gfx_app::{Application, WindowTargets}; //
 use gfx::{Resources, Factory, texture, VertexBuffer, ConstantBuffer, TextureSampler, RenderTarget, DepthTarget};
 use gfx::handle::{ShaderResourceView};
 use gfx::format::{Rgba8, DepthStencil};
@@ -15,13 +16,11 @@ use cgmath::{SquareMatrix, Matrix4, AffineMatrix3};
 use cgmath::{Point3, Vector3};
 use cgmath::{Transform};
 use views::Point;
-use data::{load_map_file, get_map_tile};
 use game::constants::{MAP_FILE_PATH, TILES_PCS_W, TILES_PCS_H};
 use genmesh::{Vertices, Triangulate};
 use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
-use winit::VirtualKeyCode as Key;
-use winit::Event::KeyboardInput;
-use winit::ElementState::Pressed;
+use views::{TileMap};
+
 
 const TILEMAP_BUF_LENGTH: usize = 4096;
 
@@ -35,39 +34,6 @@ pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> Result<ShaderResource
 
 fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
   ((point_x - point_y), (point_x + point_y) / 2.0)
-}
-
-gfx_defines! {
-    constant TileMapData {
-        data: [f32; 4] = "data",
-    }
-
-    constant Projection {
-        model: [[f32; 4]; 4] = "u_Model",
-        view: [[f32; 4]; 4] = "u_View",
-        proj: [[f32; 4]; 4] = "u_Proj",
-    }
-
-    constant TilemapSettings {
-        world_size: [f32; 4] = "u_WorldSize",
-        tilesheet_size: [f32; 4] = "u_TilesheetSize",
-        offsets: [f32; 2] = "u_TileOffsets",
-    }
-
-    vertex VertexData {
-        pos: [f32; 3] = "a_Pos",
-        buf_pos: [f32; 2] = "a_BufPos",
-    }
-
-    pipeline pipe {
-        vbuf: VertexBuffer<VertexData> = (),
-        projection_cb: ConstantBuffer<Projection> = "b_VsLocals",
-        tilemap: ConstantBuffer<TileMapData> = "b_TileMap",
-        tilemap_cb: ConstantBuffer<TilemapSettings> = "b_PsLocals",
-        tilesheet: TextureSampler<[f32; 4]> = "t_TileSheet",
-        out_color: RenderTarget<Rgba8> = "Target0",
-        out_depth: DepthTarget<DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
-    }
 }
 
 impl TileMapData {
@@ -176,16 +142,16 @@ impl<R> TileMapPlane<R> where R: Resources {
     }
   }
 
-  fn resize(&mut self, targets: WindowTargets<R>) {
+  pub fn resize(&mut self, targets: WindowTargets<R>) {
     self.params.out_color = targets.color;
     self.params.out_depth = targets.depth;
     self.projection.proj = cgmath::perspective(cgmath::deg(60.0f32), targets.aspect_ratio, 0.1, 4000.0).into();
     self.is_projection_dirty = true;
   }
 
-  fn prepare_buffers<C>(&mut self, encoder: &mut gfx::Encoder<R, C>, update_data: bool) where C: gfx::CommandBuffer<R> {
+  pub fn prepare_buffers<C>(&mut self, encoder: &mut gfx::Encoder<R, C>, update_data: bool) where C: gfx::CommandBuffer<R> {
     if update_data {
-      encoder.update_buffer(&self.params.tilemap, &self.data, 0).unwrap();
+      encoder.update_buffer(&self.params.tilemap, self.data.as_slice(), 0).unwrap();
     }
     if self.is_projection_dirty {
       encoder.update_constant_buffer(&self.params.projection_cb, &self.projection);
@@ -197,7 +163,7 @@ impl<R> TileMapPlane<R> where R: Resources {
     }
   }
 
-  fn clear<C>(&self, encoder: &mut gfx::Encoder<R, C>) where C: gfx::CommandBuffer<R> {
+  pub fn clear<C>(&self, encoder: &mut gfx::Encoder<R, C>) where C: gfx::CommandBuffer<R> {
     encoder.clear(&self.params.out_color,
                   [16.0 / 256.0, 14.0 / 256.0, 22.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.params.out_depth, 1.0);
@@ -219,6 +185,14 @@ impl<R> TileMapPlane<R> where R: Resources {
   }
 }
 
+pub struct Tilemap<R> where R: Resources {
+  pub limit_coords: [usize; 2],
+  pub focus_coords: [usize; 2],
+  tilemap_size: [usize; 2],
+  tilemap_plane: TileMapPlane<R>,
+  focus_dirty: bool,
+  tiles: Vec<usize>,
+}
 
 impl<R: gfx::Resources> TileMap<R> {
   pub fn set_focus(&mut self, focus: [usize; 2]) {
@@ -248,139 +222,5 @@ impl<R: gfx::Resources> TileMap<R> {
   pub fn set_tile(&mut self, xpos: usize, ypos: usize, data: [f32; 4]) {
     let idx = self.calc_index(xpos, ypos);
     self.tiles[idx] = TileMapData::new(data);
-  }
-}
-
-fn populate_tilemap<R>(tilemap: &mut TileMap<R>, tilemap_size: [usize; 2]) where R: gfx::Resources {
-  for ypos in 0..tilemap_size[1] {
-    for xpos in 0..tilemap_size[0] {
-      tilemap.set_tile(xpos, ypos, [1.0, 4.0, 0.0, 0.0]);
-    }
-  }
-
-  let tiledata = [9.0, 9.0, 0.0, 0.0];
-  let map = load_map_file(MAP_FILE_PATH);
-}
-
-#[derive(Clone)]
-struct InputState {
-  distance: f32,
-  x_pos: f32,
-  y_pos: f32,
-  move_amt: f32,
-}
-
-pub struct TileMap<R> where R: gfx::Resources {
-  pub tiles: Vec<TileMapData>,
-  pso: gfx::PipelineState<R, pipe::Meta>,
-  tilemap_plane: TileMapPlane<R>,
-  tile_size: f32,
-  tilemap_size: [usize; 2],
-  charmap_size: [usize; 2],
-  limit_coords: [usize; 2],
-  focus_coords: [usize; 2],
-  focus_dirty: bool,
-  input: InputState,
-}
-
-impl<R: Resources> Application<R> for TileMap<R> {
-  fn new<F: gfx::Factory<R>>(factory: &mut F, backend: gfx_app::shade::Backend,
-                             window_targets: gfx_app::WindowTargets<R>) -> Self {
-    use gfx::traits::FactoryExt;
-
-    let vs = gfx_app::shade::Source {
-      glsl_150: include_bytes!("../shader/vertex_shader.glsl"),
-      ..gfx_app::shade::Source::empty()
-    };
-    let ps = gfx_app::shade::Source {
-      glsl_150: include_bytes!("../shader/fragment_shader.glsl"),
-      ..gfx_app::shade::Source::empty()
-    };
-
-    // set up charmap plane and configure its tiles
-    let tilemap_size = [32, 32];
-    let tilemap_dimensions = [TILES_PCS_W, TILES_PCS_H];
-    let tile_size = 42;
-
-    let mut tiles = Vec::new();
-    for _ in 0..tilemap_size[0] * tilemap_size[1] {
-      tiles.push(TileMapData::new_empty());
-    }
-
-    let mut tilemap = TileMap {
-      tiles: tiles,
-      pso: factory.create_pipeline_simple(
-        vs.select(backend).unwrap(),
-        ps.select(backend).unwrap(),
-        pipe::new()
-      ).unwrap(),
-      tilemap_plane: TileMapPlane::new(factory,
-                                       tilemap_dimensions[0], tilemap_dimensions[1], tile_size,
-                                       window_targets),
-      tile_size: tile_size as f32,
-      tilemap_size: tilemap_size,
-      charmap_size: tilemap_dimensions,
-      limit_coords: [tilemap_size[0] - tilemap_dimensions[0], tilemap_size[1] - tilemap_dimensions[1]],
-      focus_coords: [0, 0],
-      focus_dirty: false,
-      input: InputState {
-        distance: 800.0,
-        x_pos: 0.0,
-        y_pos: 0.0,
-        move_amt: 10.0,
-      },
-    };
-
-    populate_tilemap(&mut tilemap, tilemap_size);
-    tilemap.set_focus([0, 0]);
-    tilemap
-  }
-
-  fn render<C: gfx::CommandBuffer<R>>(&mut self, encoder: &mut gfx::Encoder<R, C>) {
-    let view: AffineMatrix3<f32> = Transform::look_at(
-      Point3::new(self.input.x_pos, -self.input.y_pos, self.input.distance),
-      Point3::new(self.input.x_pos, -self.input.y_pos, 0.0),
-      Vector3::unit_y(),
-    );
-
-    self.tilemap_plane.update_view(&view);
-    self.tilemap_plane.prepare_buffers(encoder, self.focus_dirty);
-    self.focus_dirty = false;
-
-    self.tilemap_plane.clear(encoder);
-
-    encoder.draw(&self.tilemap_plane.slice, &self.pso, &self.tilemap_plane.params);
-  }
-
-  fn on(&mut self, event: winit::Event) {
-    let i = self.input.clone();
-    match event {
-      KeyboardInput(Pressed, _, Some(Key::Equals)) => {
-        self.input.distance -= i.move_amt;
-      }
-      KeyboardInput(Pressed, _, Some(Key::Minus)) => {
-        self.input.distance += i.move_amt;
-      }
-      KeyboardInput(Pressed, _, Some(Key::Up)) => {
-        self.input.y_pos -= i.move_amt;
-      }
-      KeyboardInput(Pressed, _, Some(Key::Down)) => {
-        self.input.y_pos += i.move_amt;
-      }
-      KeyboardInput(Pressed, _, Some(Key::Left)) => {
-        self.input.x_pos -= i.move_amt;
-      }
-      KeyboardInput(Pressed, _, Some(Key::Right)) => {
-        self.input.x_pos += i.move_amt;
-      }
-      KeyboardInput(Pressed, _, Some(Key::Escape)) => {
-        process::exit(0);
-      }
-      _ => ()
-    }
-  }
-
-  fn on_resize(&mut self, window_targets: gfx_app::WindowTargets<R>) {
-    self.tilemap_plane.resize(window_targets);
   }
 }
