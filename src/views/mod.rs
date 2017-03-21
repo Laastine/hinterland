@@ -88,37 +88,12 @@ impl GameView {
 
 impl View for GameView {
   fn render(&mut self, game: &mut Game, elapsed: f64) -> ViewAction {
-    if game.events.now.quit || game.events.now.key_escape == Some(true) {
-      return ViewAction::Quit;
-    }
-
-    let diagonal = (game.events.key_up ^ game.events.key_down) && (game.events.key_left ^ game.events.key_right);
-    let moved = if diagonal { 1.0 / 2.0f64.sqrt() } else { 1.0 } * PLAYER_SPEED * elapsed;
-    let dx = match (game.events.key_left, game.events.key_right) {
-      (true, true) | (false, false) => 0.0,
-      (true, false) => -moved * 1.5,
-      (false, true) => moved * 1.5,
-    };
-
-    let dy = match (game.events.key_up, game.events.key_down) {
-      (true, true) | (false, false) => 0.0,
-      (true, false) => -moved * 0.75,
-      (false, true) => moved * 0.75,
-    };
-
-    self.character.rect.x += dx;
-    self.character.rect.y += dy;
-
     let movable_region = Rectangle {
       x: 0.0,
       y: 0.0,
       w: game.output_size().0,
       h: game.output_size().1,
     };
-
-    let curr_rect = game.renderer.viewport();
-    let rect = viewport_move(&game, curr_rect, dx, dy);
-    game.renderer.set_viewport(rect.to_sdl());
 
     self.background.render(&mut game.renderer);
 
@@ -172,20 +147,6 @@ impl View for GameView {
       .filter_map(|z| z.update(elapsed))
       .collect();
 
-    match game.events.mouse_click {
-      Some(_) => {
-        if self.index == 0 {
-          game.play_sound(&self.pistol);
-        }
-        self.index = if self.index < 4 { self.index + 1 } else { 0 };
-        self.character.update(elapsed, dx, dy, Stance::Firing);
-        self.bullets.append(&mut self.character.fire_bullets());
-      },
-      None => {
-        self.character.update(elapsed, dx, dy, Stance::Running);
-      },
-    };
-
     for zombie in &mut self.zombies {
       zombie.render(&mut game.renderer);
     }
@@ -201,11 +162,6 @@ impl View for GameView {
     }
 
     let scale = game.renderer.scale();
-    if game.events.zoom_in == true && scale.0 <= 2.0 && scale.1 <= 2.0 {
-      let _ = game.renderer.set_scale(scale.0 + ZOOM_SPEED, scale.1 + ZOOM_SPEED);
-    } else if game.events.zoom_out == true && scale.0 > 0.85 && scale.1 > 0.85 {
-      let _ = game.renderer.set_scale(scale.0 - ZOOM_SPEED, scale.1 - ZOOM_SPEED);
-    }
 
     ViewAction::None
   }

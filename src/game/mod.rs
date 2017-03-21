@@ -3,41 +3,22 @@ use sdl2::mixer::{INIT_OGG, AUDIO_S16LSB};
 use sdl2::render::Renderer;
 
 #[macro_use]
-mod events;
-#[macro_use]
 pub mod gfx_macros;
 pub mod data;
 pub mod gfx;
 pub mod constants;
 pub mod graphics;
 
-struct_events! {
-  keyboard: {
-    key_escape: Escape,
-    key_up: W,
-    key_down: S,
-    key_left: A,
-    key_right: D,
-    zoom_in: KpPlus,
-    zoom_out: KpMinus
-  },
-  else: {
-    quit: Quit { .. }
-  }
-}
-
 pub struct Game<'window> {
-  pub events: Events,
   pub renderer: Renderer<'window>,
   allocated_channels: i32,
 }
 
 impl<'window> Game<'window> {
-  fn new(events: Events, renderer: Renderer<'window>) -> Game<'window> {
+  fn new(renderer: Renderer<'window>) -> Game<'window> {
     let allocated_channels = 32i32;
     ::sdl2::mixer::allocate_channels(allocated_channels);
     Game {
-      events: events,
       renderer: renderer,
       allocated_channels: allocated_channels,
     }
@@ -89,7 +70,6 @@ pub fn spawn<F>(title: &str, init: F) where F: Fn(&mut Game) -> Box<View> {
     .build().unwrap();
 
   let mut context = Game::new(
-    Events::new(sdl_context.event_pump().unwrap()),
     window.renderer()
       .accelerated()
       .build().unwrap());
@@ -119,8 +99,6 @@ pub fn spawn<F>(title: &str, init: F) where F: Fn(&mut Game) -> Box<View> {
       last_second = now;
       fps = 0;
     }
-
-    context.events.pump(&mut context.renderer);
 
     match current_view.render(&mut context, elapsed) {
       ViewAction::None => context.renderer.present(),
