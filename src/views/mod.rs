@@ -82,8 +82,10 @@ pub struct TileMap<R> where R: gfx::Resources {
 }
 
 fn populate_tilemap<R>(tilemap: &mut TileMap<R>, tilemap_size: [usize; 2]) where R: gfx::Resources {
-  for ypos in 0..tilemap_size[1] {
-    for xpos in 0..tilemap_size[0] {
+
+  let map = load_map_file(MAP_FILE_PATH);
+  for ypos in 0..(map.tile_height as usize) {
+    for xpos in 0..(map.tile_width as usize) {
       tilemap.set_tile(xpos, ypos, [1.0, 4.0, 0.0, 0.0]);
     }
   }
