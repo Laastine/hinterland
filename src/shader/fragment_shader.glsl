@@ -25,16 +25,10 @@ void main() {
     vec2 offset_bufpos = v_BufPos + (u_TileOffsets / u_WorldSize.zz);
     vec2 bufTileCoords = floor(offset_bufpos);
     vec2 rawUvOffsets = vec2(offset_bufpos.x - bufTileCoords.x, 1.0 - (offset_bufpos.y - bufTileCoords.y));
-    vec4 texData;
 
-    if (bufTileCoords.x >= 0.0 && bufTileCoords.x < u_WorldSize.x && bufTileCoords.y >= 0.0 && bufTileCoords.y < u_WorldSize.y) {
-        int bufIdx = int((bufTileCoords.y * u_WorldSize.x) + bufTileCoords.x);
-        vec4 entry = u_Data[bufIdx].data;
-        vec2 uvCoords = (entry.xy + rawUvOffsets) / u_TilesheetSize.xy;
-        texData = texture(t_TileSheet, uvCoords);
-    } else {
-        texData = vec4(0.0, 0.0, 0.0, 1.0);
-    }
+    int bufIdx = int((bufTileCoords.y * u_WorldSize.x) + bufTileCoords.x);
+    vec4 entry = u_Data[bufIdx].data;
+    vec2 uvCoords = (entry.xy + rawUvOffsets) / u_TilesheetSize.xy;
 
-    Target0 = texData;
+    Target0 = texture(t_TileSheet, uvCoords);
 }
