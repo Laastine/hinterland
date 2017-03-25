@@ -1,4 +1,4 @@
-#version 150 core
+#version 330 core
 
 in vec2 v_BufPos;
 out vec4 Target0;
