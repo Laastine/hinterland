@@ -100,11 +100,11 @@ impl<R: Resources> Application<R> for TileMap<R> {
     use gfx::traits::FactoryExt;
 
     let vs = gfx_app::shade::Source {
-      glsl_150: include_bytes!("../shader/vertex_shader.glsl"),
+      glsl_400: include_bytes!("../shader/vertex_shader.glsl"),
       ..gfx_app::shade::Source::empty()
     };
-    let ps = gfx_app::shade::Source {
-      glsl_150: include_bytes!("../shader/fragment_shader.glsl"),
+    let fs = gfx_app::shade::Source {
+      glsl_400: include_bytes!("../shader/fragment_shader.glsl"),
       ..gfx_app::shade::Source::empty()
     };
 
@@ -122,7 +122,7 @@ impl<R: Resources> Application<R> for TileMap<R> {
       tiles: tiles,
       pso: factory.create_pipeline_simple(
         vs.select(backend).unwrap(),
-        ps.select(backend).unwrap(),
+        fs.select(backend).unwrap(),
         pipe::new()
       ).unwrap(),
       tilemap_plane: TileMapPlane::new(factory,
