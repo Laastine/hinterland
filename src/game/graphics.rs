@@ -1,6 +1,5 @@
 #[macro_use]
 use game::gfx_macros::{TilemapSettings, Projection, VertexData, pipe, TileMapData};
-#[macro_use]
 use std::io::Cursor;
 use gfx;
 use gfx_app;
@@ -18,7 +17,7 @@ use cgmath::{Transform};
 use views::Point;
 use game::constants::{MAP_FILE_PATH, TILES_PCS_W, TILES_PCS_H};
 use genmesh::{Vertices, Triangulate};
-use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
+use genmesh::generators::{Plane, SharedVertex, IndexedPolygon, SharedVertexIterator};
 use views::{TileMap};
 
 
@@ -79,8 +78,8 @@ impl<R> TileMapPlane<R> where R: Resources {
         let vertex_x = half_width as f32 * raw_x;
         let vertex_y = half_height as f32 * raw_y;
 
-        let u_pos = (1.0 + raw_x) / 4.0;
-        let v_pos = (1.0 + raw_y) / 2.0;
+        let u_pos = (1.0 + raw_x) / 2.0;
+        let v_pos = 1.0 + raw_y;
         let tilemap_x = (u_pos * width as f32).floor();
         let tilemap_y = (v_pos * height as f32).floor();
 

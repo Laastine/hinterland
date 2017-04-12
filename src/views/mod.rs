@@ -82,16 +82,12 @@ pub struct TileMap<R> where R: gfx::Resources {
 }
 
 fn populate_tilemap<R>(tilemap: &mut TileMap<R>, tilemap_size: [usize; 2]) where R: gfx::Resources {
-
   let map = load_map_file(MAP_FILE_PATH);
   for ypos in 0..(map.tile_height as usize) {
     for xpos in 0..(map.tile_width as usize) {
-      tilemap.set_tile(xpos, ypos, [1.0, 4.0, 0.0, 0.0]);
+      tilemap.set_tile(xpos, ypos, [1.0, 1.0, 0.0, 0.0]);
     }
   }
-
-  let tiledata = [9.0, 9.0, 0.0, 0.0];
-  let map = load_map_file(MAP_FILE_PATH);
 }
 
 impl<R: Resources> Application<R> for TileMap<R> {
@@ -110,8 +106,8 @@ impl<R: Resources> Application<R> for TileMap<R> {
 
     // set up charmap plane and configure its tiles
     let tilemap_size = [32, 32];
-    let tilemap_dimensions = [TILES_PCS_W, TILES_PCS_H];
-    let tile_size = 42;
+    let tilemap_dimensions = [3, 3];
+    let tile_size = 256;
 
     let mut tiles = Vec::new();
     for _ in 0..tilemap_size[0] * tilemap_size[1] {
