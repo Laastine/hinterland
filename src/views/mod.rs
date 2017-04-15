@@ -106,8 +106,8 @@ impl<R: Resources> Application<R> for TileMap<R> {
 
     // set up charmap plane and configure its tiles
     let tilemap_size = [32, 32];
-    let tilemap_dimensions = [3, 3];
-    let tile_size = 256;
+    let tilemap_dimensions = [32, 32];
+    let tile_size = 64;
 
     let mut tiles = Vec::new();
     for _ in 0..tilemap_size[0] * tilemap_size[1] {
@@ -131,10 +131,10 @@ impl<R: Resources> Application<R> for TileMap<R> {
       focus_coords: [0, 0],
       focus_dirty: false,
       input: InputState {
-        distance: 800.0,
+        distance: 1000.0,
         x_pos: 0.0,
         y_pos: 0.0,
-        move_amt: 10.0,
+        move_amt: 20.0,
       },
     };
 
