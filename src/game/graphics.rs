@@ -37,7 +37,7 @@ fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
 
 impl TileMapData {
   pub fn new_empty() -> TileMapData {
-    TileMapData { data: [0.0, 0.0, 0.0, 0.0] }
+    TileMapData { data: [9.0, 9.0, 0.0, 0.0] }
   }
 
   pub fn new(data: [f32; 4]) -> TileMapData {
@@ -78,8 +78,7 @@ impl<R> TileMapPlane<R> where R: Resources {
         let vertex_x = half_width as f32 * raw_x;
         let vertex_y = half_height as f32 * raw_y;
 
-        let u_pos = (1.0 + raw_x) / 2.0;
-        let v_pos = 1.0 + raw_y;
+        let (u_pos, v_pos) = (((raw_x) / 4.0 - raw_y / 2.0), ((raw_x) / 4.0 + raw_y / 2.0));
         let tilemap_x = (u_pos * width as f32).floor();
         let tilemap_y = (v_pos * height as f32).floor();
 
