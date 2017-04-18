@@ -77,9 +77,9 @@ impl<R> TileMapPlane<R> where R: Resources {
         let vertex_x = half_width as f32 * raw_x;
         let vertex_y = half_height as f32 * raw_y;
 
-        let (u_pos, v_pos) = (((raw_x) / 4.0 - raw_y / 2.0), ((raw_x) / 4.0 + raw_y / 2.0));
-        let tilemap_x = (u_pos * width as f32).floor();
-        let tilemap_y = (v_pos * height as f32).floor();
+        let (u_pos, v_pos) = ((raw_x / 4.0 - raw_y / 2.0) + 0.5, (raw_x / 4.0 + raw_y / 2.0) + 0.5);
+        let tilemap_x = u_pos * width as f32;
+        let tilemap_y = v_pos * height as f32;
 
         VertexData {
           pos: [vertex_x, vertex_y, 0.0],
