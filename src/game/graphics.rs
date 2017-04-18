@@ -36,7 +36,7 @@ fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
 
 impl TileMapData {
   pub fn new_empty() -> TileMapData {
-    TileMapData { data: [9.0, 9.0, 0.0, 0.0] }
+    TileMapData { data: [32.0, 32.0, 0.0, 0.0] }
   }
 
   pub fn new(data: [f32; 4]) -> TileMapData {
@@ -115,7 +115,7 @@ impl<R> TileMapPlane<R> where R: Resources {
     }
 
     let view: AffineMatrix3<f32> = Transform::look_at(
-      Point3::new(0.0, 0.0, 800.0),
+      Point3::new(0.0, 0.0, 1000.0),
       Point3::new(0.0, 0.0, 0.0),
       Vector3::unit_y(),
     );
