@@ -2,14 +2,12 @@
 use game::gfx_macros::{TilemapSettings, Projection, VertexData, pipe, TileMapData};
 use std::io::Cursor;
 use gfx;
-use gfx_app;
 use image;
 use cgmath;
-use winit;
 use gfx_app::{Application, WindowTargets}; //
-use gfx::{Resources, Factory, texture, VertexBuffer, ConstantBuffer, TextureSampler, RenderTarget, DepthTarget};
+use gfx::{Resources, Factory, texture};
 use gfx::handle::{ShaderResourceView};
-use gfx::format::{Rgba8, DepthStencil};
+use gfx::format::{Rgba8};
 use gfx::traits::{FactoryExt};
 use cgmath::{SquareMatrix, Matrix4, AffineMatrix3};
 use cgmath::{Point3, Vector3};
@@ -19,6 +17,7 @@ use game::constants::{MAP_FILE_PATH, TILES_PCS_W, TILES_PCS_H};
 use genmesh::{Vertices, Triangulate};
 use genmesh::generators::{Plane, SharedVertex, IndexedPolygon, SharedVertexIterator};
 use views::{TileMap};
+use data::{load_map_file};
 
 
 const TILEMAP_BUF_LENGTH: usize = 4096;
@@ -220,5 +219,16 @@ impl<R: gfx::Resources> TileMap<R> {
   pub fn set_tile(&mut self, xpos: usize, ypos: usize, data: [f32; 4]) {
     let idx = self.calc_index(xpos, ypos);
     self.tiles[idx] = TileMapData::new(data);
+  }
+
+  pub fn populate_tilemap(&mut self, tilemap_size: [usize; 2]) {
+    let map = load_map_file(MAP_FILE_PATH);
+    for ypos in 0..self.tilemap_size[1] {
+      for xpos in 0..self.tilemap_size[0] {
+        self.set_tile(xpos, ypos, [7.0, 7.0, 0.0, 0.0]);
+      }
+    }
+    self.set_tile(1, 1, [4.0, 4.0, 0.0, 0.0]);
+    self.set_tile(3, 3, [4.0, 4.0, 0.0, 0.0]);
   }
 }

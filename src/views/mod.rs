@@ -18,7 +18,6 @@ use game::gfx_macros::{pipe, VertexData, TileMapData};
 use game::constants::MAP_FILE_PATH;
 use game::graphics::{TileMapPlane};
 use game::constants::{BACKGROUND_PATH, PISTOL_AUDIO_PATH, TILES_PCS_W, TILES_PCS_H, PLAYER_SPEED, ZOOM_SPEED};
-use data::{load_map_file, get_map_tile};
 
 mod bullet;
 mod character;
@@ -81,15 +80,6 @@ pub struct TileMap<R> where R: gfx::Resources {
   input: InputState,
 }
 
-fn populate_tilemap<R>(tilemap: &mut TileMap<R>, tilemap_size: [usize; 2]) where R: gfx::Resources {
-  let map = load_map_file(MAP_FILE_PATH);
-  for ypos in 0..(map.tile_height as usize) {
-    for xpos in 0..(map.tile_width as usize) {
-      tilemap.set_tile(xpos, ypos, [1.0, 1.0, 0.0, 0.0]);
-    }
-  }
-}
-
 impl<R: Resources> Application<R> for TileMap<R> {
   fn new<F: gfx::Factory<R>>(factory: &mut F, backend: gfx_app::shade::Backend,
                              window_targets: gfx_app::WindowTargets<R>) -> Self {
@@ -138,7 +128,7 @@ impl<R: Resources> Application<R> for TileMap<R> {
       },
     };
 
-    populate_tilemap(&mut tilemap, tilemap_size);
+    tilemap.populate_tilemap(tilemap_size);
     tilemap.set_focus([0, 0]);
     tilemap
   }
