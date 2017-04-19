@@ -17,7 +17,7 @@ use game::constants::{MAP_FILE_PATH, TILES_PCS_W, TILES_PCS_H};
 use genmesh::{Vertices, Triangulate};
 use genmesh::generators::{Plane, SharedVertex, IndexedPolygon, SharedVertexIterator};
 use views::{TileMap};
-use data::{load_map_file};
+use data::{load_map_file, get_map_tile};
 
 
 const TILEMAP_BUF_LENGTH: usize = 4096;
@@ -225,10 +225,11 @@ impl<R: gfx::Resources> TileMap<R> {
     let map = load_map_file(MAP_FILE_PATH);
     for ypos in 0..self.tilemap_size[1] {
       for xpos in 0..self.tilemap_size[0] {
-        self.set_tile(xpos, ypos, [7.0, 7.0, 0.0, 0.0]);
+        let map_val = get_map_tile(&map, 0, xpos as usize, ypos as usize);
+        let tex_x = map_val % 32;
+        let tex_y = (map_val - tex_x) / 32;
+        self.set_tile(xpos, ypos, [(tex_x-1) as f32, tex_y as f32, 0.0, 0.0]);
       }
     }
-    self.set_tile(1, 1, [4.0, 4.0, 0.0, 0.0]);
-    self.set_tile(3, 3, [4.0, 4.0, 0.0, 0.0]);
   }
 }
