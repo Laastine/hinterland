@@ -121,7 +121,7 @@ impl<R: Resources> Application<R> for TileMap<R> {
       focus_coords: [0, 0],
       focus_dirty: false,
       input: InputState {
-        distance: 1000.0,
+        distance: 2000.0,
         x_pos: 0.0,
         y_pos: 0.0,
         move_amt: 20.0,

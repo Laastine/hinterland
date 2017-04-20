@@ -115,7 +115,7 @@ impl<R> TileMapPlane<R> where R: Resources {
     }
 
     let view: AffineMatrix3<f32> = Transform::look_at(
-      Point3::new(0.0, 0.0, 1000.0),
+      Point3::new(0.0, 0.0, 2000.0),
       Point3::new(0.0, 0.0, 0.0),
       Vector3::unit_y(),
     );
