@@ -27,7 +27,7 @@ pub fn get_map_tile(map: &Map, layer_index: usize, x: usize, y: usize) -> u32 {
     None => panic!("Layer_index value out of index {:?}", map.layers),
     Some(ref l) => *l
   };
-  let y_index = match layer.tiles.iter().nth(y) {
+  let y_index = match layer.tiles.iter().rev().nth(y) {
     None => panic!("X value out of index {:?}", map.layers[0]),
     Some(ref x) => *x
   };
