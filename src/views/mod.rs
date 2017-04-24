@@ -22,7 +22,6 @@ use game::constants::{BACKGROUND_PATH, PISTOL_AUDIO_PATH, TILES_PCS_W, TILES_PCS
 mod bullet;
 mod character;
 mod zombie;
-mod tilemap;
 mod background;
 
 #[derive(Clone, Debug)]
