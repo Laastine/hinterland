@@ -1,12 +1,7 @@
 [package]
 name = "zombie-shooter"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
-
-[dependencies.sdl2]
-version = "0.29.0"
-default-features = false
-features = ["ttf","image","gfx","mixer"]
 
 [dependencies]
 conv = "0.3.3"

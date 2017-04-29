@@ -6,7 +6,6 @@ use std::vec::Vec;
 use std::io::{BufReader};
 use json;
 use game::constants::{CHARACTER_JSON_PATH, ZOMBIE_JSON_PATH};
-use game::data::Rectangle;
 use tiled::{Map};
 use tiled;
 
@@ -51,7 +50,7 @@ fn read_sprite_file(filename: &str) -> String {
   }
 }
 
-pub fn load_character() -> Vec<Rectangle> {
+pub fn load_character() -> Vec<(f64, f64)> {
   let mut sprites = Vec::with_capacity(512);
   let mut move_sprite_names = Vec::with_capacity(256);
   let mut fire_sprite_names = Vec::with_capacity(256);
@@ -73,26 +72,17 @@ pub fn load_character() -> Vec<Rectangle> {
   }
 
   for &ref move_sprite in &move_sprite_names {
-    sprites.push(Rectangle {
-      w: character["frames"][move_sprite]["frame"]["w"].as_f64().unwrap(),
-      h: character["frames"][move_sprite]["frame"]["h"].as_f64().unwrap(),
-      x: character["frames"][move_sprite]["frame"]["x"].as_f64().unwrap(),
-      y: character["frames"][move_sprite]["frame"]["y"].as_f64().unwrap(),
-    });
+    sprites.push((character["frames"][move_sprite]["frame"]["x"].as_f64().unwrap(), character["frames"][move_sprite]["frame"]["y"].as_f64().unwrap()));
   }
 
   for &ref fire_sprite in &fire_sprite_names {
-    sprites.push(Rectangle {
-      w: character["frames"][fire_sprite]["frame"]["w"].as_f64().unwrap(),
-      h: character["frames"][fire_sprite]["frame"]["h"].as_f64().unwrap(),
-      x: character["frames"][fire_sprite]["frame"]["x"].as_f64().unwrap(),
-      y: character["frames"][fire_sprite]["frame"]["y"].as_f64().unwrap(),
-    });
+    sprites.push((character["frames"][fire_sprite]["frame"]["x"].as_f64().unwrap(),
+                  character["frames"][fire_sprite]["frame"]["y"].as_f64().unwrap()));
   }
   sprites
 }
 
-pub fn load_zombie() -> Vec<Rectangle> {
+pub fn load_zombie() -> Vec<(f64, f64)> {
   let mut sprites = Vec::with_capacity(256);
   let mut idle_sprite_names = Vec::with_capacity(64);
   let mut walk_sprite_names = Vec::with_capacity(64);
@@ -115,21 +105,15 @@ pub fn load_zombie() -> Vec<Rectangle> {
   }
 
   for &ref idle_sprite in &idle_sprite_names {
-    sprites.push(Rectangle {
-      w: zombie["frames"][idle_sprite]["frame"]["w"].as_f64().unwrap(),
-      h: zombie["frames"][idle_sprite]["frame"]["h"].as_f64().unwrap(),
-      x: zombie["frames"][idle_sprite]["frame"]["x"].as_f64().unwrap(),
-      y: zombie["frames"][idle_sprite]["frame"]["y"].as_f64().unwrap(),
-    });
+    let x = zombie["frames"][idle_sprite]["frame"]["x"].as_f64().unwrap();
+    let y = zombie["frames"][idle_sprite]["frame"]["y"].as_f64().unwrap();
+    sprites.push((x, y));
   }
 
   for &ref walk_sprite in &walk_sprite_names {
-    sprites.push(Rectangle {
-      w: zombie["frames"][walk_sprite]["frame"]["w"].as_f64().unwrap(),
-      h: zombie["frames"][walk_sprite]["frame"]["h"].as_f64().unwrap(),
-      x: zombie["frames"][walk_sprite]["frame"]["x"].as_f64().unwrap(),
-      y: zombie["frames"][walk_sprite]["frame"]["y"].as_f64().unwrap(),
-    });
+    let x = zombie["frames"][walk_sprite]["frame"]["x"].as_f64().unwrap();
+    let y = zombie["frames"][walk_sprite]["frame"]["y"].as_f64().unwrap();
+    sprites.push((x, y));
   }
   sprites
 }

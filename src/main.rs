@@ -1,6 +1,4 @@
-#[macro_use]
 extern crate json;
-extern crate sdl2;
 extern crate conv;
 extern crate tiled;
 

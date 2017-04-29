@@ -1,10 +1,9 @@
-#[macro_use]
 use game::gfx_macros::{TilemapSettings, Projection, VertexData, pipe, TileMapData};
 use std::io::Cursor;
 use gfx;
 use image;
 use cgmath;
-use gfx_app::{Application, WindowTargets}; //
+use gfx_app::{WindowTargets}; //
 use gfx::{Resources, Factory, texture};
 use gfx::handle::{ShaderResourceView};
 use gfx::format::{Rgba8};
@@ -12,12 +11,11 @@ use gfx::traits::{FactoryExt};
 use cgmath::{SquareMatrix, Matrix4, AffineMatrix3};
 use cgmath::{Point3, Vector3};
 use cgmath::{Transform};
-use views::Point;
-use game::constants::{MAP_FILE_PATH, TILES_PCS_W, TILES_PCS_H};
+use game::constants::{MAP_FILE_PATH};
 use genmesh::{Vertices, Triangulate};
-use genmesh::generators::{Plane, SharedVertex, IndexedPolygon, SharedVertexIterator};
+use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
 use views::{TileMap};
-use data::{load_map_file, get_map_tile};
+use data::{load_map_file, load_character, load_zombie, get_map_tile};
 
 
 const TILEMAP_BUF_LENGTH: usize = 4096;
@@ -170,16 +168,6 @@ impl<R> TileMapPlane<R> where R: Resources {
     self.projection.view = view.mat.into();
     self.is_projection_dirty = true;
   }
-
-  pub fn update_x_offset(&mut self, amount: f32) {
-    self.tilemap_settings.offsets[0] = amount;
-    self.is_tilemap_dirty = true;
-  }
-
-  pub fn update_y_offset(&mut self, amount: f32) {
-    self.tilemap_settings.offsets[1] = amount;
-    self.is_tilemap_dirty = true;
-  }
 }
 
 pub struct Tilemap<R> where R: Resources {
@@ -231,5 +219,12 @@ impl<R: gfx::Resources> TileMap<R> {
         self.set_tile(xpos, ypos, [(tex_x-1) as f32, tex_y as f32, 0.0, 0.0]);
       }
     }
+  }
+
+  pub fn load_player(&mut self) {
+    let player = load_character();
+    println!("player {:?}", player);
+    let zombie = load_zombie();
+    println!("zombie {:?}", zombie);
   }
 }

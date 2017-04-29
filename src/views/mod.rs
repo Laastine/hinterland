@@ -1,11 +1,9 @@
-#[macro_use]
-use game::gfx_macros;
 use gfx;
 use gfx_app;
 use gfx::{Resources};
-use gfx_app::{Application, WindowTargets};
+use gfx_app::{Application};
 use cgmath::{Transform, Point3, Vector3};
-use cgmath::{SquareMatrix, Matrix4, AffineMatrix3};
+use cgmath::{AffineMatrix3};
 
 use winit;
 use winit::VirtualKeyCode as Key;
@@ -14,15 +12,8 @@ use winit::ElementState::Pressed;
 use std::process;
 use std::fmt::{Display, Formatter, Result};
 
-use game::gfx_macros::{pipe, VertexData, TileMapData};
-use game::constants::MAP_FILE_PATH;
+use game::gfx_macros::{pipe, TileMapData};
 use game::graphics::{TileMapPlane};
-use game::constants::{BACKGROUND_PATH, PISTOL_AUDIO_PATH, TILES_PCS_W, TILES_PCS_H, PLAYER_SPEED, ZOOM_SPEED};
-
-mod bullet;
-mod character;
-mod zombie;
-mod background;
 
 #[derive(Clone, Debug)]
 pub struct Point {
@@ -128,6 +119,7 @@ impl<R: Resources> Application<R> for TileMap<R> {
     };
 
     tilemap.populate_tilemap(tilemap_size);
+    tilemap.load_player();
     tilemap.set_focus([0, 0]);
     tilemap
   }
