@@ -2,17 +2,9 @@
 
 Simple isometric game written in Rust.
 
-![screenshot](http://laastine.kapsi.fi/kuvat/hackandslash.gif?cache=4)
+![screenshot](http://laastine.kapsi.fi/kuvat/zombieshooter.png)
 
 ## Build
-
-### SDL2 setup on OSX
-
-```bash
-brew install rust sdl2 sdl2_gfx sdl2_image sdl2_ttf sdl2_mixer --with-libvorbis
-```
-
-### Get dependencies and execute
 
 ```bash
 cargo install
@@ -21,9 +13,9 @@ cargo run
 
 ## Controls
 
-`WASD + mouse 1`
+`WASD`
 
-Tested with Rust 1.15.1
+Tested with Rust 1.17
 
 ## Asset licences
 
