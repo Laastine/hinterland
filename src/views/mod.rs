@@ -14,7 +14,7 @@ use std::fmt::{Display, Formatter, Result};
 
 use game::gfx_macros::{pipe, TileMapData};
 use game::graphics::{TileMapPlane};
-use views::data::{Event, InputState, MapControls};
+use views::data::{InputState, MapControls};
 
 mod data;
 
@@ -104,6 +104,14 @@ impl<R: Resources> Application<R> for TileMap<R> {
   }
 
   fn on(&mut self, event: winit::Event) {
+
+    fn handle_event(state: ElementState, is_pressed: &mut bool) {
+      match state {
+        ElementState::Pressed => *is_pressed = true,
+        ElementState::Released => *is_pressed = false,
+      }
+    }
+
     match event {
       KeyboardInput(_, _, Some(Key::Equals)) => {
         self.input.distance -= 20.0;
@@ -112,30 +120,18 @@ impl<R: Resources> Application<R> for TileMap<R> {
         self.input.distance += 20.0;
       }
       KeyboardInput(state, _, Some(Key::Up)) => {
-        match state {
-          ElementState::Pressed => self.events.map_up = true,
-          ElementState::Released => self.events.map_up = false,
-        }
+        handle_event(state, &mut self.events.map_up);
       }
       KeyboardInput(state, _, Some(Key::Down)) => {
-        match state {
-          ElementState::Pressed => self.events.map_down = true,
-          ElementState::Released => self.events.map_down = false,
-        }
+        handle_event(state, &mut self.events.map_down);
       }
       KeyboardInput(state, _, Some(Key::Left)) => {
-        match state {
-          ElementState::Pressed => self.events.map_left = true,
-          ElementState::Released => self.events.map_left = false,
-        }
+        handle_event(state, &mut self.events.map_left);
       }
       KeyboardInput(state, _, Some(Key::Right)) => {
-        match state {
-          ElementState::Pressed => self.events.map_right = true,
-          ElementState::Released => self.events.map_right = false,
-        }
+        handle_event(state, &mut self.events.map_right);
       }
-      KeyboardInput(Pressed, _, Some(Key::Escape)) => {
+      KeyboardInput(_, _, Some(Key::Escape)) => {
         process::exit(0);
       }
       _ => ()
