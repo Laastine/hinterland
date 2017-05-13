@@ -14,7 +14,7 @@ cargo run
 
 ## Controls
 
-`WASD`
+`Arrow keys`
 
 Tested with Rust 1.17
 
