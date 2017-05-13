@@ -8,14 +8,13 @@ use cgmath::{AffineMatrix3};
 use winit;
 use winit::VirtualKeyCode as Key;
 use winit::Event::KeyboardInput;
-use winit::ElementState::Pressed;
+use winit::ElementState;
 use std::process;
 use std::fmt::{Display, Formatter, Result};
 
 use game::gfx_macros::{pipe, TileMapData};
 use game::graphics::{TileMapPlane};
-
-use views::data::{InputState};
+use views::data::{Event, InputState, MapControls};
 
 mod data;
 
@@ -30,6 +29,7 @@ pub struct TileMap<R> where R: gfx::Resources {
   pub focus_coords: [usize; 2],
   pub focus_dirty: bool,
   input: InputState,
+  events: MapControls,
 }
 
 impl<R: Resources> Application<R> for TileMap<R> {
@@ -78,7 +78,8 @@ impl<R: Resources> Application<R> for TileMap<R> {
         y_pos: 0.0,
         move_amt: 20.0,
       },
-    };
+      events: MapControls::new(),
+  };
 
     tilemap.populate_tilemap(tilemap_size);
     tilemap.load_player();
@@ -103,31 +104,60 @@ impl<R: Resources> Application<R> for TileMap<R> {
   }
 
   fn on(&mut self, event: winit::Event) {
-    let i = self.input.clone();
     match event {
-      KeyboardInput(Pressed, _, Some(Key::Equals)) => {
-        self.input.distance -= i.move_amt;
+      KeyboardInput(_, _, Some(Key::Equals)) => {
+        self.input.distance -= 20.0;
       }
-      KeyboardInput(Pressed, _, Some(Key::Minus)) => {
-        self.input.distance += i.move_amt;
+      KeyboardInput(_, _, Some(Key::Minus)) => {
+        self.input.distance += 20.0;
       }
-      KeyboardInput(Pressed, _, Some(Key::Up)) => {
-        self.input.y_pos -= i.move_amt;
+      KeyboardInput(state, _, Some(Key::Up)) => {
+        match state {
+          ElementState::Pressed => self.events.map_up = true,
+          ElementState::Released => self.events.map_up = false,
+        }
       }
-      KeyboardInput(Pressed, _, Some(Key::Down)) => {
-        self.input.y_pos += i.move_amt;
+      KeyboardInput(state, _, Some(Key::Down)) => {
+        match state {
+          ElementState::Pressed => self.events.map_down = true,
+          ElementState::Released => self.events.map_down = false,
+        }
       }
-      KeyboardInput(Pressed, _, Some(Key::Left)) => {
-        self.input.x_pos -= i.move_amt;
+      KeyboardInput(state, _, Some(Key::Left)) => {
+        match state {
+          ElementState::Pressed => self.events.map_left = true,
+          ElementState::Released => self.events.map_left = false,
+        }
       }
-      KeyboardInput(Pressed, _, Some(Key::Right)) => {
-        self.input.x_pos += i.move_amt;
+      KeyboardInput(state, _, Some(Key::Right)) => {
+        match state {
+          ElementState::Pressed => self.events.map_right = true,
+          ElementState::Released => self.events.map_right = false,
+        }
       }
       KeyboardInput(Pressed, _, Some(Key::Escape)) => {
         process::exit(0);
       }
       _ => ()
     }
+
+    let diagonal = (self.events.map_up ^ self.events.map_down) && (self.events.map_left ^ self.events.map_right);
+
+    let moved = if diagonal { 1.0 / 2.0f32.sqrt() } else { 1.0 } * 10.0;
+    let dx = match (self.events.map_left, self.events.map_right) {
+      (true, true) | (false, false) => 0.0,
+      (true, false) => -moved * 1.5,
+      (false, true) => moved * 1.5,
+    };
+
+    let dy = match (self.events.map_up, self.events.map_down) {
+      (true, true) | (false, false) => 0.0,
+      (true, false) => -moved * 0.75,
+      (false, true) => moved * 0.75,
+    };
+
+    self.input.x_pos += dx;
+    self.input.y_pos += dy;
   }
 
   fn on_resize(&mut self, window_targets: gfx_app::WindowTargets<R>) {
