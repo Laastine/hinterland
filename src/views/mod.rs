@@ -113,27 +113,13 @@ impl<R: Resources> Application<R> for TileMap<R> {
     }
 
     match event {
-      KeyboardInput(_, _, Some(Key::Equals)) => {
-        self.input.distance -= 20.0;
-      }
-      KeyboardInput(_, _, Some(Key::Minus)) => {
-        self.input.distance += 20.0;
-      }
-      KeyboardInput(state, _, Some(Key::Up)) => {
-        handle_event(state, &mut self.events.map_up);
-      }
-      KeyboardInput(state, _, Some(Key::Down)) => {
-        handle_event(state, &mut self.events.map_down);
-      }
-      KeyboardInput(state, _, Some(Key::Left)) => {
-        handle_event(state, &mut self.events.map_left);
-      }
-      KeyboardInput(state, _, Some(Key::Right)) => {
-        handle_event(state, &mut self.events.map_right);
-      }
-      KeyboardInput(_, _, Some(Key::Escape)) => {
-        process::exit(0);
-      }
+      KeyboardInput(_, _, Some(Key::Equals)) => self.input.distance -= 20.0,
+      KeyboardInput(_, _, Some(Key::Minus)) => self.input.distance += 20.0,
+      KeyboardInput(state, _, Some(Key::Up)) => handle_event(state, &mut self.events.map_up),
+      KeyboardInput(state, _, Some(Key::Down)) => handle_event(state, &mut self.events.map_down),
+      KeyboardInput(state, _, Some(Key::Left)) => handle_event(state, &mut self.events.map_left),
+      KeyboardInput(state, _, Some(Key::Right)) => handle_event(state, &mut self.events.map_right),
+      KeyboardInput(_, _, Some(Key::Escape)) => process::exit(0),
       _ => ()
     }
 
