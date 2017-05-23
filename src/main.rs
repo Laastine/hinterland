@@ -5,13 +5,16 @@ extern crate tiled;
 extern crate cgmath;
 #[macro_use]
 extern crate gfx;
-extern crate gfx_app;
 extern crate rand;
 extern crate genmesh;
+extern crate gfx_device_gl;
+extern crate gfx_window_glutin;
+extern crate glutin;
 extern crate noise;
 extern crate image;
 extern crate winit;
 
+mod gfx_app;
 mod game;
 mod views;
 mod data;

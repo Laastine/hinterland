@@ -7,7 +7,7 @@ use cgmath::{AffineMatrix3};
 
 use winit;
 use winit::VirtualKeyCode as Key;
-use winit::Event::KeyboardInput;
+use winit::WindowEvent::KeyboardInput;
 use winit::ElementState;
 use std::process;
 use std::fmt::{Display, Formatter, Result};
@@ -103,7 +103,7 @@ impl<R: Resources> Application<R> for TileMap<R> {
     encoder.draw(&self.tilemap_plane.slice, &self.pso, &self.tilemap_plane.params);
   }
 
-  fn on(&mut self, event: winit::Event) {
+  fn on(&mut self, event: winit::WindowEvent) {
 
     fn handle_event(state: ElementState, is_pressed: &mut bool) {
       match state {
@@ -113,13 +113,13 @@ impl<R: Resources> Application<R> for TileMap<R> {
     }
 
     match event {
-      KeyboardInput(_, _, Some(Key::Equals)) => self.input.distance -= 20.0,
-      KeyboardInput(_, _, Some(Key::Minus)) => self.input.distance += 20.0,
-      KeyboardInput(state, _, Some(Key::Up)) => handle_event(state, &mut self.events.map_up),
-      KeyboardInput(state, _, Some(Key::Down)) => handle_event(state, &mut self.events.map_down),
-      KeyboardInput(state, _, Some(Key::Left)) => handle_event(state, &mut self.events.map_left),
-      KeyboardInput(state, _, Some(Key::Right)) => handle_event(state, &mut self.events.map_right),
-      KeyboardInput(_, _, Some(Key::Escape)) => process::exit(0),
+      KeyboardInput(_, _, Some(Key::Equals), _) => self.input.distance -= 20.0,
+      KeyboardInput(_, _, Some(Key::Minus), _) => self.input.distance += 20.0,
+      KeyboardInput(state, _, Some(Key::Up), _) => handle_event(state, &mut self.events.map_up),
+      KeyboardInput(state, _, Some(Key::Down), _) => handle_event(state, &mut self.events.map_down),
+      KeyboardInput(state, _, Some(Key::Left), _) => handle_event(state, &mut self.events.map_left),
+      KeyboardInput(state, _, Some(Key::Right), _) => handle_event(state, &mut self.events.map_right),
+      KeyboardInput(_, _, Some(Key::Escape), _) => process::exit(0),
       _ => ()
     }
 
