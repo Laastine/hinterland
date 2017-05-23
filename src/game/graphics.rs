@@ -14,7 +14,7 @@ use cgmath::{Transform};
 use game::constants::{MAP_FILE_PATH};
 use genmesh::{Vertices, Triangulate};
 use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
-use views::{TileMap};
+use tilemap::{TileMap};
 use data::{load_map_file, load_character, load_zombie, get_map_tile};
 
 

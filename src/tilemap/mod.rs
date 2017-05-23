@@ -14,7 +14,7 @@ use std::fmt::{Display, Formatter, Result};
 
 use game::gfx_macros::{pipe, TileMapData};
 use game::graphics::{TileMapPlane};
-use views::data::{InputState, MapControls};
+use tilemap::data::{InputState, MapControls};
 
 mod data;
 
@@ -32,19 +32,12 @@ pub struct TileMap<R> where R: gfx::Resources {
   events: MapControls,
 }
 
-impl<R: Resources> Application<R> for TileMap<R> {
-  fn new<F: gfx::Factory<R>>(factory: &mut F, backend: gfx_app::shade::Backend,
-                             window_targets: gfx_app::WindowTargets<R>) -> Self {
-    use gfx::traits::FactoryExt;
+const SHADER_VERT: &'static [u8] = include_bytes!("tilemap.v.glsl");
+const SHADER_FRAG: &'static [u8] = include_bytes!("tilemap.f.glsl");
 
-    let vs = gfx_app::shade::Source {
-      glsl_400: include_bytes!("../shader/vertex_shader.glsl"),
-      ..gfx_app::shade::Source::empty()
-    };
-    let fs = gfx_app::shade::Source {
-      glsl_400: include_bytes!("../shader/fragment_shader.glsl"),
-      ..gfx_app::shade::Source::empty()
-    };
+impl<R: Resources> Application<R> for TileMap<R> {
+  fn new<F: gfx::Factory<R>>(factory: &mut F, window_targets: gfx_app::WindowTargets<R>) -> Self {
+    use gfx::traits::FactoryExt;
 
     // set up charmap plane and configure its tiles
     let tilemap_size = [32, 32];
@@ -59,8 +52,8 @@ impl<R: Resources> Application<R> for TileMap<R> {
     let mut tilemap = TileMap {
       tiles: tiles,
       pso: factory.create_pipeline_simple(
-        vs.select(backend).unwrap(),
-        fs.select(backend).unwrap(),
+        SHADER_VERT,
+        SHADER_FRAG,
         pipe::new()
       ).unwrap(),
       tilemap_plane: TileMapPlane::new(factory,

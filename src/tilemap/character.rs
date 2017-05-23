@@ -22,7 +22,7 @@ pub enum Orientation {
 
 impl Display for Orientation {
   fn fmt(&self, f: &mut Formatter) -> Result {
-    use views::Orientation::*;
+    use tilemap::Orientation::*;
     match *self {
       Right => write!(f, "0"),
       UpRight => write!(f, "1"),

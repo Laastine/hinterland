@@ -16,11 +16,11 @@ extern crate winit;
 
 mod gfx_app;
 mod game;
-mod views;
+mod tilemap;
 mod data;
 
 fn main() {
   use gfx_app::Application;
   let wb = winit::WindowBuilder::new().with_dimensions(1280, 720).with_title("Zombie shooter");
-  views::TileMap::launch_default(wb);
+  tilemap::TileMap::launch_default(wb);
 }
