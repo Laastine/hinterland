@@ -1,17 +1,3 @@
-// Copyright 2016 The Gfx-rs Developers.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 use winit;
 use glutin;
 use gfx;
@@ -19,8 +5,6 @@ use gfx_device_gl;
 use gfx_window_glutin;
 use std;
 use winit::WindowEvent;
-
-pub mod shade;
 
 pub type ColorFormat = gfx::format::Rgba8;
 pub type DepthFormat = gfx::format::DepthStencil;
@@ -30,10 +14,6 @@ pub struct WindowTargets<R: gfx::Resources> {
   pub color: gfx::handle::RenderTargetView<R, ColorFormat>,
   pub depth: gfx::handle::DepthStencilView<R, DepthFormat>,
   pub aspect_ratio: f32,
-}
-
-pub enum Backend {
-  OpenGL2,
 }
 
 struct Harness {
@@ -68,11 +48,11 @@ pub trait Factory<R: gfx::Resources>: gfx::Factory<R> {
 }
 
 pub trait ApplicationBase<R: gfx::Resources, C: gfx::CommandBuffer<R>> {
-  fn new<F>(&mut F, WindowTargets<R>) -> Self where F: Factory<R, CommandBuffer = C>;
-  fn render<D>(&mut self, &mut D) where D: gfx::Device<Resources = R, CommandBuffer = C>;
+  fn new<F>(&mut F, WindowTargets<R>) -> Self where F: Factory<R, CommandBuffer=C>;
+  fn render<D>(&mut self, &mut D) where D: gfx::Device<Resources=R, CommandBuffer=C>;
   fn get_exit_key() -> Option<winit::VirtualKeyCode>;
   fn on(&mut self, winit::WindowEvent);
-  fn on_resize<F>(&mut self, &mut F, WindowTargets<R>) where F: Factory<R, CommandBuffer = C>;
+  fn on_resize<F>(&mut self, &mut F, WindowTargets<R>) where F: Factory<R, CommandBuffer=C>;
 }
 
 
@@ -84,8 +64,7 @@ impl Factory<gfx_device_gl::Resources> for gfx_device_gl::Factory {
 }
 
 pub fn launch_gl3<A>(wb: winit::WindowBuilder) where
-  A: Sized + ApplicationBase<gfx_device_gl::Resources, gfx_device_gl::CommandBuffer>
-{
+  A: Sized + ApplicationBase<gfx_device_gl::Resources, gfx_device_gl::CommandBuffer> {
   use gfx::traits::Device;
 
   let gl_version = glutin::GlRequest::GlThenGles {
@@ -99,9 +78,6 @@ pub fn launch_gl3<A>(wb: winit::WindowBuilder) where
   let (window, mut device, mut factory, main_color, main_depth) =
     gfx_window_glutin::init::<ColorFormat, DepthFormat>(builder, &events_loop);
   let (mut cur_width, mut cur_height) = window.get_inner_size_points().unwrap();
-  let shade_lang = device.get_info().shading_language;
-
-  let backend = shade::Backend::Glsl(shade_lang);
   let mut app = A::new(&mut factory, WindowTargets {
     color: main_color,
     depth: main_depth,
@@ -111,7 +87,7 @@ pub fn launch_gl3<A>(wb: winit::WindowBuilder) where
   let mut harness = Harness::new();
   let mut running = true;
   while running {
-    events_loop.poll_events(|winit::Event::WindowEvent{window_id: _, event}| {
+    events_loop.poll_events(|winit::Event::WindowEvent { window_id: _, event }| {
       match event {
         winit::WindowEvent::Closed => running = false,
         winit::WindowEvent::KeyboardInput(winit::ElementState::Pressed, _, key, _) if key == A::get_exit_key() => return,
@@ -128,7 +104,7 @@ pub fn launch_gl3<A>(wb: winit::WindowBuilder) where
         _ => app.on(event),
       }
     });
-    // draw a frame
+
     app.render(&mut device);
     window.swap_buffers().unwrap();
     device.cleanup();
@@ -165,11 +141,9 @@ pub struct Wrap<R: gfx::Resources, C, A> {
 impl<R, C, A> ApplicationBase<R, C> for Wrap<R, C, A>
   where R: gfx::Resources,
         C: gfx::CommandBuffer<R>,
-        A: Application<R>
-{
+        A: Application<R> {
   fn new<F>(factory: &mut F, window_targets: WindowTargets<R>) -> Self
-    where F: Factory<R, CommandBuffer = C>
-  {
+    where F: Factory<R, CommandBuffer=C> {
     Wrap {
       encoder: factory.create_encoder(),
       app: A::new(factory, window_targets),
@@ -177,8 +151,7 @@ impl<R, C, A> ApplicationBase<R, C> for Wrap<R, C, A>
   }
 
   fn render<D>(&mut self, device: &mut D)
-    where D: gfx::Device<Resources = R, CommandBuffer = C>
-  {
+    where D: gfx::Device<Resources=R, CommandBuffer=C> {
     self.app.render(&mut self.encoder);
     self.encoder.flush(device);
   }
@@ -192,8 +165,7 @@ impl<R, C, A> ApplicationBase<R, C> for Wrap<R, C, A>
   }
 
   fn on_resize<F>(&mut self, factory: &mut F, window_targets: WindowTargets<R>)
-    where F: Factory<R, CommandBuffer = C>
-  {
+    where F: Factory<R, CommandBuffer=C> {
     self.app.on_resize_ext(factory, window_targets);
   }
 }
