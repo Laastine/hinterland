@@ -1,7 +1,9 @@
 # Zombie shooter
 
 Simple isometric game written in Rust. Early stage experiment, nothing intresting to see here.<br/>
-Project started as SDL2, but was later converted to use gfx-rs.
+Project started as SDL2, but was later converted to use gfx-rs. 
+
+- Currently rebuilding features which were present in earlier SDL version.
 
 ![screenshot](http://laastine.kapsi.fi/kuvat/zombieshooter.png)
 
