@@ -4,11 +4,124 @@ use gfx;
 use gfx_device_gl;
 use gfx_window_glutin;
 use std;
-use winit::WindowEvent;
+use glutin::WindowEvent::*;
+use glutin::VirtualKeyCode::*;
+use glutin::ElementState::*;
+
+pub mod init;
+pub mod renderer;
+pub mod system;
 
 pub type ColorFormat = gfx::format::Rgba8;
 pub type DepthFormat = gfx::format::DepthStencil;
 pub type DefaultResources = gfx_device_gl::Resources;
+
+pub struct GlutinWindow {
+  window: glutin::Window,
+  events_loop: glutin::EventsLoop,
+  device: gfx_device_gl::Device,
+  factory: gfx_device_gl::Factory,
+  render_target_view: gfx::handle::RenderTargetView<gfx_device_gl::Resources, ColorFormat>,
+  depth_stencil_view: gfx::handle::DepthStencilView<gfx_device_gl::Resources, DepthFormat>,
+}
+
+impl GlutinWindow {
+  pub fn new() -> GlutinWindow {
+    let builder = glutin::WindowBuilder::new()
+      .with_title("Zombie shooter")
+      .with_pixel_format(24, 8)
+      .with_gl(glutin::GlRequest::GlThenGles {
+        opengles_version: (3, 0),
+        opengl_version: (4, 1),
+      });
+
+    let events_loop = glutin::EventsLoop::new();
+
+    let (window, device, factory, rtv, dsv) = gfx_window_glutin::init::<ColorFormat,
+      DepthFormat>(builder, &events_loop);
+
+    GlutinWindow {
+      window: window,
+      events_loop: events_loop,
+      device: device,
+      factory: factory,
+      render_target_view: rtv,
+      depth_stencil_view: dsv,
+    }
+  }
+}
+
+#[derive(Debug,PartialEq,Eq)]
+pub enum GameStatus {
+  Render,
+  Quit,
+}
+
+pub trait Window<D: gfx::Device, F: gfx::Factory<D::Resources>> {
+  fn swap_window(&mut self);
+  fn poll_events(&mut self) -> Option<GameStatus>;
+
+  fn create_buffers(&mut self, count: usize) -> Vec<D::CommandBuffer>;
+
+  fn get_viewport_size(&mut self) -> (u32, u32);
+  fn get_device(&mut self) -> &mut D;
+  fn get_factory(&mut self) -> &mut F;
+  fn get_render_target_view(&mut self) -> gfx::handle::RenderTargetView<D::Resources, ColorFormat>;
+  fn get_depth_stencil_view(&mut self) -> gfx::handle::DepthStencilView<D::Resources, DepthFormat>;
+}
+
+impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
+  fn swap_window(&mut self) {
+    use gfx::Device;
+    self.window
+      .swap_buffers()
+      .expect("Unable to swap buffers");
+    self.device.cleanup();
+  }
+
+  fn create_buffers(&mut self, count: usize) -> Vec<gfx_device_gl::CommandBuffer> {
+    let mut bufs = Vec::new();
+    for _ in 0..count {
+      bufs.push(self.factory.create_command_buffer());
+    }
+    bufs
+  }
+
+  fn get_viewport_size(&mut self) -> (u32, u32) {
+    self.window
+      .get_inner_size_pixels()
+      .unwrap_or((1280, 720))
+  }
+
+  fn get_device(&mut self) -> &mut gfx_device_gl::Device {
+    &mut self.device
+  }
+
+  fn get_factory(&mut self) -> &mut gfx_device_gl::Factory {
+    &mut self.factory
+  }
+
+  fn get_render_target_view(&mut self) -> gfx::handle::RenderTargetView<gfx_device_gl::Resources, ColorFormat> {
+    self.render_target_view.clone()
+  }
+
+  fn get_depth_stencil_view(&mut self) -> gfx::handle::DepthStencilView<gfx_device_gl::Resources, DepthFormat> {
+    self.depth_stencil_view.clone()
+  }
+
+  fn poll_events(&mut self) -> Option<GameStatus> {
+    use glutin::Event::*;
+    use glutin::VirtualKeyCode::*;
+    use glutin::ElementState::*;
+
+    self.events_loop.poll_events(|event| {
+      match event {
+        _ => ()
+      }
+    });
+    None
+  }
+}
 
 pub struct WindowTargets<R: gfx::Resources> {
   pub color: gfx::handle::RenderTargetView<R, ColorFormat>,
@@ -50,7 +163,6 @@ pub trait Factory<R: gfx::Resources>: gfx::Factory<R> {
 pub trait ApplicationBase<R: gfx::Resources, C: gfx::CommandBuffer<R>> {
   fn new<F>(&mut F, WindowTargets<R>) -> Self where F: Factory<R, CommandBuffer=C>;
   fn render<D>(&mut self, &mut D) where D: gfx::Device<Resources=R, CommandBuffer=C>;
-  fn get_exit_key() -> Option<winit::VirtualKeyCode>;
   fn on(&mut self, winit::WindowEvent);
   fn on_resize<F>(&mut self, &mut F, WindowTargets<R>) where F: Factory<R, CommandBuffer=C>;
 }
@@ -64,8 +176,12 @@ impl Factory<gfx_device_gl::Resources> for gfx_device_gl::Factory {
 }
 
 pub fn launch_gl3<A>(wb: winit::WindowBuilder) where
-  A: Sized + ApplicationBase<gfx_device_gl::Resources, gfx_device_gl::CommandBuffer> {
+  A: Sized + ApplicationBase<gfx_device_gl::Resources,
+    gfx_device_gl::CommandBuffer> {
   use gfx::traits::Device;
+  use winit;
+  use winit::WindowEvent;
+
 
   let gl_version = glutin::GlRequest::GlThenGles {
     opengl_version: (4, 0),
@@ -90,7 +206,7 @@ pub fn launch_gl3<A>(wb: winit::WindowBuilder) where
     events_loop.poll_events(|winit::Event::WindowEvent { window_id: _, event }| {
       match event {
         winit::WindowEvent::Closed => running = false,
-        winit::WindowEvent::KeyboardInput(winit::ElementState::Pressed, _, key, _) if key == A::get_exit_key() => return,
+        winit::WindowEvent::KeyboardInput(winit::ElementState::Pressed, _, Some(winit::VirtualKeyCode::Escape), _) => return,
         winit::WindowEvent::Resized(width, height) => if width != cur_width || height != cur_height {
           cur_width = width;
           cur_height = height;
@@ -115,10 +231,6 @@ pub fn launch_gl3<A>(wb: winit::WindowBuilder) where
 pub trait Application<R: gfx::Resources>: Sized {
   fn new<F: gfx::Factory<R>>(&mut F, WindowTargets<R>) -> Self;
   fn render<C: gfx::CommandBuffer<R>>(&mut self, &mut gfx::Encoder<R, C>);
-
-  fn get_exit_key() -> Option<winit::VirtualKeyCode> {
-    Some(winit::VirtualKeyCode::Escape)
-  }
 
   fn on_resize(&mut self, WindowTargets<R>) {}
 
@@ -154,10 +266,6 @@ impl<R, C, A> ApplicationBase<R, C> for Wrap<R, C, A>
     where D: gfx::Device<Resources=R, CommandBuffer=C> {
     self.app.render(&mut self.encoder);
     self.encoder.flush(device);
-  }
-
-  fn get_exit_key() -> Option<winit::VirtualKeyCode> {
-    A::get_exit_key()
   }
 
   fn on(&mut self, event: winit::WindowEvent) {

@@ -1,8 +1,13 @@
 use gfx;
+use gfx_app::ColorFormat;
 
 gfx_defines! {
     constant TileMapData {
         data: [f32; 4] = "data",
+    }
+
+    constant Bounds {
+        data: [[f32; 4]; 4] = "bou",
     }
 
     constant Projection {
@@ -25,9 +30,11 @@ gfx_defines! {
     pipeline pipe {
         vbuf: gfx::VertexBuffer<VertexData> = (),
         projection_cb: gfx::ConstantBuffer<Projection> = "b_VsLocals",
+        bounds: gfx::ConstantBuffer<Bounds> = "Bounds",
         tilemap: gfx::ConstantBuffer<TileMapData> = "b_TileMap",
         tilemap_cb: gfx::ConstantBuffer<TilemapSettings> = "b_PsLocals",
         tilesheet: gfx::TextureSampler<[f32; 4]> = "t_TileSheet",
+//        out: gfx::RenderTarget<ColorFormat> = "out_color",
         out_color: gfx::RenderTarget<gfx::format::Rgba8> = "Target0",
         out_depth: gfx::DepthTarget<gfx::format::DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
     }

@@ -1,4 +1,4 @@
-use game::gfx_macros::{TilemapSettings, Projection, VertexData, pipe, TileMapData};
+use terrain::gfx_macros::{TilemapSettings, Projection, VertexData, pipe, TileMapData};
 use std::io::Cursor;
 use gfx;
 use image;
@@ -146,7 +146,7 @@ impl<R> TileMapPlane<R> where R: Resources {
 
   pub fn prepare_buffers<C>(&mut self, encoder: &mut gfx::Encoder<R, C>, update_data: bool) where C: gfx::CommandBuffer<R> {
     if update_data {
-      encoder.update_buffer(&self.params.tilemap, self.data.as_slice(), 0).unwrap();
+      encoder.update_buffer(&self.params.tilemap, self.data.as_slice(), 0).unwrap();  //vertex data
     }
     if self.is_projection_dirty {
       encoder.update_constant_buffer(&self.params.projection_cb, &self.projection);
