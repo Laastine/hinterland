@@ -1,9 +1,9 @@
 # Zombie shooter
 
 Simple isometric game written in Rust. Early stage experiment, nothing intresting to see here.<br/>
-Project started as SDL2, but was later converted to use gfx-rs. 
+Project started as SDL2, but was later converted to use gfx-rs.
 
-- Currently rebuilding features which were present in earlier SDL version.
+- Currently rebuilding features which were present in earlier SDL2 version.
 
 ![screenshot](http://laastine.kapsi.fi/kuvat/zombieshooter.png)
 
@@ -18,7 +18,7 @@ cargo run
 
 `Arrow keys`
 
-Tested with Rust 1.17
+Tested with Rust 1.18
 
 ## Asset licences
 
