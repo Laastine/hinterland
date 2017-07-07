@@ -1,4 +1,4 @@
-use cgmath::{SquareMatrix, Matrix4, AffineMatrix3, Transform, Point3, Vector3};
+use cgmath::{SquareMatrix, Matrix4, Transform, Point3, Vector3};
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx;
 use gfx::{Resources, Factory, texture};
