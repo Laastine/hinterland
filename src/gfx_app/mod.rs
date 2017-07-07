@@ -175,59 +175,6 @@ impl Factory<gfx_device_gl::Resources> for gfx_device_gl::Factory {
   }
 }
 
-pub fn launch_gl3<A>(wb: winit::WindowBuilder) where
-  A: Sized + ApplicationBase<gfx_device_gl::Resources,
-    gfx_device_gl::CommandBuffer> {
-  use gfx::traits::Device;
-  use winit;
-  use winit::WindowEvent;
-
-
-  let gl_version = glutin::GlRequest::GlThenGles {
-    opengl_version: (4, 0),
-    opengles_version: (2, 0),
-  };
-  let builder = glutin::WindowBuilder::from_winit_builder(wb)
-    .with_gl(gl_version)
-    .with_vsync();
-  let events_loop = glutin::EventsLoop::new();
-  let (window, mut device, mut factory, main_color, main_depth) =
-    gfx_window_glutin::init::<ColorFormat, DepthFormat>(builder, &events_loop);
-  let (mut cur_width, mut cur_height) = window.get_inner_size_points().unwrap();
-  let mut app = A::new(&mut factory, WindowTargets {
-    color: main_color,
-    depth: main_depth,
-    aspect_ratio: cur_width as f32 / cur_height as f32,
-  });
-
-  let mut harness = Harness::new();
-  let mut running = true;
-  while running {
-    events_loop.poll_events(|winit::Event::WindowEvent { window_id: _, event }| {
-      match event {
-        winit::WindowEvent::Closed => running = false,
-        winit::WindowEvent::KeyboardInput(winit::ElementState::Pressed, _, Some(winit::VirtualKeyCode::Escape), _) => return,
-        winit::WindowEvent::Resized(width, height) => if width != cur_width || height != cur_height {
-          cur_width = width;
-          cur_height = height;
-          let (new_color, new_depth) = gfx_window_glutin::new_views(&window);
-          app.on_resize(&mut factory, WindowTargets {
-            color: new_color,
-            depth: new_depth,
-            aspect_ratio: width as f32 / height as f32,
-          });
-        },
-        _ => app.on(event),
-      }
-    });
-
-    app.render(&mut device);
-    window.swap_buffers().unwrap();
-    device.cleanup();
-    harness.bump();
-  }
-}
-
 pub trait Application<R: gfx::Resources>: Sized {
   fn new<F: gfx::Factory<R>>(&mut F, WindowTargets<R>) -> Self;
   fn render<C: gfx::CommandBuffer<R>>(&mut self, &mut gfx::Encoder<R, C>);
@@ -239,10 +186,6 @@ pub trait Application<R: gfx::Resources>: Sized {
   }
 
   fn on(&mut self, _event: winit::WindowEvent) {}
-
-  fn launch_default(wb: winit::WindowBuilder) where Self: Application<DefaultResources> {
-    launch_gl3::<Wrap<_, _, Self>>(wb);
-  }
 }
 
 pub struct Wrap<R: gfx::Resources, C, A> {

@@ -7,7 +7,7 @@ use std::sync::mpsc;
 use terrain;
 use specs;
 use specs::Planner;
-use terrain::gfx_macros;
+use physics::Dimensions;
 
 pub fn run<W, D, F>(window: &mut W) -> GameStatus
   where W: Window<D, F>,
@@ -27,11 +27,9 @@ pub fn run<W, D, F>(window: &mut W) -> GameStatus
 fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.register::<terrain::Drawable>();
 
-  //  let dimensions = Dimensions::new(viewport_size.0, viewport_size.1);
-  //  world.add_resource(terrain::generate(&dimensions, 10));
-  //  world.add_resource(dimensions);
-  //  world.add_resource()
+  let dimensions = Dimensions::new(viewport_size.0, viewport_size.1);
   world.add_resource(terrain::terrain::generate());
+  world.add_resource(dimensions);
   world.create().with(terrain::Drawable::new()).build();
 }
 

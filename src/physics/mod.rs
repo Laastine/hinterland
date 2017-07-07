@@ -9,8 +9,8 @@ pub struct Dimensions {
 impl Dimensions {
   pub fn new(_window_width: u32, _window_height: u32) -> Dimensions {
     Dimensions {
-      width: 1000,
-      height: 1000,
+      width: 1280,
+      height: 720,
     }
   }
 

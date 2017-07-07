@@ -46,11 +46,11 @@ pub struct Drawable {
 
 impl Drawable {
   pub fn new() -> Drawable {
-    Drawable { bounds: Bounds { data: [[0.0; 4]; 4] } }
+    Drawable { bounds: Bounds { transform: [[0.0; 4]; 4] } }
   }
 
   pub fn update(&mut self, world_to_clip: &Matrix4<f32>) {
-    self.bounds.data = (*world_to_clip).into();
+    self.bounds.transform = (*world_to_clip).into();
   }
 }
 
@@ -78,20 +78,19 @@ impl<R: gfx::Resources> DrawSystem<R> {
     let tile_size = 32;
     let width = 32;
     let height = 32;
-    let total_size = 64;
+//    let total_size = 64;
     let half_width = (tile_size * width) / 2;
     let half_height = (tile_size * height) / 2;
-    let total_size = width * height;
+//    let total_size = width * height;
 
     let tilesheet_bytes = &include_bytes!("../../assets/maps/terrain.png")[..];
-    let tilesheet_width = 32;
-    let tilesheet_height = 32;
-    let tilesheet_tilesize = 32;
+//    let tilesheet_width = 32;
+//    let tilesheet_height = 32;
+//    let tilesheet_tilesize = 32;
 
-    let tilesheet_total_width = tilesheet_width * tilesheet_tilesize;
-    let tilesheet_total_height = tilesheet_height * tilesheet_tilesize;
+//    let tilesheet_total_width = tilesheet_width * tilesheet_tilesize;
+//    let tilesheet_total_height = tilesheet_height * tilesheet_tilesize;
     let plane = Plane::subdivide(width, width);
-
     let vertex_data: Vec<VertexData> = plane.shared_vertex_iter()
       .map(|(x, y)| {
         let (raw_x, raw_y) = cartesian_to_isometric(x, y);
@@ -109,6 +108,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
       })
       .collect();
 
+
     let index_data: Vec<u32> = plane.indexed_polygon_iter()
       .triangulate()
       .vertices()
@@ -118,12 +118,6 @@ impl<R: gfx::Resources> DrawSystem<R> {
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
 
     let tile_texture = load_texture(factory, tilesheet_bytes).unwrap();
-
-    let view: AffineMatrix3<f32> = Transform::look_at(
-      Point3::new(0.0, 0.0, 2000.0),
-      Point3::new(0.0, 0.0, 0.0),
-      Vector3::unit_y(),
-    );
 
     let program = factory.link_program(SHADER_VERT, SHADER_FRAG).unwrap();
 
@@ -141,7 +135,6 @@ impl<R: gfx::Resources> DrawSystem<R> {
       tilemap_cb: factory.create_constant_buffer(1),
       tilesheet: (tile_texture, factory.create_sampler_linear()),
       bounds: factory.create_constant_buffer(1),
-//      out: rtv,
       out_color: rtv,
       out_depth: dsv,
     };
@@ -177,8 +170,7 @@ impl PreDrawSystem {
 impl<C> specs::System<C> for PreDrawSystem {
   fn run(&mut self, arg: specs::RunArg, _: C) {
     use specs::Join;
-    let (mut terrain, dim) =
-      arg.fetch(|w| (w.write::<Drawable>(), w.read_resource::<Dimensions>()));
+    let (mut terrain, dim) = arg.fetch(|w| (w.write::<Drawable>(), w.read_resource::<Dimensions>()));
 
     let world_to_clip = dim.world_to_clip();
 
