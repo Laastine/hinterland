@@ -68,7 +68,8 @@ pub struct DrawSystem<R: gfx::Resources> {
 impl<R: gfx::Resources> DrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
-                dsv: gfx::handle::DepthStencilView<R, DepthFormat>)
+                dsv: gfx::handle::DepthStencilView<R, DepthFormat>,
+                terrain: &terrain::Terrain)
                 -> DrawSystem<R>
     where F: gfx::Factory<R>
   {
@@ -144,14 +145,13 @@ impl<R: gfx::Resources> DrawSystem<R> {
       out_color: rtv,
       out_depth: dsv,
     };
-    println!("**DrawSystem");
+
     DrawSystem { bundle: gfx::Bundle::new(slice, pso, params)}
   }
 
   pub fn draw<C>(&mut self, drawable: &Drawable, encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R>
   {
-    println!("**DRAW");
     encoder.clear(&self.bundle.data.out_color,
                   [16.0 / 256.0, 14.0 / 256.0, 22.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.bundle.data.out_depth, 1.0);
@@ -159,7 +159,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
     //buffer update
     //clear
     encoder.update_constant_buffer(&self.bundle.data.bounds, &drawable.bounds);
-//    encoder.update_buffer(&self.data, &drawable.data.as_slice(), 0).unwrap();  //tilemap
+//    encoder.update_buffer(&self.bundle.data.tilemap, &drawable.bounds.as_slice(), 0).unwrap();  //tilemap
 //    encoder.update_constant_buffer(&self.params.projection_cb, &self.projection);   //projection
     self.bundle.encode(encoder);
   }

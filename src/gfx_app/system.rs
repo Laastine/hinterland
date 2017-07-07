@@ -14,13 +14,14 @@ impl<D: gfx::Device> DrawSystem<D> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<D::Resources, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<D::Resources, DepthFormat>,
-                queue: EncoderQueue<D>)
+                queue: EncoderQueue<D>,
+                terrain: &terrain::terrain::Terrain)
                 -> DrawSystem<D>
     where F: gfx::Factory<D::Resources>
   {
     DrawSystem {
       render_target_view: rtv.clone(),
-      terrain_system: terrain::DrawSystem::new(factory, rtv.clone(), dsv.clone()),
+      terrain_system: terrain::DrawSystem::new(factory, rtv.clone(), dsv.clone(), terrain),
       encoder_queue: queue,
     }
   }
@@ -32,15 +33,15 @@ impl<D, C> specs::System<C> for DrawSystem<D>
 {
   fn run(&mut self, arg: specs::RunArg, _: C) {
     use specs::Join;
-    println!("0");
+
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
     let terrain =
       arg.fetch(|w| {
          w.read::<terrain::Drawable>()
       });
-    println!(1);
+
     encoder.clear(&self.render_target_view, [0.0, 0.0, 0.0, 1.0]);
-    println!(2);
+
     for t in (&terrain).join() {
       self.terrain_system.draw(t, &mut encoder);
     }

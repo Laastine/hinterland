@@ -1,12 +1,12 @@
 use gfx_app::{GlutinWindow, Window, GameStatus};
 use gfx_app::renderer::{DeviceRenderer, EncoderQueue};
-use gfx_app::system::{DrawSystem};
+use gfx_app::system::DrawSystem;
 use gfx;
 use std::time;
 use std::sync::mpsc;
 use terrain;
 use specs;
-use specs::{Planner};
+use specs::Planner;
 use terrain::gfx_macros;
 
 pub fn run<W, D, F>(window: &mut W) -> GameStatus
@@ -27,10 +27,10 @@ pub fn run<W, D, F>(window: &mut W) -> GameStatus
 fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.register::<terrain::Drawable>();
 
-//  let dimensions = Dimensions::new(viewport_size.0, viewport_size.1);
-//  world.add_resource(terrain::generate(&dimensions, 10));
-//  world.add_resource(dimensions);
-//  world.add_resource()
+  //  let dimensions = Dimensions::new(viewport_size.0, viewport_size.1);
+  //  world.add_resource(terrain::generate(&dimensions, 10));
+  //  world.add_resource(dimensions);
+  //  world.add_resource()
   world.add_resource(terrain::terrain::generate());
   world.create().with(terrain::Drawable::new()).build();
 }
@@ -45,9 +45,12 @@ fn setup_planner<W, D, F>(window: &mut W,
         D::CommandBuffer: Send
 {
   let draw = {
+    let terrain = planner
+      .mut_world()
+      .read_resource_now::<terrain::terrain::Terrain>();
     let rtv = window.get_render_target_view();
     let dsv = window.get_depth_stencil_view();
-    DrawSystem::new(window.get_factory(), rtv, dsv, encoder_queue)
+    DrawSystem::new(window.get_factory(), rtv, dsv, encoder_queue, &terrain)
   };
 
   let (tx, rx) = mpsc::channel();

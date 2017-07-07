@@ -7,7 +7,7 @@ gfx_defines! {
     }
 
     constant Bounds {
-        data: [[f32; 4]; 4] = "bou",
+        data: [[f32; 4]; 4] = "bounds",
     }
 
     constant Projection {
