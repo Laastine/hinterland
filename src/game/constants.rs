@@ -3,8 +3,8 @@
 //
 //pub const FIRE_SPRITE_START_INDEX: usize = 211;
 //
-//pub const TILES_PCS_W: usize = 32;
-//pub const TILES_PCS_H: usize = 32;
+pub const TILES_PCS_W: usize = 32;
+pub const TILES_PCS_H: usize = 32;
 //
 //pub const TILESHEET_PCS_W: usize = TILES_PCS_W - 1;
 //pub const TILESHEET_PCS_H: usize = TILES_PCS_H - 1;
