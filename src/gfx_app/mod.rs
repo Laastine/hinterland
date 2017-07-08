@@ -1,12 +1,7 @@
-use winit;
 use glutin;
 use gfx;
 use gfx_device_gl;
 use gfx_window_glutin;
-use std;
-use glutin::WindowEvent::*;
-use glutin::VirtualKeyCode::*;
-use glutin::ElementState::*;
 
 pub mod init;
 pub mod renderer;
@@ -14,7 +9,6 @@ pub mod system;
 
 pub type ColorFormat = gfx::format::Rgba8;
 pub type DepthFormat = gfx::format::DepthStencil;
-pub type DefaultResources = gfx_device_gl::Resources;
 
 pub struct GlutinWindow {
   window: glutin::Window,
@@ -51,7 +45,7 @@ impl GlutinWindow {
   }
 }
 
-#[derive(Debug,PartialEq,Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum GameStatus {
   Render,
   Quit,
@@ -110,43 +104,15 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
   }
 
   fn poll_events(&mut self) -> Option<GameStatus> {
-    use glutin::Event::*;
-    use glutin::VirtualKeyCode::*;
-    use glutin::ElementState::*;
-
     self.events_loop.poll_events(|event| {
       match event {
-        _ => ()
+        glutin::Event::WindowEvent { event, .. } =>
+          match event {
+            glutin::WindowEvent::Closed => self.events_loop.interrupt(),
+            _ => (),
+          },
       }
     });
     None
   }
 }
-
-struct Harness {
-  start: std::time::Instant,
-  num_frames: f64,
-}
-
-impl Harness {
-  fn new() -> Harness {
-    Harness {
-      start: std::time::Instant::now(),
-      num_frames: 0.0,
-    }
-  }
-  fn bump(&mut self) {
-    self.num_frames += 1.0;
-  }
-}
-
-impl Drop for Harness {
-  fn drop(&mut self) {
-    let time_end = self.start.elapsed();
-    println!("Avg frame time: {} ms",
-             ((time_end.as_secs() * 1000) as f64 +
-               (time_end.subsec_nanos() / 1000_000) as f64) / self.num_frames);
-  }
-}
-
-

@@ -1,5 +1,4 @@
 use gfx;
-use gfx_app::ColorFormat;
 
 gfx_defines! {
     constant TileMapData {
