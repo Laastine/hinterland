@@ -123,12 +123,6 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
   }
 }
 
-pub struct WindowTargets<R: gfx::Resources> {
-  pub color: gfx::handle::RenderTargetView<R, ColorFormat>,
-  pub depth: gfx::handle::DepthStencilView<R, DepthFormat>,
-  pub aspect_ratio: f32,
-}
-
 struct Harness {
   start: std::time::Instant,
   num_frames: f64,
@@ -155,68 +149,4 @@ impl Drop for Harness {
   }
 }
 
-pub trait Factory<R: gfx::Resources>: gfx::Factory<R> {
-  type CommandBuffer: gfx::CommandBuffer<R>;
-  fn create_encoder(&mut self) -> gfx::Encoder<R, Self::CommandBuffer>;
-}
 
-pub trait ApplicationBase<R: gfx::Resources, C: gfx::CommandBuffer<R>> {
-  fn new<F>(&mut F, WindowTargets<R>) -> Self where F: Factory<R, CommandBuffer=C>;
-  fn render<D>(&mut self, &mut D) where D: gfx::Device<Resources=R, CommandBuffer=C>;
-  fn on(&mut self, winit::WindowEvent);
-  fn on_resize<F>(&mut self, &mut F, WindowTargets<R>) where F: Factory<R, CommandBuffer=C>;
-}
-
-
-impl Factory<gfx_device_gl::Resources> for gfx_device_gl::Factory {
-  type CommandBuffer = gfx_device_gl::CommandBuffer;
-  fn create_encoder(&mut self) -> gfx::Encoder<gfx_device_gl::Resources, Self::CommandBuffer> {
-    self.create_command_buffer().into()
-  }
-}
-
-pub trait Application<R: gfx::Resources>: Sized {
-  fn new<F: gfx::Factory<R>>(&mut F, WindowTargets<R>) -> Self;
-  fn render<C: gfx::CommandBuffer<R>>(&mut self, &mut gfx::Encoder<R, C>);
-
-  fn on_resize(&mut self, WindowTargets<R>) {}
-
-  fn on_resize_ext<F: gfx::Factory<R>>(&mut self, _factory: &mut F, targets: WindowTargets<R>) {
-    self.on_resize(targets);
-  }
-
-  fn on(&mut self, _event: winit::WindowEvent) {}
-}
-
-pub struct Wrap<R: gfx::Resources, C, A> {
-  encoder: gfx::Encoder<R, C>,
-  app: A,
-}
-
-impl<R, C, A> ApplicationBase<R, C> for Wrap<R, C, A>
-  where R: gfx::Resources,
-        C: gfx::CommandBuffer<R>,
-        A: Application<R> {
-  fn new<F>(factory: &mut F, window_targets: WindowTargets<R>) -> Self
-    where F: Factory<R, CommandBuffer=C> {
-    Wrap {
-      encoder: factory.create_encoder(),
-      app: A::new(factory, window_targets),
-    }
-  }
-
-  fn render<D>(&mut self, device: &mut D)
-    where D: gfx::Device<Resources=R, CommandBuffer=C> {
-    self.app.render(&mut self.encoder);
-    self.encoder.flush(device);
-  }
-
-  fn on(&mut self, event: winit::WindowEvent) {
-    self.app.on(event)
-  }
-
-  fn on_resize<F>(&mut self, factory: &mut F, window_targets: WindowTargets<R>)
-    where F: Factory<R, CommandBuffer=C> {
-    self.app.on_resize_ext(factory, window_targets);
-  }
-}

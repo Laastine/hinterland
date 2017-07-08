@@ -22,9 +22,6 @@ mod physics;
 mod terrain;
 
 fn main() {
-//  use gfx_app::Application;
-//  let wb = winit::WindowBuilder::new().with_dimensions(1280, 720).with_title("Zombie shooter");
-//  tilemap::TileMap::launch_default(wb);
   let mut window = gfx_app::GlutinWindow::new();
   loop {
     match gfx_app::init::run(&mut window) {
