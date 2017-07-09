@@ -1,4 +1,6 @@
-use cgmath::{Matrix4, Vector3};
+use terrain::gfx_macros::{Projection};
+use cgmath;
+use cgmath::{Matrix4, Matrix3, Point3, Vector3, Vector4, Quaternion, Decomposed, Transform};
 
 #[derive(Debug,Clone)]
 pub struct Dimensions {
@@ -14,16 +16,17 @@ impl Dimensions {
     }
   }
 
-  pub fn game_width(&self) -> u32 {
-    self.width
-  }
-
-  pub fn game_height(&self) -> u32 {
-    self.height
-  }
-
-  pub fn world_to_clip(&self) -> Matrix4<f32> {
-    Matrix4::from_translation(Vector3::new(-1.0, -1.0, 0.0)) *
-      Matrix4::from_nonuniform_scale(2.0 / (self.width as f32), 2.0 / (self.height as f32), 1.0)
+  pub fn world_to_clip(&self) -> Projection {
+    let view: Matrix4<f32> = Matrix4::look_at(
+      Point3::new(0.0, 0.0, 2000.0),
+      Point3::new(0.0, 0.0, 0.0),
+      Vector3::unit_y(),
+    );
+    let aspect_ratio = self.width as f32 / self.height as f32;
+    Projection {
+      model: Matrix4::from(view).into(),
+      view: view.into(),
+      proj: cgmath::perspective(cgmath::Deg(60.0f32), aspect_ratio, 0.1, 4000.0).into(),
+    }
   }
 }

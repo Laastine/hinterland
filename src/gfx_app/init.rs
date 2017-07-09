@@ -1,4 +1,4 @@
-use gfx_app::{GlutinWindow, Window, GameStatus};
+use gfx_app::{Window, GameStatus};
 use gfx_app::renderer::{DeviceRenderer, EncoderQueue};
 use gfx_app::system::DrawSystem;
 use gfx;

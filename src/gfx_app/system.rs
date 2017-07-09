@@ -6,6 +6,7 @@ use specs;
 
 pub struct DrawSystem<D: gfx::Device> {
   render_target_view: gfx::handle::RenderTargetView<D::Resources, ColorFormat>,
+  depth_stencil_view: gfx::handle::DepthStencilView<D::Resources, DepthFormat>,
   terrain_system: terrain::DrawSystem<D::Resources>,
   encoder_queue: EncoderQueue<D>,
 }
@@ -21,6 +22,7 @@ impl<D: gfx::Device> DrawSystem<D> {
   {
     DrawSystem {
       render_target_view: rtv.clone(),
+      depth_stencil_view: dsv.clone(),
       terrain_system: terrain::DrawSystem::new(factory, rtv.clone(), dsv.clone(), terrain),
       encoder_queue: queue,
     }
@@ -40,7 +42,8 @@ impl<D, C> specs::System<C> for DrawSystem<D>
          w.read::<terrain::Drawable>()
       });
 
-    encoder.clear(&self.render_target_view, [0.0, 0.0, 0.0, 1.0]);
+    encoder.clear(&self.render_target_view, [16.0 / 256.0, 14.0 / 256.0, 22.0 / 256.0, 1.0]);
+    encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
     for t in (&terrain).join() {
       self.terrain_system.draw(t, &mut encoder);

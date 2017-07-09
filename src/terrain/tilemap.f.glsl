@@ -7,7 +7,7 @@ struct TileMapData {
     vec4 data;
 };
 
-const int TILEMAP_BUF_LENGTH = 4096;
+const int TILEMAP_BUF_LENGTH = 2304;
 
 uniform b_TileMap {
     TileMapData u_Data[TILEMAP_BUF_LENGTH];

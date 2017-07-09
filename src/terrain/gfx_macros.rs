@@ -5,10 +5,6 @@ gfx_defines! {
         data: [f32; 4] = "data",
     }
 
-    constant Bounds {
-        transform: [[f32; 4]; 4] = "transform",
-    }
-
     constant Projection {
         model: [[f32; 4]; 4] = "u_Model",
         view: [[f32; 4]; 4] = "u_View",
@@ -29,7 +25,6 @@ gfx_defines! {
     pipeline pipe {
         vbuf: gfx::VertexBuffer<VertexData> = (),
         projection_cb: gfx::ConstantBuffer<Projection> = "b_VsLocals",
-        bounds: gfx::ConstantBuffer<Bounds> = "Bounds",
         tilemap: gfx::ConstantBuffer<TileMapData> = "b_TileMap",
         tilemap_cb: gfx::ConstantBuffer<TilemapSettings> = "b_PsLocals",
         tilesheet: gfx::TextureSampler<[f32; 4]> = "t_TileSheet",
