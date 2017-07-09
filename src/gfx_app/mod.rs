@@ -2,6 +2,7 @@ use glutin;
 use gfx;
 use gfx_device_gl;
 use gfx_window_glutin;
+use std::process;
 
 pub mod init;
 pub mod renderer;
@@ -104,13 +105,15 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
   }
 
   fn poll_events(&mut self) -> Option<GameStatus> {
-    self.events_loop.poll_events(|event| {
+    self.events_loop.run_forever(|event| {
       match event {
-        glutin::Event::WindowEvent { event, .. } =>
-          match event {
-            glutin::WindowEvent::Closed => self.events_loop.interrupt(),
-            _ => (),
-          },
+        glutin::Event::WindowEvent { event, .. } => match event {
+          glutin::WindowEvent::KeyboardInput(glutin::ElementState::Pressed, _, Some(glutin::VirtualKeyCode::Escape), _) => {
+            process::exit(0);
+          }
+          glutin::WindowEvent::Closed => self.events_loop.interrupt(),
+          _ => (),
+        },
       }
     });
     None
