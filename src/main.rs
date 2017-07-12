@@ -13,7 +13,6 @@ extern crate gfx_window_glutin;
 extern crate glutin;
 extern crate noise;
 extern crate image;
-extern crate winit;
 
 mod gfx_app;
 mod game;
