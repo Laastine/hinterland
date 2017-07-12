@@ -12,7 +12,7 @@ use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
 use image;
 use std::io::Cursor;
 use terrain::gfx_macros::{TileMapData, VertexData, Projection, pipe, TilemapSettings};
-use game::constants::TILEMAP_BUF_LENGTH;
+use game::constants::{TILEMAP_BUF_LENGTH, ASPECT_RATIO};
 
 #[macro_use]
 pub mod gfx_macros;
@@ -150,7 +150,6 @@ impl<R: gfx::Resources> DrawSystem<R> {
       Vector3::unit_y(),
     );
 
-    let aspect_ratio: f32 = 1280.0 / 720.0;
 
     DrawSystem {
       bundle: gfx::Bundle::new(slice, pso, data),
@@ -158,7 +157,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
       projection: Projection {
         model: Matrix4::identity().into(),
         view: view.into(),
-        proj: cgmath::perspective(cgmath::Deg(60.0f32), aspect_ratio, 0.1, 4000.0).into(),
+        proj: cgmath::perspective(cgmath::Deg(60.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       },
     }
   }

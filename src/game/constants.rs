@@ -39,3 +39,4 @@ pub const MAP_FILE_PATH: &'static str = "assets/maps/tilemap.tmx";
 
 pub const TILEMAP_BUF_LENGTH: usize = 4096;
 
+pub const ASPECT_RATIO: f32 = 1280.0 / 720.0;
