@@ -43,12 +43,9 @@ fn setup_planner<W, D, F>(window: &mut W,
         D::CommandBuffer: Send
 {
   let draw = {
-    let terrain = planner
-      .mut_world()
-      .read_resource_now::<terrain::terrain::Terrain>();
     let rtv = window.get_render_target_view();
     let dsv = window.get_depth_stencil_view();
-    DrawSystem::new(window.get_factory(), rtv, dsv, encoder_queue, &terrain)
+    DrawSystem::new(window.get_factory(), rtv, dsv, encoder_queue)
   };
 
   let (tx, rx) = mpsc::channel();

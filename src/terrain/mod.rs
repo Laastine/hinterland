@@ -86,7 +86,6 @@ impl<R: gfx::Resources> DrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>,
-                terrain: &terrain::Terrain)
                 -> DrawSystem<R>
     where F: gfx::Factory<R>
   {

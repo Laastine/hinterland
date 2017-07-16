@@ -15,15 +15,14 @@ impl<D: gfx::Device> DrawSystem<D> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<D::Resources, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<D::Resources, DepthFormat>,
-                queue: EncoderQueue<D>,
-                terrain: &terrain::terrain::Terrain)
+                queue: EncoderQueue<D>)
                 -> DrawSystem<D>
     where F: gfx::Factory<D::Resources>
   {
     DrawSystem {
       render_target_view: rtv.clone(),
       depth_stencil_view: dsv.clone(),
-      terrain_system: terrain::DrawSystem::new(factory, rtv.clone(), dsv.clone(), terrain),
+      terrain_system: terrain::DrawSystem::new(factory, rtv.clone(), dsv.clone(), input),
       encoder_queue: queue,
     }
   }
@@ -45,9 +44,7 @@ impl<D, C> specs::System<C> for DrawSystem<D>
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 14.0 / 256.0, 22.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
-    for t in (&terrain).join() {
-      self.terrain_system.draw(t, &mut encoder);
-    }
+    self.terrain_system.draw(&mut encoder);
 
     if let Err(e) = self.encoder_queue.sender.send(encoder) {
       println!("Disconnected, cannot return encoder to mpsc: {}", e);
