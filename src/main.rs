@@ -24,11 +24,11 @@ fn main() {
   let mut window = gfx_app::GlutinWindow::new();
   loop {
     match gfx_app::init::run(&mut window) {
-      Quit => {
+      gfx_app::GameStatus::Quit => {
         println!("Game was quit");
         break;
       }
-      Render => println!("Render..."),
+      gfx_app::GameStatus::Render => println!("Render..."),
     }
   }
 }

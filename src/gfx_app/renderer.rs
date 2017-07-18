@@ -20,7 +20,7 @@ impl<D: gfx::Device> DeviceRenderer<D> {
       let encoder = gfx::Encoder::from(cb);
       a_send
         .send(encoder)
-        .expect("Unable to send initial command buffers");
+        .expect("command buffers send failed");
     }
 
     (DeviceRenderer {
@@ -44,13 +44,13 @@ impl<D: gfx::Device> DeviceRenderer<D> {
             true
           },
           Err(e) => {
-            println!("Unable to send, receiver hung up: {}", e);
+            println!("Unable to send {}", e);
             false
           }
         }
       }
       Err(e) => {
-        println!("Unable to receive, sender hung up: {}", e);
+        println!("Unable to receive {}", e);
         false
       }
     }

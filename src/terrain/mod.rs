@@ -1,5 +1,5 @@
 use cgmath;
-use cgmath::{SquareMatrix, Matrix4, Point3, Vector3};
+use cgmath::{Matrix4, Point3, Vector3};
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx;
 use gfx::{Resources, Factory, texture};
@@ -12,11 +12,13 @@ use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
 use image;
 use std::io::Cursor;
 use terrain::gfx_macros::{TileMapData, VertexData, Projection, pipe, TilemapSettings};
+use terrain::controls::InputState;
 use game::constants::{TILEMAP_BUF_LENGTH, ASPECT_RATIO};
 
 #[macro_use]
 pub mod gfx_macros;
 pub mod terrain;
+pub mod controls;
 
 pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> Result<ShaderResourceView<R, [f32; 4]>, String> where R: Resources, F: Factory<R> {
   let img = image::load(Cursor::new(data), image::PNG).unwrap().to_rgba();
@@ -48,12 +50,12 @@ pub struct Drawable {
 impl Drawable {
   pub fn new() -> Drawable {
     let view: Matrix4<f32> = Matrix4::look_at(
-      Point3::new(0.0, 0.0, 2000.0),
+      Point3::new(0.0, 0.0, 1000.0),
       Point3::new(0.0, 0.0, 0.0),
       Vector3::unit_y(),
     );
 
-    let aspect_ratio: f32 = 1280.0 / 720.0;
+    let aspect_ratio: f32 = ASPECT_RATIO;
 
     Drawable {
       projection: Projection {
@@ -79,13 +81,12 @@ const SHADER_FRAG: &'static [u8] = include_bytes!("tilemap.f.glsl");
 pub struct DrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, pipe::Data<R>>,
   data: Vec<TileMapData>,
-  projection: Projection
 }
 
 impl<R: gfx::Resources> DrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
-                dsv: gfx::handle::DepthStencilView<R, DepthFormat>,
+                dsv: gfx::handle::DepthStencilView<R, DepthFormat>)
                 -> DrawSystem<R>
     where F: gfx::Factory<R>
   {
@@ -143,33 +144,24 @@ impl<R: gfx::Resources> DrawSystem<R> {
       out_depth: dsv,
     };
 
-    let view: Matrix4<f32> = Matrix4::look_at(
-      Point3::new(0.0, 0.0, 2000.0),
-      Point3::new(0.0, 0.0, 0.0),
-      Vector3::unit_y(),
-    );
-
-
     DrawSystem {
       bundle: gfx::Bundle::new(slice, pso, data),
       data: terrain::generate().tiles,
-      projection: Projection {
-        model: Matrix4::identity().into(),
-        view: view.into(),
-        proj: cgmath::perspective(cgmath::Deg(60.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
-      },
     }
   }
 
-  pub fn draw<C>(&mut self, drawable: &Drawable, encoder: &mut gfx::Encoder<R, C>)
+  pub fn draw<C>(&mut self,
+                 drawable: &Drawable,
+                 encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
     encoder.update_buffer(&self.bundle.data.tilemap, self.data.as_slice(), 0).unwrap();  //tilemap
-    encoder.update_constant_buffer(&self.bundle.data.projection_cb, &self.projection);
+    encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.tilemap_cb, &TilemapSettings {
       world_size: [32.0, 32.0, 32.0, 0.0],
       tilesheet_size: [32.0, 32.0, 32.0, 32.0],
       offsets: [0.0, 0.0],
     });
+
     self.bundle.encode(encoder);
   }
 }
@@ -186,11 +178,14 @@ impl PreDrawSystem {
 impl<C> specs::System<C> for PreDrawSystem {
   fn run(&mut self, arg: specs::RunArg, _: C) {
     use specs::Join;
-    let (mut terrain, dim) = arg.fetch(|w| (w.write::<Drawable>(), w.read_resource::<Dimensions>()));
+    let (mut terrain, dim, mut input) =
+      arg.fetch(|w| (
+        w.write::<Drawable>(),
+        w.read_resource::<Dimensions>(),
+        w.write::<InputState>()));
 
-    let world_to_clip = dim.world_to_clip();
-
-    for t in (&mut terrain).join() {
+    for (t, i) in (&mut terrain, &mut input).join() {
+      let world_to_clip = dim.world_to_clip(i);
       t.update(&world_to_clip);
     }
   }

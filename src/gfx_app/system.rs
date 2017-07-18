@@ -2,7 +2,9 @@ use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::renderer::EncoderQueue;
 use gfx;
 use terrain;
+use terrain::controls::InputState;
 use specs;
+use physics::{Dimensions};
 
 pub struct DrawSystem<D: gfx::Device> {
   render_target_view: gfx::handle::RenderTargetView<D::Resources, ColorFormat>,
@@ -22,7 +24,7 @@ impl<D: gfx::Device> DrawSystem<D> {
     DrawSystem {
       render_target_view: rtv.clone(),
       depth_stencil_view: dsv.clone(),
-      terrain_system: terrain::DrawSystem::new(factory, rtv.clone(), dsv.clone(), input),
+      terrain_system: terrain::DrawSystem::new(factory, rtv.clone(), dsv.clone()),
       encoder_queue: queue,
     }
   }
@@ -34,17 +36,20 @@ impl<D, C> specs::System<C> for DrawSystem<D>
 {
   fn run(&mut self, arg: specs::RunArg, _: C) {
     use specs::Join;
-
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
-    let terrain =
+    let (mut terrain, dim, mut input_state) =
       arg.fetch(|w| {
-         w.read::<terrain::Drawable>()
+         (w.write::<terrain::Drawable>(),
+          w.read_resource::<Dimensions>(),
+          w.write::<terrain::controls::InputState>())
       });
 
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 14.0 / 256.0, 22.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
-    self.terrain_system.draw(&mut encoder);
+    for t in (&mut terrain).join() {
+      self.terrain_system.draw(t, &mut encoder);
+    }
 
     if let Err(e) = self.encoder_queue.sender.send(encoder) {
       println!("Disconnected, cannot return encoder to mpsc: {}", e);

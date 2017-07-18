@@ -1,6 +1,11 @@
 use terrain::gfx_macros::{Projection};
 use cgmath;
-use cgmath::{Matrix4, Matrix3, Point3, Vector3, Vector4, Quaternion, Decomposed, Transform};
+use cgmath::{Matrix4, Point3, Vector3};
+use specs;
+use terrain;
+
+pub type Delta = f32;
+pub type Planner = specs::Planner<Delta>;
 
 #[derive(Debug,Clone)]
 pub struct Dimensions {
@@ -16,9 +21,9 @@ impl Dimensions {
     }
   }
 
-  pub fn world_to_clip(&self) -> Projection {
+  pub fn world_to_clip(&self, input: &mut terrain::controls::InputState) -> Projection {
     let view: Matrix4<f32> = Matrix4::look_at(
-      Point3::new(0.0, 0.0, 2000.0),
+      Point3::new(0.0, 0.0, input.distance),
       Point3::new(0.0, 0.0, 0.0),
       Vector3::unit_y(),
     );

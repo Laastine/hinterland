@@ -7,12 +7,14 @@ use std::process;
 pub mod init;
 pub mod renderer;
 pub mod system;
+pub mod controls;
 
 pub type ColorFormat = gfx::format::Rgba8;
 pub type DepthFormat = gfx::format::DepthStencil;
 
 pub struct GlutinWindow {
   window: glutin::Window,
+  controls: Option<controls::TilemapControls>,
   events_loop: glutin::EventsLoop,
   device: gfx_device_gl::Device,
   factory: gfx_device_gl::Factory,
@@ -37,6 +39,7 @@ impl GlutinWindow {
 
     GlutinWindow {
       window: window,
+      controls: None,
       events_loop: events_loop,
       device: device,
       factory: factory,
@@ -57,6 +60,7 @@ pub trait Window<D: gfx::Device, F: gfx::Factory<D::Resources>> {
   fn poll_events(&mut self) -> Option<GameStatus>;
 
   fn create_buffers(&mut self, count: usize) -> Vec<D::CommandBuffer>;
+  fn set_controls(&mut self, controls: controls::TilemapControls);
 
   fn get_viewport_size(&mut self) -> (u32, u32);
   fn get_device(&mut self) -> &mut D;
@@ -82,6 +86,10 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
     bufs
   }
 
+  fn set_controls(&mut self, controls: controls::TilemapControls) {
+    self.controls = Some(controls);
+  }
+
   fn get_viewport_size(&mut self) -> (u32, u32) {
     self.window
       .get_inner_size_pixels()
@@ -105,12 +113,25 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
   }
 
   fn poll_events(&mut self) -> Option<GameStatus> {
-    self.events_loop.run_forever(|event| {
+    use glutin::WindowEvent::KeyboardInput;
+    use glutin::ElementState::{Pressed, Released};
+    use glutin::VirtualKeyCode;
+
+    let controls = match self.controls {
+      Some(ref c) => c,
+      None => panic!("Controls have not been initialized"),
+    };
+
+    self.events_loop.poll_events(|event| {
       match event {
         glutin::Event::WindowEvent { event, .. } => match event {
-          glutin::WindowEvent::KeyboardInput(glutin::ElementState::Pressed, _, Some(glutin::VirtualKeyCode::Escape), _) => {
+          KeyboardInput(Pressed, _, Some(VirtualKeyCode::Escape), _) => {
             process::exit(0);
-          }
+          },
+          KeyboardInput(Pressed, _, Some(VirtualKeyCode::Minus), _) => controls.clone().zoom_out(),
+          KeyboardInput(Pressed, _, Some(VirtualKeyCode::Equals), _) => controls.clone().zoom_in(),
+          KeyboardInput(Released, _, Some(VirtualKeyCode::Minus), _) => controls.clone().zoom_stop(),
+          KeyboardInput(Released, _, Some(VirtualKeyCode::Equals), _) => controls.clone().zoom_stop(),
           glutin::WindowEvent::Closed => self.events_loop.interrupt(),
           _ => (),
         },
