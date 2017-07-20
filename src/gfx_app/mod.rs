@@ -130,8 +130,16 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
           },
           KeyboardInput(Pressed, _, Some(VirtualKeyCode::Minus), _) => controls.clone().zoom_out(),
           KeyboardInput(Pressed, _, Some(VirtualKeyCode::Equals), _) => controls.clone().zoom_in(),
-          KeyboardInput(Released, _, Some(VirtualKeyCode::Minus), _) => controls.clone().zoom_stop(),
+          KeyboardInput(Released, _, Some(VirtualKeyCode::Minus), _) |
           KeyboardInput(Released, _, Some(VirtualKeyCode::Equals), _) => controls.clone().zoom_stop(),
+          KeyboardInput(Pressed, _, Some(VirtualKeyCode::W), _) => controls.clone().move_map_up(),
+          KeyboardInput(Pressed, _, Some(VirtualKeyCode::S), _) => controls.clone().move_map_down(),
+          KeyboardInput(Released, _, Some(VirtualKeyCode::W), _) |
+          KeyboardInput(Released, _, Some(VirtualKeyCode::S), _) => controls.clone().stop_map_y(),
+          KeyboardInput(Pressed, _, Some(VirtualKeyCode::D), _) => controls.clone().move_map_right(),
+          KeyboardInput(Pressed, _, Some(VirtualKeyCode::A), _) => controls.clone().move_map_left(),
+          KeyboardInput(Released, _, Some(VirtualKeyCode::D), _) |
+          KeyboardInput(Released, _, Some(VirtualKeyCode::A), _) => controls.clone().stop_map_x(),
           glutin::WindowEvent::Closed => self.events_loop.interrupt(),
           _ => (),
         },

@@ -23,8 +23,8 @@ impl Dimensions {
 
   pub fn world_to_clip(&self, input: &mut terrain::controls::InputState) -> Projection {
     let view: Matrix4<f32> = Matrix4::look_at(
-      Point3::new(0.0, 0.0, input.distance),
-      Point3::new(0.0, 0.0, 0.0),
+      Point3::new(input.x_pos, -input.y_pos, input.distance),
+      Point3::new(input.x_pos, -input.y_pos, 0.0),
       Vector3::unit_y(),
     );
     let aspect_ratio = self.width as f32 / self.height as f32;
