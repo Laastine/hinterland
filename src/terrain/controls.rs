@@ -48,8 +48,8 @@ impl<C> specs::System<C> for TerrainControlSystem {
     let mut map_input = arg.fetch(|w| w.write::<InputState>());
     while let Ok(control) = self.queue.try_recv() {
       match control {
-        TerrainControl::ZoomIn => self.zoom_level = Some(-2.0),
-        TerrainControl::ZoomOut => self.zoom_level = Some(2.0),
+        TerrainControl::ZoomIn => self.zoom_level = Some(2.0),
+        TerrainControl::ZoomOut => self.zoom_level = Some(-2.0),
         TerrainControl::ZoomStop => self.zoom_level = None,
       }
     }
