@@ -2,7 +2,6 @@ use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::renderer::EncoderQueue;
 use gfx;
 use terrain;
-use terrain::controls::InputState;
 use specs;
 use physics::{Dimensions};
 
@@ -37,12 +36,7 @@ impl<D, C> specs::System<C> for DrawSystem<D>
   fn run(&mut self, arg: specs::RunArg, _: C) {
     use specs::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
-    let (mut terrain, dim, mut input_state) =
-      arg.fetch(|w| {
-         (w.write::<terrain::Drawable>(),
-          w.read_resource::<Dimensions>(),
-          w.write::<terrain::controls::InputState>())
-      });
+    let mut terrain = arg.fetch(|w| w.write::<terrain::Drawable>());
 
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 14.0 / 256.0, 22.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
