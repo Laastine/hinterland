@@ -18,7 +18,7 @@ cargo run
 
 `Arrow keys`
 
-Tested with Rust 1.18
+Tested with Rust 1.19
 
 ## Asset licences
 
