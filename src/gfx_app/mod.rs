@@ -9,6 +9,7 @@ pub mod init;
 pub mod renderer;
 pub mod system;
 pub mod controls;
+pub mod graphics;
 
 pub type ColorFormat = gfx::format::Rgba8;
 pub type DepthFormat = gfx::format::DepthStencil;
