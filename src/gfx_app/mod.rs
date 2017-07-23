@@ -2,6 +2,7 @@ use glutin;
 use gfx;
 use gfx_device_gl;
 use gfx_window_glutin;
+use glutin::GlContext;
 use std::process;
 
 pub mod init;
@@ -13,7 +14,7 @@ pub type ColorFormat = gfx::format::Rgba8;
 pub type DepthFormat = gfx::format::DepthStencil;
 
 pub struct GlutinWindow {
-  window: glutin::Window,
+  window: glutin::GlWindow,
   controls: Option<controls::TilemapControls>,
   events_loop: glutin::EventsLoop,
   device: gfx_device_gl::Device,
@@ -25,17 +26,18 @@ pub struct GlutinWindow {
 impl GlutinWindow {
   pub fn new() -> GlutinWindow {
     let builder = glutin::WindowBuilder::new()
-      .with_title("Zombie shooter")
+      .with_title("Zombie shooter");
+
+    let events_loop = glutin::EventsLoop::new();
+    let context = glutin::ContextBuilder::new()
       .with_pixel_format(24, 8)
       .with_gl(glutin::GlRequest::GlThenGles {
         opengles_version: (3, 0),
         opengl_version: (4, 1),
       });
 
-    let events_loop = glutin::EventsLoop::new();
-
     let (window, device, factory, rtv, dsv) = gfx_window_glutin::init::<ColorFormat,
-      DepthFormat>(builder, &events_loop);
+      DepthFormat>(builder, context, &events_loop);
 
     GlutinWindow {
       window: window,
@@ -113,9 +115,9 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
   }
 
   fn poll_events(&mut self) -> Option<GameStatus> {
-    use glutin::WindowEvent::KeyboardInput;
+    use glutin::KeyboardInput;
     use glutin::ElementState::{Pressed, Released};
-    use glutin::VirtualKeyCode;
+    use glutin::VirtualKeyCode::{Escape, Minus, Equals, W, A, S, D};
 
     let controls = match self.controls {
       Some(ref c) => c,
@@ -125,26 +127,30 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
     self.events_loop.poll_events(|event| {
       match event {
         glutin::Event::WindowEvent { event, .. } => match event {
-          KeyboardInput(Pressed, _, Some(VirtualKeyCode::Escape), _) => {
-            process::exit(0);
+          glutin::WindowEvent::KeyboardInput { input, .. } => match input {
+            KeyboardInput { state: _, virtual_keycode: Some(Escape), modifiers: _, scancode: _ } => process::exit(0),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Minus) } => controls.clone().zoom_out(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Equals) } => controls.clone().zoom_in(),
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Minus) } |
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Equals) } => controls.clone().zoom_stop(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(W) } => controls.clone().move_map_up(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(S) } => controls.clone().move_map_down(),
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(W) } |
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(S) } => controls.clone().stop_map_y(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(D) } => controls.clone().move_map_right(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(A) } => controls.clone().move_map_left(),
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(D) } |
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(A) } => controls.clone().stop_map_x(),
+            _ => (),
           },
-          KeyboardInput(Pressed, _, Some(VirtualKeyCode::Minus), _) => controls.clone().zoom_out(),
-          KeyboardInput(Pressed, _, Some(VirtualKeyCode::Equals), _) => controls.clone().zoom_in(),
-          KeyboardInput(Released, _, Some(VirtualKeyCode::Minus), _) |
-          KeyboardInput(Released, _, Some(VirtualKeyCode::Equals), _) => controls.clone().zoom_stop(),
-          KeyboardInput(Pressed, _, Some(VirtualKeyCode::W), _) => controls.clone().move_map_up(),
-          KeyboardInput(Pressed, _, Some(VirtualKeyCode::S), _) => controls.clone().move_map_down(),
-          KeyboardInput(Released, _, Some(VirtualKeyCode::W), _) |
-          KeyboardInput(Released, _, Some(VirtualKeyCode::S), _) => controls.clone().stop_map_y(),
-          KeyboardInput(Pressed, _, Some(VirtualKeyCode::D), _) => controls.clone().move_map_right(),
-          KeyboardInput(Pressed, _, Some(VirtualKeyCode::A), _) => controls.clone().move_map_left(),
-          KeyboardInput(Released, _, Some(VirtualKeyCode::D), _) |
-          KeyboardInput(Released, _, Some(VirtualKeyCode::A), _) => controls.clone().stop_map_x(),
-          glutin::WindowEvent::Closed => self.events_loop.interrupt(),
+          glutin::WindowEvent::Closed => process::exit(0),
           _ => (),
         },
+        _ => (),
       }
     });
     None
   }
 }
+
+
