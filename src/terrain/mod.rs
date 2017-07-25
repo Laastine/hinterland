@@ -122,7 +122,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
                               pipe::new())
       .unwrap();
 
-    let data = pipe::Data {
+    let pipeline_data = pipe::Data {
       vbuf: vertex_buf,
       projection_cb: factory.create_constant_buffer(1),
       tilemap: factory.create_constant_buffer(TILEMAP_BUF_LENGTH),
@@ -133,7 +133,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
     };
 
     DrawSystem {
-      bundle: gfx::Bundle::new(slice, pso, data),
+      bundle: gfx::Bundle::new(slice, pso, pipeline_data),
       data: terrain::generate().tiles,
     }
   }
