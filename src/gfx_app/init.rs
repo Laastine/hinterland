@@ -8,6 +8,8 @@ use terrain;
 use specs;
 use physics::{Dimensions, Planner};
 use gfx_app;
+use gfx_app::controls::{TilemapControls};
+use terrain::controls::{TerrainControlSystem};
 
 pub fn run<W, D, F>(window: &mut W) -> GameStatus
   where W: Window<D, F>,
@@ -60,9 +62,9 @@ fn setup_planner<W, D, F>(window: &mut W, planner: &mut Planner, encoder_queue: 
   rx
 }
 
-fn create_controls(planner: &mut Planner) -> gfx_app::controls::TilemapControls {
-  let (terrain_system, terrain_control) = terrain::controls::TerrainControlSystem::new();
-  let controls = gfx_app::controls::TilemapControls::new(terrain_control);
+fn create_controls(planner: &mut Planner) -> TilemapControls {
+  let (terrain_system, terrain_control) = TerrainControlSystem::new();
+  let controls = TilemapControls::new(terrain_control);
   planner.add_system(terrain_system, "terrain-system", 20);
   controls
 }
