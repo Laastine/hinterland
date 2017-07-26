@@ -89,7 +89,9 @@ impl<R: gfx::Resources> DrawSystem<R> {
     let tilesheet_bytes = &include_bytes!("../../assets/maps/terrain.png")[..];
     let plane = Plane::subdivide(width, width);
     let vertex_data: Vec<VertexData> = plane.shared_vertex_iter()
-      .map(|(x, y)| {
+      .map(|vertex| {
+        let x = vertex.pos[0];
+        let y = vertex.pos[1];
         let (raw_x, raw_y) = cartesian_to_isometric(x, y);
         let vertex_x = half_width as f32 * raw_x;
         let vertex_y = half_height as f32 * raw_y;
