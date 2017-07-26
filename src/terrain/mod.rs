@@ -9,7 +9,8 @@ use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
 use terrain::gfx_macros::{TileMapData, VertexData, Projection, pipe, TilemapSettings};
 use terrain::controls::InputState;
 use game::constants::{TILEMAP_BUF_LENGTH, ASPECT_RATIO};
-use gfx_app::graphics::{load_texture};
+use gfx_app::graphics::load_texture;
+use game::constants::{TILES_PCS_W, TILES_PCS_H};
 
 #[macro_use]
 pub mod gfx_macros;
@@ -81,8 +82,8 @@ impl<R: gfx::Resources> DrawSystem<R> {
     use gfx::traits::FactoryExt;
 
     let tile_size = 32;
-    let width = 32;
-    let height = 32;
+    let width = TILES_PCS_W;
+    let height = TILES_PCS_H;
     let half_width = (tile_size * width) / 2;
     let half_height = (tile_size * height) / 2;
 
