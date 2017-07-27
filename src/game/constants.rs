@@ -33,7 +33,6 @@ pub const TILES_PCS_H: usize = 32;
 pub const ZOMBIE_JSON_PATH: &'static str = "assets/zombie.json";
 //pub const CHARACTER_PATH: &'static str = "assets/character.png";
 pub const CHARACTER_JSON_PATH: &'static str = "assets/character.json";
-//pub const BACKGROUND_PATH: &'static str = "assets/background.png";
 //pub const PISTOL_AUDIO_PATH: &'static str = "assets/audio/pistol.ogg";
 pub const MAP_FILE_PATH: &'static str = "assets/maps/tilemap.tmx";
 
