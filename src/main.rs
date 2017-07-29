@@ -19,6 +19,7 @@ mod game;
 mod data;
 mod physics;
 mod terrain;
+mod character;
 
 fn main() {
   let mut window = gfx_app::GlutinWindow::new();
