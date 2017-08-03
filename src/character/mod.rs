@@ -1,9 +1,9 @@
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use physics::{Dimensions, Position};
-use cgmath::{Matrix4, Point3, Vector3, SquareMatrix};
+use cgmath::{Matrix4, Point3, Vector3, SquareMatrix, Deg, Point2};
 use specs;
-use gfx_app::graphics::{load_texture};
+use gfx_app::graphics::load_texture;
 use genmesh::{Vertices, Triangulate};
 use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
 use character::gfx_macros::{pipe, CharacterData, VertexData, CharacterSheetSettings, CharacterPosition};
@@ -38,8 +38,8 @@ impl Drawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Matrix4<f32>, pos: &Position) {
-    self.locals.transform = (world_to_clip * pos.model_to_world()).into();
+  pub fn update(&mut self, world_to_clip: &Matrix4<f32>) {
+    self.locals.transform = (*world_to_clip).into();
   }
 }
 
@@ -97,6 +97,38 @@ impl<R: gfx::Resources> DrawSystem<R> {
     DrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
       data: data::load_character(),
+    }
+  }
+
+  pub fn draw<C>(&mut self,
+                 drawable: Drawable,
+                 encoder: &mut gfx::Encoder<R, C>)
+    where C: gfx::CommandBuffer<R> {
+    encoder.update_constant_buffer(&self.bundle.data.locals, &drawable.locals);
+    self.bundle.encode(encoder);
+  }
+}
+
+#[derive(Debug)]
+pub struct PreDrawSystem;
+
+impl PreDrawSystem {
+  pub fn new() -> PreDrawSystem {
+    PreDrawSystem {}
+  }
+}
+
+impl<C> specs::System<C> for PreDrawSystem {
+  fn run(&mut self, arg: specs::RunArg, _: C) {
+    use specs::Join;
+    let (mut character, dim) =
+      arg.fetch(|w| (
+        w.write::<Drawable>(),
+        w.read_resource::<Dimensions>()));
+
+    for c in (&mut character).join() {
+      let world_to_clip = dim.world_to_clip();
+      c.update(&world_to_clip);
     }
   }
 }
