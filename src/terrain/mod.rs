@@ -174,7 +174,7 @@ impl<C> specs::System<C> for PreDrawSystem {
         w.write::<InputState>()));
 
     for (t, i) in (&mut terrain, &mut input).join() {
-      let world_to_clip = dim.world_to_clip(i);
+      let world_to_clip = dim.world_to_projection(i);
       t.update(&world_to_clip);
     }
   }

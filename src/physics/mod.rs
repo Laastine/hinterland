@@ -21,7 +21,7 @@ impl Dimensions {
     }
   }
 
-  pub fn world_to_clip(&self, input: &mut terrain::controls::InputState) -> Projection {
+  pub fn world_to_projection(&self, input: &mut terrain::controls::InputState) -> Projection {
     let view: Matrix4<f32> = Matrix4::look_at(
       Point3::new(input.x_pos, -input.y_pos, input.distance),
       Point3::new(input.x_pos, -input.y_pos, 0.0),
@@ -33,6 +33,11 @@ impl Dimensions {
       view: view.into(),
       proj: cgmath::perspective(cgmath::Deg(60.0f32), aspect_ratio, 0.1, 4000.0).into(),
     }
+  }
+
+  pub fn world_to_clip(&self) -> Matrix4<f32> {
+    Matrix4::from_translation(Vector3::new(-1.0, -1.0, 0.0)) *
+      Matrix4::from_nonuniform_scale(2.0 / (self.width as f32), 2.0 / (self.height as f32), 1.0)
   }
 }
 
