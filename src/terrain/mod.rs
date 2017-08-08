@@ -143,7 +143,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
                  drawable: &Drawable,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
-    encoder.update_buffer(&self.bundle.data.tilemap, self.data.as_slice(), 0).unwrap();  //tilemap
+    encoder.update_buffer(&self.bundle.data.tilemap, self.data.as_slice(), 0).unwrap();
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.tilemap_cb, &TilemapSettings {
       world_size: [32.0, 32.0, 32.0, 0.0],
