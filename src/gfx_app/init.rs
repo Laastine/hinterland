@@ -7,9 +7,9 @@ use std::sync::mpsc;
 use terrain;
 use specs;
 use physics::{Dimensions, Planner};
-use gfx_app;
 use gfx_app::controls::{TilemapControls};
 use terrain::controls::{TerrainControlSystem};
+use character;
 
 pub fn run<W, D, F>(window: &mut W) -> GameStatus
   where W: Window<D, F>,
@@ -28,12 +28,14 @@ pub fn run<W, D, F>(window: &mut W) -> GameStatus
 
 fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.register::<terrain::Drawable>();
+  world.register::<character::Drawable>();
   world.register::<terrain::controls::InputState>();
 
   let dimensions = Dimensions::new(viewport_size.0, viewport_size.1);
   world.add_resource(terrain::terrain::generate());
   world.add_resource(dimensions);
   world.add_resource(terrain::controls::InputState::new());
+  world.add_resource(character::Drawable::new());
   world.create()
     .with(terrain::Drawable::new())
     .with(terrain::controls::InputState::new()).build();
@@ -55,6 +57,7 @@ fn setup_planner<W, D, F>(window: &mut W, planner: &mut Planner, encoder_queue: 
 
   planner.add_system(draw, "drawing", 10);
   planner.add_system(terrain::PreDrawSystem::new(), "draw-prep-terrain", 15);
+  planner.add_system(character::PreDrawSystem::new(), "draw-prep-character", 20);
 
   let map_control = create_controls(planner);
   window.set_controls(map_control);

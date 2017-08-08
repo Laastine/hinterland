@@ -1,12 +1,12 @@
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use physics::{Dimensions, Position};
-use cgmath::{Matrix4, Point3, Vector3, SquareMatrix, Deg, Point2};
+use physics::{Dimensions};
+use cgmath::{Matrix4, SquareMatrix};
 use specs;
 use gfx_app::graphics::load_texture;
 use genmesh::{Vertices, Triangulate};
-use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
-use character::gfx_macros::{pipe, CharacterData, VertexData, CharacterSheetSettings, CharacterPosition};
+use genmesh::generators::{Plane, IndexedPolygon};
+use character::gfx_macros::{pipe, CharacterData, VertexData, CharacterPosition};
 use data;
 
 pub mod gfx_macros;
@@ -101,10 +101,10 @@ impl<R: gfx::Resources> DrawSystem<R> {
   }
 
   pub fn draw<C>(&mut self,
-                 drawable: Drawable,
+                 drawable: &Drawable,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
-    encoder.update_constant_buffer(&self.bundle.data.locals, &drawable.locals);
+    encoder.update_buffer(&self.bundle.data.character, &self.data.as_slice(), 0).unwrap();
     self.bundle.encode(encoder);
   }
 }
