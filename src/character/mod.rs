@@ -4,8 +4,6 @@ use physics::Dimensions;
 use cgmath::{Matrix4, SquareMatrix};
 use specs;
 use gfx_app::graphics::load_texture;
-use genmesh::{Vertices, Triangulate};
-use genmesh::generators::{Plane, IndexedPolygon};
 use character::gfx_macros::{pipe, CharacterData, CharacterSheetSettings, VertexData, CharacterPosition};
 use data;
 
@@ -62,20 +60,19 @@ impl<R: gfx::Resources> DrawSystem<R> {
     let height = 32;
 
     let tilesheet_bytes = &include_bytes!("../../assets/character.png")[..];
-    let plane = Plane::subdivide(width, width);
     let vertex_data: Vec<VertexData> =
       vec![VertexData {
-        pos: [0.0, 0.0, 0.0],
+        pos: [-0.5, -0.5, 0.0],
+        buf_pos: [0.0, 0.0]
+      }, VertexData {
+        pos: [0.0, 0.5, 0.0],
+        buf_pos: [0.0, 0.0]
+      }, VertexData {
+        pos: [0.5, -0.5, 0.0],
         buf_pos: [0.0, 0.0]
       }];
 
-    let index_data: Vec<u32> = plane.indexed_polygon_iter()
-      .triangulate()
-      .vertices()
-      .map(|i| i as u32)
-      .collect();
-
-    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
+    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());
 
     let tile_texture = load_texture(factory, tilesheet_bytes).unwrap();
 
