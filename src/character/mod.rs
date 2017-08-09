@@ -1,7 +1,7 @@
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use physics::Dimensions;
-use cgmath::{Matrix4, SquareMatrix};
+use physics::{Dimensions, Position};
+use cgmath::{Matrix4, SquareMatrix, Point2, Deg, Rad};
 use specs;
 use gfx_app::graphics::load_texture;
 use character::gfx_macros::{pipe, CharacterData, CharacterSheetSettings, VertexData, CharacterPosition};
@@ -37,8 +37,8 @@ impl Drawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Matrix4<f32>) {
-    self.locals.transform = (*world_to_clip).into();
+  pub fn update(&mut self, world_to_clip: &Matrix4<f32>, pos: &Position) {
+    self.locals.transform = (world_to_clip * pos.model_to_world()).into();
   }
 }
 
@@ -85,6 +85,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
 
     let pipeline_data = pipe::Data {
       vbuf: vertex_buf,
+      locals: factory.create_constant_buffer(1),
       character: factory.create_constant_buffer(512),
       character_cb: factory.create_constant_buffer(1),
       charactersheet: (tile_texture, factory.create_sampler_linear()),
@@ -102,6 +103,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
                  drawable: &Drawable,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
+    encoder.update_constant_buffer(&self.bundle.data.locals, &drawable.locals);
     encoder.update_buffer(&self.bundle.data.character, &self.data.as_slice(), 0).unwrap();
     encoder.update_constant_buffer(&self.bundle.data.character_cb, &CharacterSheetSettings {
       charactersheet_idx: [1.0, 0.0, 0.0, 0.0],
@@ -131,7 +133,11 @@ impl<C> specs::System<C> for PreDrawSystem {
 
     for c in (&mut character).join() {
       let world_to_clip = dim.world_to_clip();
-      c.update(&world_to_clip);
+      c.update(&world_to_clip, &Position {
+        position: Point2::new(100.0, 100.0),
+        orientation: Deg(0.0).into(),
+        scale: 100.0
+      });
     }
   }
 }

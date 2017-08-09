@@ -23,7 +23,7 @@ uniform sampler2D t_CharacterSheet;
 void main() {
   int bufIdx = int(u_characterSheetIdx.x);
   vec4 entry = u_Data[bufIdx].data;
-  vec2 uvCoords = (entry.xy) / u_CharactersheetSize.x;
+  vec2 uvCoords = (entry.xy) / u_CharactersheetSize.xy;
 
   Target0 = texture(t_CharacterSheet, uvCoords);
 }

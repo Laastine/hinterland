@@ -22,6 +22,7 @@ gfx_defines! {
 
   pipeline pipe {
     vbuf: gfx::VertexBuffer<VertexData> = (),
+    locals: gfx::ConstantBuffer<CharacterPosition> = "b_VsLocals",
     character: gfx::ConstantBuffer<CharacterData> = "b_Character",
     character_cb: gfx::ConstantBuffer<CharacterSheetSettings> = "b_PsLocals",
     charactersheet: gfx::TextureSampler<[f32; 4]> = "t_CharacterSheet",
