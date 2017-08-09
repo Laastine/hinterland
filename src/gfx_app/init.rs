@@ -28,8 +28,9 @@ pub fn run<W, D, F>(window: &mut W) -> GameStatus
 
 fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.register::<terrain::Drawable>();
-  world.register::<character::Drawable>();
   world.register::<terrain::controls::InputState>();
+  world.register::<character::Drawable>();
+  world.register::<character::character::Character>();
 
   let dimensions = Dimensions::new(viewport_size.0, viewport_size.1);
   world.add_resource(terrain::terrain::generate());
@@ -38,6 +39,7 @@ fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.add_resource(character::Drawable::new());
   world.create()
     .with(terrain::Drawable::new())
+    .with(character::Drawable::new())
     .with(terrain::controls::InputState::new()).build();
 }
 

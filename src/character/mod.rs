@@ -8,6 +8,7 @@ use character::gfx_macros::{pipe, CharacterData, CharacterSheetSettings, VertexD
 use data;
 
 pub mod gfx_macros;
+pub mod character;
 
 const SHADER_VERT: &'static [u8] = include_bytes!("character.v.glsl");
 const SHADER_FRAG: &'static [u8] = include_bytes!("character.f.glsl");
