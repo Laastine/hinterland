@@ -106,7 +106,6 @@ impl<R: gfx::Resources> DrawSystem<R> {
       })
       .collect();
 
-
     let index_data: Vec<u32> = plane.indexed_polygon_iter()
       .triangulate()
       .vertices()
