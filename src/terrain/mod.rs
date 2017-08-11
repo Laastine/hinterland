@@ -64,8 +64,8 @@ impl specs::Component for Drawable {
   type Storage = specs::HashMapStorage<Drawable>;
 }
 
-const SHADER_VERT: &'static [u8] = include_bytes!("tilemap.v.glsl");
-const SHADER_FRAG: &'static [u8] = include_bytes!("tilemap.f.glsl");
+const SHADER_VERT: &'static [u8] = include_bytes!("terrain.v.glsl");
+const SHADER_FRAG: &'static [u8] = include_bytes!("terrain.f.glsl");
 
 pub struct DrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, pipe::Data<R>>,
