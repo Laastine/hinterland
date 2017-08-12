@@ -15,6 +15,8 @@ uniform b_VsLocals {
 };
 
 void main() {
-  v_BufPos = a_BufPos * vec2(0.1, -0.1) * vec2((1.0 / 11.0), (1.0 / 19.0));
-  gl_Position = u_Proj * u_View * u_Model * vec4(a_Pos, 1.0);
+  vec2 scale_down = vec2(0.3, -0.3);
+  vec4 translate_y = vec4(0.0, 500.0, 0.0, 0.0);
+  v_BufPos = a_BufPos * scale_down * vec2((1.0 / 11.0), (1.0 / 19.0));
+  gl_Position = translate_y + u_Proj * u_View * u_Model * vec4(a_Pos, 1.0);
 }

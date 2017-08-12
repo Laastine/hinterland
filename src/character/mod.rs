@@ -81,12 +81,12 @@ impl<R: gfx::Resources> DrawSystem<R> {
     let tilesheet_bytes = &include_bytes!("../../assets/character.png")[..];
     let vertex_data: Vec<VertexData> =
       vec![
-        VertexData::new([-100.0, -150.0, 0.0], [0.0, 150.0]),
-        VertexData::new([100.0, -150.0, 0.0], [100.0, 150.0]),
-        VertexData::new([100.0, 150.0, 0.0], [100.0, 0.0]),
-        VertexData::new([-100.0, -150.0, 0.0], [0.0, 150.0]),
-        VertexData::new([100.0, 150.0, 0.0], [100.0, 0.0]),
-        VertexData::new([-100.0, 150.0, 0.0], [0.0, 0.0]),
+        VertexData::new([-40.0, -64.0, 0.0], [0.0, 64.0]),
+        VertexData::new([40.0, -64.0, 0.0], [40.0, 64.0]),
+        VertexData::new([40.0, 64.0, 0.0], [40.0, 0.0]),
+        VertexData::new([-40.0, -64.0, 0.0], [0.0, 64.0]),
+        VertexData::new([40.0, 64.0, 0.0], [40.0, 0.0]),
+        VertexData::new([-40.0, 64.0, 0.0], [0.0, 0.0]),
       ];
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());
