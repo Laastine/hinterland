@@ -4,7 +4,8 @@ use physics::{Dimensions, Position};
 use cgmath::{Matrix4, SquareMatrix, Deg};
 use specs;
 use gfx_app::graphics::load_texture;
-use character::gfx_macros::{pipe, CharacterData, CharacterSheetSettings, VertexData, CharacterPosition};
+use character::gfx_macros::{pipe, CharacterData, CharacterSheetSettings, CharacterIdx, VertexData, CharacterPosition};
+use game::constants::{CHARACTER_W, CHARACTER_H};
 use data;
 
 pub mod gfx_macros;
@@ -54,6 +55,7 @@ impl specs::Component for Drawable {
 pub struct DrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, pipe::Data<R>>,
   data: Vec<CharacterData>,
+  settings: CharacterSheetSettings,
 }
 
 impl<R: gfx::Resources> DrawSystem<R> {
@@ -86,17 +88,29 @@ impl<R: gfx::Resources> DrawSystem<R> {
 
     let pipeline_data = pipe::Data {
       vbuf: vertex_buf,
-      locals: factory.create_constant_buffer(1),
+      locals_cb: factory.create_constant_buffer(1),
       character: factory.create_constant_buffer(512),
       character_cb: factory.create_constant_buffer(1),
       charactersheet: (tile_texture, factory.create_sampler_linear()),
+      character_idx: factory.create_constant_buffer(1),
       out_color: rtv,
       out_depth: dsv,
     };
 
+    let tilesheet_width = 11;
+    let tilesheet_height = 19;
+
+    let tilesheet_total_width = tilesheet_width * CHARACTER_W as i32;
+    let tilesheet_total_height = tilesheet_height * CHARACTER_H as i32;
+
     DrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
       data: data::load_character(),
+      settings: CharacterSheetSettings {
+        character_size: [CHARACTER_W as f32, CHARACTER_H as f32, height as f32, 0.0],
+        charactersheet_size: [tilesheet_width as f32, tilesheet_height as f32, tilesheet_total_width as f32, tilesheet_total_height as f32],
+        offsets: [0.0, 0.0],
+      }
     }
   }
 
@@ -104,12 +118,11 @@ impl<R: gfx::Resources> DrawSystem<R> {
                  drawable: &Drawable,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
-    encoder.update_constant_buffer(&self.bundle.data.locals, &drawable.locals);
     encoder.update_buffer(&self.bundle.data.character, &self.data.as_slice(), 0).unwrap();
-    encoder.update_constant_buffer(&self.bundle.data.character_cb, &CharacterSheetSettings {
-      charactersheet_idx: [1.0, 0.0, 0.0, 0.0],
-      charactersheet_size: [32.0, 32.0, 32.0, 32.0],
-      offsets: [0.0, 0.0],
+    encoder.update_constant_buffer(&self.bundle.data.locals_cb, &drawable.locals);
+    encoder.update_constant_buffer(&self.bundle.data.character_cb, &self.settings);
+    encoder.update_constant_buffer(&self.bundle.data.character_idx, &CharacterIdx {
+      idx: 7.0
     });
     self.bundle.encode(encoder);
   }
@@ -134,7 +147,7 @@ impl<C> specs::System<C> for PreDrawSystem {
 
     for c in (&mut character).join() {
       let world_to_clip = dim.world_to_clip();
-      let pos = Position::new(100.0, 100.0, Deg(0.0).into(), 100.0);
+      let pos = Position::new(100.0, 200.0, Deg(0.0).into(), 0.5);
       c.update(&world_to_clip, &pos);
     }
   }
