@@ -1,6 +1,6 @@
 use game::gfx_macros::Projection;
 use cgmath;
-use cgmath::{Matrix4, Point3, Vector3, Point2, Deg};
+use cgmath::{Matrix4, Point3, Vector3};
 use specs;
 use terrain;
 
@@ -33,10 +33,5 @@ impl Dimensions {
       view: view.into(),
       proj: cgmath::perspective(cgmath::Deg(60.0f32), aspect_ratio, 0.1, 4000.0).into(),
     }
-  }
-
-  pub fn world_to_clip(&self) -> Matrix4<f32> {
-    Matrix4::from_translation(Vector3::new(-1.0, -1.0, 0.0)) *
-      Matrix4::from_nonuniform_scale(2.0 / (self.width as f32), 2.0 / (self.height as f32), 1.0)
   }
 }
