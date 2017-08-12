@@ -1,7 +1,7 @@
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use physics::{Dimensions, Position};
-use cgmath::{Matrix4, SquareMatrix, Point2, Deg, Rad};
+use cgmath::{Matrix4, SquareMatrix, Deg};
 use specs;
 use gfx_app::graphics::load_texture;
 use character::gfx_macros::{pipe, CharacterData, CharacterSheetSettings, VertexData, CharacterPosition};
@@ -14,10 +14,6 @@ const SHADER_VERT: &'static [u8] = include_bytes!("character.v.glsl");
 const SHADER_FRAG: &'static [u8] = include_bytes!("character.f.glsl");
 
 impl CharacterData {
-  pub fn new_empty() -> CharacterData {
-    CharacterData { data: [32.0, 32.0, 0.0, 0.0] }
-  }
-
   pub fn new(data: [f32; 4]) -> CharacterData {
     CharacterData { data: data }
   }
@@ -57,8 +53,6 @@ impl<R: gfx::Resources> DrawSystem<R> {
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> DrawSystem<R>
     where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
-    let width = 32;
-    let height = 32;
 
     let tilesheet_bytes = &include_bytes!("../../assets/character.png")[..];
     let vertex_data: Vec<VertexData> =
@@ -133,11 +127,8 @@ impl<C> specs::System<C> for PreDrawSystem {
 
     for c in (&mut character).join() {
       let world_to_clip = dim.world_to_clip();
-      c.update(&world_to_clip, &Position {
-        position: Point2::new(100.0, 100.0),
-        orientation: Deg(0.0).into(),
-        scale: 100.0
-      });
+      let pos = Position::new(100.0, 100.0, Deg(0.0).into(), 100.0);
+      c.update(&world_to_clip, &pos);
     }
   }
 }

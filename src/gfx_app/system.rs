@@ -38,7 +38,7 @@ impl<D, C> specs::System<C> for DrawSystem<D>
   fn run(&mut self, arg: specs::RunArg, _: C) {
     use specs::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
-    let (mut terrain, mut character) = arg.fetch(|w| {
+    let (mut terrain, character) = arg.fetch(|w| {
       (w.read::<terrain::Drawable>(),
        w.read::<character::Drawable>())
     });

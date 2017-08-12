@@ -52,6 +52,7 @@ impl GlutinWindow {
   }
 }
 
+#[allow(dead_code)]
 #[derive(Debug, PartialEq, Eq)]
 pub enum GameStatus {
   Render,

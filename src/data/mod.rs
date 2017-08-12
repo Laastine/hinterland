@@ -88,6 +88,7 @@ pub fn load_character() -> Vec<CharacterData> {
   sprites
 }
 
+#[allow(dead_code)]
 pub fn load_zombie() -> Vec<(f64, f64)> {
   let mut sprites = Vec::with_capacity(256);
   let mut idle_sprite_names = Vec::with_capacity(64);
