@@ -40,30 +40,3 @@ impl Dimensions {
       Matrix4::from_nonuniform_scale(2.0 / (self.width as f32), 2.0 / (self.height as f32), 1.0)
   }
 }
-
-#[derive(Debug, Clone)]
-pub struct Position {
-  pub position: Point2<f32>,
-  pub orientation: Deg<f32>,
-  pub scale: f32,
-}
-
-impl Position {
-  pub fn new(x: f32, y: f32, angle: Deg<f32>, scale: f32) -> Position {
-    Position {
-      position: Point2::new(x, y),
-      orientation: angle,
-      scale: scale,
-    }
-  }
-
-  pub fn model_to_world(&self) -> Matrix4<f32> {
-    Matrix4::from_translation(Vector3::new(self.position.x, self.position.y, 0.0)) *
-      Matrix4::from_nonuniform_scale(self.scale, self.scale, 1.0) *
-      Matrix4::from_angle_z(-self.orientation)
-  }
-}
-
-impl specs::Component for Position {
-  type Storage = specs::VecStorage<Position>;
-}
