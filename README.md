@@ -17,8 +17,10 @@ cargo run
 ## Controls
 
 `Arrow keys`
+`+` - zoom in
+`-` - zoom out
 
-Tested with Rust 1.18
+Tested with Rust 1.19
 
 ## Asset licences
 

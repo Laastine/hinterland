@@ -3,11 +3,12 @@ use std::fs::File;
 use std::string::String;
 use std::path::Path;
 use std::vec::Vec;
-use std::io::{BufReader};
+use std::io::BufReader;
 use json;
 use game::constants::{CHARACTER_JSON_PATH, ZOMBIE_JSON_PATH};
-use tiled::{Map};
+use tiled::Map;
 use tiled;
+use character::gfx_macros::CharacterData;
 
 pub fn load_map_file(filename: &str) -> Map {
   let file = match File::open(&Path::new(&filename)) {
@@ -50,10 +51,10 @@ fn read_sprite_file(filename: &str) -> String {
   }
 }
 
-pub fn load_character() -> Vec<(f64, f64)> {
+pub fn load_character() -> Vec<CharacterData> {
   let mut sprites = Vec::with_capacity(512);
   let mut move_sprite_names = Vec::with_capacity(256);
-  let mut fire_sprite_names = Vec::with_capacity(256);
+//  let mut fire_sprite_names = Vec::with_capacity(256);
   let character_json = read_sprite_file(CHARACTER_JSON_PATH);
   let character = match json::parse(&character_json) {
     Ok(res) => res,
@@ -65,23 +66,29 @@ pub fn load_character() -> Vec<(f64, f64)> {
       move_sprite_names.push(format!("run_{}_{}", x, y));
     }
   }
-  for x in 0..15 {
-    for y in 0..3 {
-      fire_sprite_names.push(format!("fire_{}_{}", x, y));
-    }
-  }
+//  for x in 0..15 {
+//    for y in 0..3 {
+//      fire_sprite_names.push(format!("fire_{}_{}", x, y));
+//    }
+//  }
 
   for &ref move_sprite in &move_sprite_names {
-    sprites.push((character["frames"][move_sprite]["frame"]["x"].as_f64().unwrap(), character["frames"][move_sprite]["frame"]["y"].as_f64().unwrap()));
+    sprites.push(CharacterData::new([character["frames"][move_sprite]["frame"]["x"].as_f32().unwrap(),
+                                    character["frames"][move_sprite]["frame"]["y"].as_f32().unwrap(),
+                                    0.0,
+                                    0.0]));
   }
 
-  for &ref fire_sprite in &fire_sprite_names {
-    sprites.push((character["frames"][fire_sprite]["frame"]["x"].as_f64().unwrap(),
-                  character["frames"][fire_sprite]["frame"]["y"].as_f64().unwrap()));
-  }
+//  for &ref fire_sprite in &fire_sprite_names {
+//    sprites.push(CharacterData::new([character["frames"][fire_sprite]["frame"]["x"].as_f32().unwrap(),
+//                                    character["frames"][fire_sprite]["frame"]["y"].as_f32().unwrap(),
+//                                    0.0,
+//                                    0.0]));
+//  }
   sprites
 }
 
+#[allow(dead_code)]
 pub fn load_zombie() -> Vec<(f64, f64)> {
   let mut sprites = Vec::with_capacity(256);
   let mut idle_sprite_names = Vec::with_capacity(64);
