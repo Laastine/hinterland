@@ -1,5 +1,7 @@
 use std::sync::mpsc;
 use specs;
+use game::constants::{VIEW_DISTANCE};
+
 
 #[derive(Clone, Debug)]
 pub struct InputState {
@@ -11,7 +13,7 @@ pub struct InputState {
 impl InputState {
   pub fn new() -> InputState {
     InputState {
-      distance: 1000.0,
+      distance: VIEW_DISTANCE,
       x_pos: 0.0,
       y_pos: 0.0,
     }

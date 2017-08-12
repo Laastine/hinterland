@@ -10,7 +10,7 @@ use terrain::gfx_macros::{TileMapData, VertexData, Projection, pipe, TilemapSett
 use terrain::controls::InputState;
 use game::constants::{TILEMAP_BUF_LENGTH, ASPECT_RATIO};
 use gfx_app::graphics::load_texture;
-use game::constants::{TILES_PCS_W, TILES_PCS_H};
+use game::constants::{TILES_PCS_W, TILES_PCS_H, VIEW_DISTANCE};
 
 #[macro_use]
 pub mod gfx_macros;
@@ -39,7 +39,7 @@ pub struct Drawable {
 impl Drawable {
   pub fn new() -> Drawable {
     let view: Matrix4<f32> = Matrix4::look_at(
-      Point3::new(0.0, 0.0, 1000.0),
+      Point3::new(0.0, 0.0, VIEW_DISTANCE),
       Point3::new(0.0, 0.0, 0.0),
       Vector3::unit_y(),
     );
