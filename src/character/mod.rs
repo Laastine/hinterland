@@ -24,6 +24,15 @@ pub struct Drawable {
   locals: CharacterPosition,
 }
 
+impl VertexData {
+  fn new(pos: [f32; 3], buf_pos: [f32; 2]) -> VertexData {
+    VertexData {
+      pos: pos,
+      buf_pos: buf_pos,
+    }
+  }
+}
+
 impl Drawable {
   pub fn new() -> Drawable {
     Drawable {
@@ -56,16 +65,14 @@ impl<R: gfx::Resources> DrawSystem<R> {
 
     let tilesheet_bytes = &include_bytes!("../../assets/character.png")[..];
     let vertex_data: Vec<VertexData> =
-      vec![VertexData {
-        pos: [-0.5, -0.5, 0.0],
-        buf_pos: [0.0, 0.0]
-      }, VertexData {
-        pos: [0.0, 0.5, 0.0],
-        buf_pos: [0.0, 0.0]
-      }, VertexData {
-        pos: [0.5, -0.5, 0.0],
-        buf_pos: [0.0, 0.0]
-      }];
+      vec![
+        VertexData::new([-100.0, -150.0, 0.0], [0.0, 150.0]),
+        VertexData::new([100.0, -150.0, 0.0], [100.0, 150.0]),
+        VertexData::new([100.0, 150.0, 0.0], [100.0, 0.0]),
+        VertexData::new([-100.0, -150.0, 0.0], [0.0, 150.0]),
+        VertexData::new([100.0, 150.0, 0.0], [100.0, 0.0]),
+        VertexData::new([-100.0, 150.0, 0.0], [0.0, 0.0]),
+      ];
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());
 
