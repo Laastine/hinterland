@@ -1,4 +1,4 @@
-use terrain::gfx_macros::Projection;
+use game::gfx_macros::Projection;
 use cgmath;
 use cgmath::{Matrix4, Point3, Vector3, Point2, Deg};
 use specs;
@@ -16,8 +16,8 @@ pub struct Dimensions {
 impl Dimensions {
   pub fn new(_window_width: u32, _window_height: u32) -> Dimensions {
     Dimensions {
-      width: 1280,
-      height: 720,
+      width: 1920,
+      height: 1080,
     }
   }
 

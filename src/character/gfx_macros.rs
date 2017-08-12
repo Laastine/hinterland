@@ -1,4 +1,5 @@
 use gfx;
+use game::gfx_macros::Projection;
 
 gfx_defines! {
   constant CharacterData {
@@ -7,10 +8,6 @@ gfx_defines! {
 
   constant CharacterIdx {
     idx: f32 = "idx",
-  }
-
-  constant CharacterPosition {
-    transform: [[f32; 4]; 4] = "transform",
   }
 
   constant CharacterSheetSettings {
@@ -26,7 +23,7 @@ gfx_defines! {
 
   pipeline pipe {
     vbuf: gfx::VertexBuffer<VertexData> = (),
-    locals_cb: gfx::ConstantBuffer<CharacterPosition> = "b_VsLocals",
+    projection_cb: gfx::ConstantBuffer<Projection> = "b_VsLocals",
     character: gfx::ConstantBuffer<CharacterData> = "b_Character",
     character_cb: gfx::ConstantBuffer<CharacterSheetSettings> = "b_PsLocals",
     charactersheet: gfx::TextureSampler<[f32; 4]> = "t_CharacterSheet",

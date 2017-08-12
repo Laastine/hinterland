@@ -1,11 +1,14 @@
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use physics::{Dimensions, Position};
-use cgmath::{Matrix4, SquareMatrix, Deg};
+use cgmath;
+use cgmath::{Matrix4, Point3, Vector3};
 use specs;
 use gfx_app::graphics::load_texture;
-use character::gfx_macros::{pipe, CharacterData, CharacterSheetSettings, CharacterIdx, VertexData, CharacterPosition};
-use game::constants::{CHARACTER_W, CHARACTER_H};
+use character::gfx_macros::{pipe, CharacterData, CharacterSheetSettings, CharacterIdx, VertexData};
+use game::gfx_macros::Projection;
+use game::constants::{CHARACTER_W, CHARACTER_H, ASPECT_RATIO, VIEW_DISTANCE};
+use terrain::controls::InputState;
 use data;
 
 pub mod gfx_macros;
@@ -20,11 +23,6 @@ impl CharacterData {
   }
 }
 
-#[derive(Debug, Clone)]
-pub struct Drawable {
-  locals: CharacterPosition,
-}
-
 impl VertexData {
   fn new(pos: [f32; 3], buf_pos: [f32; 2]) -> VertexData {
     VertexData {
@@ -34,17 +32,32 @@ impl VertexData {
   }
 }
 
+#[derive(Debug)]
+pub struct Drawable {
+  projection: Projection,
+}
+
 impl Drawable {
   pub fn new() -> Drawable {
+    let view: Matrix4<f32> = Matrix4::look_at(
+      Point3::new(0.0, 0.0, VIEW_DISTANCE),
+      Point3::new(0.0, 0.0, 0.0),
+      Vector3::unit_y(),
+    );
+
+    let aspect_ratio: f32 = ASPECT_RATIO;
+
     Drawable {
-      locals: CharacterPosition {
-        transform: Matrix4::identity().into()
-      },
+      projection: Projection {
+        model: Matrix4::from(view).into(),
+        view: view.into(),
+        proj: cgmath::perspective(cgmath::Deg(60.0f32), aspect_ratio, 0.1, 4000.0).into(),
+      }
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Matrix4<f32>, pos: &Position) {
-    self.locals.transform = (world_to_clip * pos.model_to_world()).into();
+  pub fn update(&mut self, world_to_clip: &Projection) {
+    self.projection = *world_to_clip;
   }
 }
 
@@ -88,7 +101,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
 
     let pipeline_data = pipe::Data {
       vbuf: vertex_buf,
-      locals_cb: factory.create_constant_buffer(1),
+      projection_cb: factory.create_constant_buffer(1),
       character: factory.create_constant_buffer(512),
       character_cb: factory.create_constant_buffer(1),
       charactersheet: (tile_texture, factory.create_sampler_linear()),
@@ -107,7 +120,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
       data: data::load_character(),
       settings: CharacterSheetSettings {
-        character_size: [CHARACTER_W as f32, CHARACTER_H as f32, height as f32, 0.0],
+        character_size: [CHARACTER_W as f32, CHARACTER_H as f32, CHARACTER_H as f32, 0.0],
         charactersheet_size: [tilesheet_width as f32, tilesheet_height as f32, tilesheet_total_width as f32, tilesheet_total_height as f32],
         offsets: [0.0, 0.0],
       }
@@ -119,7 +132,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
     encoder.update_buffer(&self.bundle.data.character, &self.data.as_slice(), 0).unwrap();
-    encoder.update_constant_buffer(&self.bundle.data.locals_cb, &drawable.locals);
+    encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.character_cb, &self.settings);
     encoder.update_constant_buffer(&self.bundle.data.character_idx, &CharacterIdx {
       idx: 7.0
@@ -140,15 +153,15 @@ impl PreDrawSystem {
 impl<C> specs::System<C> for PreDrawSystem {
   fn run(&mut self, arg: specs::RunArg, _: C) {
     use specs::Join;
-    let (mut character, dim) =
+    let (mut character, dim, mut input) =
       arg.fetch(|w| (
         w.write::<Drawable>(),
-        w.read_resource::<Dimensions>()));
+        w.read_resource::<Dimensions>(),
+        w.write::<InputState>()));
 
-    for c in (&mut character).join() {
-      let world_to_clip = dim.world_to_clip();
-      let pos = Position::new(100.0, 200.0, Deg(0.0).into(), 0.5);
-      c.update(&world_to_clip, &pos);
+    for (c, i) in (&mut character, &mut input).join() {
+      let world_to_clip = dim.world_to_projection(i);
+      c.update(&world_to_clip);
     }
   }
 }

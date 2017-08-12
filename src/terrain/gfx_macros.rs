@@ -1,14 +1,9 @@
 use gfx;
+use game::gfx_macros::Projection;
 
 gfx_defines! {
     constant TileMapData {
         data: [f32; 4] = "data",
-    }
-
-    constant Projection {
-        model: [[f32; 4]; 4] = "u_Model",
-        view: [[f32; 4]; 4] = "u_View",
-        proj: [[f32; 4]; 4] = "u_Proj",
     }
 
     constant TilemapSettings {
