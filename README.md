@@ -21,6 +21,11 @@ cargo run
 `-` - zoom out
 `Esc` - exit
 
+## Development
+
+Log frame render speed with
+`cargo run --features dev`
+
 Tested with Rust 1.19
 
 ## Asset licences

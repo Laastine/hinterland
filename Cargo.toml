@@ -17,3 +17,6 @@ image = "0.14.0"
 noise = "0.1.0"
 rand = "0.3.0"
 specs = "0.8.1"
+
+[features]
+dev = []
