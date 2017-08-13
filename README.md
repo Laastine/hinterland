@@ -16,9 +16,9 @@ cargo run
 
 ## Controls
 
-`WASD keys`
-`+` - zoom in
-`-` - zoom out
+`WASD keys`<br/>
+`+` - zoom in<br/>
+`-` - zoom out<br/>
 `Esc` - exit
 
 ## Development
