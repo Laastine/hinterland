@@ -3,6 +3,7 @@ use cgmath;
 use cgmath::{Matrix4, Point3, Vector3};
 use specs;
 use terrain;
+use game::constants::{RESOLUTION_X, RESOLUTION_Y};
 
 pub type Delta = f32;
 pub type Planner = specs::Planner<Delta>;
@@ -16,8 +17,8 @@ pub struct Dimensions {
 impl Dimensions {
   pub fn new(_window_width: u32, _window_height: u32) -> Dimensions {
     Dimensions {
-      width: 1920,
-      height: 1080,
+      width: RESOLUTION_X,
+      height: RESOLUTION_Y,
     }
   }
 

@@ -8,9 +8,6 @@ pub const TILES_PCS_H: usize = 32;
 //
 //pub const TILESHEET_PCS_W: usize = TILES_PCS_W - 1;
 //pub const TILESHEET_PCS_H: usize = TILES_PCS_H - 1;
-//
-//pub const SCREEN_WIDTH: f64 = 1280.0;
-//pub const SCREEN_HEIGHT: f64 = 720.0;
 
 pub const CHARACTER_W: f32 = 45.0;
 pub const CHARACTER_H: f32 = 60.0;
@@ -38,6 +35,9 @@ pub const MAP_FILE_PATH: &'static str = "assets/maps/tilemap.tmx";
 
 pub const TILEMAP_BUF_LENGTH: usize = 4096;
 
-pub const ASPECT_RATIO: f32 = 1280.0 / 720.0;
+pub const RESOLUTION_X: u32 = 1920;
+pub const RESOLUTION_Y: u32 = 1080;
+
+pub const ASPECT_RATIO: f32 = (RESOLUTION_X / RESOLUTION_Y) as f32;
 
 pub const VIEW_DISTANCE: f32 = 300.0;

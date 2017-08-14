@@ -4,6 +4,7 @@ use gfx_device_gl;
 use gfx_window_glutin;
 use glutin::GlContext;
 use std::process;
+use game::constants::{RESOLUTION_X, RESOLUTION_Y};
 
 pub mod init;
 pub mod renderer;
@@ -97,7 +98,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
   fn get_viewport_size(&mut self) -> (u32, u32) {
     self.window
       .get_inner_size_pixels()
-      .unwrap_or((1280, 720))
+      .unwrap_or((RESOLUTION_X, RESOLUTION_Y))
   }
 
   fn get_device(&mut self) -> &mut gfx_device_gl::Device {
