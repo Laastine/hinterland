@@ -11,7 +11,6 @@ extern crate genmesh;
 extern crate gfx_device_gl;
 extern crate gfx_window_glutin;
 extern crate glutin;
-extern crate noise;
 extern crate image;
 
 mod gfx_app;
