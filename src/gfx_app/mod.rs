@@ -123,7 +123,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
     use glutin::VirtualKeyCode::{Escape, Minus, Equals, W, A, S, D};
 
     let controls = match self.controls {
-      Some(ref c) => c,
+      Some(ref mut c) => c,
       None => panic!("Controls have not been initialized"),
     };
 
@@ -132,18 +132,18 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
         glutin::Event::WindowEvent { event, .. } => match event {
           glutin::WindowEvent::KeyboardInput { input, .. } => match input {
             KeyboardInput { state: _, virtual_keycode: Some(Escape), modifiers: _, scancode: _ } => process::exit(0),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Minus) } => controls.clone().zoom_out(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Equals) } => controls.clone().zoom_in(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Minus) } => controls.zoom_out(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Equals) } => controls.zoom_in(),
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Minus) } |
-            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Equals) } => controls.clone().zoom_stop(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(W) } => controls.clone().move_map_up(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(S) } => controls.clone().move_map_down(),
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Equals) } => controls.zoom_stop(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(W) } => controls.move_map_up(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(S) } => controls.move_map_down(),
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(W) } |
-            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(S) } => controls.clone().stop_map_y(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(D) } => controls.clone().move_map_right(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(A) } => controls.clone().move_map_left(),
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(S) } => controls.stop_map_y(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(D) } => controls.move_map_right(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(A) } => controls.move_map_left(),
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(D) } |
-            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(A) } => controls.clone().stop_map_x(),
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(A) } => controls.stop_map_x(),
             _ => (),
           },
           glutin::WindowEvent::Closed => process::exit(0),
