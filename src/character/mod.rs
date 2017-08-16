@@ -91,7 +91,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());
 
-    let tile_texture = load_texture(factory, tilesheet_bytes).unwrap();
+    let char_texture = load_texture(factory, tilesheet_bytes).unwrap();
 
     let pso = factory
       .create_pipeline_simple(SHADER_VERT,
@@ -104,7 +104,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
       projection_cb: factory.create_constant_buffer(1),
       character: factory.create_constant_buffer(512),
       character_cb: factory.create_constant_buffer(1),
-      charactersheet: (tile_texture, factory.create_sampler_linear()),
+      charactersheet: (char_texture, factory.create_sampler_linear()),
       character_idx: factory.create_constant_buffer(1),
       out_color: rtv,
       out_depth: dsv,
