@@ -28,7 +28,8 @@ pub struct GlutinWindow {
 impl GlutinWindow {
   pub fn new() -> GlutinWindow {
     let builder = glutin::WindowBuilder::new()
-      .with_title("Zombie shooter");
+      .with_title("Zombie shooter")
+      .with_dimensions(RESOLUTION_X,RESOLUTION_Y);
 
     let events_loop = glutin::EventsLoop::new();
     let context = glutin::ContextBuilder::new()
