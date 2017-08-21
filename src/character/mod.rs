@@ -7,7 +7,7 @@ use specs;
 use gfx_app::graphics::load_texture;
 use character::gfx_macros::{pipe, CharacterData, CharacterSheetSettings, CharacterIdx, VertexData};
 use game::gfx_macros::Projection;
-use game::constants::{CHARACTER_W, CHARACTER_H, ASPECT_RATIO, VIEW_DISTANCE};
+use game::constants::{CHARACTER_W, CHARACTER_H, ASPECT_RATIO, VIEW_DISTANCE, CHARACTER_BUF_LENGTH};
 use terrain::controls::InputState;
 use data;
 
@@ -102,7 +102,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
     let pipeline_data = pipe::Data {
       vbuf: vertex_buf,
       projection_cb: factory.create_constant_buffer(1),
-      character: factory.create_constant_buffer(512),
+      character: factory.create_constant_buffer(CHARACTER_BUF_LENGTH),
       character_cb: factory.create_constant_buffer(1),
       charactersheet: (char_texture, factory.create_sampler_linear()),
       character_idx: factory.create_constant_buffer(1),

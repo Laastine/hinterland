@@ -34,6 +34,7 @@ pub const CHARACTER_JSON_PATH: &'static str = "assets/character.json";
 pub const MAP_FILE_PATH: &'static str = "assets/maps/tilemap.tmx";
 
 pub const TILEMAP_BUF_LENGTH: usize = 4096;
+pub const CHARACTER_BUF_LENGTH: usize = 210;
 
 pub const RESOLUTION_X: u32 = 1920;
 pub const RESOLUTION_Y: u32 = 1080;

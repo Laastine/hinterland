@@ -7,7 +7,7 @@ struct CharacterData {
     vec4 data;
 };
 
-const int CHARACTER_BUF_LENGTH = 512;
+const int CHARACTER_BUF_LENGTH = 210;
 
 uniform b_Character {
   CharacterData u_Data[CHARACTER_BUF_LENGTH];
