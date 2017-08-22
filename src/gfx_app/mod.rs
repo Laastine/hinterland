@@ -29,7 +29,7 @@ impl GlutinWindow {
   pub fn new() -> GlutinWindow {
     let builder = glutin::WindowBuilder::new()
       .with_title("Zombie shooter")
-      .with_dimensions(RESOLUTION_X,RESOLUTION_Y);
+      .with_dimensions(RESOLUTION_X, RESOLUTION_Y);
 
     let events_loop = glutin::EventsLoop::new();
     let context = glutin::ContextBuilder::new()
@@ -120,6 +120,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
 
   fn poll_events(&mut self) -> Option<GameStatus> {
     use glutin::KeyboardInput;
+    use glutin::WindowEvent::{Resized, Closed};
     use glutin::ElementState::{Pressed, Released};
     use glutin::VirtualKeyCode::{Escape, Minus, Equals, W, A, S, D};
 
@@ -127,6 +128,9 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
       Some(ref mut c) => c,
       None => panic!("Controls have not been initialized"),
     };
+    let ref w = self.window;
+    let ref mut rtv = self.render_target_view;
+    let ref mut dsv = self.depth_stencil_view;
 
     self.events_loop.poll_events(|event| {
       match event {
@@ -147,7 +151,8 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(A) } => controls.stop_map_x(),
             _ => (),
           },
-          glutin::WindowEvent::Closed => process::exit(0),
+          Closed => process::exit(0),
+          Resized(_, _) => gfx_window_glutin::update_views(w, rtv, dsv),
           _ => (),
         },
         _ => (),
