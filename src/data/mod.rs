@@ -54,7 +54,7 @@ fn read_sprite_file(filename: &str) -> String {
 pub fn load_character() -> Vec<CharacterData> {
   let mut sprites = Vec::with_capacity(512);
   let mut move_sprite_names = Vec::with_capacity(256);
-//  let mut fire_sprite_names = Vec::with_capacity(256);
+  //  let mut fire_sprite_names = Vec::with_capacity(256);
   let character_json = read_sprite_file(CHARACTER_JSON_PATH);
   let character = match json::parse(&character_json) {
     Ok(res) => res,
@@ -66,11 +66,11 @@ pub fn load_character() -> Vec<CharacterData> {
       move_sprite_names.push(format!("run_{}_{}", x, y));
     }
   }
-//  for x in 0..15 {
-//    for y in 0..3 {
-//      fire_sprite_names.push(format!("fire_{}_{}", x, y));
-//    }
-//  }
+  //  for x in 0..15 {
+  //    for y in 0..3 {
+  //      fire_sprite_names.push(format!("fire_{}_{}", x, y));
+  //    }
+  //  }
 
   for &ref move_sprite in &move_sprite_names {
     sprites.push(CharacterData::new([character["frames"][move_sprite]["frame"]["x"].as_f32().unwrap(),
@@ -79,12 +79,12 @@ pub fn load_character() -> Vec<CharacterData> {
                                     0.0]));
   }
 
-//  for &ref fire_sprite in &fire_sprite_names {
-//    sprites.push(CharacterData::new([character["frames"][fire_sprite]["frame"]["x"].as_f32().unwrap(),
-//                                    character["frames"][fire_sprite]["frame"]["y"].as_f32().unwrap(),
-//                                    0.0,
-//                                    0.0]));
-//  }
+  //  for &ref fire_sprite in &fire_sprite_names {
+  //    sprites.push(CharacterData::new([character["frames"][fire_sprite]["frame"]["x"].as_f32().unwrap(),
+  //                                    character["frames"][fire_sprite]["frame"]["y"].as_f32().unwrap(),
+  //                                    0.0,
+  //                                    0.0]));
+  //  }
   sprites
 }
 

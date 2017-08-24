@@ -69,6 +69,7 @@ pub struct DrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, pipe::Data<R>>,
   data: Vec<CharacterData>,
   settings: CharacterSheetSettings,
+  idx: f32
 }
 
 impl<R: gfx::Resources> DrawSystem<R> {
@@ -79,14 +80,15 @@ impl<R: gfx::Resources> DrawSystem<R> {
     use gfx::traits::FactoryExt;
 
     let tilesheet_bytes = &include_bytes!("../../assets/character.png")[..];
+
     let vertex_data: Vec<VertexData> =
       vec![
-        VertexData::new([-40.0, -64.0, 0.0], [0.0, 64.0]),
-        VertexData::new([40.0, -64.0, 0.0], [40.0, 64.0]),
-        VertexData::new([40.0, 64.0, 0.0], [40.0, 0.0]),
-        VertexData::new([-40.0, -64.0, 0.0], [0.0, 64.0]),
-        VertexData::new([40.0, 64.0, 0.0], [40.0, 0.0]),
-        VertexData::new([-40.0, 64.0, 0.0], [0.0, 0.0]),
+        VertexData::new([-0.2, -0.32, 0.0], [0.0, 1.0]),
+        VertexData::new([0.2, -0.32, 0.0], [1.0, 1.0]),
+        VertexData::new([0.2, 0.32, 0.0], [1.0, 0.0]),
+        VertexData::new([-0.2, -0.32, 0.0], [0.0, 1.0]),
+        VertexData::new([0.2, 0.32, 0.0], [1.0, 0.0]),
+        VertexData::new([-0.2, 0.32, 0.0], [0.0, 0.0]),
       ];
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());
@@ -110,20 +112,15 @@ impl<R: gfx::Resources> DrawSystem<R> {
       out_depth: dsv,
     };
 
-    let tilesheet_width = 11;
-    let tilesheet_height = 19;
-
-    let tilesheet_total_width = tilesheet_width * CHARACTER_W as i32;
-    let tilesheet_total_height = tilesheet_height * CHARACTER_H as i32;
-
     DrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
       data: data::load_character(),
       settings: CharacterSheetSettings {
         character_size: [CHARACTER_W as f32, CHARACTER_H as f32, CHARACTER_H as f32, 0.0],
-        charactersheet_size: [tilesheet_width as f32, tilesheet_height as f32, tilesheet_total_width as f32, tilesheet_total_height as f32],
+        charactersheet_size: [CHARACTER_W as f32, CHARACTER_H as f32, CHARACTER_H as f32, CHARACTER_H as f32],
         offsets: [0.0, 0.0],
-      }
+      },
+      idx: 0.0
     }
   }
 
