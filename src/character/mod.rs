@@ -5,9 +5,9 @@ use cgmath;
 use cgmath::{Matrix4, Point3, Vector3};
 use specs;
 use gfx_app::graphics::load_texture;
-use character::gfx_macros::{pipe, CharacterData, CharacterSheetSettings, CharacterIdx, VertexData};
+use character::gfx_macros::{pipe, CharacterIdx, VertexData};
 use game::gfx_macros::Projection;
-use game::constants::{CHARACTER_W, CHARACTER_H, ASPECT_RATIO, VIEW_DISTANCE, CHARACTER_BUF_LENGTH};
+use game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
 use terrain::controls::InputState;
 use data;
 
@@ -16,6 +16,10 @@ pub mod character;
 
 const SHADER_VERT: &'static [u8] = include_bytes!("character.v.glsl");
 const SHADER_FRAG: &'static [u8] = include_bytes!("character.f.glsl");
+
+pub struct CharacterData {
+  data: [f32; 4]
+}
 
 impl CharacterData {
   pub fn new(data: [f32; 4]) -> CharacterData {
@@ -67,8 +71,6 @@ impl specs::Component for Drawable {
 
 pub struct DrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, pipe::Data<R>>,
-  data: Vec<CharacterData>,
-  settings: CharacterSheetSettings,
   idx: f32
 }
 
@@ -104,8 +106,6 @@ impl<R: gfx::Resources> DrawSystem<R> {
     let pipeline_data = pipe::Data {
       vbuf: vertex_buf,
       projection_cb: factory.create_constant_buffer(1),
-      character: factory.create_constant_buffer(CHARACTER_BUF_LENGTH),
-      character_cb: factory.create_constant_buffer(1),
       charactersheet: (char_texture, factory.create_sampler_linear()),
       character_idx: factory.create_constant_buffer(1),
       out_color: rtv,
@@ -114,12 +114,6 @@ impl<R: gfx::Resources> DrawSystem<R> {
 
     DrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
-      data: data::load_character(),
-      settings: CharacterSheetSettings {
-        character_size: [CHARACTER_W as f32, CHARACTER_H as f32, CHARACTER_H as f32, 0.0],
-        charactersheet_size: [CHARACTER_W as f32, CHARACTER_H as f32, CHARACTER_H as f32, CHARACTER_H as f32],
-        offsets: [0.0, 0.0],
-      },
       idx: 0.0
     }
   }
@@ -128,9 +122,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
                  drawable: &Drawable,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
-    encoder.update_buffer(&self.bundle.data.character, &self.data.as_slice(), 0).unwrap();
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
-    encoder.update_constant_buffer(&self.bundle.data.character_cb, &self.settings);
     encoder.update_constant_buffer(&self.bundle.data.character_idx, &CharacterIdx {
       idx: 7.0
     });
