@@ -85,12 +85,12 @@ impl<R: gfx::Resources> DrawSystem<R> {
 
     let vertex_data: Vec<VertexData> =
       vec![
-        VertexData::new([-0.2, -0.32, 0.0], [0.0, 1.0]),
-        VertexData::new([0.2, -0.32, 0.0], [1.0, 1.0]),
-        VertexData::new([0.2, 0.32, 0.0], [1.0, 0.0]),
-        VertexData::new([-0.2, -0.32, 0.0], [0.0, 1.0]),
-        VertexData::new([0.2, 0.32, 0.0], [1.0, 0.0]),
-        VertexData::new([-0.2, 0.32, 0.0], [0.0, 0.0]),
+        VertexData::new([-40.0, -64.0, 0.0], [0.0, 1.0]),
+        VertexData::new([40.0, -64.0, 0.0], [1.0, 1.0]),
+        VertexData::new([40.0, 64.0, 0.0], [1.0, 0.0]),
+        VertexData::new([-40.0, -64.0, 0.0], [0.0, 1.0]),
+        VertexData::new([40.0, 64.0, 0.0], [1.0, 0.0]),
+        VertexData::new([-40.0, 64.0, 0.0], [0.0, 0.0]),
       ];
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());

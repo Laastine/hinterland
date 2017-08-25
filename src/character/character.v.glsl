@@ -24,5 +24,5 @@ void main() {
   v_BufPos.y /= y_sheet;
   v_BufPos.y += (4.0 / y_sheet);
 
-  gl_Position = vec4(a_Pos, 1.0);
+  gl_Position = u_Proj * u_View * u_Model * vec4(a_Pos, 1.0);
 }
