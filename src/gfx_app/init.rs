@@ -31,15 +31,18 @@ fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.register::<terrain::controls::InputState>();
   world.register::<character::Drawable>();
   world.register::<character::character::Character>();
+  world.register::<character::CharacterSprite>();
 
   let dimensions = Dimensions::new(viewport_size.0, viewport_size.1);
   world.add_resource(terrain::terrain::generate());
   world.add_resource(dimensions);
   world.add_resource(terrain::controls::InputState::new());
   world.add_resource(character::Drawable::new());
+  world.add_resource(character::CharacterSprite::new());
   world.create()
     .with(terrain::Drawable::new())
     .with(character::Drawable::new())
+    .with(character::CharacterSprite::new())
     .with(terrain::controls::InputState::new()).build();
 }
 

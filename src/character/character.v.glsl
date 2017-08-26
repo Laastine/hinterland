@@ -10,8 +10,9 @@ uniform b_VsLocals {
   mat4 u_Proj;
 };
 
-uniform t_CharacterIdx {
-  float idx;
+uniform b_CharacterSprite {
+   vec2 a_div;
+   vec2 a_index;
 };
 
 void main() {
@@ -19,10 +20,10 @@ void main() {
   float y_sheet = 19.0;
   v_BufPos = vec2(a_BufPos);
 
-  v_BufPos.x /= x_sheet;
-  v_BufPos.x += (4.0 / x_sheet);
-  v_BufPos.y /= y_sheet;
-  v_BufPos.y += (4.0 / y_sheet);
+  v_BufPos.x /= a_div.x;
+  v_BufPos.x += (a_index.x / a_div.x);
+  v_BufPos.y /= a_div.y;
+  v_BufPos.y += (a_index.y / a_div.y);
 
   gl_Position = u_Proj * u_View * u_Model * vec4(a_Pos, 1.0);
 }

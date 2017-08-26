@@ -5,11 +5,13 @@ use cgmath;
 use cgmath::{Matrix4, Point3, Vector3};
 use specs;
 use gfx_app::graphics::load_texture;
-use character::gfx_macros::{pipe, CharacterIdx, VertexData};
+use character::gfx_macros::{pipe, VertexData, CharacterSheet};
 use game::gfx_macros::Projection;
 use game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
 use terrain::controls::InputState;
 use data;
+use character::orientation::Orientation;
+use std::mem::replace;
 
 pub mod gfx_macros;
 pub mod character;
@@ -36,6 +38,31 @@ impl VertexData {
       buf_pos: buf_pos,
     }
   }
+}
+
+#[derive(Debug)]
+pub struct CharacterSprite {
+  character_idx: u32
+}
+
+impl CharacterSprite {
+  pub fn new() -> CharacterSprite {
+    CharacterSprite {
+      character_idx: 0,
+    }
+  }
+
+  pub fn update(&mut self) {
+    if self.character_idx < 14 {
+      self.character_idx = self.character_idx + 1;
+    } else {
+      self.character_idx = 0;
+    }
+  }
+}
+
+impl specs::Component for CharacterSprite {
+  type Storage = specs::VecStorage<CharacterSprite>;
 }
 
 #[derive(Debug)]
@@ -73,7 +100,8 @@ impl specs::Component for Drawable {
 
 pub struct DrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, pipe::Data<R>>,
-  idx: f32
+  orientation: f32,
+  data: Vec<CharacterData>,
 }
 
 impl<R: gfx::Resources> DrawSystem<R> {
@@ -108,26 +136,46 @@ impl<R: gfx::Resources> DrawSystem<R> {
     let pipeline_data = pipe::Data {
       vbuf: vertex_buf,
       projection_cb: factory.create_constant_buffer(1),
+      character_sprite_cb: factory.create_constant_buffer(1),
       charactersheet: (char_texture, factory.create_sampler_linear()),
-      character_idx: factory.create_constant_buffer(1),
       out_color: rtv,
       out_depth: dsv,
     };
 
+    let data = data::load_character();
+
     DrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
-      idx: 0.0
+      orientation: 0.0,
+      data: data
     }
+  }
+
+  fn get_next_sprite(&self, character_idx: u32) -> CharacterSheet {
+    let sprite_idx = (self.orientation as u32 * 28 + character_idx) as usize;
+    let char_sprite = &self.data[sprite_idx];
+
+    let charsheet_total_width = 992f32;
+    let charsheet_total_height = 1920f32;
+
+    let elements_x = char_sprite.data[2] / charsheet_total_width;
+    let elements_y = char_sprite.data[3] / charsheet_total_height;
+
+    let char = CharacterSheet {
+      div: [11.0, 19.0],
+      index: [character_idx as f32, 0.0]
+    };
+    println!("{:?}", char);
+    char
   }
 
   pub fn draw<C>(&mut self,
                  drawable: &Drawable,
+                 character: &CharacterSprite,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
-    encoder.update_constant_buffer(&self.bundle.data.character_idx, &CharacterIdx {
-      idx: 7.0
-    });
+    encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb, &mut self.get_next_sprite(character.character_idx));
     self.bundle.encode(encoder);
   }
 }

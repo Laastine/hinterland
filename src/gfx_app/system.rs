@@ -5,6 +5,9 @@ use terrain;
 use character;
 use specs;
 use std::time::Instant;
+use character::CharacterSprite;
+
+pub type Delta = f32;
 
 pub struct DrawSystem<D: gfx::Device> {
   render_target_view: gfx::handle::RenderTargetView<D::Resources, ColorFormat>,
@@ -14,6 +17,7 @@ pub struct DrawSystem<D: gfx::Device> {
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
   frames: u32,
+  cool_down: f32,
 }
 
 impl<D: gfx::Device> DrawSystem<D> {
@@ -32,20 +36,26 @@ impl<D: gfx::Device> DrawSystem<D> {
       encoder_queue: queue,
       game_time: Instant::now(),
       frames: 0,
+      cool_down: 1.0
     }
   }
 }
 
-impl<D, C> specs::System<C> for DrawSystem<D>
+impl<D> specs::System<Delta> for DrawSystem<D>
   where D: gfx::Device,
         D::CommandBuffer: Send,
 {
-  fn run(&mut self, arg: specs::RunArg, _: C) {
+  fn run(&mut self, arg: specs::RunArg, delta: Delta) {
     use specs::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
-    let (mut terrain, character) = arg.fetch(|w| {
+    let (mut terrain, character, mut sprite) = arg.fetch(|w| {
+      if self.cool_down == 0.0 {
+        self.cool_down = self.cool_down + 0.1;
+      }
+      self.cool_down = (self.cool_down - delta).max(0.0);
       (w.read::<terrain::Drawable>(),
-       w.read::<character::Drawable>())
+       w.read::<character::Drawable>(),
+       w.write::<CharacterSprite>())
     });
 
     let current_time = Instant::now();
@@ -63,8 +73,11 @@ impl<D, C> specs::System<C> for DrawSystem<D>
       self.terrain_system.draw(t, &mut encoder);
     }
 
-    for c in (&character).join() {
-      self.character_system.draw(c, &mut encoder);
+    for (c, s) in (&character, &mut sprite).join() {
+      if self.cool_down == 0.0 {
+        s.update();
+      }
+      self.character_system.draw(c, s, &mut encoder);
     }
 
     if let Err(e) = self.encoder_queue.sender.send(encoder) {
