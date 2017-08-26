@@ -17,12 +17,13 @@ pub mod character;
 const SHADER_VERT: &'static [u8] = include_bytes!("character.v.glsl");
 const SHADER_FRAG: &'static [u8] = include_bytes!("character.f.glsl");
 
+#[derive(Debug)]
 pub struct CharacterData {
-  data: [f32; 4]
+  data: [f32; 6]
 }
 
 impl CharacterData {
-  pub fn new(data: [f32; 4]) -> CharacterData {
+  pub fn new(data: [f32; 6]) -> CharacterData {
     CharacterData { data: data }
   }
 }

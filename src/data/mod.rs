@@ -72,14 +72,21 @@ pub fn load_character() -> Vec<CharacterData> {
 //    }
 //  }
 
-  for &ref move_sprite in &move_sprite_names {
-    sprites.push(CharacterData::new([
-      character["frames"][move_sprite]["frame"]["x"].as_f32().unwrap(),
-      character["frames"][move_sprite]["frame"]["y"].as_f32().unwrap(),
-      character["frames"][move_sprite]["frame"]["w"].as_f32().unwrap(),
-      character["frames"][move_sprite]["frame"]["h"].as_f32().unwrap()
-    ]));
+//  for &ref move_sprite in &move_sprite_names {
+  for x in 0..15 {
+    for y in 0..14 {
+      let ref key = format!("run_{}_{}", x, y);
+      sprites.push(CharacterData::new([
+        character["frames"][key]["frame"]["x"].as_f32().unwrap(),
+        character["frames"][key]["frame"]["y"].as_f32().unwrap(),
+        character["frames"][key]["frame"]["w"].as_f32().unwrap(),
+        character["frames"][key]["frame"]["h"].as_f32().unwrap(),
+        x as f32,
+        y as f32
+      ]));
+    }
   }
+//  }
 
 //  for &ref fire_sprite in &fire_sprite_names {
 //    sprites.push(CharacterData::new([
