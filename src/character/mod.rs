@@ -13,6 +13,7 @@ use data;
 
 pub mod gfx_macros;
 pub mod character;
+pub mod orientation;
 
 const SHADER_VERT: &'static [u8] = include_bytes!("character.v.glsl");
 const SHADER_FRAG: &'static [u8] = include_bytes!("character.f.glsl");
