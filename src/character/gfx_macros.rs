@@ -8,8 +8,8 @@ gfx_defines! {
   }
 
   constant CharacterSheet {
-    div: [f32; 2] = "a_div",
-    index: [f32; 2] = "a_index",
+    div: f32 = "a_div",
+    index: f32 = "a_index",
   }
 
   pipeline pipe {

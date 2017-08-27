@@ -53,7 +53,7 @@ impl CharacterSprite {
   }
 
   pub fn update(&mut self) {
-    if self.character_idx < 14 {
+    if self.character_idx < 12 {
       self.character_idx = self.character_idx + 1;
     } else {
       self.character_idx = 0;
@@ -155,18 +155,12 @@ impl<R: gfx::Resources> DrawSystem<R> {
     let sprite_idx = (self.orientation as u32 * 28 + character_idx) as usize;
     let char_sprite = &self.data[sprite_idx];
 
-    let charsheet_total_width = 992f32;
-    let charsheet_total_height = 1920f32;
-
-    let elements_x = char_sprite.data[2] / charsheet_total_width;
-    let elements_y = char_sprite.data[3] / charsheet_total_height;
-
-    let y = (character_idx as f32 / 11.0).floor();
-    let x = character_idx as f32 - (y * 11.0);
-
+    let charsheet_total_width = 11422f32;
+    let offset = 2.0;
+    let elements_x = charsheet_total_width / (char_sprite.data[2] + offset);
     let char = CharacterSheet {
-      div: [11.0, 19.0],
-      index: [x, y]
+      div: elements_x,
+      index: sprite_idx as f32
     };
     println!("{:?}", char);
     char
