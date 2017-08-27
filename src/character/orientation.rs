@@ -15,14 +15,14 @@ pub enum Orientation {
 impl Display for Orientation {
   fn fmt(&self, f: &mut Formatter) -> Result {
     match *self {
-      Right => write!(f, "0"),
-      UpRight => write!(f, "1"),
-      Up => write!(f, "2"),
-      UpLeft => write!(f, "3"),
-      Left => write!(f, "4"),
-      DownLeft => write!(f, "5"),
-      Down => write!(f, "6"),
-      DownRight => write!(f, "7"),
+      Orientation::Right => write!(f, "0"),
+      Orientation::UpRight => write!(f, "1"),
+      Orientation::Up => write!(f, "2"),
+      Orientation::UpLeft => write!(f, "3"),
+      Orientation::Left => write!(f, "4"),
+      Orientation::DownLeft => write!(f, "5"),
+      Orientation::Down => write!(f, "6"),
+      Orientation::DownRight => write!(f, "7"),
     }
   }
 }
