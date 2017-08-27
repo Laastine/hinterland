@@ -12,7 +12,6 @@ use terrain::controls::TerrainInputState;
 use character::controls::CharacterInputState;
 use data;
 use character::orientation::Orientation;
-use std::mem::replace;
 
 pub mod gfx_macros;
 pub mod character;
@@ -44,7 +43,7 @@ impl VertexData {
 
 #[derive(Debug)]
 pub struct CharacterSprite {
-  character_idx: u32
+  character_idx: usize
 }
 
 impl CharacterSprite {
@@ -71,6 +70,7 @@ impl specs::Component for CharacterSprite {
 pub struct Drawable {
   projection: Projection,
   position: Position,
+  orientation: Orientation,
 }
 
 impl Drawable {
@@ -91,15 +91,31 @@ impl Drawable {
       },
       position: Position {
         position: [0.0, 0.0],
-      }
+      },
+      orientation: Orientation::Right
     }
   }
 
   pub fn update(&mut self, world_to_clip: &Projection, position: &CharacterInputState) {
     self.projection = *world_to_clip;
-    self.position = Position {
+    let new_position = Position {
       position: [position.x_movement, position.y_movement]
     };
+
+    let dx = new_position.position[0] - self.position.position[0];
+    let dy = new_position.position[1] - self.position.position[1];
+    self.orientation =
+    if dx == 0.0 && dy < 0.0       { Orientation::Up }
+    else if dx > 0.0 && dy < 0.0   { Orientation::UpRight }
+    else if dx < 0.0 && dy < 0.0   { Orientation::UpLeft }
+    else if dx == 0.0 && dy == 0.0 { Orientation::Right }
+    else if dx > 0.0 && dy == 0.0  { Orientation::Right }
+    else if dx < 0.0 && dy == 0.0  { Orientation::Left }
+    else if dx == 0.0 && dy > 0.0  { Orientation::Down }
+    else if dx > 0.0 && dy > 0.0   { Orientation::DownRight }
+    else if dx < 0.0 && dy > 0.0   { Orientation::DownLeft }
+    else { unreachable!() };
+    self.position = new_position;
   }
 }
 
@@ -109,7 +125,6 @@ impl specs::Component for Drawable {
 
 pub struct DrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, pipe::Data<R>>,
-  orientation: f32,
   data: Vec<CharacterData>,
 }
 
@@ -156,13 +171,12 @@ impl<R: gfx::Resources> DrawSystem<R> {
 
     DrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
-      orientation: 0.0,
       data: data
     }
   }
 
-  fn get_next_sprite(&self, character_idx: u32) -> CharacterSheet {
-    let sprite_idx = (self.orientation as u32 * 28 + character_idx) as usize;
+  fn get_next_sprite(&self, character_idx: usize, orientation: &Orientation) -> CharacterSheet {
+    let sprite_idx = (*orientation as usize * 28 + character_idx) as usize;
     let char_sprite = &self.data[sprite_idx];
 
     let charsheet_total_width = 11422f32;
@@ -183,7 +197,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
     where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
-    encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb, &mut self.get_next_sprite(character.character_idx));
+    encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb, &mut self.get_next_sprite(character.character_idx, &drawable.orientation));
     self.bundle.encode(encoder);
   }
 }
