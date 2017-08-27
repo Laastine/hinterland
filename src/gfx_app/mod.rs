@@ -122,7 +122,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
     use glutin::KeyboardInput;
     use glutin::WindowEvent::{Resized, Closed};
     use glutin::ElementState::{Pressed, Released};
-    use glutin::VirtualKeyCode::{Escape, Minus, Equals, W, A, S, D};
+    use glutin::VirtualKeyCode::{Escape, Minus, Equals, W, A, S, D, Up, Down, Left, Right};
 
     let controls = match self.controls {
       Some(ref mut c) => c,
@@ -141,14 +141,14 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Equals) } => controls.zoom_in(),
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Minus) } |
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Equals) } => controls.zoom_stop(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(W) } => controls.move_map_up(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(S) } => controls.move_map_down(),
-            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(W) } |
-            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(S) } => controls.stop_map_y(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(D) } => controls.move_map_right(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(A) } => controls.move_map_left(),
-            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(D) } |
-            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(A) } => controls.stop_map_x(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Up) } => controls.move_map_up(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Down) } => controls.move_map_down(),
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Up) } |
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Down) } => controls.stop_map_y(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Right) } => controls.move_map_right(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Left) } => controls.move_map_left(),
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Right) } |
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Left) } => controls.stop_map_x(),
             _ => (),
           },
           Closed => process::exit(0),
