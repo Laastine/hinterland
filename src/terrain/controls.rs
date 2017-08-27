@@ -4,15 +4,15 @@ use game::constants::{VIEW_DISTANCE};
 
 
 #[derive(Clone, Debug)]
-pub struct InputState {
+pub struct TerrainInputState {
   pub distance: f32,
   pub x_pos: f32,
   pub y_pos: f32,
 }
 
-impl InputState {
-  pub fn new() -> InputState {
-    InputState {
+impl TerrainInputState {
+  pub fn new() -> TerrainInputState {
+    TerrainInputState {
       distance: VIEW_DISTANCE,
       x_pos: 0.0,
       y_pos: 0.0,
@@ -20,8 +20,8 @@ impl InputState {
   }
 }
 
-impl specs::Component for InputState {
-  type Storage = specs::HashMapStorage<InputState>;
+impl specs::Component for TerrainInputState {
+  type Storage = specs::HashMapStorage<TerrainInputState>;
 }
 
 #[derive(Debug)]
@@ -61,7 +61,7 @@ impl<C> specs::System<C> for TerrainControlSystem {
   fn run(&mut self, arg: specs::RunArg, _: C) {
     use specs::Join;
 
-    let mut map_input = arg.fetch(|w| w.write::<InputState>());
+    let mut map_input = arg.fetch(|w| w.write::<TerrainInputState>());
     while let Ok(control) = self.queue.try_recv() {
       match control {
         TerrainControl::ZoomIn => self.zoom_level = Some(2.0),

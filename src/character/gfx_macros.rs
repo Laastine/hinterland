@@ -12,9 +12,14 @@ gfx_defines! {
     index: f32 = "a_index",
   }
 
+  constant Position {
+    position: [f32; 2] = "a_position",
+  }
+
   pipeline pipe {
     vbuf: gfx::VertexBuffer<VertexData> = (),
     projection_cb: gfx::ConstantBuffer<Projection> = "b_VsLocals",
+    position_cb: gfx::ConstantBuffer<Position> = "b_CharacterPosition",
     character_sprite_cb: gfx::ConstantBuffer<CharacterSheet> = "b_CharacterSprite",
     charactersheet: gfx::TextureSampler<[f32; 4]> = "t_CharacterSheet",
     out_color: gfx::RenderTarget<gfx::format::Rgba8> = "Target0",

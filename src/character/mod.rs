@@ -5,10 +5,11 @@ use cgmath;
 use cgmath::{Matrix4, Point3, Vector3};
 use specs;
 use gfx_app::graphics::load_texture;
-use character::gfx_macros::{pipe, VertexData, CharacterSheet};
+use character::gfx_macros::{pipe, VertexData, CharacterSheet, Position};
 use game::gfx_macros::Projection;
 use game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
-use terrain::controls::InputState;
+use terrain::controls::TerrainInputState;
+use character::controls::CharacterInputState;
 use data;
 use character::orientation::Orientation;
 use std::mem::replace;
@@ -16,6 +17,7 @@ use std::mem::replace;
 pub mod gfx_macros;
 pub mod character;
 pub mod orientation;
+pub mod controls;
 
 const SHADER_VERT: &'static [u8] = include_bytes!("character.v.glsl");
 const SHADER_FRAG: &'static [u8] = include_bytes!("character.f.glsl");
@@ -68,6 +70,7 @@ impl specs::Component for CharacterSprite {
 #[derive(Debug)]
 pub struct Drawable {
   projection: Projection,
+  position: Position,
 }
 
 impl Drawable {
@@ -85,12 +88,18 @@ impl Drawable {
         model: Matrix4::from(view).into(),
         view: view.into(),
         proj: cgmath::perspective(cgmath::Deg(60.0f32), aspect_ratio, 0.1, 4000.0).into(),
+      },
+      position: Position {
+        position: [0.0, 0.0],
       }
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection) {
+  pub fn update(&mut self, world_to_clip: &Projection, position: &CharacterInputState) {
     self.projection = *world_to_clip;
+    self.position = Position {
+      position: [position.x_movement, position.y_movement]
+    };
   }
 }
 
@@ -136,6 +145,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
     let pipeline_data = pipe::Data {
       vbuf: vertex_buf,
       projection_cb: factory.create_constant_buffer(1),
+      position_cb: factory.create_constant_buffer(1),
       character_sprite_cb: factory.create_constant_buffer(1),
       charactersheet: (char_texture, factory.create_sampler_linear()),
       out_color: rtv,
@@ -172,6 +182,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
+    encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb, &mut self.get_next_sprite(character.character_idx));
     self.bundle.encode(encoder);
   }
@@ -189,15 +200,16 @@ impl PreDrawSystem {
 impl<C> specs::System<C> for PreDrawSystem {
   fn run(&mut self, arg: specs::RunArg, _: C) {
     use specs::Join;
-    let (mut character, dim, mut input) =
+    let (mut character, dim, mut terrain_input, mut character_input) =
       arg.fetch(|w| (
         w.write::<Drawable>(),
         w.read_resource::<Dimensions>(),
-        w.write::<InputState>()));
+        w.write::<TerrainInputState>(),
+        w.write::<CharacterInputState>()));
 
-    for (c, i) in (&mut character, &mut input).join() {
+    for (c, i, ci) in (&mut character, &mut terrain_input, &mut character_input).join() {
       let world_to_clip = dim.world_to_projection(i);
-      c.update(&world_to_clip);
+      c.update(&world_to_clip, ci);
     }
   }
 }

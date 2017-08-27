@@ -8,7 +8,7 @@ use genmesh::{Vertices, Triangulate};
 use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
 use terrain::gfx_macros::{TileMapData, VertexData, pipe, TilemapSettings};
 use game::gfx_macros::Projection;
-use terrain::controls::InputState;
+use terrain::controls::TerrainInputState;
 use game::constants::{TILEMAP_BUF_LENGTH, ASPECT_RATIO};
 use gfx_app::graphics::load_texture;
 use game::constants::{TILES_PCS_W, TILES_PCS_H, VIEW_DISTANCE};
@@ -171,7 +171,7 @@ impl<C> specs::System<C> for PreDrawSystem {
       arg.fetch(|w| (
         w.write::<Drawable>(),
         w.read_resource::<Dimensions>(),
-        w.write::<InputState>()));
+        w.write::<TerrainInputState>()));
 
     for (t, i) in (&mut terrain, &mut input).join() {
       let world_to_clip = dim.world_to_projection(i);

@@ -15,11 +15,15 @@ uniform b_CharacterSprite {
    float a_index;
 };
 
+uniform b_CharacterPosition {
+  vec2 a_position;
+};
+
 void main() {
   v_BufPos = vec2(a_BufPos);
 
   v_BufPos.x /= a_div;
   v_BufPos.x += a_index / a_div;
 
-  gl_Position = u_Proj * u_View * u_Model * vec4(a_Pos, 1.0);
+  gl_Position = vec4(a_position, 0.0, 0.0) +  u_Proj * u_View * u_Model * vec4(a_Pos, 1.0);
 }

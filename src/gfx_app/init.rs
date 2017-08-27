@@ -9,6 +9,7 @@ use specs;
 use physics::{Dimensions, Planner};
 use gfx_app::controls::{TilemapControls};
 use terrain::controls::{TerrainControlSystem};
+use character::controls::CharacterControlSystem;
 use character;
 
 pub fn run<W, D, F>(window: &mut W) -> GameStatus
@@ -28,22 +29,25 @@ pub fn run<W, D, F>(window: &mut W) -> GameStatus
 
 fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.register::<terrain::Drawable>();
-  world.register::<terrain::controls::InputState>();
+  world.register::<terrain::controls::TerrainInputState>();
   world.register::<character::Drawable>();
   world.register::<character::character::Character>();
   world.register::<character::CharacterSprite>();
+  world.register::<character::controls::CharacterInputState>();
 
   let dimensions = Dimensions::new(viewport_size.0, viewport_size.1);
   world.add_resource(terrain::terrain::generate());
   world.add_resource(dimensions);
-  world.add_resource(terrain::controls::InputState::new());
+  world.add_resource(terrain::controls::TerrainInputState::new());
+  world.add_resource(character::controls::CharacterInputState::new());
   world.add_resource(character::Drawable::new());
   world.add_resource(character::CharacterSprite::new());
   world.create()
     .with(terrain::Drawable::new())
     .with(character::Drawable::new())
     .with(character::CharacterSprite::new())
-    .with(terrain::controls::InputState::new()).build();
+    .with(terrain::controls::TerrainInputState::new())
+    .with(character::controls::CharacterInputState::new()).build();
 }
 
 fn setup_planner<W, D, F>(window: &mut W, planner: &mut Planner, encoder_queue: EncoderQueue<D>)
@@ -72,8 +76,10 @@ fn setup_planner<W, D, F>(window: &mut W, planner: &mut Planner, encoder_queue: 
 
 fn create_controls(planner: &mut Planner) -> TilemapControls {
   let (terrain_system, terrain_control) = TerrainControlSystem::new();
-  let controls = TilemapControls::new(terrain_control);
+  let (character_system, character_control) = CharacterControlSystem::new();
+  let controls = TilemapControls::new(terrain_control, character_control);
   planner.add_system(terrain_system, "terrain-system", 20);
+  planner.add_system(character_system, "character-system", 20);
   controls
 }
 

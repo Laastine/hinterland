@@ -22,7 +22,7 @@ impl Dimensions {
     }
   }
 
-  pub fn world_to_projection(&self, input: &mut terrain::controls::InputState) -> Projection {
+  pub fn world_to_projection(&self, input: &mut terrain::controls::TerrainInputState) -> Projection {
     let view: Matrix4<f32> = Matrix4::look_at(
       Point3::new(input.x_pos, -input.y_pos, input.distance),
       Point3::new(input.x_pos, -input.y_pos, 0.0),

@@ -126,7 +126,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
 
     let controls = match self.controls {
       Some(ref mut c) => c,
-      None => panic!("Controls have not been initialized"),
+      None => panic!("Terrain controls have not been initialized"),
     };
     let ref w = self.window;
     let ref mut rtv = self.render_target_view;
@@ -149,6 +149,14 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Left) } => controls.move_map_left(),
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Right) } |
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Left) } => controls.stop_map_x(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(W) } => controls.move_character_up(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(S) } => controls.move_character_down(),
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(W) } |
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(S) } => controls.stop_character_y(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(A) } => controls.move_character_left(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(D) } => controls.move_character_right(),
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(A) } |
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(D) } => controls.stop_character_x(),
             _ => (),
           },
           Closed => process::exit(0),
