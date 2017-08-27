@@ -161,9 +161,12 @@ impl<R: gfx::Resources> DrawSystem<R> {
     let elements_x = char_sprite.data[2] / charsheet_total_width;
     let elements_y = char_sprite.data[3] / charsheet_total_height;
 
+    let y = (character_idx as f32 / 11.0).floor();
+    let x = character_idx as f32 - (y * 11.0);
+
     let char = CharacterSheet {
       div: [11.0, 19.0],
-      index: [character_idx as f32, 0.0]
+      index: [x, y]
     };
     println!("{:?}", char);
     char
