@@ -105,15 +105,15 @@ impl Drawable {
     let dx = new_position.position[0] - self.position.position[0];
     let dy = new_position.position[1] - self.position.position[1];
     self.orientation =
-    if dx == 0.0 && dy < 0.0       { Orientation::Up }
-    else if dx > 0.0 && dy < 0.0   { Orientation::UpRight }
-    else if dx < 0.0 && dy < 0.0   { Orientation::UpLeft }
+    if dx == 0.0 && dy < 0.0       { Orientation::Down }
+    else if dx > 0.0 && dy < 0.0   { Orientation::DownRight }
+    else if dx < 0.0 && dy < 0.0   { Orientation::DownLeft }
     else if dx == 0.0 && dy == 0.0 { Orientation::Right }
     else if dx > 0.0 && dy == 0.0  { Orientation::Right }
     else if dx < 0.0 && dy == 0.0  { Orientation::Left }
-    else if dx == 0.0 && dy > 0.0  { Orientation::Down }
-    else if dx > 0.0 && dy > 0.0   { Orientation::DownRight }
-    else if dx < 0.0 && dy > 0.0   { Orientation::DownLeft }
+    else if dx == 0.0 && dy > 0.0  { Orientation::Up }
+    else if dx > 0.0 && dy > 0.0   { Orientation::UpRight }
+    else if dx < 0.0 && dy > 0.0   { Orientation::UpLeft }
     else { unreachable!() };
     self.position = new_position;
   }
