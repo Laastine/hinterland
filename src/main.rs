@@ -1,11 +1,9 @@
 extern crate json;
-extern crate conv;
 extern crate tiled;
 
 extern crate cgmath;
 #[macro_use]
 extern crate gfx;
-extern crate rand;
 extern crate specs;
 extern crate genmesh;
 extern crate gfx_device_gl;
