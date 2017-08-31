@@ -3,8 +3,6 @@
 in vec2 v_BufPos;
 out vec4 Target0;
 
-const int CHARACTER_BUF_LENGTH = 210;
-
 uniform sampler2D t_CharacterSheet;
 
 void main() {
