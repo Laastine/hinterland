@@ -185,7 +185,6 @@ impl<R: gfx::Resources> DrawSystem<R> {
       div: elements_x,
       index: sprite_idx as f32
     };
-    println!("{:?}", char);
     char
   }
 
