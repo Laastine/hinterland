@@ -23,11 +23,11 @@ const SHADER_FRAG: &'static [u8] = include_bytes!("character.f.glsl");
 
 #[derive(Debug)]
 pub struct CharacterData {
-  data: [f32; 6]
+  data: [f32; 4]
 }
 
 impl CharacterData {
-  pub fn new(data: [f32; 6]) -> CharacterData {
+  pub fn new(data: [f32; 4]) -> CharacterData {
     CharacterData { data: data }
   }
 }

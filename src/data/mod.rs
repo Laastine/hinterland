@@ -5,7 +5,7 @@ use std::path::Path;
 use std::vec::Vec;
 use std::io::BufReader;
 use json;
-use game::constants::{CHARACTER_JSON_PATH, ZOMBIE_JSON_PATH};
+use game::constants::{CHARACTER_JSON_PATH, ZOMBIE_JSON_PATH, CHARACTER_BUF_LENGTH};
 use tiled::Map;
 use tiled;
 use character::CharacterData;
@@ -52,27 +52,12 @@ fn read_sprite_file(filename: &str) -> String {
 }
 
 pub fn load_character() -> Vec<CharacterData> {
-  let mut sprites = Vec::with_capacity(512);
-  let mut move_sprite_names = Vec::with_capacity(256);
-//  let mut fire_sprite_names = Vec::with_capacity(256);
+  let mut sprites = Vec::with_capacity(CHARACTER_BUF_LENGTH);
   let character_json = read_sprite_file(CHARACTER_JSON_PATH);
   let character = match json::parse(&character_json) {
     Ok(res) => res,
     Err(e) => panic!("Character JSON parse error {:?}", e),
   };
-
-  for x in 0..15 {
-    for y in 0..14 {
-      move_sprite_names.push(format!("run_{}_{}", x, y));
-    }
-  }
-//  for x in 0..15 {
-//    for y in 0..3 {
-//      fire_sprite_names.push(format!("fire_{}_{}", x, y));
-//    }
-//  }
-
-//  for &ref move_sprite in &move_sprite_names {
   for x in 0..15 {
     for y in 0..14 {
       let ref key = format!("run_{}_{}", x, y);
@@ -81,21 +66,10 @@ pub fn load_character() -> Vec<CharacterData> {
         character["frames"][key]["frame"]["y"].as_f32().unwrap(),
         character["frames"][key]["frame"]["w"].as_f32().unwrap(),
         character["frames"][key]["frame"]["h"].as_f32().unwrap(),
-        x as f32,
-        y as f32
       ]));
     }
   }
-//  }
 
-//  for &ref fire_sprite in &fire_sprite_names {
-//    sprites.push(CharacterData::new([
-//      character["frames"][fire_sprite]["frame"]["x"].as_f32().unwrap(),
-//      character["frames"][fire_sprite]["frame"]["y"].as_f32().unwrap(),
-//      character["frames"][fire_sprite]["frame"]["w"].as_f32().unwrap(),
-//      character["frames"][fire_sprite]["frame"]["h"].as_f32().unwrap()
-//    ]));
-//  }
   sprites
 }
 
