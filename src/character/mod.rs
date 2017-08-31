@@ -54,7 +54,7 @@ impl CharacterSprite {
   }
 
   pub fn update(&mut self) {
-    if self.character_idx < 12 {
+    if self.character_idx < 13 {
       self.character_idx = self.character_idx + 1;
     } else {
       self.character_idx = 0;
@@ -139,18 +139,17 @@ impl<R: gfx::Resources> DrawSystem<R> {
 
     let vertex_data: Vec<VertexData> =
       vec![
-        VertexData::new([-40.0, -64.0, 0.0], [0.0, 1.0]),
-        VertexData::new([40.0, -64.0, 0.0], [1.0, 1.0]),
-        VertexData::new([40.0, 64.0, 0.0], [1.0, 0.0]),
-        VertexData::new([-40.0, -64.0, 0.0], [0.0, 1.0]),
-        VertexData::new([40.0, 64.0, 0.0], [1.0, 0.0]),
-        VertexData::new([-40.0, 64.0, 0.0], [0.0, 0.0]),
+        VertexData::new([-20.0, -28.0, 0.0], [0.0, 1.0]),
+        VertexData::new([20.0, -28.0, 0.0], [1.0, 1.0]),
+        VertexData::new([20.0, 28.0, 0.0], [1.0, 0.0]),
+        VertexData::new([-20.0, -28.0, 0.0], [0.0, 1.0]),
+        VertexData::new([20.0, 28.0, 0.0], [1.0, 0.0]),
+        VertexData::new([-20.0, 28.0, 0.0], [0.0, 0.0]),
       ];
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());
 
     let char_texture = load_texture(factory, tilesheet_bytes).unwrap();
-
     let pso = factory
       .create_pipeline_simple(SHADER_VERT,
                               SHADER_FRAG,
@@ -179,7 +178,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
     let sprite_idx = (*orientation as usize * 28 + character_idx) as usize;
     let char_sprite = &self.data[sprite_idx];
 
-    let charsheet_total_width = 11422f32;
+    let charsheet_total_width = 12320f32;
     let offset = 2.0;
     let elements_x = charsheet_total_width / (char_sprite.data[2] + offset);
     let char = CharacterSheet {

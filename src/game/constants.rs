@@ -9,8 +9,8 @@ pub const TILES_PCS_H: usize = 32;
 //pub const TILESHEET_PCS_W: usize = TILES_PCS_W - 1;
 //pub const TILESHEET_PCS_H: usize = TILES_PCS_H - 1;
 
-pub const CHARACTER_W: f32 = 45.0;
-pub const CHARACTER_H: f32 = 60.0;
+//pub const CHARACTER_W: f32 = 45.0;
+//pub const CHARACTER_H: f32 = 60.0;
 
 //pub const CHARACTER_POS_W: f64 = SCREEN_WIDTH * 0.5;
 //pub const CHARACTER_POS_H: f64 = SCREEN_HEIGHT * 0.4;
@@ -34,7 +34,7 @@ pub const CHARACTER_JSON_PATH: &'static str = "assets/character.json";
 pub const MAP_FILE_PATH: &'static str = "assets/maps/tilemap.tmx";
 
 pub const TILEMAP_BUF_LENGTH: usize = 4096;
-pub const CHARACTER_BUF_LENGTH: usize = 210;
+pub const CHARACTER_BUF_LENGTH: usize = 256;
 
 pub const RESOLUTION_X: u32 = 1920;
 pub const RESOLUTION_Y: u32 = 1080;
