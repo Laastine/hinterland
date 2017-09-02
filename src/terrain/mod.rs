@@ -146,7 +146,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
     encoder.update_buffer(&self.bundle.data.tilemap, self.data.as_slice(), 0).unwrap();
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.tilemap_cb, &TilemapSettings {
-      world_size: [32.0, 32.0, 32.0, 0.0],
+      world_size: [64.0, 64.0],
       tilesheet_size: [32.0, 32.0],
     });
 

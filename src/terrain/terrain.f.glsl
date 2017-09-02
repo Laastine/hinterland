@@ -14,7 +14,7 @@ uniform b_TileMap {
 };
 
 uniform b_PsLocals {
-  vec4 u_WorldSize;
+  vec2 u_WorldSize;
   vec2 u_TilesheetSize;
 };
 

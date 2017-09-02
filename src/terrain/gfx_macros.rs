@@ -7,7 +7,7 @@ gfx_defines! {
     }
 
     constant TilemapSettings {
-        world_size: [f32; 4] = "u_WorldSize",
+        world_size: [f32; 2] = "u_WorldSize",
         tilesheet_size: [f32; 2] = "u_TilesheetSize",
     }
 
