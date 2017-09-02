@@ -64,13 +64,25 @@ impl<C> specs::System<C> for CharacterControlSystem {
       }
     }
     if let Some(x) = self.x_move {
-      for m in (&mut character_input).join() {
-        m.x_movement += x;
+      if let Some(y) = self.y_move {
+        for m in (&mut character_input).join() {
+          m.x_movement += x / 1.5;
+          m.y_movement += y / 1.5;
+        }
+      }
+    }
+    if let Some(x) = self.x_move {
+      if self.y_move == None {
+        for m in (&mut character_input).join() {
+          m.x_movement += x;
+        }
       }
     }
     if let Some(y) = self.y_move {
-      for m in (&mut character_input).join() {
-        m.y_movement += y;
+      if self.x_move == None {
+        for m in (&mut character_input).join() {
+          m.y_movement += y;
+        }
       }
     }
   }
