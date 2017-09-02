@@ -147,7 +147,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.tilemap_cb, &TilemapSettings {
       world_size: [32.0, 32.0, 32.0, 0.0],
-      tilesheet_size: [32.0, 32.0, 32.0, 32.0],
+      tilesheet_size: [32.0, 32.0],
       offsets: [0.0, 0.0],
     });
 
