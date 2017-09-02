@@ -16,8 +16,8 @@ fn populate_tilemap(mut tiles: Vec<TileMapData>) -> Vec<TileMapData> {
   for ypos in 0..TILES_PCS_H {
     for xpos in 0..TILES_PCS_W {
       let map_val = get_map_tile(&map, 0, xpos as usize, ypos as usize);
-      let tex_x = map_val % (TILES_PCS_W as u32);
-      let tex_y = (map_val - tex_x) / (TILES_PCS_W as u32);
+      let tex_x = map_val % 32;
+      let tex_y = (map_val - tex_x) / 32;
       let idx = calc_index(xpos, ypos);
       tiles[idx] = TileMapData::new([(tex_x-1) as f32, tex_y as f32, 0.0, 0.0]);
     }
