@@ -9,7 +9,6 @@ gfx_defines! {
     constant TilemapSettings {
         world_size: [f32; 4] = "u_WorldSize",
         tilesheet_size: [f32; 2] = "u_TilesheetSize",
-        offsets: [f32; 2] = "u_TileOffsets",
     }
 
     vertex VertexData {
