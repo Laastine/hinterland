@@ -50,7 +50,7 @@ impl<D> specs::System<Delta> for DrawSystem<D>
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
     let (mut terrain, character, mut sprite) = arg.fetch(|w| {
       if self.cool_down == 0.0 {
-        self.cool_down = self.cool_down + 0.1;
+        self.cool_down = self.cool_down + 0.07;
       }
       self.cool_down = (self.cool_down - delta).max(0.0);
       (w.read::<terrain::Drawable>(),
