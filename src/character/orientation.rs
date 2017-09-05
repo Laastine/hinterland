@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter, Result};
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Orientation {
   Right = 0,
   UpRight = 1,
@@ -10,6 +10,7 @@ pub enum Orientation {
   DownLeft = 5,
   Down = 6,
   DownRight = 7,
+  Still = 8,
 }
 
 impl Display for Orientation {
@@ -23,6 +24,7 @@ impl Display for Orientation {
       Orientation::DownLeft => write!(f, "5"),
       Orientation::Down => write!(f, "6"),
       Orientation::DownRight => write!(f, "7"),
+      Orientation::Still => write!(f, "8"),
     }
   }
 }
