@@ -48,13 +48,13 @@ impl<D> specs::System<Delta> for DrawSystem<D>
   fn run(&mut self, arg: specs::RunArg, delta: Delta) {
     use specs::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
-    let (mut terrain, character, mut sprite) = arg.fetch(|w| {
+    let (mut terrain, mut character, mut sprite) = arg.fetch(|w| {
       if self.cool_down == 0.0 {
         self.cool_down = self.cool_down + 0.07;
       }
       self.cool_down = (self.cool_down - delta).max(0.0);
       (w.read::<terrain::Drawable>(),
-       w.read::<character::Drawable>(),
+       w.write::<character::Drawable>(),
        w.write::<CharacterSprite>())
     });
 
@@ -73,7 +73,7 @@ impl<D> specs::System<Delta> for DrawSystem<D>
       self.terrain_system.draw(t, &mut encoder);
     }
 
-    for (c, s) in (&character, &mut sprite).join() {
+    for (c, s) in (&mut character, &mut sprite).join() {
       if self.cool_down == 0.0 {
         s.update();
       }

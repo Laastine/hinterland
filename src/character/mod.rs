@@ -71,6 +71,7 @@ pub struct Drawable {
   projection: Projection,
   position: Position,
   orientation: Orientation,
+  direction: Orientation,
 }
 
 impl Drawable {
@@ -92,7 +93,8 @@ impl Drawable {
       position: Position {
         position: [0.0, 0.0],
       },
-      orientation: Orientation::Right
+      orientation: Orientation::Right,
+      direction: Orientation::Right,
     }
   }
 
@@ -108,7 +110,7 @@ impl Drawable {
     if dx == 0.0 && dy < 0.0       { Orientation::Down }
     else if dx > 0.0 && dy < 0.0   { Orientation::DownRight }
     else if dx < 0.0 && dy < 0.0   { Orientation::DownLeft }
-    else if dx == 0.0 && dy == 0.0 { Orientation::Right }
+    else if dx == 0.0 && dy == 0.0 { Orientation::Still }
     else if dx > 0.0 && dy == 0.0  { Orientation::Right }
     else if dx < 0.0 && dy == 0.0  { Orientation::Left }
     else if dx == 0.0 && dy > 0.0  { Orientation::Up }
@@ -174,28 +176,39 @@ impl<R: gfx::Resources> DrawSystem<R> {
     }
   }
 
-  fn get_next_sprite(&self, character_idx: usize, orientation: &Orientation) -> CharacterSheet {
-    let sprite_idx = (*orientation as usize * 28 + character_idx) as usize;
-    let char_sprite = &self.data[sprite_idx];
-
+  fn get_next_sprite(&self, character_idx: usize, orientation: &Orientation, direction: &mut Orientation) -> CharacterSheet {
     let charsheet_total_width = 12320f32;
     let offset = 2.0;
-    let elements_x = charsheet_total_width / (char_sprite.data[2] + offset);
-    let char = CharacterSheet {
-      div: elements_x,
-      index: sprite_idx as f32
-    };
-    char
+    if *orientation == Orientation::Still {
+      let sprite_idx = (*direction as usize * 28) as usize;
+      let char_sprite = &self.data[sprite_idx];
+      let elements_x = charsheet_total_width / (char_sprite.data[2] + offset);
+      let char = CharacterSheet {
+        div: elements_x,
+        index: sprite_idx as f32
+      };
+      char
+    } else {
+      *direction = *orientation;
+      let sprite_idx = (*orientation as usize * 28 + character_idx) as usize;
+      let char_sprite = &self.data[sprite_idx];
+      let elements_x = charsheet_total_width / (char_sprite.data[2] + offset);
+      let char = CharacterSheet {
+        div: elements_x,
+        index: sprite_idx as f32
+      };
+      char
+    }
   }
 
   pub fn draw<C>(&mut self,
-                 drawable: &Drawable,
+                 drawable: &mut Drawable,
                  character: &CharacterSprite,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
-    encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb, &mut self.get_next_sprite(character.character_idx, &drawable.orientation));
+    encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb, &mut self.get_next_sprite(character.character_idx, &drawable.orientation, &mut drawable.direction));
     self.bundle.encode(encoder);
   }
 }
