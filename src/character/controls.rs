@@ -55,8 +55,8 @@ impl<C> specs::System<C> for CharacterControlSystem {
     let mut character_input = arg.fetch(|w| w.write::<CharacterInputState>());
     while let Ok(control) = self.queue.try_recv() {
       match control {
-        CharacterControl::Up => self.y_move = Some(0.8),
-        CharacterControl::Down => self.y_move = Some(-0.8),
+        CharacterControl::Up => self.y_move = Some(0.7),
+        CharacterControl::Down => self.y_move = Some(-0.7),
         CharacterControl::YMoveStop => self.y_move = None,
         CharacterControl::Right => self.x_move = Some(0.8),
         CharacterControl::Left => self.x_move = Some(-0.8),
