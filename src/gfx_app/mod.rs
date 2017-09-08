@@ -23,6 +23,7 @@ pub struct GlutinWindow {
   factory: gfx_device_gl::Factory,
   render_target_view: gfx::handle::RenderTargetView<gfx_device_gl::Resources, ColorFormat>,
   depth_stencil_view: gfx::handle::DepthStencilView<gfx_device_gl::Resources, DepthFormat>,
+  mouse_pos: (f64, f64),
 }
 
 impl GlutinWindow {
@@ -50,6 +51,7 @@ impl GlutinWindow {
       factory: factory,
       render_target_view: rtv,
       depth_stencil_view: dsv,
+      mouse_pos: (0.0, 0.0)
     }
   }
 }
@@ -60,6 +62,7 @@ pub enum GameStatus {
   Render,
   Quit,
 }
+
 
 pub trait Window<D: gfx::Device, F: gfx::Factory<D::Resources>> {
   fn swap_window(&mut self);
@@ -120,7 +123,8 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
 
   fn poll_events(&mut self) -> Option<GameStatus> {
     use glutin::KeyboardInput;
-    use glutin::WindowEvent::{Resized, Closed};
+    use glutin::MouseButton;
+    use glutin::WindowEvent::{Resized, Closed, MouseMoved, MouseInput};
     use glutin::ElementState::{Pressed, Released};
     use glutin::VirtualKeyCode::{Escape, Minus, Equals, W, A, S, D, Up, Down, Left, Right};
 
@@ -131,6 +135,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
     let ref w = self.window;
     let ref mut rtv = self.render_target_view;
     let ref mut dsv = self.depth_stencil_view;
+    let ref mut m_pos = self.mouse_pos;
 
     self.events_loop.poll_events(|event| {
       match event {
@@ -158,6 +163,12 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(A) } |
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(D) } => controls.stop_character_x(),
             _ => (),
+          },
+          MouseInput {device_id: _, state: Pressed, button: MouseButton::Left} => {
+            println!("Click {:?}", m_pos);
+          },
+          MouseMoved {device_id: _, position} => {
+            *m_pos = position;
           },
           Closed => process::exit(0),
           Resized(_, _) => gfx_window_glutin::update_views(w, rtv, dsv),
