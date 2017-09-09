@@ -1,6 +1,4 @@
 machine:
-  timezone:
-    Europe/Helsinki
   environment:
     RUST_HOME: $HOME/rust
     PATH: $RUST_HOME/bin:$PATH

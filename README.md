@@ -1,5 +1,7 @@
 # Zombie shooter
 
+[![CircleCI](https://circleci.com/bb/laastine-ci/zombie-shooter/tree/master.svg?style=svg&circle-token=6f849c254dd78a3b0a19eccb75197d5325235b3f)](https://circleci.com/bb/laastine-ci/zombie-shooter/tree/master)
+
 Simple isometric game written in Rust.<br/>
 Project started as SDL2, but was later converted to use gfx-rs.
 
