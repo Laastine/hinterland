@@ -24,7 +24,7 @@ impl<D: gfx::Device> DrawSystem<D> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<D::Resources, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<D::Resources, DepthFormat>,
-                queue: EncoderQueue<D>)
+                encoder_queue: EncoderQueue<D>)
                 -> DrawSystem<D>
     where F: gfx::Factory<D::Resources>
   {
@@ -33,7 +33,7 @@ impl<D: gfx::Device> DrawSystem<D> {
       depth_stencil_view: dsv.clone(),
       terrain_system: terrain::DrawSystem::new(factory, rtv.clone(), dsv.clone()),
       character_system: character::DrawSystem::new(factory, rtv.clone(), dsv.clone()),
-      encoder_queue: queue,
+      encoder_queue,
       game_time: Instant::now(),
       frames: 0,
       cool_down: 1.0

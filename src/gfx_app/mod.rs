@@ -44,11 +44,11 @@ impl GlutinWindow {
       DepthFormat>(builder, context, &events_loop);
 
     GlutinWindow {
-      window: window,
+      window,
       controls: None,
-      events_loop: events_loop,
-      device: device,
-      factory: factory,
+      events_loop,
+      device,
+      factory,
       render_target_view: rtv,
       depth_stencil_view: dsv,
       mouse_pos: (0.0, 0.0)

@@ -35,8 +35,8 @@ impl CharacterData {
 impl VertexData {
   fn new(pos: [f32; 3], buf_pos: [f32; 2]) -> VertexData {
     VertexData {
-      pos: pos,
-      buf_pos: buf_pos,
+      pos,
+      buf_pos,
     }
   }
 }
@@ -172,7 +172,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
 
     DrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
-      data: data
+      data
     }
   }
 
