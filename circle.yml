@@ -1,0 +1,18 @@
+machine:
+  timezone:
+    Europe/Helsinki
+  environment:
+    RUST_HOME: $HOME/rust
+    PATH: $RUST_HOME/bin:$PATH
+
+dependencies:
+  post:
+    - ./scripts/install-rust.sh $RUST_HOME
+    - rustc --version --verbose
+
+  cache_directories:
+    - "~/rust"
+
+test:
+  override:
+    - cargo build
