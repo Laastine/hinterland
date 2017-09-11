@@ -1,18 +1,23 @@
 use std::sync::mpsc;
 use terrain::controls::TerrainControl;
 use character::controls::CharacterControl;
+use gfx_app::mouse_controls::MouseControl;
 
 #[derive(Debug, Clone)]
 pub struct TilemapControls {
   terrain_control: mpsc::Sender<TerrainControl>,
   character_control: mpsc::Sender<CharacterControl>,
+  mouse_control: mpsc::Sender<(MouseControl, Option<(f64, f64)>)>,
 }
 
 impl TilemapControls {
-  pub fn new(ttc: mpsc::Sender<TerrainControl>, ctc: mpsc::Sender<CharacterControl>) -> TilemapControls {
+  pub fn new(ttc: mpsc::Sender<TerrainControl>,
+             ctc: mpsc::Sender<CharacterControl>,
+             mtc: mpsc::Sender<(MouseControl, Option<(f64, f64)>)>) -> TilemapControls {
     TilemapControls {
       terrain_control: ttc,
       character_control: ctc,
+      mouse_control: mtc,
     }
   }
 
@@ -24,6 +29,11 @@ impl TilemapControls {
   fn cc(&mut self, value: CharacterControl) {
     if self.character_control.send(value).is_err() {
       println!("Controls disconnected");
+    }
+  }
+  fn mc(&mut self, contol_value: MouseControl, value: Option<(f64, f64)>) {
+    if self.mouse_control.send((contol_value, value)).is_err() {
+      println!("Controls disconnected")
     }
   }
 
@@ -69,4 +79,7 @@ impl TilemapControls {
     self.cc(CharacterControl::Down)
   }
   pub fn stop_character_y(&mut self) { self.cc(CharacterControl::YMoveStop)}
+
+  pub fn mouse_left_click(&mut self, mouse_pos: Option<(f64, f64)>) { self.mc(MouseControl::LeftClick, mouse_pos)}
+  pub fn mouse_right_click(&mut self, mouse_pos: Option<(f64, f64)>) { self.mc(MouseControl::RightClick, mouse_pos)}
 }

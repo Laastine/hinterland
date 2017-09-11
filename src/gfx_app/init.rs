@@ -8,8 +8,9 @@ use terrain;
 use specs;
 use physics::{Dimensions, Planner};
 use gfx_app::controls::{TilemapControls};
+use gfx_app::mouse_controls::{MouseControl, MouseControlSystem, MouseInputState};
 use terrain::controls::{TerrainControlSystem};
-use character::controls::CharacterControlSystem;
+use character::controls::{CharacterControlSystem};
 use character::character::CharacterSprite;
 use character;
 
@@ -35,12 +36,14 @@ fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.register::<character::character::Character>();
   world.register::<CharacterSprite>();
   world.register::<character::controls::CharacterInputState>();
+  world.register::<MouseInputState>();
 
   let dimensions = Dimensions::new(viewport_size.0, viewport_size.1);
   world.add_resource(terrain::terrain::generate());
   world.add_resource(dimensions);
   world.add_resource(terrain::controls::TerrainInputState::new());
   world.add_resource(character::controls::CharacterInputState::new());
+  world.add_resource(MouseInputState::new());
   world.add_resource(character::Drawable::new());
   world.add_resource(CharacterSprite::new());
   world.create()
@@ -78,9 +81,11 @@ fn setup_planner<W, D, F>(window: &mut W, planner: &mut Planner, encoder_queue: 
 fn create_controls(planner: &mut Planner) -> TilemapControls {
   let (terrain_system, terrain_control) = TerrainControlSystem::new();
   let (character_system, character_control) = CharacterControlSystem::new();
-  let controls = TilemapControls::new(terrain_control, character_control);
+  let (mouse_system, mouse_control) = MouseControlSystem::new();
+  let controls = TilemapControls::new(terrain_control, character_control, mouse_control);
   planner.add_system(terrain_system, "terrain-system", 20);
   planner.add_system(character_system, "character-system", 20);
+  planner.add_system(mouse_system, "mouse-system", 20);
   controls
 }
 

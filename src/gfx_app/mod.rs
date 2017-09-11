@@ -10,6 +10,7 @@ pub mod init;
 pub mod renderer;
 pub mod system;
 pub mod controls;
+pub mod mouse_controls;
 pub mod graphics;
 
 pub type ColorFormat = gfx::format::Rgba8;
@@ -165,7 +166,10 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             _ => (),
           },
           MouseInput {device_id: _, state: Pressed, button: MouseButton::Left} => {
-            println!("Click {:?}", m_pos);
+            controls.mouse_left_click(Some(*m_pos))
+          },
+          MouseInput {device_id: _, state: Released, button: MouseButton::Left} => {
+            controls.mouse_left_click(None)
           },
           MouseMoved {device_id: _, position} => {
             *m_pos = position;
