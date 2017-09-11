@@ -28,7 +28,7 @@ impl TileMapData {
   }
 
   pub fn new(data: [f32; 4]) -> TileMapData {
-    TileMapData { data: data }
+    TileMapData { data }
   }
 }
 

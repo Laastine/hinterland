@@ -12,6 +12,7 @@ use terrain::controls::TerrainInputState;
 use character::controls::CharacterInputState;
 use data;
 use character::orientation::Orientation;
+use character::character::{CharacterSprite, CharacterData};
 
 pub mod gfx_macros;
 pub mod character;
@@ -21,17 +22,6 @@ pub mod controls;
 const SHADER_VERT: &'static [u8] = include_bytes!("character.v.glsl");
 const SHADER_FRAG: &'static [u8] = include_bytes!("character.f.glsl");
 
-#[derive(Debug)]
-pub struct CharacterData {
-  data: [f32; 4]
-}
-
-impl CharacterData {
-  pub fn new(data: [f32; 4]) -> CharacterData {
-    CharacterData { data: data }
-  }
-}
-
 impl VertexData {
   fn new(pos: [f32; 3], buf_pos: [f32; 2]) -> VertexData {
     VertexData {
@@ -39,31 +29,6 @@ impl VertexData {
       buf_pos,
     }
   }
-}
-
-#[derive(Debug)]
-pub struct CharacterSprite {
-  character_idx: usize
-}
-
-impl CharacterSprite {
-  pub fn new() -> CharacterSprite {
-    CharacterSprite {
-      character_idx: 0,
-    }
-  }
-
-  pub fn update(&mut self) {
-    if self.character_idx < 13 {
-      self.character_idx = self.character_idx + 1;
-    } else {
-      self.character_idx = 0;
-    }
-  }
-}
-
-impl specs::Component for CharacterSprite {
-  type Storage = specs::VecStorage<CharacterSprite>;
 }
 
 #[derive(Debug)]

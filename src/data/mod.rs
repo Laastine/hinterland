@@ -8,7 +8,7 @@ use json;
 use game::constants::{CHARACTER_JSON_PATH, ZOMBIE_JSON_PATH, CHARACTER_BUF_LENGTH};
 use tiled::Map;
 use tiled;
-use character::CharacterData;
+use character::character::CharacterData;
 
 pub fn load_map_file(filename: &str) -> Map {
   let file = match File::open(&Path::new(&filename)) {

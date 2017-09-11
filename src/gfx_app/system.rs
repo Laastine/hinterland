@@ -5,7 +5,7 @@ use terrain;
 use character;
 use specs;
 use std::time::Instant;
-use character::CharacterSprite;
+use character::character::CharacterSprite;
 
 pub type Delta = f32;
 
