@@ -50,8 +50,8 @@ impl<C> specs::System<C> for MouseControlSystem {
 
     while let Ok((control_value, value)) = self.queue.try_recv() {
       match control_value {
-        MouseControl::LeftClick => println!("left click {:?}", value),
-        MouseControl::RightClick => println!("right click {:?}", value),
+        MouseControl::LeftClick => println!("left click {:?} {:?}", value, control_value)
+        MouseControl::RightClick => println!("right click {:?} {:?}", value, control_value)
       }
     }
   }

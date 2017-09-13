@@ -167,6 +167,8 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
           },
           MouseInput {device_id: _, state: Pressed, button: MouseButton::Left} => controls.mouse_left_click(Some(*m_pos)),
           MouseInput {device_id: _, state: Released, button: MouseButton::Left} => controls.mouse_left_click(None),
+          MouseInput {device_id: _, state: Pressed, button: MouseButton::Right} => controls.mouse_right_click(Some(*m_pos)),
+          MouseInput {device_id: _, state: Released, button: MouseButton::Right} => controls.mouse_right_click(None),
           MouseMoved {device_id: _, position} => {
             *m_pos = position;
           },
