@@ -165,12 +165,8 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(D) } => controls.stop_character_x(),
             _ => (),
           },
-          MouseInput {device_id: _, state: Pressed, button: MouseButton::Left} => {
-            controls.mouse_left_click(Some(*m_pos))
-          },
-          MouseInput {device_id: _, state: Released, button: MouseButton::Left} => {
-            controls.mouse_left_click(None)
-          },
+          MouseInput {device_id: _, state: Pressed, button: MouseButton::Left} => controls.mouse_left_click(Some(*m_pos)),
+          MouseInput {device_id: _, state: Released, button: MouseButton::Left} => controls.mouse_left_click(None),
           MouseMoved {device_id: _, position} => {
             *m_pos = position;
           },

@@ -8,7 +8,7 @@ use terrain;
 use specs;
 use physics::{Dimensions, Planner};
 use gfx_app::controls::{TilemapControls};
-use gfx_app::mouse_controls::{MouseControl, MouseControlSystem, MouseInputState};
+use gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
 use terrain::controls::{TerrainControlSystem};
 use character::controls::{CharacterControlSystem};
 use character::character::CharacterSprite;

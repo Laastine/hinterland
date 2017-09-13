@@ -1,7 +1,6 @@
 use std::sync::mpsc;
 use specs;
 
-
 #[derive(Clone, Debug)]
 pub struct MouseInputState {
   pub mouse_left: Option<(f64, f64)>,
@@ -47,10 +46,8 @@ impl MouseControlSystem {
 
 impl<C> specs::System<C> for MouseControlSystem {
   fn run(&mut self, arg: specs::RunArg, _: C) {
-    use specs::Join;
+    let _mouse_input = arg.fetch(|w| w.write::<MouseInputState>());
 
-    let mut mouse_input = arg.fetch(|w|
-    w.write::<MouseInputState>());
     while let Ok((control_value, value)) = self.queue.try_recv() {
       match control_value {
         MouseControl::LeftClick => println!("left click {:?}", value),
