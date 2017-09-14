@@ -1,6 +1,6 @@
 use game::gfx_macros::Projection;
 use cgmath;
-use cgmath::{Matrix4, Point3, Vector3};
+use cgmath::{Matrix4, Point3, Vector3, Point2, Rad};
 use specs;
 use terrain;
 use game::constants::{RESOLUTION_X, RESOLUTION_Y};
@@ -35,4 +35,8 @@ impl Dimensions {
       proj: cgmath::perspective(cgmath::Deg(60.0f32), aspect_ratio, 0.1, 4000.0).into(),
     }
   }
+}
+
+fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> Rad<f32> {
+  cgmath::Angle::atan2(end_point.y - start_point.y, (end_point.x - start_point.x))
 }
