@@ -4,6 +4,9 @@ use cgmath::{Matrix4, Point3, Vector3, Point2, Rad};
 use specs;
 use terrain;
 use game::constants::{RESOLUTION_X, RESOLUTION_Y};
+use character::orientation::Orientation;
+use character::gfx_macros::Position;
+use gfx_app::mouse_controls::MouseInputState;
 
 pub type Delta = f32;
 pub type Planner = specs::Planner<Delta>;
@@ -39,4 +42,13 @@ impl Dimensions {
 
 fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> Rad<f32> {
   cgmath::Angle::atan2(end_point.y - start_point.y, (end_point.x - start_point.x))
+}
+
+pub fn get_orientation(character: &Position, mouse_input: &mut MouseInputState) -> Orientation {
+
+  if let Some(val) = mouse_input.left_click_point {
+    let start_point = Point2::new(character.position[0], character.position[1]);
+    print!("direction {:?}", direction(start_point, val))
+  }
+  Orientation::Right
 }

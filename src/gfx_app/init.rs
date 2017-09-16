@@ -7,10 +7,10 @@ use std::sync::mpsc;
 use terrain;
 use specs;
 use physics::{Dimensions, Planner};
-use gfx_app::controls::{TilemapControls};
+use gfx_app::controls::TilemapControls;
 use gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
-use terrain::controls::{TerrainControlSystem};
-use character::controls::{CharacterControlSystem};
+use terrain::controls::TerrainControlSystem;
+use character::controls::CharacterControlSystem;
 use character::character::CharacterSprite;
 use character;
 
@@ -51,7 +51,8 @@ fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
     .with(character::Drawable::new())
     .with(CharacterSprite::new())
     .with(terrain::controls::TerrainInputState::new())
-    .with(character::controls::CharacterInputState::new()).build();
+    .with(character::controls::CharacterInputState::new())
+    .with(MouseInputState::new()).build();
 }
 
 fn setup_planner<W, D, F>(window: &mut W, planner: &mut Planner, encoder_queue: EncoderQueue<D>)

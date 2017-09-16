@@ -1,10 +1,13 @@
+use cgmath::Point2;
 use std::sync::mpsc;
 use specs;
 
 #[derive(Clone, Debug)]
 pub struct MouseInputState {
-  pub mouse_left: Option<(f64, f64)>,
-  pub mouse_right: Option<(f64, f64)>,
+  pub mouse_left: Option<Point2<f32>>,
+  pub mouse_right: Option<Point2<f32>>,
+  pub left_click_point: Option<Point2<f32>>,
+  pub right_click_point: Option<Point2<f32>>,
 }
 
 impl MouseInputState {
@@ -12,6 +15,8 @@ impl MouseInputState {
     MouseInputState {
       mouse_left: None,
       mouse_right: None,
+      left_click_point: None,
+      right_click_point: None,
     }
   }
 }
@@ -46,12 +51,30 @@ impl MouseControlSystem {
 
 impl<C> specs::System<C> for MouseControlSystem {
   fn run(&mut self, arg: specs::RunArg, _: C) {
-    let _mouse_input = arg.fetch(|w| w.write::<MouseInputState>());
+    use specs::Join;
+
+    let mut mouse_input = arg.fetch(|w| w.write::<MouseInputState>());
 
     while let Ok((control_value, value)) = self.queue.try_recv() {
       match control_value {
-        MouseControl::LeftClick => println!("left click {:?} {:?}", value, control_value),
-        MouseControl::RightClick => println!("right click {:?} {:?}", value, control_value),
+        MouseControl::LeftClick => {
+          for mi in (&mut mouse_input).join() {
+            if let Some(val) = value {
+              mi.left_click_point = Some(Point2::new(val.0 as f32, val.1 as f32));
+            } else {
+              mi.left_click_point = None;
+            }
+          }
+        }
+        MouseControl::RightClick => {
+          for mi in (&mut mouse_input).join() {
+            if let Some(val) = value {
+              mi.right_click_point = Some(Point2::new(val.0 as f32, val.1 as f32));
+            } else {
+              mi.right_click_point = None
+            }
+          }
+        }
       }
     }
   }

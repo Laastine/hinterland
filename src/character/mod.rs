@@ -1,6 +1,6 @@
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use physics::Dimensions;
+use physics::{Dimensions, get_orientation};
 use cgmath;
 use cgmath::{Matrix4, Point3, Vector3};
 use specs;
@@ -8,6 +8,7 @@ use gfx_app::graphics::load_texture;
 use character::gfx_macros::{pipe, VertexData, CharacterSheet, Position};
 use game::gfx_macros::Projection;
 use game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
+use gfx_app::mouse_controls::MouseInputState;
 use terrain::controls::TerrainInputState;
 use character::controls::CharacterInputState;
 use data;
@@ -63,11 +64,13 @@ impl Drawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, position: &CharacterInputState) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mi: &mut MouseInputState) {
     self.projection = *world_to_clip;
     let new_position = Position {
-      position: [position.x_movement, position.y_movement]
+      position: [ci.x_movement, ci.y_movement]
     };
+
+    get_orientation(&self.position, mi);
 
     let dx = new_position.position[0] - self.position.position[0];
     let dy = new_position.position[1] - self.position.position[1];
@@ -190,16 +193,17 @@ impl PreDrawSystem {
 impl<C> specs::System<C> for PreDrawSystem {
   fn run(&mut self, arg: specs::RunArg, _: C) {
     use specs::Join;
-    let (mut character, dim, mut terrain_input, mut character_input) =
+    let (mut character, dim, mut terrain_input, mut character_input, mut mouse_input) =
       arg.fetch(|w| (
         w.write::<Drawable>(),
         w.read_resource::<Dimensions>(),
         w.write::<TerrainInputState>(),
-        w.write::<CharacterInputState>()));
+        w.write::<CharacterInputState>(),
+        w.write::<MouseInputState>()));
 
-    for (c, i, ci) in (&mut character, &mut terrain_input, &mut character_input).join() {
+    for (c, i, ci, mi) in (&mut character, &mut terrain_input, &mut character_input, &mut mouse_input).join() {
       let world_to_clip = dim.world_to_projection(i);
-      c.update(&world_to_clip, ci);
+      c.update(&world_to_clip, ci, mi);
     }
   }
 }
