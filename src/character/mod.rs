@@ -145,7 +145,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
   }
 
   fn get_next_sprite(&self, character_idx: usize, orientation: &Orientation, direction: &mut Orientation) -> CharacterSheet {
-    let charsheet_total_width = 12320f32;
+    let charsheet_total_width = 12544f32;
     let offset = 2.0;
     if *orientation == Orientation::Still {
       let sprite_idx = (*direction as usize * 28) as usize;
