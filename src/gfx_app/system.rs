@@ -54,7 +54,7 @@ impl<D> specs::System<Delta> for DrawSystem<D>
       }
       self.cool_down = (self.cool_down - delta).max(0.0);
       (w.read::<terrain::Drawable>(),
-       w.write::<character::Drawable>(),
+       w.write::<character::CharacterDrawable>(),
        w.write::<CharacterSprite>())
     });
 

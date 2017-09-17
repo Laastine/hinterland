@@ -33,15 +33,15 @@ impl VertexData {
 }
 
 #[derive(Debug)]
-pub struct Drawable {
+pub struct CharacterDrawable {
   projection: Projection,
   position: Position,
   orientation: Orientation,
   direction: Orientation,
 }
 
-impl Drawable {
-  pub fn new() -> Drawable {
+impl CharacterDrawable {
+  pub fn new() -> CharacterDrawable {
     let view: Matrix4<f32> = Matrix4::look_at(
       Point3::new(0.0, 0.0, VIEW_DISTANCE),
       Point3::new(0.0, 0.0, 0.0),
@@ -50,7 +50,7 @@ impl Drawable {
 
     let aspect_ratio: f32 = ASPECT_RATIO;
 
-    Drawable {
+    CharacterDrawable {
       projection: Projection {
         model: Matrix4::from(view).into(),
         view: view.into(),
@@ -89,8 +89,8 @@ impl Drawable {
   }
 }
 
-impl specs::Component for Drawable {
-  type Storage = specs::VecStorage<Drawable>;
+impl specs::Component for CharacterDrawable {
+  type Storage = specs::VecStorage<CharacterDrawable>;
 }
 
 pub struct DrawSystem<R: gfx::Resources> {
@@ -170,7 +170,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
   }
 
   pub fn draw<C>(&mut self,
-                 drawable: &mut Drawable,
+                 drawable: &mut CharacterDrawable,
                  character: &CharacterSprite,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
@@ -195,7 +195,7 @@ impl<C> specs::System<C> for PreDrawSystem {
     use specs::Join;
     let (mut character, dim, mut terrain_input, mut character_input, mut mouse_input) =
       arg.fetch(|w| (
-        w.write::<Drawable>(),
+        w.write::<CharacterDrawable>(),
         w.read_resource::<Dimensions>(),
         w.write::<TerrainInputState>(),
         w.write::<CharacterInputState>(),
