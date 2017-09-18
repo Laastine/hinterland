@@ -1,18 +1,18 @@
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use physics::{Dimensions, get_orientation};
+use physics::Dimensions;
 use cgmath;
 use cgmath::{Matrix4, Point3, Vector3};
 use specs;
 use gfx_app::graphics::load_texture;
 use character::gfx_macros::{pipe, VertexData, CharacterSheet, Position};
 use game::gfx_macros::Projection;
-use game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
+use game::constants::{ASPECT_RATIO, VIEW_DISTANCE, RUN_SPRITE_OFFSET};
 use gfx_app::mouse_controls::MouseInputState;
 use terrain::controls::TerrainInputState;
 use character::controls::CharacterInputState;
 use data;
-use character::orientation::Orientation;
+use character::orientation::{Orientation, Stance};
 use character::character::{CharacterSprite, CharacterData};
 
 pub mod gfx_macros;
@@ -37,6 +37,7 @@ pub struct CharacterDrawable {
   projection: Projection,
   position: Position,
   orientation: Orientation,
+  stance: Stance,
   direction: Orientation,
 }
 
@@ -60,17 +61,22 @@ impl CharacterDrawable {
         position: [0.0, 0.0],
       },
       orientation: Orientation::Right,
+      stance: Stance::Normal,
       direction: Orientation::Right,
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mi: &mut MouseInputState) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &mut MouseInputState) {
     self.projection = *world_to_clip;
     let new_position = Position {
       position: [ci.x_movement, ci.y_movement]
     };
 
-    get_orientation(&self.position, mi);
+    if let Some(_) = mouse_input.left_click_point {
+      self.stance = Stance::Firing;
+    } else {
+      self.stance = Stance::Normal;
+    }
 
     let dx = new_position.position[0] - self.position.position[0];
     let dy = new_position.position[1] - self.position.position[1];
@@ -144,11 +150,22 @@ impl<R: gfx::Resources> DrawSystem<R> {
     }
   }
 
-  fn get_next_sprite(&self, character_idx: usize, orientation: &Orientation, direction: &mut Orientation) -> CharacterSheet {
-    let charsheet_total_width = 12544f32;
+  fn get_next_sprite(&self, character_idx: usize, mut drawable: &mut CharacterDrawable) -> CharacterSheet {
+    let charsheet_total_width = 16128f32;
     let offset = 2.0;
-    if *orientation == Orientation::Still {
-      let sprite_idx = (*direction as usize * 28) as usize;
+
+    if drawable.orientation == Orientation::Still && drawable.stance == Stance::Normal {
+      let sprite_idx = (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET) as usize;
+      let char_sprite = &self.data[sprite_idx];
+      let elements_x = charsheet_total_width / (char_sprite.data[2] + offset);
+      let char = CharacterSheet {
+        div: elements_x,
+        index: sprite_idx as f32
+      };
+      char
+    } else if drawable.stance == Stance::Normal {
+      drawable.direction = drawable.orientation;
+      let sprite_idx = (drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET) as usize;
       let char_sprite = &self.data[sprite_idx];
       let elements_x = charsheet_total_width / (char_sprite.data[2] + offset);
       let char = CharacterSheet {
@@ -157,8 +174,8 @@ impl<R: gfx::Resources> DrawSystem<R> {
       };
       char
     } else {
-      *direction = *orientation;
-      let sprite_idx = (*orientation as usize * 28 + character_idx) as usize;
+      let idx = (character_idx as f32 * 4.0 / 14.0).floor() as usize;
+      let sprite_idx = (drawable.orientation as usize * 8 + idx) as usize;
       let char_sprite = &self.data[sprite_idx];
       let elements_x = charsheet_total_width / (char_sprite.data[2] + offset);
       let char = CharacterSheet {
@@ -170,13 +187,13 @@ impl<R: gfx::Resources> DrawSystem<R> {
   }
 
   pub fn draw<C>(&mut self,
-                 drawable: &mut CharacterDrawable,
+                 mut drawable: &mut CharacterDrawable,
                  character: &CharacterSprite,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
-    encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb, &mut self.get_next_sprite(character.character_idx, &drawable.orientation, &mut drawable.direction));
+    encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb, &mut self.get_next_sprite(character.character_idx, &mut drawable));
     self.bundle.encode(encoder);
   }
 }
