@@ -28,3 +28,19 @@ impl Display for Orientation {
     }
   }
 }
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Stance {
+  Normal = 0,
+  Firing = 1,
+}
+
+impl Display for Stance {
+  fn fmt(&self, f: &mut Formatter) -> Result {
+    match *self {
+      Stance::Normal => write!(f, "0"),
+      Stance::Firing => write!(f, "1"),
+    }
+  }
+}
+
