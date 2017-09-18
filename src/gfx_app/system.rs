@@ -66,7 +66,7 @@ impl<D> specs::System<Delta> for DrawSystem<D>
       self.game_time = Instant::now();
     }
 
-    encoder.clear(&self.render_target_view, [16.0 / 256.0, 14.0 / 256.0, 22.0 / 256.0, 1.0]);
+    encoder.clear(&self.render_target_view, [16.0 / 256.0, 16.0 / 256.0, 20.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
     for t in (&mut terrain).join() {
