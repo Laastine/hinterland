@@ -81,16 +81,7 @@ impl CharacterDrawable {
     let dx = new_position.position[0] - self.position.position[0];
     let dy = new_position.position[1] - self.position.position[1];
     self.orientation =
-    if dx == 0.0 && dy < 0.0       { Orientation::Down }
-    else if dx > 0.0 && dy < 0.0   { Orientation::DownRight }
-    else if dx < 0.0 && dy < 0.0   { Orientation::DownLeft }
-    else if dx == 0.0 && dy == 0.0 { Orientation::Still }
-    else if dx > 0.0 && dy == 0.0  { Orientation::Right }
-    else if dx < 0.0 && dy == 0.0  { Orientation::Left }
-    else if dx == 0.0 && dy > 0.0  { Orientation::Up }
-    else if dx > 0.0 && dy > 0.0   { Orientation::UpRight }
-    else if dx < 0.0 && dy > 0.0   { Orientation::UpLeft }
-    else { unreachable!() };
+      if dx == 0.0 && dy < 0.0 { Orientation::Down } else if dx > 0.0 && dy < 0.0 { Orientation::DownRight } else if dx < 0.0 && dy < 0.0 { Orientation::DownLeft } else if dx == 0.0 && dy == 0.0 { Orientation::Still } else if dx > 0.0 && dy == 0.0 { Orientation::Right } else if dx < 0.0 && dy == 0.0 { Orientation::Left } else if dx == 0.0 && dy > 0.0 { Orientation::Up } else if dx > 0.0 && dy > 0.0 { Orientation::UpRight } else if dx < 0.0 && dy > 0.0 { Orientation::UpLeft } else { unreachable!() };
     self.position = new_position;
   }
 }
@@ -154,36 +145,25 @@ impl<R: gfx::Resources> DrawSystem<R> {
     let charsheet_total_width = 16128f32;
     let offset = 2.0;
 
-    if drawable.orientation == Orientation::Still && drawable.stance == Stance::Normal {
+    let char_sprite = if drawable.orientation == Orientation::Still && drawable.stance == Stance::Normal {
       let sprite_idx = (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET) as usize;
-      let char_sprite = &self.data[sprite_idx];
-      let elements_x = charsheet_total_width / (char_sprite.data[2] + offset);
-      let char = CharacterSheet {
-        div: elements_x,
-        index: sprite_idx as f32
-      };
-      char
+      (&self.data[sprite_idx], sprite_idx)
     } else if drawable.stance == Stance::Normal {
       drawable.direction = drawable.orientation;
       let sprite_idx = (drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET) as usize;
-      let char_sprite = &self.data[sprite_idx];
-      let elements_x = charsheet_total_width / (char_sprite.data[2] + offset);
-      let char = CharacterSheet {
-        div: elements_x,
-        index: sprite_idx as f32
-      };
-      char
+      (&self.data[sprite_idx], sprite_idx)
     } else {
       let idx = (character_idx as f32 * 4.0 / 14.0).floor() as usize;
       let sprite_idx = (drawable.orientation as usize * 8 + idx) as usize;
-      let char_sprite = &self.data[sprite_idx];
-      let elements_x = charsheet_total_width / (char_sprite.data[2] + offset);
-      let char = CharacterSheet {
-        div: elements_x,
-        index: sprite_idx as f32
-      };
-      char
-    }
+      (&self.data[sprite_idx], sprite_idx)
+    };
+
+    let elements_x = charsheet_total_width / (char_sprite.0.data[2] + offset);
+    let char = CharacterSheet {
+      div: elements_x,
+      index: char_sprite.1 as f32
+    };
+    char
   }
 
   pub fn draw<C>(&mut self,
