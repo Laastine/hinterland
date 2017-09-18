@@ -2,7 +2,7 @@
 <map version="1.0" orientation="isometric" renderorder="left-down" width="64" height="64" tilewidth="32" tileheight="32" nextobjectid="1">
  <tileset firstgid="1" name="terrain" tilewidth="32" tileheight="32" tilecount="1024" columns="32" backgroundcolor="#000000">
   <grid orientation="isometric" width="32" height="32"/>
-  <image source="../../../../../temp/terrain.png" width="1024" height="1024"/>
+  <image source="./terrain.png" width="1024" height="1024"/>
  </tileset>
  <layer name="Tile Layer 1" width="64" height="64">
   <data encoding="csv">
