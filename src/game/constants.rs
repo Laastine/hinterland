@@ -27,14 +27,15 @@ pub const TILES_PCS_H: usize = 64;
 
 //Assets
 //pub const ZOMBIE_PATH: &'static str = "assets/zombie.png";
-pub const ZOMBIE_JSON_PATH: &'static str = "assets/zombie.json";
+//pub const CHARACTER_FIRE_JSON_PATH: &'static str = "assets/character-fire.json";
 //pub const CHARACTER_PATH: &'static str = "assets/character.png";
 pub const CHARACTER_JSON_PATH: &'static str = "assets/character.json";
 //pub const PISTOL_AUDIO_PATH: &'static str = "assets/audio/pistol.ogg";
 pub const MAP_FILE_PATH: &'static str = "assets/maps/tilemap.tmx";
+pub const RUN_SPRITE_OFFSET: usize = 64;
 
 pub const TILEMAP_BUF_LENGTH: usize = 4096;
-pub const CHARACTER_BUF_LENGTH: usize = 256;
+pub const CHARACTER_BUF_LENGTH: usize = 224;
 
 pub const RESOLUTION_X: u32 = 1920;
 pub const RESOLUTION_Y: u32 = 1080;

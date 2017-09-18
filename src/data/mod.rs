@@ -5,7 +5,7 @@ use std::path::Path;
 use std::vec::Vec;
 use std::io::BufReader;
 use json;
-use game::constants::{CHARACTER_JSON_PATH, ZOMBIE_JSON_PATH, CHARACTER_BUF_LENGTH};
+use game::constants::{CHARACTER_JSON_PATH, CHARACTER_BUF_LENGTH};
 use tiled::Map;
 use tiled;
 use character::character::CharacterData;
@@ -52,13 +52,13 @@ fn read_sprite_file(filename: &str) -> String {
 }
 
 pub fn load_character() -> Vec<CharacterData> {
-  let mut sprites = Vec::with_capacity(CHARACTER_BUF_LENGTH);
+  let mut sprites = Vec::with_capacity(CHARACTER_BUF_LENGTH + 64);
   let character_json = read_sprite_file(CHARACTER_JSON_PATH);
   let character = match json::parse(&character_json) {
     Ok(res) => res,
     Err(e) => panic!("Character JSON parse error {:?}", e),
   };
-  for x in 0..15 {
+  for x in 0..16 {
     for y in 0..14 {
       let ref key = format!("run_{}_{}", x, y);
       sprites.push(CharacterData::new([
@@ -70,42 +70,17 @@ pub fn load_character() -> Vec<CharacterData> {
     }
   }
 
-  sprites
-}
-
-#[allow(dead_code)]
-pub fn load_zombie() -> Vec<(f64, f64)> {
-  let mut sprites = Vec::with_capacity(256);
-  let mut idle_sprite_names = Vec::with_capacity(64);
-  let mut walk_sprite_names = Vec::with_capacity(64);
-  let character_json = read_sprite_file(ZOMBIE_JSON_PATH);
-  let zombie = match json::parse(&character_json) {
-    Ok(res) => res,
-    Err(e) => panic!("Character JSON parse error {:?}", e),
-  };
-
-  for x in 0..7 {
-    for y in 0..3 {
-      idle_sprite_names.push(format!("idle_{}_{}", x, y));
+  for x in 0..15 {
+    for y in 0..4 {
+      let ref key = format!("fire_{}_{}", x, y);
+      sprites.push(CharacterData::new([
+        character["frames"][key]["frame"]["x"].as_f32().unwrap(),
+        character["frames"][key]["frame"]["y"].as_f32().unwrap(),
+        character["frames"][key]["frame"]["w"].as_f32().unwrap(),
+        character["frames"][key]["frame"]["h"].as_f32().unwrap(),
+      ]));
     }
   }
 
-  for x in 0..7 {
-    for y in 0..3 {
-      walk_sprite_names.push(format!("walk_{}_{}", x, y));
-    }
-  }
-
-  for &ref idle_sprite in &idle_sprite_names {
-    let x = zombie["frames"][idle_sprite]["frame"]["x"].as_f64().unwrap();
-    let y = zombie["frames"][idle_sprite]["frame"]["y"].as_f64().unwrap();
-    sprites.push((x, y));
-  }
-
-  for &ref walk_sprite in &walk_sprite_names {
-    let x = zombie["frames"][walk_sprite]["frame"]["x"].as_f64().unwrap();
-    let y = zombie["frames"][walk_sprite]["frame"]["y"].as_f64().unwrap();
-    sprites.push((x, y));
-  }
   sprites
 }
