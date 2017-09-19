@@ -6,6 +6,7 @@ machine:
 dependencies:
   post:
     - ./scripts/install-rust.sh $RUST_HOME
+    - ./scripts/install-alsa.sh
     - rustc --version --verbose
 
   cache_directories:
