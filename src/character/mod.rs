@@ -15,6 +15,7 @@ use data;
 use character::orientation::{Orientation, Stance};
 use character::character::{CharacterSprite, CharacterData};
 
+mod audio;
 pub mod gfx_macros;
 pub mod character;
 pub mod orientation;
@@ -32,13 +33,13 @@ impl VertexData {
   }
 }
 
-#[derive(Debug)]
 pub struct CharacterDrawable {
   projection: Projection,
   position: Position,
   orientation: Orientation,
   stance: Stance,
   direction: Orientation,
+  audio: audio::CharacterAudio
 }
 
 impl CharacterDrawable {
@@ -63,6 +64,7 @@ impl CharacterDrawable {
       orientation: Orientation::Right,
       stance: Stance::Normal,
       direction: Orientation::Right,
+      audio: audio::CharacterAudio::new(),
     }
   }
 
@@ -74,6 +76,7 @@ impl CharacterDrawable {
 
     if let Some(_) = mouse_input.left_click_point {
       self.stance = Stance::Firing;
+      self.audio.play_pistol();
     } else {
       self.stance = Stance::Normal;
     }
@@ -81,7 +84,16 @@ impl CharacterDrawable {
     let dx = new_position.position[0] - self.position.position[0];
     let dy = new_position.position[1] - self.position.position[1];
     self.orientation =
-      if dx == 0.0 && dy < 0.0 { Orientation::Down } else if dx > 0.0 && dy < 0.0 { Orientation::DownRight } else if dx < 0.0 && dy < 0.0 { Orientation::DownLeft } else if dx == 0.0 && dy == 0.0 { Orientation::Still } else if dx > 0.0 && dy == 0.0 { Orientation::Right } else if dx < 0.0 && dy == 0.0 { Orientation::Left } else if dx == 0.0 && dy > 0.0 { Orientation::Up } else if dx > 0.0 && dy > 0.0 { Orientation::UpRight } else if dx < 0.0 && dy > 0.0 { Orientation::UpLeft } else { unreachable!() };
+      if dx == 0.0 && dy < 0.0       { Orientation::Down }
+      else if dx > 0.0 && dy < 0.0   { Orientation::DownRight }
+      else if dx < 0.0 && dy < 0.0   { Orientation::DownLeft }
+      else if dx == 0.0 && dy == 0.0 { Orientation::Still }
+      else if dx > 0.0 && dy == 0.0  { Orientation::Right }
+      else if dx < 0.0 && dy == 0.0  { Orientation::Left }
+      else if dx == 0.0 && dy > 0.0  { Orientation::Up }
+      else if dx > 0.0 && dy > 0.0   { Orientation::UpRight }
+      else if dx < 0.0 && dy > 0.0   { Orientation::UpLeft }
+      else { unreachable!() };
     self.position = new_position;
   }
 }

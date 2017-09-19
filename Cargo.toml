@@ -4,8 +4,6 @@ version = "0.2.0"
 authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 
 [dependencies]
-json = "0.11.9"
-tiled = "0.7.2"
 cgmath = "0.15"
 gfx = "0.16.1"
 gfx_device_gl = "0.14.1"
@@ -13,7 +11,10 @@ gfx_window_glutin = "0.17.0"
 glutin = "0.9.1"
 genmesh = "0.5.0"
 image = "0.15.0"
+json = "0.11.9"
+rodio = "0.5.2"
 specs = "0.8.1"
+tiled = "0.7.2"
 
 [features]
 dev = []
