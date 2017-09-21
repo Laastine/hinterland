@@ -7,7 +7,7 @@ Project started as SDL2, but was later converted to use gfx-rs.
 
 - Currently rebuilding features which were present in earlier [SDL2 version](http://laastine.kapsi.fi/kuvat/hackandslash.gif).
 
-![screenshot](http://laastine.kapsi.fi/kuvat/zombie-shooter-gl.gif?cache=1)
+![screenshot](http://laastine.kapsi.fi/kuvat/zombie-shooter-gl.gif?cache=2)
 
 ## Build
 
