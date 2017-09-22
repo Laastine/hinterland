@@ -15,11 +15,11 @@ fn populate_tilemap(mut tiles: Vec<TileMapData>) -> Vec<TileMapData> {
   let map = load_map_file(MAP_FILE_PATH);
   for ypos in 0..TILES_PCS_H {
     for xpos in 0..TILES_PCS_W {
-      let map_val = get_map_tile(&map, 0, xpos as usize, ypos as usize);
+      let map_val = get_map_tile(&map, 0, xpos, ypos);
       let tex_x = map_val % 32;
       let y = (map_val - tex_x) / 32;
-      let idx = calc_index(xpos, ypos);
       let x = if tex_x < 1 { 1 } else { tex_x - 1 };
+      let idx = calc_index(xpos, ypos);
       tiles[idx] = TileMapData::new([x as f32, y as f32, 0.0, 0.0]);
     }
   }
