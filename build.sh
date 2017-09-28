@@ -1,15 +1,16 @@
 #!/bin/bash
 
 cargo build --release
-mkdir -p hacknslash
-mkdir -p hacknslash/assets
-cp assets/*.png hacknslash/assets
-cp assets/*.json hacknslash/assets
-cp -r assets/maps hacknslash/assets
-cp -r assets/audio hacknslash/assets
-cp target/release/hacknslash hacknslash
+mkdir -p zombie-shooter
+mkdir -p zombie-shooter/assets
+cp assets/*.png zombie-shooter/assets
+cp assets/*.json zombie-shooter/assets
+cp -r assets/maps zombie-shooter/assets
+cp -r assets/audio zombie-shooter/assets
+cp target/release/zombie-shooter zombie-shooter
+find zombie-shooter -name '.DS_Store' -type f -delete
 
-tar zcfv hacknslash.tgz hacknslash
-rm -r hacknslash
+tar zcfv zombie-shooter.tgz zombie-shooter
+rm -r zombie-shooter
 
 echo 'done'
