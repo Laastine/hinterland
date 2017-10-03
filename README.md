@@ -18,7 +18,9 @@ cargo run
 
 ## Controls
 
-`Arrow keys`<br/>
+`Arrow keys` - Map scroll<br/>
+`WASD` - Character controls<br/>
+`Mouse left` - Fire<br/>
 `+` - zoom in<br/>
 `-` - zoom out<br/>
 `Esc` - exit
