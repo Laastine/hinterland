@@ -1,17 +1,17 @@
 use std::sync::mpsc;
-use terrain::controls::TerrainControl;
+use terrain::controls::CameraControl;
 use character::controls::CharacterControl;
 use gfx_app::mouse_controls::MouseControl;
 
 #[derive(Debug, Clone)]
 pub struct TilemapControls {
-  terrain_control: mpsc::Sender<TerrainControl>,
+  terrain_control: mpsc::Sender<CameraControl>,
   character_control: mpsc::Sender<CharacterControl>,
   mouse_control: mpsc::Sender<(MouseControl, Option<(f64, f64)>)>,
 }
 
 impl TilemapControls {
-  pub fn new(ttc: mpsc::Sender<TerrainControl>,
+  pub fn new(ttc: mpsc::Sender<CameraControl>,
              ctc: mpsc::Sender<CharacterControl>,
              mtc: mpsc::Sender<(MouseControl, Option<(f64, f64)>)>) -> TilemapControls {
     TilemapControls {
@@ -21,7 +21,7 @@ impl TilemapControls {
     }
   }
 
-  fn tc(&mut self, value: TerrainControl) {
+  fn tc(&mut self, value: CameraControl) {
     if self.terrain_control.send(value).is_err() {
       println!("Controls disconnected");
     }
@@ -38,31 +38,31 @@ impl TilemapControls {
   }
 
   pub fn zoom_in(&mut self) {
-    self.tc(TerrainControl::ZoomIn)
+    self.tc(CameraControl::ZoomIn)
   }
   pub fn zoom_out(&mut self) {
-    self.tc(TerrainControl::ZoomOut)
+    self.tc(CameraControl::ZoomOut)
   }
   pub fn zoom_stop(&mut self) {
-    self.tc(TerrainControl::ZoomStop)
+    self.tc(CameraControl::ZoomStop)
   }
   pub fn move_map_left(&mut self) {
-    self.tc(TerrainControl::Left)
+    self.tc(CameraControl::Left)
   }
   pub fn move_map_right(&mut self) {
-    self.tc(TerrainControl::Right)
+    self.tc(CameraControl::Right)
   }
   pub fn move_map_up(&mut self) {
-    self.tc(TerrainControl::Up)
+    self.tc(CameraControl::Up)
   }
   pub fn move_map_down(&mut self) {
-    self.tc(TerrainControl::Down)
+    self.tc(CameraControl::Down)
   }
   pub fn stop_map_x(&mut self) {
-    self.tc(TerrainControl::XMoveStop)
+    self.tc(CameraControl::XMoveStop)
   }
   pub fn stop_map_y(&mut self) {
-    self.tc(TerrainControl::YMoveStop)
+    self.tc(CameraControl::YMoveStop)
   }
 
   pub fn move_character_left(&mut self) {

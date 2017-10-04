@@ -9,7 +9,7 @@ use character::gfx_macros::{pipe, VertexData, CharacterSheet, Position};
 use game::gfx_macros::Projection;
 use game::constants::{ASPECT_RATIO, VIEW_DISTANCE, RUN_SPRITE_OFFSET};
 use gfx_app::mouse_controls::MouseInputState;
-use terrain::controls::TerrainInputState;
+use terrain::controls::CameraInputState;
 use character::controls::CharacterInputState;
 use data;
 use character::orientation::{Orientation, Stance};
@@ -206,7 +206,7 @@ impl<C> specs::System<C> for PreDrawSystem {
       arg.fetch(|w| (
         w.write::<CharacterDrawable>(),
         w.read_resource::<Dimensions>(),
-        w.write::<TerrainInputState>(),
+        w.write::<CameraInputState>(),
         w.write::<CharacterInputState>(),
         w.write::<MouseInputState>()));
 
