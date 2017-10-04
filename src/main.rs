@@ -15,7 +15,7 @@ extern crate rodio;
 mod gfx_app;
 mod game;
 mod data;
-mod physics;
+mod graphics;
 mod terrain;
 mod character;
 

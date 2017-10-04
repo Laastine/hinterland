@@ -2,7 +2,7 @@ use cgmath;
 use cgmath::{Matrix4, Point3, Vector3};
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx;
-use physics::{Dimensions};
+use graphics::{Dimensions};
 use specs;
 use genmesh::{Vertices, Triangulate};
 use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};

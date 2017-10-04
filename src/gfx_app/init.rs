@@ -6,7 +6,7 @@ use std::time;
 use std::sync::mpsc;
 use terrain;
 use specs;
-use physics::{Dimensions, Planner};
+use graphics::{Dimensions, Planner};
 use gfx_app::controls::TilemapControls;
 use gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
 use terrain::controls::CameraControlSystem;

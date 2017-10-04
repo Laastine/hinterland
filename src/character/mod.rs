@@ -1,6 +1,6 @@
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use physics::Dimensions;
+use graphics::Dimensions;
 use cgmath;
 use cgmath::{Matrix4, Point3, Vector3};
 use specs;
