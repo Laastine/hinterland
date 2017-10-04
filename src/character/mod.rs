@@ -153,7 +153,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
     }
   }
 
-  fn get_next_sprite(&self, character_idx: usize, mut drawable: &mut CharacterDrawable) -> CharacterSheet {
+  fn get_next_sprite(&self, character_idx: usize, drawable: &mut CharacterDrawable) -> CharacterSheet {
     let charsheet_total_width = 16128f32;
     let offset = 2.0;
 
