@@ -2,11 +2,12 @@ use game::gfx_macros::Projection;
 use cgmath;
 use cgmath::{Matrix4, Point3, Vector3, Point2, Rad};
 use specs;
-use terrain;
 use game::constants::{RESOLUTION_X, RESOLUTION_Y};
 use character::orientation::Orientation;
 use character::gfx_macros::Position;
 use gfx_app::mouse_controls::MouseInputState;
+
+pub mod camera;
 
 pub type Delta = f32;
 pub type Planner = specs::Planner<Delta>;
@@ -25,7 +26,7 @@ impl Dimensions {
     }
   }
 
-  pub fn world_to_projection(&self, input: &mut terrain::controls::CameraInputState) -> Projection {
+  pub fn world_to_projection(&self, input: &mut camera::CameraInputState) -> Projection {
     let view: Matrix4<f32> = Matrix4::look_at(
       Point3::new(input.x_pos, -input.y_pos, input.distance),
       Point3::new(input.x_pos, -input.y_pos, 0.0),

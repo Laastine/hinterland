@@ -9,10 +9,11 @@ use specs;
 use graphics::{Dimensions, Planner};
 use gfx_app::controls::TilemapControls;
 use gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
-use terrain::controls::CameraControlSystem;
+use graphics::camera::CameraControlSystem;
 use character::controls::CharacterControlSystem;
 use character::character::CharacterSprite;
 use character;
+use graphics;
 
 pub fn run<W, D, F>(window: &mut W) -> GameStatus
   where W: Window<D, F>,
@@ -31,7 +32,7 @@ pub fn run<W, D, F>(window: &mut W) -> GameStatus
 
 fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.register::<terrain::Drawable>();
-  world.register::<terrain::controls::CameraInputState>();
+  world.register::<graphics::camera::CameraInputState>();
   world.register::<character::CharacterDrawable>();
   world.register::<character::character::Character>();
   world.register::<CharacterSprite>();
@@ -41,7 +42,7 @@ fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   let dimensions = Dimensions::new(viewport_size.0, viewport_size.1);
   world.add_resource(terrain::terrain::generate());
   world.add_resource(dimensions);
-  world.add_resource(terrain::controls::CameraInputState::new());
+  world.add_resource(graphics::camera::CameraInputState::new());
   world.add_resource(character::controls::CharacterInputState::new());
   world.add_resource(MouseInputState::new());
   world.add_resource(character::CharacterDrawable::new());
@@ -50,7 +51,7 @@ fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
     .with(terrain::Drawable::new())
     .with(character::CharacterDrawable::new())
     .with(CharacterSprite::new())
-    .with(terrain::controls::CameraInputState::new())
+    .with(graphics::camera::CameraInputState::new())
     .with(character::controls::CharacterInputState::new())
     .with(MouseInputState::new()).build();
 }

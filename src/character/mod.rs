@@ -9,7 +9,7 @@ use character::gfx_macros::{pipe, VertexData, CharacterSheet, Position};
 use game::gfx_macros::Projection;
 use game::constants::{ASPECT_RATIO, VIEW_DISTANCE, RUN_SPRITE_OFFSET};
 use gfx_app::mouse_controls::MouseInputState;
-use terrain::controls::CameraInputState;
+use graphics::camera::CameraInputState;
 use character::controls::CharacterInputState;
 use data;
 use character::orientation::{Orientation, Stance};
