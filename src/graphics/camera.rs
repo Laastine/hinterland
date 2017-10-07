@@ -1,6 +1,6 @@
 use std::sync::mpsc;
 use specs;
-use game::constants::{VIEW_DISTANCE};
+use game::constants::VIEW_DISTANCE;
 
 
 #[derive(Clone, Debug)]
@@ -67,11 +67,11 @@ impl<C> specs::System<C> for CameraControlSystem {
         CameraControl::ZoomIn => self.zoom_level = Some(2.0),
         CameraControl::ZoomOut => self.zoom_level = Some(-2.0),
         CameraControl::ZoomStop => self.zoom_level = None,
-        CameraControl::Up => self.y_move = Some(-1.0),
-        CameraControl::Down => self.y_move = Some(1.0),
+        CameraControl::Up => self.y_move = Some(-0.265),
+        CameraControl::Down => self.y_move = Some(0.265),
         CameraControl::YMoveStop => self.y_move = None,
-        CameraControl::Right => self.x_move = Some(1.0),
-        CameraControl::Left => self.x_move = Some(-1.0),
+        CameraControl::Right => self.x_move = Some(0.4),
+        CameraControl::Left => self.x_move = Some(-0.4),
         CameraControl::XMoveStop => self.x_move = None,
       }
     }
@@ -83,13 +83,25 @@ impl<C> specs::System<C> for CameraControlSystem {
       }
     }
     if let Some(x) = self.x_move {
-      for m in (&mut map_input).join() {
-        m.x_pos += x;
+      if let Some(y) = self.y_move {
+        for m in (&mut map_input).join() {
+          m.x_pos += x / 1.5;
+          m.y_pos += y / 2.0;
+        }
+      }
+    }
+    if let Some(x) = self.x_move {
+      if self.y_move == None {
+        for m in (&mut map_input).join() {
+          m.x_pos += x;
+        }
       }
     }
     if let Some(y) = self.y_move {
-      for m in (&mut map_input).join() {
-        m.y_pos += y;
+      if self.x_move == None {
+        for m in (&mut map_input).join() {
+          m.y_pos += y;
+        }
       }
     }
   }

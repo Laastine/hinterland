@@ -127,7 +127,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
     use glutin::MouseButton;
     use glutin::WindowEvent::{Resized, Closed, MouseMoved, MouseInput};
     use glutin::ElementState::{Pressed, Released};
-    use glutin::VirtualKeyCode::{Escape, Minus, Equals, W, A, S, D, Up, Down, Left, Right};
+    use glutin::VirtualKeyCode::{Escape, Minus, Equals, W, A, S, D};
 
     let controls = match self.controls {
       Some(ref mut c) => c,
@@ -147,22 +147,14 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Equals) } => controls.zoom_in(),
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Minus) } |
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Equals) } => controls.zoom_stop(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Up) } => controls.move_map_up(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Down) } => controls.move_map_down(),
-            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Up) } |
-            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Down) } => controls.stop_map_y(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Right) } => controls.move_map_right(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(Left) } => controls.move_map_left(),
-            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Right) } |
-            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(Left) } => controls.stop_map_x(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(W) } => controls.move_character_up(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(S) } => controls.move_character_down(),
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(W) } => {controls.move_character_up(); controls.move_map_up();},
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(S) } => {controls.move_character_down(); controls.move_map_down();},
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(W) } |
-            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(S) } => controls.stop_character_y(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(A) } => controls.move_character_left(),
-            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(D) } => controls.move_character_right(),
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(S) } => {controls.stop_character_y(); controls.stop_map_y();},
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(A) } => {controls.move_character_left(); controls.move_map_left();},
+            KeyboardInput { state: Pressed, scancode: _, modifiers: _, virtual_keycode: Some(D) } => {controls.move_character_right(); controls.move_map_right();},
             KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(A) } |
-            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(D) } => controls.stop_character_x(),
+            KeyboardInput { state: Released, scancode: _, modifiers: _, virtual_keycode: Some(D) } => {controls.stop_character_x(); controls.stop_map_x();},
             _ => (),
           },
           MouseInput {device_id: _, state: Pressed, button: MouseButton::Left} => controls.mouse_left_click(Some(*m_pos)),
