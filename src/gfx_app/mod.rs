@@ -29,11 +29,21 @@ pub struct GlutinWindow {
 
 impl GlutinWindow {
   pub fn new() -> GlutinWindow {
-    let builder = glutin::WindowBuilder::new()
-      .with_title("Zombie shooter")
-      .with_dimensions(RESOLUTION_X, RESOLUTION_Y);
-
     let events_loop = glutin::EventsLoop::new();
+
+    let window_title = glutin::WindowBuilder::new()
+      .with_title("Zombie shooter");
+
+    let builder = if cfg!(feature = "dev") {
+      window_title.with_dimensions(RESOLUTION_X, RESOLUTION_Y)
+    } else {
+      let monitor = {
+        glutin::get_available_monitors().nth(0).expect("Please enter a valid ID")
+      };
+      window_title.with_fullscreen(monitor)
+        .with_dimensions(RESOLUTION_X, RESOLUTION_Y)
+    };
+
     let context = glutin::ContextBuilder::new()
       .with_pixel_format(24, 8)
       .with_gl(glutin::GlRequest::GlThenGles {
