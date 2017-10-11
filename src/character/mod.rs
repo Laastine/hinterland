@@ -210,8 +210,8 @@ impl<C> specs::System<C> for PreDrawSystem {
         w.write::<CharacterInputState>(),
         w.write::<MouseInputState>()));
 
-    for (c, i, ci, mi) in (&mut character, &mut terrain_input, &mut character_input, &mut mouse_input).join() {
-      let world_to_clip = dim.world_to_projection(i);
+    for (c, ti, ci, mi) in (&mut character, &mut terrain_input, &mut character_input, &mut mouse_input).join() {
+      let world_to_clip = dim.world_to_projection(ti);
       c.update(&world_to_clip, ci, mi);
     }
   }
