@@ -53,7 +53,7 @@ impl<D> specs::System<Delta> for DrawSystem<D>
         self.cool_down = self.cool_down + 0.07;
       }
       self.cool_down = (self.cool_down - delta).max(0.0);
-      (w.read::<terrain::Drawable>(),
+      (w.write::<terrain::Drawable>(),
        w.write::<character::CharacterDrawable>(),
        w.write::<CharacterSprite>())
     });
@@ -69,11 +69,8 @@ impl<D> specs::System<Delta> for DrawSystem<D>
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 16.0 / 256.0, 20.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
-    for t in (&mut terrain).join() {
+    for (t, c, s) in (&mut terrain, &mut character, &mut sprite).join() {
       self.terrain_system.draw(t, &mut encoder);
-    }
-
-    for (c, s) in (&mut character, &mut sprite).join() {
       if self.cool_down == 0.0 {
         s.update();
       }
