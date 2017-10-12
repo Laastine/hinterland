@@ -1,5 +1,6 @@
 use std::sync::mpsc;
 use specs;
+use gfx_app::mouse_controls::MouseInputState;
 
 #[derive(Clone, Debug)]
 pub struct CharacterInputState {
@@ -52,7 +53,7 @@ impl<C> specs::System<C> for CharacterControlSystem {
   fn run(&mut self, arg: specs::RunArg, _: C) {
     use specs::Join;
 
-    let mut character_input = arg.fetch(|w| w.write::<CharacterInputState>());
+    let (mut character_input, mut mouse_input) = arg.fetch(|w| (w.write::<CharacterInputState>(), w.write::<MouseInputState>()));
     while let Ok(control) = self.queue.try_recv() {
       match control {
         CharacterControl::Up => self.y_move = Some(0.7),
@@ -65,23 +66,29 @@ impl<C> specs::System<C> for CharacterControlSystem {
     }
     if let Some(x) = self.x_move {
       if let Some(y) = self.y_move {
-        for m in (&mut character_input).join() {
-          m.x_movement += x / 1.5;
-          m.y_movement += y / 1.5;
+        for (ci, mi) in (&mut character_input, &mut mouse_input).join() {
+          if let None = mi.left_click_point {
+            ci.x_movement += x / 1.5;
+            ci.y_movement += y / 1.5;
+          }
         }
       }
     }
     if let Some(x) = self.x_move {
       if self.y_move == None {
-        for m in (&mut character_input).join() {
-          m.x_movement += x;
+        for (ci, mi) in (&mut character_input, &mut mouse_input).join() {
+          if let None = mi.left_click_point {
+            ci.x_movement += x;
+          }
         }
       }
     }
     if let Some(y) = self.y_move {
       if self.x_move == None {
-        for m in (&mut character_input).join() {
-          m.y_movement += y;
+        for (ci, mi) in (&mut character_input, &mut mouse_input).join() {
+          if let None = mi.left_click_point {
+            ci.y_movement += y;
+          }
         }
       }
     }

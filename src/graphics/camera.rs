@@ -1,7 +1,7 @@
 use std::sync::mpsc;
 use specs;
 use game::constants::VIEW_DISTANCE;
-
+use gfx_app::mouse_controls::MouseInputState;
 
 #[derive(Clone, Debug)]
 pub struct CameraInputState {
@@ -61,7 +61,7 @@ impl<C> specs::System<C> for CameraControlSystem {
   fn run(&mut self, arg: specs::RunArg, _: C) {
     use specs::Join;
 
-    let mut map_input = arg.fetch(|w| w.write::<CameraInputState>());
+    let (mut map_input, mut mouse_input) = arg.fetch(|w| (w.write::<CameraInputState>(), w.write::<MouseInputState>()));
     while let Ok(control) = self.queue.try_recv() {
       match control {
         CameraControl::ZoomIn => self.zoom_level = Some(2.0),
@@ -84,23 +84,29 @@ impl<C> specs::System<C> for CameraControlSystem {
     }
     if let Some(x) = self.x_move {
       if let Some(y) = self.y_move {
-        for m in (&mut map_input).join() {
-          m.x_pos += x / 1.5;
-          m.y_pos += y / 2.0;
+        for (map, mi) in (&mut map_input, &mut mouse_input).join() {
+          if let None = mi.left_click_point {
+            map.x_pos += x / 1.5;
+            map.y_pos += y / 2.0;
+          }
         }
       }
     }
     if let Some(x) = self.x_move {
       if self.y_move == None {
-        for m in (&mut map_input).join() {
-          m.x_pos += x;
+        for (map, mi) in (&mut map_input, &mut mouse_input).join() {
+          if let None = mi.left_click_point {
+            map.x_pos += x;
+          }
         }
       }
     }
     if let Some(y) = self.y_move {
       if self.x_move == None {
-        for m in (&mut map_input).join() {
-          m.y_pos += y;
+        for (map, mi) in (&mut map_input, &mut mouse_input).join() {
+          if let None = mi.left_click_point {
+            map.y_pos += y;
+          }
         }
       }
     }
