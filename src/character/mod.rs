@@ -37,7 +37,7 @@ pub struct CharacterDrawable {
   projection: Projection,
   position: Position,
   orientation: Orientation,
-  stance: Stance,
+  pub stance: Stance,
   direction: Orientation,
   audio: audio::CharacterAudio
 }
@@ -153,7 +153,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
     }
   }
 
-  fn get_next_sprite(&self, character_idx: usize, drawable: &mut CharacterDrawable) -> CharacterSheet {
+  fn get_next_sprite(&self, character_idx: usize, character_fire_idx: usize, drawable: &mut CharacterDrawable) -> CharacterSheet {
     let charsheet_total_width = 16128f32;
     let offset = 2.0;
 
@@ -165,8 +165,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
       let sprite_idx = (drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET) as usize;
       (&self.data[sprite_idx], sprite_idx)
     } else {
-      let idx = (character_idx as f32 * 4.0 / 14.0).floor() as usize;
-      let sprite_idx = (drawable.orientation as usize * 8 + idx) as usize;
+      let sprite_idx = (drawable.orientation as usize * 8 + character_fire_idx) as usize;
       (&self.data[sprite_idx], sprite_idx)
     };
 
@@ -185,7 +184,10 @@ impl<R: gfx::Resources> DrawSystem<R> {
     where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
-    encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb, &mut self.get_next_sprite(character.character_idx, &mut drawable));
+    encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb,
+                                   &mut self.get_next_sprite(character.character_idx,
+                                                             character.character_fire_idx,
+                                                             &mut drawable));
     self.bundle.encode(encoder);
   }
 }

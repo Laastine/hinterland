@@ -6,6 +6,7 @@ use character;
 use specs;
 use std::time::Instant;
 use character::character::CharacterSprite;
+use character::orientation::Stance;
 
 pub type Delta = f32;
 
@@ -72,7 +73,11 @@ impl<D> specs::System<Delta> for DrawSystem<D>
     for (t, c, s) in (&mut terrain, &mut character, &mut sprite).join() {
       self.terrain_system.draw(t, &mut encoder);
       if self.cool_down == 0.0 {
-        s.update();
+        if c.stance == Stance::Normal {
+          s.update_run();
+        } else if c.stance == Stance::Firing {
+          s.update_fire();
+        }
       }
       self.character_system.draw(c, s, &mut encoder);
     }
