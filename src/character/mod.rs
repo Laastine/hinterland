@@ -1,23 +1,23 @@
-use gfx;
-use gfx_app::{ColorFormat, DepthFormat};
-use graphics::Dimensions;
-use cgmath;
 use cgmath::{Matrix4, Point3, Vector3};
-use specs;
-use gfx_app::graphics::load_texture;
-use character::gfx_macros::{pipe, VertexData, CharacterSheet, Position};
-use game::gfx_macros::Projection;
-use game::constants::{ASPECT_RATIO, VIEW_DISTANCE, RUN_SPRITE_OFFSET};
-use gfx_app::mouse_controls::MouseInputState;
-use graphics::camera::CameraInputState;
-use character::controls::CharacterInputState;
-use data;
-use character::orientation::{Orientation, Stance};
+use cgmath;
 use character::character::{CharacterSprite, CharacterData};
+use character::controls::CharacterInputState;
+use character::gfx_macros::{pipe, VertexData, CharacterSheet, Position};
+use character::orientation::{Orientation, Stance};
+use data;
+use game::constants::{ASPECT_RATIO, VIEW_DISTANCE, RUN_SPRITE_OFFSET};
+use game::gfx_macros::Projection;
+use gfx;
+use gfx_app::graphics::load_texture;
+use gfx_app::mouse_controls::MouseInputState;
+use gfx_app::{ColorFormat, DepthFormat};
+use graphics::{Dimensions, get_orientation};
+use graphics::camera::CameraInputState;
+use specs;
 
 mod audio;
-pub mod gfx_macros;
 pub mod character;
+pub mod gfx_macros;
 pub mod orientation;
 pub mod controls;
 
@@ -76,6 +76,7 @@ impl CharacterDrawable {
 
     if let Some(_) = mouse_input.left_click_point {
       self.stance = Stance::Firing;
+      self.orientation = get_orientation(mouse_input);
       self.audio.play_pistol();
     } else {
       self.stance = Stance::Normal;
@@ -94,7 +95,6 @@ impl CharacterDrawable {
         else { unreachable!() };
       self.position = new_position;
     }
-
   }
 }
 
