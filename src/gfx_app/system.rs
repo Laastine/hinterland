@@ -19,6 +19,7 @@ pub struct DrawSystem<D: gfx::Device> {
   game_time: Instant,
   frames: u32,
   cool_down: f32,
+  fire_cool_down: f32,
 }
 
 impl<D: gfx::Device> DrawSystem<D> {
@@ -37,7 +38,8 @@ impl<D: gfx::Device> DrawSystem<D> {
       encoder_queue,
       game_time: Instant::now(),
       frames: 0,
-      cool_down: 1.0
+      cool_down: 1.0,
+      fire_cool_down: 1.0
     }
   }
 }
@@ -53,7 +55,11 @@ impl<D> specs::System<Delta> for DrawSystem<D>
       if self.cool_down == 0.0 {
         self.cool_down = self.cool_down + 0.07;
       }
+      if self.fire_cool_down == 0.0 {
+        self.fire_cool_down = self.fire_cool_down + 0.2;
+      }
       self.cool_down = (self.cool_down - delta).max(0.0);
+      self.fire_cool_down = (self.fire_cool_down - delta).max(0.0);
       (w.write::<terrain::Drawable>(),
        w.write::<character::CharacterDrawable>(),
        w.write::<CharacterSprite>())
@@ -61,7 +67,7 @@ impl<D> specs::System<Delta> for DrawSystem<D>
 
     let current_time = Instant::now();
     self.frames = self.frames + 1;
-    if cfg!(feature = "dev") && (current_time.duration_since(self.game_time ).as_secs()) >= 1 {
+    if cfg!(feature = "dev") && (current_time.duration_since(self.game_time).as_secs()) >= 1 {
       println!("{:?} ms/frames", 1000.0 / self.frames as f32);
       self.frames = 0;
       self.game_time = Instant::now();
@@ -72,12 +78,10 @@ impl<D> specs::System<Delta> for DrawSystem<D>
 
     for (t, c, s) in (&mut terrain, &mut character, &mut sprite).join() {
       self.terrain_system.draw(t, &mut encoder);
-      if self.cool_down == 0.0 {
-        if c.stance == Stance::Normal {
-          s.update_run();
-        } else if c.stance == Stance::Firing {
-          s.update_fire();
-        }
+      if self.cool_down == 0.0 && c.stance == Stance::Normal {
+        s.update_run();
+      } else if self.fire_cool_down == 0.0 && c.stance == Stance::Firing {
+        s.update_fire();
       }
       self.character_system.draw(c, s, &mut encoder);
     }

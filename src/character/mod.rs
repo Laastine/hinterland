@@ -68,7 +68,7 @@ impl CharacterDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &mut MouseInputState) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, cs: &mut CharacterSprite, mouse_input: &mut MouseInputState) {
     self.projection = *world_to_clip;
     let new_position = Position {
       position: [ci.x_movement, ci.y_movement]
@@ -77,7 +77,9 @@ impl CharacterDrawable {
     if let Some(_) = mouse_input.left_click_point {
       self.stance = Stance::Firing;
       self.orientation = get_orientation(mouse_input);
-      self.audio.play_pistol();
+      if cs.character_fire_idx == 1 {
+        self.audio.play_pistol();
+      }
     } else {
       self.stance = Stance::Normal;
       let dx = new_position.position[0] - self.position.position[0];
@@ -204,17 +206,18 @@ impl PreDrawSystem {
 impl<C> specs::System<C> for PreDrawSystem {
   fn run(&mut self, arg: specs::RunArg, _: C) {
     use specs::Join;
-    let (mut character, dim, mut terrain_input, mut character_input, mut mouse_input) =
+    let (mut character, dim, mut terrain_input, mut character_input, mut character_sprite, mut mouse_input) =
       arg.fetch(|w| (
         w.write::<CharacterDrawable>(),
         w.read_resource::<Dimensions>(),
         w.write::<CameraInputState>(),
         w.write::<CharacterInputState>(),
+        w.write::<CharacterSprite>(),
         w.write::<MouseInputState>()));
 
-    for (c, ti, ci, mi) in (&mut character, &mut terrain_input, &mut character_input, &mut mouse_input).join() {
+    for (c, ti, ci, cs, mi) in (&mut character, &mut terrain_input, &mut character_input, &mut character_sprite, &mut mouse_input).join() {
       let world_to_clip = dim.world_to_projection(ti);
-      c.update(&world_to_clip, ci, mi);
+      c.update(&world_to_clip, ci, cs, mi);
     }
   }
 }
