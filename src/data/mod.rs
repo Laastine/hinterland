@@ -31,11 +31,10 @@ pub fn get_map_tile(map: &Map, layer_index: usize, x: usize, y: usize) -> u32 {
     None => panic!("X value out of index {:?}", map.layers[0]),
     Some(x) => x
   };
-  let val = match y_index.get(x) {
+  match y_index.get(x) {
     None => panic!("Y value out of index {:?}", layer.tiles[y]),
     Some(val) => *val
-  };
-  val
+  }
 }
 
 fn read_sprite_file(filename: &str) -> String {

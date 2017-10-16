@@ -172,11 +172,10 @@ impl<R: gfx::Resources> DrawSystem<R> {
     };
 
     let elements_x = charsheet_total_width / (char_sprite.0.data[2] + offset);
-    let char = CharacterSheet {
+    CharacterSheet {
       div: elements_x,
       index: char_sprite.1 as f32
-    };
-    char
+    }
   }
 
   pub fn draw<C>(&mut self,
