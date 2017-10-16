@@ -72,8 +72,7 @@ pub fn get_orientation(mouse_input: &mut MouseInputState) -> Orientation {
     let angle_in_degrees = direction(start_point, flip_y_axel(end_point_gl));
 
     match angle_in_degrees {
-      345 ... 360 => Orientation::Right,
-      0 ... 22 => Orientation::Right,
+      345 ... 360 | 0 ... 22 => Orientation::Right,
       23 ... 68 => Orientation::UpRight,
       69 ... 114 => Orientation::Up,
       115 ... 160 => Orientation::UpLeft,
