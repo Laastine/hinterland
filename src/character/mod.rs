@@ -74,7 +74,7 @@ impl CharacterDrawable {
       position: [ci.x_movement, ci.y_movement]
     };
 
-    if let Some(_) = mouse_input.left_click_point {
+    if mouse_input.left_click_point.is_some() {
       self.stance = Stance::Firing;
       self.orientation = get_orientation(mouse_input);
       if cs.character_fire_idx == 1 {

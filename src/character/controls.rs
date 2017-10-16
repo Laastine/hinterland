@@ -67,7 +67,7 @@ impl<C> specs::System<C> for CharacterControlSystem {
     if let Some(x) = self.x_move {
       if let Some(y) = self.y_move {
         for (ci, mi) in (&mut character_input, &mut mouse_input).join() {
-          if let None = mi.left_click_point {
+          if mi.left_click_point.is_none() {
             ci.x_movement += x / 1.5;
             ci.y_movement += y / 1.5;
           }
@@ -77,7 +77,7 @@ impl<C> specs::System<C> for CharacterControlSystem {
     if let Some(x) = self.x_move {
       if self.y_move == None {
         for (ci, mi) in (&mut character_input, &mut mouse_input).join() {
-          if let None = mi.left_click_point {
+          if mi.left_click_point.is_none() {
             ci.x_movement += x;
           }
         }
@@ -86,7 +86,7 @@ impl<C> specs::System<C> for CharacterControlSystem {
     if let Some(y) = self.y_move {
       if self.x_move == None {
         for (ci, mi) in (&mut character_input, &mut mouse_input).join() {
-          if let None = mi.left_click_point {
+          if mi.left_click_point.is_none() {
             ci.y_movement += y;
           }
         }
