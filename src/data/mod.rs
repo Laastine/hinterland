@@ -25,15 +25,15 @@ pub fn load_map_file(filename: &str) -> Map {
 pub fn get_map_tile(map: &Map, layer_index: usize, x: usize, y: usize) -> u32 {
   let layer = match map.layers.get(layer_index) {
     None => panic!("Layer_index value out of index {:?}", map.layers),
-    Some(ref l) => *l
+    Some(l) => l
   };
   let y_index = match layer.tiles.iter().rev().nth(y) {
     None => panic!("X value out of index {:?}", map.layers[0]),
-    Some(ref x) => *x
+    Some(x) => x
   };
   let val = match y_index.get(x) {
     None => panic!("Y value out of index {:?}", layer.tiles[y]),
-    Some(ref val) => **val
+    Some(val) => *val
   };
   val
 }
@@ -60,7 +60,7 @@ pub fn load_character() -> Vec<CharacterData> {
   };
   for x in 0..16 {
     for y in 0..14 {
-      let ref key = format!("run_{}_{}", x, y);
+      let key = &format!("run_{}_{}", x, y);
       sprites.push(CharacterData::new([
         character["frames"][key]["frame"]["x"].as_f32().unwrap(),
         character["frames"][key]["frame"]["y"].as_f32().unwrap(),
@@ -72,7 +72,7 @@ pub fn load_character() -> Vec<CharacterData> {
 
   for x in 0..15 {
     for y in 0..4 {
-      let ref key = format!("fire_{}_{}", x, y);
+      let key = &format!("fire_{}_{}", x, y);
       sprites.push(CharacterData::new([
         character["frames"][key]["frame"]["x"].as_f32().unwrap(),
         character["frames"][key]["frame"]["y"].as_f32().unwrap(),

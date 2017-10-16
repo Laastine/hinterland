@@ -143,10 +143,10 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
       Some(ref mut c) => c,
       None => panic!("Terrain controls have not been initialized"),
     };
-    let ref w = self.window;
-    let ref mut rtv = self.render_target_view;
-    let ref mut dsv = self.depth_stencil_view;
-    let ref mut m_pos = self.mouse_pos;
+    let w = &self.window;
+    let m_rtv = &mut self.render_target_view;
+    let m_dsv = &mut self.depth_stencil_view;
+    let m_pos = &mut self.mouse_pos;
 
     self.events_loop.poll_events(|event| {
       match event {
@@ -175,7 +175,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             *m_pos = position;
           },
           Closed => process::exit(0),
-          Resized(_, _) => gfx_window_glutin::update_views(w, rtv, dsv),
+          Resized(_, _) => gfx_window_glutin::update_views(w, m_rtv, m_dsv),
           _ => (),
         },
         _ => (),
