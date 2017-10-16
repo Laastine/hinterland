@@ -5,7 +5,7 @@ use character::controls::CharacterInputState;
 use character::gfx_macros::{pipe, VertexData, CharacterSheet, Position};
 use character::orientation::{Orientation, Stance};
 use data;
-use game::constants::{ASPECT_RATIO, VIEW_DISTANCE, RUN_SPRITE_OFFSET};
+use game::constants::{ASPECT_RATIO, VIEW_DISTANCE, RUN_SPRITE_OFFSET, CHARSHEET_TOTAL_WIDTH, SPRITE_OFFSET};
 use game::gfx_macros::Projection;
 use gfx;
 use gfx_app::graphics::load_texture;
@@ -156,9 +156,6 @@ impl<R: gfx::Resources> DrawSystem<R> {
   }
 
   fn get_next_sprite(&self, character_idx: usize, character_fire_idx: usize, drawable: &mut CharacterDrawable) -> CharacterSheet {
-    let charsheet_total_width = 16128f32;
-    let offset = 2.0;
-
     let char_sprite = if drawable.orientation == Orientation::Still && drawable.stance == Stance::Normal {
       let sprite_idx = (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET) as usize;
       (&self.data[sprite_idx], sprite_idx)
@@ -171,7 +168,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
       (&self.data[sprite_idx], sprite_idx)
     };
 
-    let elements_x = charsheet_total_width / (char_sprite.0.data[2] + offset);
+    let elements_x = CHARSHEET_TOTAL_WIDTH / (char_sprite.0.data[2] + SPRITE_OFFSET);
     CharacterSheet {
       div: elements_x,
       index: char_sprite.1 as f32
