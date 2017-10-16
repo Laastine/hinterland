@@ -23,7 +23,7 @@ impl CharacterSprite {
 
   pub fn update_run(&mut self) {
     if self.character_idx < 13 {
-      self.character_idx = self.character_idx + 1;
+      self.character_idx += 1;
     } else {
       self.character_idx = 0;
     }
@@ -32,7 +32,7 @@ impl CharacterSprite {
 
   pub fn update_fire(&mut self) {
     if self.character_fire_idx < 4 {
-      self.character_fire_idx = self.character_fire_idx + 1;
+      self.character_fire_idx += 1;
     } else {
       self.character_fire_idx = 0;
     }

@@ -53,10 +53,10 @@ impl<D> specs::System<Delta> for DrawSystem<D>
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
     let (mut terrain, mut character, mut sprite) = arg.fetch(|w| {
       if self.cool_down == 0.0 {
-        self.cool_down = self.cool_down + 0.07;
+        self.cool_down += 0.07;
       }
       if self.fire_cool_down == 0.0 {
-        self.fire_cool_down = self.fire_cool_down + 0.2;
+        self.fire_cool_down += 0.2;
       }
       self.cool_down = (self.cool_down - delta).max(0.0);
       self.fire_cool_down = (self.fire_cool_down - delta).max(0.0);
@@ -66,7 +66,7 @@ impl<D> specs::System<Delta> for DrawSystem<D>
     });
 
     let current_time = Instant::now();
-    self.frames = self.frames + 1;
+    self.frames += 1;
     if cfg!(feature = "dev") && (current_time.duration_since(self.game_time).as_secs()) >= 1 {
       println!("{:?} ms/frames", 1000.0 / self.frames as f32);
       self.frames = 0;
