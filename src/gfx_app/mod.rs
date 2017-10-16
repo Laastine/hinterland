@@ -149,36 +149,53 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
     let m_pos = &mut self.mouse_pos;
 
     self.events_loop.poll_events(|event| {
-      match event {
-        glutin::Event::WindowEvent { event, .. } => match event {
+      if let glutin::Event::WindowEvent { event, .. } = event {
+        match event {
           glutin::WindowEvent::KeyboardInput { input, .. } => match input {
             KeyboardInput { virtual_keycode: Some(Escape), .. } => process::exit(0),
             KeyboardInput { state: Pressed, virtual_keycode: Some(Minus), .. } => controls.zoom_out(),
             KeyboardInput { state: Pressed, virtual_keycode: Some(Equals), .. } => controls.zoom_in(),
             KeyboardInput { state: Released, virtual_keycode: Some(Minus), .. } |
             KeyboardInput { state: Released, virtual_keycode: Some(Equals), .. } => controls.zoom_stop(),
-            KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {controls.move_character_up(); controls.move_map_up();},
-            KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {controls.move_character_down(); controls.move_map_down();},
+            KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {
+              controls.move_character_up();
+              controls.move_map_up();
+            },
+            KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {
+              controls.move_character_down();
+              controls.move_map_down();
+            },
             KeyboardInput { state: Released, virtual_keycode: Some(W), .. } |
-            KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {controls.stop_character_y(); controls.stop_map_y();},
-            KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {controls.move_character_left(); controls.move_map_left();},
-            KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {controls.move_character_right(); controls.move_map_right();},
+            KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {
+              controls.stop_character_y();
+              controls.stop_map_y();
+            },
+            KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {
+              controls.move_character_left();
+              controls.move_map_left();
+            },
+            KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {
+              controls.move_character_right();
+              controls.move_map_right();
+            },
             KeyboardInput { state: Released, virtual_keycode: Some(A), .. } |
-            KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {controls.stop_character_x(); controls.stop_map_x();},
+            KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {
+              controls.stop_character_x();
+              controls.stop_map_x();
+            },
             _ => (),
           },
-          MouseInput {state: Pressed, button: MouseButton::Left, ..} => controls.mouse_left_click(Some(*m_pos)),
-          MouseInput {state: Released, button: MouseButton::Left, ..} => controls.mouse_left_click(None),
-          MouseInput {state: Pressed, button: MouseButton::Right, ..} => controls.mouse_right_click(Some(*m_pos)),
-          MouseInput {state: Released, button: MouseButton::Right, ..} => controls.mouse_right_click(None),
-          MouseMoved {position, ..} => {
+          MouseInput { state: Pressed, button: MouseButton::Left, .. } => controls.mouse_left_click(Some(*m_pos)),
+          MouseInput { state: Released, button: MouseButton::Left, .. } => controls.mouse_left_click(None),
+          MouseInput { state: Pressed, button: MouseButton::Right, .. } => controls.mouse_right_click(Some(*m_pos)),
+          MouseInput { state: Released, button: MouseButton::Right, .. } => controls.mouse_right_click(None),
+          MouseMoved { position, .. } => {
             *m_pos = position;
           },
           Closed => process::exit(0),
           Resized(_, _) => gfx_window_glutin::update_views(w, m_rtv, m_dsv),
           _ => (),
-        },
-        _ => (),
+        }
       }
     });
     None
