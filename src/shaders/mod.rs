@@ -1,5 +1,4 @@
 use gfx;
-use game::gfx_macros::Projection;
 
 gfx_defines! {
   vertex VertexData {
@@ -24,5 +23,20 @@ gfx_defines! {
     charactersheet: gfx::TextureSampler<[f32; 4]> = "t_CharacterSheet",
     out_color: gfx::RenderTarget<gfx::format::Rgba8> = "Target0",
     out_depth: gfx::DepthTarget<gfx::format::DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
+  }
+
+  constant Projection {
+    model: [[f32; 4]; 4] = "u_Model",
+    view: [[f32; 4]; 4] = "u_View",
+    proj: [[f32; 4]; 4] = "u_Proj",
+  }
+}
+
+impl VertexData {
+  pub fn new(pos: [f32; 3], buf_pos: [f32; 2]) -> VertexData {
+    VertexData {
+      pos,
+      buf_pos,
+    }
   }
 }

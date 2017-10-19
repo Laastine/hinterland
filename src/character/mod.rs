@@ -2,11 +2,10 @@ use cgmath::{Matrix4, Point3, Vector3};
 use cgmath;
 use character::character::{CharacterSprite, CharacterData};
 use character::controls::CharacterInputState;
-use character::gfx_macros::{pipe, VertexData, CharacterSheet, Position};
 use character::orientation::{Orientation, Stance};
 use data;
 use game::constants::{ASPECT_RATIO, VIEW_DISTANCE, RUN_SPRITE_OFFSET, CHARSHEET_TOTAL_WIDTH, SPRITE_OFFSET};
-use game::gfx_macros::Projection;
+use shaders::{pipe, VertexData, CharacterSheet, Position, Projection};
 use gfx;
 use gfx_app::graphics::load_texture;
 use gfx_app::mouse_controls::MouseInputState;
@@ -17,21 +16,11 @@ use specs;
 
 mod audio;
 pub mod character;
-pub mod gfx_macros;
 pub mod orientation;
 pub mod controls;
 
-const SHADER_VERT: &'static [u8] = include_bytes!("character.v.glsl");
-const SHADER_FRAG: &'static [u8] = include_bytes!("character.f.glsl");
-
-impl VertexData {
-  fn new(pos: [f32; 3], buf_pos: [f32; 2]) -> VertexData {
-    VertexData {
-      pos,
-      buf_pos,
-    }
-  }
-}
+const SHADER_VERT: &'static [u8] = include_bytes!("../shaders/character.v.glsl");
+const SHADER_FRAG: &'static [u8] = include_bytes!("../shaders/character.f.glsl");
 
 pub struct CharacterDrawable {
   projection: Projection,

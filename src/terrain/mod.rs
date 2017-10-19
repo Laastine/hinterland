@@ -7,7 +7,7 @@ use specs;
 use genmesh::{Vertices, Triangulate};
 use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
 use terrain::gfx_macros::{TileMapData, VertexData, pipe, TilemapSettings};
-use game::gfx_macros::Projection;
+use shaders::Projection;
 use graphics::camera::CameraInputState;
 use game::constants::{TILEMAP_BUF_LENGTH, ASPECT_RATIO};
 use gfx_app::graphics::load_texture;

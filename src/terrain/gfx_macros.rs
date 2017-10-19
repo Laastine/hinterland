@@ -1,5 +1,5 @@
 use gfx;
-use game::gfx_macros::Projection;
+use shaders::Projection;
 
 gfx_defines! {
     constant TileMapData {

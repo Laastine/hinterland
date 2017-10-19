@@ -1,4 +1,4 @@
-use game::gfx_macros::Projection;
+use shaders::Projection;
 use cgmath;
 use cgmath::{Matrix4, Point3, Vector3, Point2, Rad};
 use specs;
