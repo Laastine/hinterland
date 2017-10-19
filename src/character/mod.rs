@@ -2,7 +2,7 @@ use cgmath::{Matrix4, Point3, Vector3};
 use cgmath;
 use character::character::{CharacterSprite, CharacterData};
 use character::controls::CharacterInputState;
-use character::orientation::{Orientation, Stance};
+use graphics::orientation::{Orientation, Stance};
 use data;
 use game::constants::{ASPECT_RATIO, VIEW_DISTANCE, RUN_SPRITE_OFFSET, CHARSHEET_TOTAL_WIDTH, SPRITE_OFFSET};
 use shaders::{pipe, VertexData, CharacterSheet, Position, Projection};
@@ -16,7 +16,6 @@ use specs;
 
 mod audio;
 pub mod character;
-pub mod orientation;
 pub mod controls;
 
 const SHADER_VERT: &'static [u8] = include_bytes!("../shaders/character.v.glsl");

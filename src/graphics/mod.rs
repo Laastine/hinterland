@@ -3,11 +3,12 @@ use cgmath;
 use cgmath::{Matrix4, Point3, Vector3, Point2, Rad};
 use specs;
 use game::constants::{RESOLUTION_X, RESOLUTION_Y};
-use character::orientation::Orientation;
+use graphics::orientation::Orientation;
 use gfx_app::mouse_controls::MouseInputState;
 use std::f32::consts::PI;
 
 pub mod camera;
+pub mod orientation;
 
 pub type Delta = f32;
 pub type Planner = specs::Planner<Delta>;

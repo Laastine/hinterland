@@ -6,7 +6,7 @@ use character;
 use specs;
 use std::time::Instant;
 use character::character::CharacterSprite;
-use character::orientation::Stance;
+use graphics::orientation::Stance;
 
 pub type Delta = f32;
 
