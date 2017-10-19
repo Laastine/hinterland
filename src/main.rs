@@ -19,6 +19,7 @@ mod graphics;
 mod terrain;
 mod character;
 mod shaders;
+mod zombie;
 
 fn main() {
   let mut window = gfx_app::GlutinWindow::new();

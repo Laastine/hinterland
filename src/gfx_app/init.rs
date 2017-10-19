@@ -13,6 +13,7 @@ use graphics::camera::CameraControlSystem;
 use character::controls::CharacterControlSystem;
 use character::character::CharacterSprite;
 use character;
+use zombie;
 use graphics;
 
 pub fn run<W, D, F>(window: &mut W) -> GameStatus
@@ -34,6 +35,7 @@ fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.register::<terrain::Drawable>();
   world.register::<graphics::camera::CameraInputState>();
   world.register::<character::CharacterDrawable>();
+  world.register::<zombie::ZombieDrawable>();
   world.register::<character::character::Character>();
   world.register::<CharacterSprite>();
   world.register::<character::controls::CharacterInputState>();
@@ -46,10 +48,12 @@ fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.add_resource(character::controls::CharacterInputState::new());
   world.add_resource(MouseInputState::new());
   world.add_resource(character::CharacterDrawable::new());
+  world.add_resource(zombie::ZombieDrawable::new());
   world.add_resource(CharacterSprite::new());
   world.create()
     .with(terrain::Drawable::new())
     .with(character::CharacterDrawable::new())
+    .with(zombie::ZombieDrawable::new())
     .with(CharacterSprite::new())
     .with(graphics::camera::CameraInputState::new())
     .with(character::controls::CharacterInputState::new())
