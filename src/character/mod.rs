@@ -92,15 +92,15 @@ impl specs::Component for CharacterDrawable {
   type Storage = specs::VecStorage<CharacterDrawable>;
 }
 
-pub struct DrawSystem<R: gfx::Resources> {
+pub struct CharacterDrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, pipe::Data<R>>,
   data: Vec<CritterData>,
 }
 
-impl<R: gfx::Resources> DrawSystem<R> {
+impl<R: gfx::Resources> CharacterDrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
-                dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> DrawSystem<R>
+                dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> CharacterDrawSystem<R>
     where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
@@ -137,7 +137,7 @@ impl<R: gfx::Resources> DrawSystem<R> {
 
     let data = data::load_character();
 
-    DrawSystem {
+    CharacterDrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
       data
     }

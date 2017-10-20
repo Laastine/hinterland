@@ -13,8 +13,8 @@ pub type Delta = f32;
 pub struct DrawSystem<D: gfx::Device> {
   render_target_view: gfx::handle::RenderTargetView<D::Resources, ColorFormat>,
   depth_stencil_view: gfx::handle::DepthStencilView<D::Resources, DepthFormat>,
-  terrain_system: terrain::DrawSystem<D::Resources>,
-  character_system: character::DrawSystem<D::Resources>,
+  terrain_system: terrain::TerrainDrawSystem<D::Resources>,
+  character_system: character::CharacterDrawSystem<D::Resources>,
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
   frames: u32,
@@ -33,8 +33,8 @@ impl<D: gfx::Device> DrawSystem<D> {
     DrawSystem {
       render_target_view: rtv.clone(),
       depth_stencil_view: dsv.clone(),
-      terrain_system: terrain::DrawSystem::new(factory, rtv.clone(), dsv.clone()),
-      character_system: character::DrawSystem::new(factory, rtv.clone(), dsv.clone()),
+      terrain_system: terrain::TerrainDrawSystem::new(factory, rtv.clone(), dsv.clone()),
+      character_system: character::CharacterDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       encoder_queue,
       game_time: Instant::now(),
       frames: 0,
@@ -60,7 +60,7 @@ impl<D> specs::System<Delta> for DrawSystem<D>
       }
       self.cool_down = (self.cool_down - delta).max(0.0);
       self.fire_cool_down = (self.fire_cool_down - delta).max(0.0);
-      (w.write::<terrain::Drawable>(),
+      (w.write::<terrain::TerrainDrawable>(),
        w.write::<character::CharacterDrawable>(),
        w.write::<CharacterSprite>())
     });

@@ -32,12 +32,12 @@ impl TileMapData {
 }
 
 #[derive(Debug)]
-pub struct Drawable {
+pub struct TerrainDrawable {
   projection: Projection,
 }
 
-impl Drawable {
-  pub fn new() -> Drawable {
+impl TerrainDrawable {
+  pub fn new() -> TerrainDrawable {
     let view: Matrix4<f32> = Matrix4::look_at(
       Point3::new(0.0, 0.0, VIEW_DISTANCE),
       Point3::new(0.0, 0.0, 0.0),
@@ -46,7 +46,7 @@ impl Drawable {
 
     let aspect_ratio: f32 = ASPECT_RATIO;
 
-    Drawable {
+    TerrainDrawable {
       projection: Projection {
         model: Matrix4::from(view).into(),
         view: view.into(),
@@ -60,23 +60,23 @@ impl Drawable {
   }
 }
 
-impl specs::Component for Drawable {
-  type Storage = specs::HashMapStorage<Drawable>;
+impl specs::Component for TerrainDrawable {
+  type Storage = specs::HashMapStorage<TerrainDrawable>;
 }
 
 const SHADER_VERT: &'static [u8] = include_bytes!("terrain.v.glsl");
 const SHADER_FRAG: &'static [u8] = include_bytes!("terrain.f.glsl");
 
-pub struct DrawSystem<R: gfx::Resources> {
+pub struct TerrainDrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, pipe::Data<R>>,
   data: Vec<TileMapData>,
 }
 
-impl<R: gfx::Resources> DrawSystem<R> {
+impl<R: gfx::Resources> TerrainDrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>)
-                -> DrawSystem<R>
+                -> TerrainDrawSystem<R>
     where F: gfx::Factory<R>
   {
     use gfx::traits::FactoryExt;
@@ -132,14 +132,14 @@ impl<R: gfx::Resources> DrawSystem<R> {
       out_depth: dsv,
     };
 
-    DrawSystem {
+    TerrainDrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
       data: terrain::generate().tiles,
     }
   }
 
   pub fn draw<C>(&mut self,
-                 drawable: &Drawable,
+                 drawable: &TerrainDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
     encoder.update_buffer(&self.bundle.data.tilemap, self.data.as_slice(), 0).unwrap();
@@ -167,7 +167,7 @@ impl<C> specs::System<C> for PreDrawSystem {
     use specs::Join;
     let (mut terrain, dim, mut input) =
       arg.fetch(|w| (
-        w.write::<Drawable>(),
+        w.write::<TerrainDrawable>(),
         w.read_resource::<Dimensions>(),
         w.write::<CameraInputState>()));
 

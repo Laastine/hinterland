@@ -32,7 +32,7 @@ pub fn run<W, D, F>(window: &mut W) -> GameStatus
 }
 
 fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
-  world.register::<terrain::Drawable>();
+  world.register::<terrain::TerrainDrawable>();
   world.register::<graphics::camera::CameraInputState>();
   world.register::<character::CharacterDrawable>();
   world.register::<zombie::ZombieDrawable>();
@@ -51,7 +51,7 @@ fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.add_resource(zombie::ZombieDrawable::new());
   world.add_resource(CharacterSprite::new());
   world.create()
-    .with(terrain::Drawable::new())
+    .with(terrain::TerrainDrawable::new())
     .with(character::CharacterDrawable::new())
     .with(zombie::ZombieDrawable::new())
     .with(CharacterSprite::new())
