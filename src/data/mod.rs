@@ -94,7 +94,7 @@ pub fn load_zombie() -> Vec<CritterData> {
 
   for x in 0..7 {
     for y in 0..7 {
-      let key = &format!("walk_{}_{}", x, y);
+      let key = &format!("zombie_{}_{}", x, y);
       sprites.push(CritterData::new([
         zombie["frames"][key]["frame"]["x"].as_f32().unwrap(),
         zombie["frames"][key]["frame"]["y"].as_f32().unwrap(),
