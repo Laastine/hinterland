@@ -3,6 +3,7 @@ use gfx_app::renderer::EncoderQueue;
 use gfx;
 use terrain;
 use character;
+use zombie;
 use specs;
 use std::time::Instant;
 use critter::{CharacterSprite, ZombieSprite};
@@ -15,6 +16,7 @@ pub struct DrawSystem<D: gfx::Device> {
   depth_stencil_view: gfx::handle::DepthStencilView<D::Resources, DepthFormat>,
   terrain_system: terrain::TerrainDrawSystem<D::Resources>,
   character_system: character::CharacterDrawSystem<D::Resources>,
+  zombie_system: zombie::ZombieDrawSystem<D::Resources>,
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
   frames: u32,
@@ -35,6 +37,7 @@ impl<D: gfx::Device> DrawSystem<D> {
       depth_stencil_view: dsv.clone(),
       terrain_system: terrain::TerrainDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       character_system: character::CharacterDrawSystem::new(factory, rtv.clone(), dsv.clone()),
+      zombie_system: zombie::ZombieDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       encoder_queue,
       game_time: Instant::now(),
       frames: 0,
@@ -51,7 +54,7 @@ impl<D> specs::System<Delta> for DrawSystem<D>
   fn run(&mut self, arg: specs::RunArg, delta: Delta) {
     use specs::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
-    let (mut terrain, mut character, mut sprite) = arg.fetch(|w| {
+    let (mut terrain, mut character, mut character_sprite, mut zombie, mut zombie_sprite) = arg.fetch(|w| {
       if self.cool_down == 0.0 {
         self.cool_down += 0.07;
       }
@@ -62,7 +65,9 @@ impl<D> specs::System<Delta> for DrawSystem<D>
       self.fire_cool_down = (self.fire_cool_down - delta).max(0.0);
       (w.write::<terrain::TerrainDrawable>(),
        w.write::<character::CharacterDrawable>(),
-       w.write::<CharacterSprite>())
+       w.write::<CharacterSprite>(),
+       w.write::<zombie::ZombieDrawable>(),
+       w.write::<ZombieSprite>())
     });
 
     let current_time = Instant::now();
@@ -76,14 +81,15 @@ impl<D> specs::System<Delta> for DrawSystem<D>
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 16.0 / 256.0, 20.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
-    for (t, c, s) in (&mut terrain, &mut character, &mut sprite).join() {
+    for (t, c, cs, z, zs) in (&mut terrain, &mut character, &mut character_sprite, &mut zombie, &mut zombie_sprite).join() {
       self.terrain_system.draw(t, &mut encoder);
       if self.cool_down == 0.0 && c.stance == Stance::Normal {
-        s.update_run();
+        cs.update_run();
       } else if self.fire_cool_down == 0.0 && c.stance == Stance::Firing {
-        s.update_fire();
+        cs.update_fire();
       }
-      self.character_system.draw(c, s, &mut encoder);
+      self.character_system.draw(c, cs, &mut encoder);
+      self.zombie_system.draw(z, zs, &mut encoder);
     }
 
     if let Err(e) = self.encoder_queue.sender.send(encoder) {

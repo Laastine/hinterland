@@ -39,6 +39,7 @@ fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.register::<character::CharacterDrawable>();
   world.register::<zombie::ZombieDrawable>();
   world.register::<CharacterSprite>();
+  world.register::<ZombieSprite>();
   world.register::<character::controls::CharacterInputState>();
   world.register::<MouseInputState>();
 
@@ -50,12 +51,15 @@ fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.add_resource(MouseInputState::new());
   world.add_resource(character::CharacterDrawable::new(view_matrix));
   world.add_resource(zombie::ZombieDrawable::new(view_matrix));
+  world.add_resource(zombie::ZombieDrawable::new(view_matrix));
   world.add_resource(CharacterSprite::new());
+  world.add_resource(ZombieSprite::new());
   world.create()
     .with(terrain::TerrainDrawable::new(view_matrix))
     .with(character::CharacterDrawable::new(view_matrix))
     .with(zombie::ZombieDrawable::new(view_matrix))
     .with(CharacterSprite::new())
+    .with(ZombieSprite::new())
     .with(graphics::camera::CameraInputState::new())
     .with(character::controls::CharacterInputState::new())
     .with(MouseInputState::new()).build();
