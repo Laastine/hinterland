@@ -95,7 +95,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
     where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
-    let tilesheet_bytes = &include_bytes!("../../assets/character.png")[..];
+    let charter_bytes = &include_bytes!("../../assets/character.png")[..];
 
     let vertex_data: Vec<VertexData> =
       vec![
@@ -109,7 +109,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());
 
-    let char_texture = load_texture(factory, tilesheet_bytes).unwrap();
+    let char_texture = load_texture(factory, charter_bytes).unwrap();
     let pso = factory
       .create_pipeline_simple(SHADER_VERT,
                               SHADER_FRAG,
