@@ -5,7 +5,7 @@ use std::path::Path;
 use std::vec::Vec;
 use std::io::BufReader;
 use json;
-use game::constants::{CHARACTER_JSON_PATH, CHARACTER_BUF_LENGTH};
+use game::constants::{CHARACTER_JSON_PATH, CHARACTER_BUF_LENGTH, ZOMBIE_JSON_PATH};
 use tiled::Map;
 use tiled;
 use character::character::CritterData;
@@ -77,6 +77,29 @@ pub fn load_character() -> Vec<CritterData> {
         character["frames"][key]["frame"]["y"].as_f32().unwrap(),
         character["frames"][key]["frame"]["w"].as_f32().unwrap(),
         character["frames"][key]["frame"]["h"].as_f32().unwrap(),
+      ]));
+    }
+  }
+
+  sprites
+}
+
+pub fn load_zombie() -> Vec<CritterData> {
+  let mut sprites = Vec::with_capacity(128);
+  let character_json = read_sprite_file(ZOMBIE_JSON_PATH);
+  let zombie = match json::parse(&character_json) {
+    Ok(res) => res,
+    Err(e) => panic!("Character JSON parse error {:?}", e),
+  };
+
+  for x in 0..7 {
+    for y in 0..7 {
+      let key = &format!("walk_{}_{}", x, y);
+      sprites.push(CritterData::new([
+        zombie["frames"][key]["frame"]["x"].as_f32().unwrap(),
+        zombie["frames"][key]["frame"]["y"].as_f32().unwrap(),
+        zombie["frames"][key]["frame"]["w"].as_f32().unwrap(),
+        zombie["frames"][key]["frame"]["h"].as_f32().unwrap()
       ]));
     }
   }

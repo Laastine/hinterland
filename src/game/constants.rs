@@ -27,7 +27,7 @@ pub const TILES_PCS_H: usize = 64;
 
 //Assets
 //pub const ZOMBIE_PATH: &'static str = "assets/zombie.png";
-//pub const CHARACTER_FIRE_JSON_PATH: &'static str = "assets/character-fire.json";
+pub const ZOMBIE_JSON_PATH: &'static str = "assets/zombie.json";
 //pub const CHARACTER_PATH: &'static str = "assets/character.png";
 pub const CHARACTER_JSON_PATH: &'static str = "assets/character.json";
 //pub const PISTOL_AUDIO_PATH: &'static str = "assets/audio/pistol.ogg";
