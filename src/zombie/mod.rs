@@ -17,20 +17,12 @@ pub struct ZombieDrawable {
 }
 
 impl ZombieDrawable {
-  pub fn new() -> ZombieDrawable {
-    let view: Matrix4<f32> = Matrix4::look_at(
-      Point3::new(0.0, 0.0, VIEW_DISTANCE),
-      Point3::new(0.0, 0.0, 0.0),
-      Vector3::unit_y(),
-    );
-
-    let aspect_ratio: f32 = ASPECT_RATIO;
-
+  pub fn new(view: Matrix4<f32>) -> ZombieDrawable {
     ZombieDrawable {
       projection: Projection {
         model: Matrix4::from(view).into(),
         view: view.into(),
-        proj: cgmath::perspective(cgmath::Deg(60.0f32), aspect_ratio, 0.1, 4000.0).into(),
+        proj: cgmath::perspective(cgmath::Deg(60.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       },
       position: Position {
         position: [0.0, 0.0],

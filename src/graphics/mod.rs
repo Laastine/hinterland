@@ -2,7 +2,7 @@ use shaders::Projection;
 use cgmath;
 use cgmath::{Matrix4, Point3, Vector3, Point2, Rad};
 use specs;
-use game::constants::{RESOLUTION_X, RESOLUTION_Y};
+use game::constants::{RESOLUTION_X, RESOLUTION_Y, VIEW_DISTANCE};
 use graphics::orientation::Orientation;
 use gfx_app::mouse_controls::MouseInputState;
 use std::f32::consts::PI;
@@ -25,6 +25,14 @@ impl Dimensions {
       width: RESOLUTION_X,
       height: RESOLUTION_Y,
     }
+  }
+
+  pub fn get_view_matrix() -> Matrix4<f32> {
+    Matrix4::look_at(
+      Point3::new(0.0, 0.0, VIEW_DISTANCE),
+      Point3::new(0.0, 0.0, 0.0),
+      Vector3::unit_y(),
+    )
   }
 
   pub fn world_to_projection(&self, input: &mut camera::CameraInputState) -> Projection {

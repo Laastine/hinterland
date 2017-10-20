@@ -32,6 +32,7 @@ pub fn run<W, D, F>(window: &mut W) -> GameStatus
 }
 
 fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
+  let view_matrix = Dimensions::get_view_matrix();
   world.register::<terrain::TerrainDrawable>();
   world.register::<graphics::camera::CameraInputState>();
   world.register::<character::CharacterDrawable>();
@@ -47,13 +48,13 @@ fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.add_resource(graphics::camera::CameraInputState::new());
   world.add_resource(character::controls::CharacterInputState::new());
   world.add_resource(MouseInputState::new());
-  world.add_resource(character::CharacterDrawable::new());
-  world.add_resource(zombie::ZombieDrawable::new());
+  world.add_resource(character::CharacterDrawable::new(view_matrix));
+  world.add_resource(zombie::ZombieDrawable::new(view_matrix));
   world.add_resource(CharacterSprite::new());
   world.create()
-    .with(terrain::TerrainDrawable::new())
-    .with(character::CharacterDrawable::new())
-    .with(zombie::ZombieDrawable::new())
+    .with(terrain::TerrainDrawable::new(view_matrix))
+    .with(character::CharacterDrawable::new(view_matrix))
+    .with(zombie::ZombieDrawable::new(view_matrix))
     .with(CharacterSprite::new())
     .with(graphics::camera::CameraInputState::new())
     .with(character::controls::CharacterInputState::new())
