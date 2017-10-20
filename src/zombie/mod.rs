@@ -4,7 +4,7 @@ use graphics::Dimensions;
 use character::controls::CharacterInputState;
 use graphics::camera::CameraInputState;
 use cgmath::{Matrix4, Point3, Vector3};
-use game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
+use game::constants::{ASPECT_RATIO, VIEW_DISTANCE, ZOMBIESHEET_TOTAL_WIDTH};
 use critter::{CritterData, ZombieSprite};
 use gfx_app::{ColorFormat, DepthFormat};
 use cgmath;
@@ -33,7 +33,7 @@ impl ZombieDrawable {
         proj: cgmath::perspective(cgmath::Deg(60.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       },
       position: Position {
-        position: [0.0, 0.0],
+        position: [16.0, 0.0],
       },
       orientation: Orientation::Right,
       stance: Stance::Normal,
@@ -51,7 +51,16 @@ impl ZombieDrawable {
     let dx = new_position.position[0] - self.position.position[0];
     let dy = new_position.position[1] - self.position.position[1];
     self.orientation =
-      if dx == 0.0 && dy < 0.0 { Orientation::Down } else if dx > 0.0 && dy < 0.0 { Orientation::DownRight } else if dx < 0.0 && dy < 0.0 { Orientation::DownLeft } else if dx == 0.0 && dy == 0.0 { Orientation::Still } else if dx > 0.0 && dy == 0.0 { Orientation::Right } else if dx < 0.0 && dy == 0.0 { Orientation::Left } else if dx == 0.0 && dy > 0.0 { Orientation::Up } else if dx > 0.0 && dy > 0.0 { Orientation::UpRight } else if dx < 0.0 && dy > 0.0 { Orientation::UpLeft } else { unreachable!() };
+      if dx == 0.0 && dy < 0.0       { Orientation::Down }
+      else if dx > 0.0 && dy < 0.0   { Orientation::DownRight }
+      else if dx < 0.0 && dy < 0.0   { Orientation::DownLeft }
+      else if dx == 0.0 && dy == 0.0 { Orientation::Still }
+      else if dx > 0.0 && dy == 0.0  { Orientation::Right }
+      else if dx < 0.0 && dy == 0.0  { Orientation::Left }
+      else if dx == 0.0 && dy > 0.0  { Orientation::Up }
+      else if dx > 0.0 && dy > 0.0   { Orientation::UpRight }
+      else if dx < 0.0 && dy > 0.0   { Orientation::UpLeft }
+      else { unreachable!() };
     self.position = new_position;
   }
 }
@@ -111,12 +120,32 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
     }
   }
 
+  fn get_next_sprite(&self, character_idx: usize, drawable: &mut ZombieDrawable) -> CharacterSheet {
+    let zombie_sprite = if drawable.orientation == Orientation::Still && drawable.stance == Stance::Normal {
+      let sprite_idx = (drawable.direction as usize * 8) as usize;
+      (&self.data[sprite_idx], sprite_idx)
+    } else  {
+      drawable.direction = drawable.orientation;
+      let sprite_idx = (drawable.orientation as usize * 8 + character_idx) as usize;
+      (&self.data[sprite_idx], sprite_idx)
+    };
+
+    let elements_x = ZOMBIESHEET_TOTAL_WIDTH / (zombie_sprite.0.data[2]);
+    CharacterSheet {
+      div: elements_x,
+      index: zombie_sprite.1 as f32
+    }
+  }
+
   pub fn draw<C>(&mut self,
                  mut drawable: &mut ZombieDrawable,
                  zombie: &ZombieSprite,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
+    encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
+    encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb,
+                                   &mut self.get_next_sprite(zombie.zombie_idx, &mut drawable));
     self.bundle.encode(encoder);
   }
 }
