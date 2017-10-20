@@ -8,7 +8,7 @@ use json;
 use game::constants::{CHARACTER_JSON_PATH, CHARACTER_BUF_LENGTH};
 use tiled::Map;
 use tiled;
-use character::character::CharacterData;
+use character::character::CritterData;
 
 pub fn load_map_file(filename: &str) -> Map {
   let file = match File::open(&Path::new(&filename)) {
@@ -50,7 +50,7 @@ fn read_sprite_file(filename: &str) -> String {
   }
 }
 
-pub fn load_character() -> Vec<CharacterData> {
+pub fn load_character() -> Vec<CritterData> {
   let mut sprites = Vec::with_capacity(CHARACTER_BUF_LENGTH + 64);
   let character_json = read_sprite_file(CHARACTER_JSON_PATH);
   let character = match json::parse(&character_json) {
@@ -60,7 +60,7 @@ pub fn load_character() -> Vec<CharacterData> {
   for x in 0..16 {
     for y in 0..14 {
       let key = &format!("run_{}_{}", x, y);
-      sprites.push(CharacterData::new([
+      sprites.push(CritterData::new([
         character["frames"][key]["frame"]["x"].as_f32().unwrap(),
         character["frames"][key]["frame"]["y"].as_f32().unwrap(),
         character["frames"][key]["frame"]["w"].as_f32().unwrap(),
@@ -72,7 +72,7 @@ pub fn load_character() -> Vec<CharacterData> {
   for x in 0..15 {
     for y in 0..4 {
       let key = &format!("fire_{}_{}", x, y);
-      sprites.push(CharacterData::new([
+      sprites.push(CritterData::new([
         character["frames"][key]["frame"]["x"].as_f32().unwrap(),
         character["frames"][key]["frame"]["y"].as_f32().unwrap(),
         character["frames"][key]["frame"]["w"].as_f32().unwrap(),

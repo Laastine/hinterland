@@ -44,12 +44,12 @@ impl specs::Component for CharacterSprite {
 }
 
 #[derive(Debug)]
-pub struct CharacterData {
+pub struct CritterData {
   pub data: [f32; 4]
 }
 
-impl CharacterData {
-  pub fn new(data: [f32; 4]) -> CharacterData {
-    CharacterData { data }
+impl CritterData {
+  pub fn new(data: [f32; 4]) -> CritterData {
+    CritterData { data }
   }
 }

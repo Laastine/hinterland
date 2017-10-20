@@ -1,6 +1,6 @@
 use cgmath::{Matrix4, Point3, Vector3};
 use cgmath;
-use character::character::{CharacterSprite, CharacterData};
+use character::character::{CharacterSprite, CritterData};
 use character::controls::CharacterInputState;
 use graphics::orientation::{Orientation, Stance};
 use data;
@@ -94,7 +94,7 @@ impl specs::Component for CharacterDrawable {
 
 pub struct DrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, pipe::Data<R>>,
-  data: Vec<CharacterData>,
+  data: Vec<CritterData>,
 }
 
 impl<R: gfx::Resources> DrawSystem<R> {
