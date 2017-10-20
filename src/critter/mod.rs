@@ -1,13 +1,6 @@
 use specs;
 
 #[derive(Debug)]
-pub struct Character;
-
-impl specs::Component for Character {
-  type Storage = specs::HashMapStorage<Character>;
-}
-
-#[derive(Debug)]
 pub struct CharacterSprite {
   pub character_idx: usize,
   pub character_fire_idx: usize,
@@ -41,6 +34,32 @@ impl CharacterSprite {
 
 impl specs::Component for CharacterSprite {
   type Storage = specs::VecStorage<CharacterSprite>;
+}
+
+#[derive(Debug)]
+pub struct ZombieSprite {
+  pub zombie_idx: usize,
+}
+
+impl ZombieSprite {
+  pub fn new() -> ZombieSprite {
+    ZombieSprite {
+      zombie_idx: 0,
+    }
+  }
+
+  pub fn update_run(&mut self) {
+    if self.zombie_idx < 13 {
+      self.zombie_idx += 1;
+    } else {
+      self.zombie_idx = 0;
+    }
+    self.zombie_idx = 0;
+  }
+}
+
+impl specs::Component for ZombieSprite {
+  type Storage = specs::VecStorage<ZombieSprite>;
 }
 
 #[derive(Debug)]

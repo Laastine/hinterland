@@ -1,6 +1,5 @@
 use cgmath::{Matrix4, Point3, Vector3};
 use cgmath;
-use character::character::{CharacterSprite, CritterData};
 use character::controls::CharacterInputState;
 use graphics::orientation::{Orientation, Stance};
 use data;
@@ -12,10 +11,10 @@ use gfx_app::mouse_controls::MouseInputState;
 use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{Dimensions, get_orientation};
 use graphics::camera::CameraInputState;
+use critter::{CharacterSprite, CritterData};
 use specs;
 
 mod audio;
-pub mod character;
 pub mod controls;
 
 const SHADER_VERT: &'static [u8] = include_bytes!("../shaders/character.v.glsl");

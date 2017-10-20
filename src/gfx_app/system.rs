@@ -5,7 +5,7 @@ use terrain;
 use character;
 use specs;
 use std::time::Instant;
-use character::character::CharacterSprite;
+use critter::{CharacterSprite, ZombieSprite};
 use graphics::orientation::Stance;
 
 pub type Delta = f32;

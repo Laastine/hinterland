@@ -11,7 +11,8 @@ use gfx_app::controls::TilemapControls;
 use gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
 use graphics::camera::CameraControlSystem;
 use character::controls::CharacterControlSystem;
-use character::character::CharacterSprite;
+use critter::{CharacterSprite, ZombieSprite};
+use critter;
 use character;
 use zombie;
 use graphics;
@@ -37,7 +38,6 @@ fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.register::<graphics::camera::CameraInputState>();
   world.register::<character::CharacterDrawable>();
   world.register::<zombie::ZombieDrawable>();
-  world.register::<character::character::Character>();
   world.register::<CharacterSprite>();
   world.register::<character::controls::CharacterInputState>();
   world.register::<MouseInputState>();
