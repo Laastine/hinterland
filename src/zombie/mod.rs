@@ -4,7 +4,7 @@ use graphics::Dimensions;
 use character::controls::CharacterInputState;
 use graphics::camera::CameraInputState;
 use cgmath::{Matrix4, Point3, Vector3};
-use game::constants::{ASPECT_RATIO, VIEW_DISTANCE, ZOMBIESHEET_TOTAL_WIDTH};
+use game::constants::{ASPECT_RATIO, VIEW_DISTANCE, ZOMBIESHEET_TOTAL_WIDTH, SPRITE_OFFSET, RUN_SPRITE_OFFSET};
 use critter::{CritterData, ZombieSprite};
 use gfx_app::{ColorFormat, DepthFormat};
 use cgmath;
@@ -33,11 +33,11 @@ impl ZombieDrawable {
         proj: cgmath::perspective(cgmath::Deg(60.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       },
       position: Position {
-        position: [16.0, 0.0],
+        position: [128.0, 0.0],
       },
-      orientation: Orientation::Right,
+      orientation: Orientation::Left,
       stance: Stance::Normal,
-      direction: Orientation::Right,
+      direction: Orientation::Left,
     }
   }
 
@@ -120,17 +120,18 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
     }
   }
 
-  fn get_next_sprite(&self, character_idx: usize, drawable: &mut ZombieDrawable) -> CharacterSheet {
-    let zombie_sprite = if drawable.orientation == Orientation::Still && drawable.stance == Stance::Normal {
-      let sprite_idx = (drawable.direction as usize * 8) as usize;
-      (&self.data[sprite_idx], sprite_idx)
-    } else  {
-      drawable.direction = drawable.orientation;
-      let sprite_idx = (drawable.orientation as usize * 8 + character_idx) as usize;
-      (&self.data[sprite_idx], sprite_idx)
-    };
+  fn get_next_sprite(&self, zombie_idx: usize, drawable: &mut ZombieDrawable) -> CharacterSheet {
+    let zombie_sprite =
+      if drawable.orientation == Orientation::Still && drawable.stance == Stance::Normal {
+        let sprite_idx = (drawable.direction as usize * 8 + zombie_idx) as usize;
+        (&self.data[sprite_idx], sprite_idx)
+      } else {
+        drawable.direction = drawable.orientation;
+        let sprite_idx = (drawable.orientation as usize * 8 + zombie_idx) as usize;
+        (&self.data[sprite_idx], sprite_idx)
+      };
 
-    let elements_x = ZOMBIESHEET_TOTAL_WIDTH / (zombie_sprite.0.data[2]);
+    let elements_x = ZOMBIESHEET_TOTAL_WIDTH / (zombie_sprite.0.data[2] + SPRITE_OFFSET);
     CharacterSheet {
       div: elements_x,
       index: zombie_sprite.1 as f32

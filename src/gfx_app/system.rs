@@ -85,6 +85,7 @@ impl<D> specs::System<Delta> for DrawSystem<D>
       self.terrain_system.draw(t, &mut encoder);
       if self.cool_down == 0.0 && c.stance == Stance::Normal {
         cs.update_run();
+        zs.update_walk();
       } else if self.fire_cool_down == 0.0 && c.stance == Stance::Firing {
         cs.update_fire();
       }

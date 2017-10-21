@@ -48,13 +48,12 @@ impl ZombieSprite {
     }
   }
 
-  pub fn update_run(&mut self) {
-    if self.zombie_idx < 13 {
+  pub fn update_walk(&mut self) {
+    if self.zombie_idx < 8 {
       self.zombie_idx += 1;
     } else {
       self.zombie_idx = 0;
     }
-    self.zombie_idx = 0;
   }
 }
 
