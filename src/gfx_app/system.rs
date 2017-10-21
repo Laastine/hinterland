@@ -72,7 +72,7 @@ impl<D> specs::System<Delta> for DrawSystem<D>
 
     let current_time = Instant::now();
     self.frames += 1;
-    if cfg!(feature = "dev") && (current_time.duration_since(self.game_time).as_secs()) >= 1 {
+    if cfg!(feature = "fps") && (current_time.duration_since(self.game_time).as_secs()) >= 1 {
       println!("{:?} ms/frames", 1000.0 / self.frames as f32);
       self.frames = 0;
       self.game_time = Instant::now();
