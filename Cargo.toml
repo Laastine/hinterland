@@ -17,5 +17,5 @@ specs = "0.8.1"
 tiled = "0.7.2"
 
 [features]
-dev = []
+windowed = []
 fps = []

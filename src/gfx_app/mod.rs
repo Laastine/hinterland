@@ -34,7 +34,7 @@ impl GlutinWindow {
     let window_title = glutin::WindowBuilder::new()
       .with_title("Zombie shooter");
 
-    let builder = if cfg!(feature = "dev") {
+    let builder = if cfg!(feature = "windowed") {
       window_title.with_dimensions(RESOLUTION_X, RESOLUTION_Y)
     } else {
       let monitor = {
