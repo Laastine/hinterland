@@ -41,27 +41,13 @@ impl ZombieDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CameraInputState) {
     self.projection = *world_to_clip;
-    let new_position = Position {
-      position: [0.0, 0.0]
-    };
-
     self.stance = Stance::Normal;
-    let dx = new_position.position[0] - self.position.position[0];
-    let dy = new_position.position[1] - self.position.position[1];
-    self.orientation =
-      if dx == 0.0 && dy < 0.0       { Orientation::Down }
-      else if dx > 0.0 && dy < 0.0   { Orientation::DownRight }
-      else if dx < 0.0 && dy < 0.0   { Orientation::DownLeft }
-      else if dx == 0.0 && dy == 0.0 { Orientation::Still }
-      else if dx > 0.0 && dy == 0.0  { Orientation::Right }
-      else if dx < 0.0 && dy == 0.0  { Orientation::Left }
-      else if dx == 0.0 && dy > 0.0  { Orientation::Up }
-      else if dx > 0.0 && dy > 0.0   { Orientation::UpRight }
-      else if dx < 0.0 && dy > 0.0   { Orientation::UpLeft }
-      else { unreachable!() };
-    self.position = new_position;
+    self.position = Position {
+      position: [((self.position.position[0] - ci.x_pos) * 0.1325 * 1000.0).round() / 1000.0,
+        ((self.position.position[1] - ci.y_pos) * 0.1325 * 1000.0).round() / 1000.0]
+    };
   }
 }
 
@@ -172,7 +158,7 @@ impl<C> specs::System<C> for PreDrawSystem {
 
     for (z, ti) in (&mut zombie, &mut terrain_input).join() {
       let world_to_clip = dim.world_to_projection(ti);
-      z.update(&world_to_clip);
+      z.update(&world_to_clip, ti);
     }
   }
 }

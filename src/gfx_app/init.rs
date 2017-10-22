@@ -82,6 +82,7 @@ fn setup_planner<W, D, F>(window: &mut W, planner: &mut Planner, encoder_queue: 
   planner.add_system(draw, "drawing", 10);
   planner.add_system(terrain::PreDrawSystem::new(), "draw-prep-terrain", 15);
   planner.add_system(character::PreDrawSystem::new(), "draw-prep-character", 15);
+  planner.add_system(zombie::PreDrawSystem::new(), "draw-prep-zombie", 15);
 
   let map_control = create_controls(planner);
   window.set_controls(map_control);
