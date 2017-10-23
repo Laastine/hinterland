@@ -66,12 +66,12 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
 
     let vertex_data: Vec<VertexData> =
       vec![
-        VertexData::new([-20.0, -28.0, 0.0], [0.0, 1.0]),
-        VertexData::new([20.0, -28.0, 0.0], [1.0, 1.0]),
-        VertexData::new([20.0, 28.0, 0.0], [1.0, 0.0]),
-        VertexData::new([-20.0, -28.0, 0.0], [0.0, 1.0]),
-        VertexData::new([20.0, 28.0, 0.0], [1.0, 0.0]),
-        VertexData::new([-20.0, 28.0, 0.0], [0.0, 0.0]),
+        VertexData::new([-25.0, -35.0, 0.0], [0.0, 1.0]),
+        VertexData::new([25.0, -35.0, 0.0], [1.0, 1.0]),
+        VertexData::new([25.0, 35.0, 0.0], [1.0, 0.0]),
+        VertexData::new([-25.0, -35.0, 0.0], [0.0, 1.0]),
+        VertexData::new([25.0, 35.0, 0.0], [1.0, 0.0]),
+        VertexData::new([-25.0, 35.0, 0.0], [0.0, 0.0]),
       ];
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());
