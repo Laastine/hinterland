@@ -1,5 +1,5 @@
 use cgmath;
-use cgmath::{Matrix4, Point3, Vector3};
+use cgmath::{Matrix4};
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx;
 use graphics::{Dimensions};
@@ -11,7 +11,7 @@ use shaders::Projection;
 use graphics::camera::CameraInputState;
 use game::constants::{TILEMAP_BUF_LENGTH, ASPECT_RATIO};
 use gfx_app::graphics::load_texture;
-use game::constants::{TILES_PCS_W, TILES_PCS_H, VIEW_DISTANCE};
+use game::constants::{TILES_PCS_W, TILES_PCS_H};
 
 #[macro_use]
 pub mod gfx_macros;

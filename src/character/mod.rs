@@ -1,9 +1,9 @@
-use cgmath::{Matrix4, Point3, Vector3};
+use cgmath::Matrix4;
 use cgmath;
 use character::controls::CharacterInputState;
 use graphics::orientation::{Orientation, Stance};
 use data;
-use game::constants::{ASPECT_RATIO, VIEW_DISTANCE, RUN_SPRITE_OFFSET, CHARSHEET_TOTAL_WIDTH, SPRITE_OFFSET};
+use game::constants::{ASPECT_RATIO, RUN_SPRITE_OFFSET, CHARSHEET_TOTAL_WIDTH, SPRITE_OFFSET};
 use shaders::{pipe, VertexData, CharacterSheet, Position, Projection};
 use gfx;
 use gfx_app::graphics::load_texture;
@@ -135,17 +135,18 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
   }
 
   fn get_next_sprite(&self, character_idx: usize, character_fire_idx: usize, drawable: &mut CharacterDrawable) -> CharacterSheet {
-    let char_sprite = if drawable.orientation == Orientation::Still && drawable.stance == Stance::Normal {
-      let sprite_idx = (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET) as usize;
-      (&self.data[sprite_idx], sprite_idx)
-    } else if drawable.stance == Stance::Normal {
-      drawable.direction = drawable.orientation;
-      let sprite_idx = (drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET) as usize;
-      (&self.data[sprite_idx], sprite_idx)
-    } else {
-      let sprite_idx = (drawable.orientation as usize * 8 + character_fire_idx) as usize;
-      (&self.data[sprite_idx], sprite_idx)
-    };
+    let char_sprite =
+      if drawable.orientation == Orientation::Still && drawable.stance == Stance::Normal {
+        let sprite_idx = (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET) as usize;
+        (&self.data[sprite_idx], sprite_idx)
+      } else if drawable.stance == Stance::Normal {
+        drawable.direction = drawable.orientation;
+        let sprite_idx = (drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET) as usize;
+        (&self.data[sprite_idx], sprite_idx)
+      } else {
+        let sprite_idx = (drawable.orientation as usize * 8 + character_fire_idx) as usize;
+        (&self.data[sprite_idx], sprite_idx)
+      };
 
     let elements_x = CHARSHEET_TOTAL_WIDTH / (char_sprite.0.data[2] + SPRITE_OFFSET);
     CharacterSheet {

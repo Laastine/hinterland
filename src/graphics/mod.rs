@@ -48,20 +48,6 @@ impl Dimensions {
       proj: cgmath::perspective(cgmath::Deg(60.0f32), aspect_ratio, 0.1, 4000.0).into(),
     }
   }
-
-  pub fn world_to_projection_still(&self, input: &mut camera::CameraInputState) -> Projection {
-    let view: Matrix4<f32> = Matrix4::look_at(
-      Point3::new(-input.x_pos, input.y_pos, input.distance),
-      Point3::new(-input.x_pos, input.y_pos, 0.0),
-      Vector3::unit_y(),
-    );
-    let aspect_ratio = self.width as f32 / self.height as f32;
-    Projection {
-      model: Matrix4::from(view).into(),
-      view: view.into(),
-      proj: cgmath::perspective(cgmath::Deg(60.0f32), aspect_ratio, 0.1, 4000.0).into(),
-    }
-  }
 }
 
 fn flip_y_axel(point: Point2<f32>) -> Point2<f32> {

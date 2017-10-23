@@ -1,10 +1,9 @@
 use shaders::{pipe, VertexData, CharacterSheet, Position, Projection};
 use graphics::orientation::{Orientation, Stance};
 use graphics::Dimensions;
-use character::controls::CharacterInputState;
 use graphics::camera::CameraInputState;
-use cgmath::{Matrix4, Point3, Vector3};
-use game::constants::{ASPECT_RATIO, VIEW_DISTANCE, ZOMBIESHEET_TOTAL_WIDTH, SPRITE_OFFSET, RUN_SPRITE_OFFSET};
+use cgmath::Matrix4;
+use game::constants::{ASPECT_RATIO, ZOMBIESHEET_TOTAL_WIDTH, SPRITE_OFFSET};
 use critter::{CritterData, ZombieSprite};
 use gfx_app::{ColorFormat, DepthFormat};
 use cgmath;
@@ -33,7 +32,7 @@ impl ZombieDrawable {
         proj: cgmath::perspective(cgmath::Deg(60.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       },
       position: Position {
-        position: [128.0, 0.0],
+        position: [256.0, 0.0],
       },
       orientation: Orientation::Left,
       stance: Stance::Normal,
@@ -41,13 +40,9 @@ impl ZombieDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CameraInputState) {
+  pub fn update(&mut self, world_to_clip: &Projection) {
     self.projection = *world_to_clip;
     self.stance = Stance::Normal;
-    self.position = Position {
-      position: [((self.position.position[0] - ci.x_pos) * 0.1325 * 1000.0).round() / 1000.0,
-        ((self.position.position[1] - ci.y_pos) * 0.1325 * 1000.0).round() / 1000.0]
-    };
   }
 }
 
@@ -158,7 +153,7 @@ impl<C> specs::System<C> for PreDrawSystem {
 
     for (z, ti) in (&mut zombie, &mut terrain_input).join() {
       let world_to_clip = dim.world_to_projection(ti);
-      z.update(&world_to_clip, ti);
+      z.update(&world_to_clip);
     }
   }
 }

@@ -70,8 +70,8 @@ impl<C> specs::System<C> for CameraControlSystem {
         CameraControl::Up => self.y_move = Some(-0.265),
         CameraControl::Down => self.y_move = Some(0.265),
         CameraControl::YMoveStop => self.y_move = None,
-        CameraControl::Right => self.x_move = Some(0.4),
-        CameraControl::Left => self.x_move = Some(-0.4),
+        CameraControl::Right => self.x_move = Some(0.265),
+        CameraControl::Left => self.x_move = Some(-0.265),
         CameraControl::XMoveStop => self.x_move = None,
       }
     }
@@ -86,7 +86,7 @@ impl<C> specs::System<C> for CameraControlSystem {
       if let Some(y) = self.y_move {
         for (map, mi) in (&mut map_input, &mut mouse_input).join() {
           if mi.left_click_point.is_none() {
-            map.x_pos += x / 1.5;
+            map.x_pos += x;
             map.y_pos += y / 2.0;
           }
         }

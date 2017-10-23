@@ -12,7 +12,6 @@ use gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
 use graphics::camera::CameraControlSystem;
 use character::controls::CharacterControlSystem;
 use critter::{CharacterSprite, ZombieSprite};
-use critter;
 use character;
 use zombie;
 use graphics;
