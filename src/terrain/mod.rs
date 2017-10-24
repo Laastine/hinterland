@@ -40,7 +40,7 @@ impl TerrainDrawable {
   pub fn new(view: Matrix4<f32>) -> TerrainDrawable {
     TerrainDrawable {
       projection: Projection {
-        model: Matrix4::from(view).into(),
+        model: view.into(),
         view: view.into(),
         proj: cgmath::perspective(cgmath::Deg(60.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       }

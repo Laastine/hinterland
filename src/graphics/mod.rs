@@ -43,7 +43,7 @@ impl Dimensions {
     );
     let aspect_ratio = self.width as f32 / self.height as f32;
     Projection {
-      model: Matrix4::from(view).into(),
+      model: view.into(),
       view: view.into(),
       proj: cgmath::perspective(cgmath::Deg(60.0f32), aspect_ratio, 0.1, 4000.0).into(),
     }
