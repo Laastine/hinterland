@@ -43,7 +43,7 @@ fn setup_world(world: &mut specs::World, viewport_size: (u32, u32)) {
   world.register::<MouseInputState>();
 
   let dimensions = Dimensions::new(viewport_size.0, viewport_size.1);
-  world.add_resource(terrain::terrain::generate());
+  world.add_resource(terrain::tilemap::generate());
   world.add_resource(dimensions);
   world.add_resource(graphics::camera::CameraInputState::new());
   world.add_resource(character::controls::CharacterInputState::new());

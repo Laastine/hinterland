@@ -15,7 +15,7 @@ use game::constants::{TILES_PCS_W, TILES_PCS_H};
 
 #[macro_use]
 pub mod gfx_macros;
-pub mod terrain;
+pub mod tilemap;
 
 fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
   ((point_x - point_y), (point_x + point_y) / 2.0)
@@ -126,7 +126,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
 
     TerrainDrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
-      data: terrain::generate().tiles,
+      data: tilemap::generate().tiles,
     }
   }
 
