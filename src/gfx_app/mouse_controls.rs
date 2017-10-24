@@ -2,6 +2,8 @@ use cgmath::Point2;
 use std::sync::mpsc;
 use specs;
 
+type MouseEvent = mpsc::Sender<(MouseControl, Option<(f64, f64)>)>;
+
 #[derive(Clone, Debug)]
 pub struct MouseInputState {
   pub mouse_left: Option<Point2<f32>>,
@@ -39,7 +41,7 @@ pub struct MouseControlSystem {
 }
 
 impl MouseControlSystem {
-  pub fn new() -> (MouseControlSystem, mpsc::Sender<(MouseControl, Option<(f64, f64)>)>) {
+  pub fn new() -> (MouseControlSystem, MouseEvent) {
     let (tx, rx) = mpsc::channel();
     (MouseControlSystem {
       queue: rx,
