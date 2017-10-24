@@ -163,7 +163,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb,
-                                   &mut self.get_next_sprite(character.character_idx,
+                                   &self.get_next_sprite(character.character_idx,
                                                              character.character_fire_idx,
                                                              &mut drawable));
     self.bundle.encode(encoder);
