@@ -46,7 +46,7 @@ fn read_sprite_file(filename: &str) -> String {
   let mut buf = String::new();
   match file.read_to_string(&mut buf) {
     Ok(_) => buf,
-    Err(_) => panic!("Couldn't read file {}", filename),
+    Err(e) => panic!("read file {} error {}", filename, e),
   }
 }
 
