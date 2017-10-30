@@ -55,6 +55,14 @@ impl ZombieSprite {
       self.zombie_idx = 0;
     }
   }
+
+  pub fn update_still(&mut self) {
+    if self.zombie_idx < 3 {
+      self.zombie_idx += 1;
+    } else {
+      self.zombie_idx = 0;
+    }
+  }
 }
 
 impl specs::Component for ZombieSprite {

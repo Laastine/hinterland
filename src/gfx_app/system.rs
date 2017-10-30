@@ -83,9 +83,17 @@ impl<D> specs::System<Delta> for DrawSystem<D>
 
     for (t, c, cs, z, zs) in (&mut terrain, &mut character, &mut character_sprite, &mut zombie, &mut zombie_sprite).join() {
       self.terrain_system.draw(t, &mut encoder);
-      if self.cool_down == 0.0 && c.stance == Stance::Normal {
-        cs.update_run();
-        zs.update_walk();
+
+      if self.cool_down == 0.0 {
+        if c.stance == Stance::Walking {
+          cs.update_run();
+        }
+        if z.stance == Stance::Walking {
+          zs.update_walk();
+        }
+        if z.stance == Stance::Still {
+          zs.update_still();
+        }
       } else if self.fire_cool_down == 0.0 && c.stance == Stance::Firing {
         cs.update_fire();
       }

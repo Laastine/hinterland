@@ -22,3 +22,4 @@ pub const CHARACTER_JSON_PATH: &str = "assets/character.json";
 pub const PISTOL_AUDIO_PATH: &str = "assets/audio/pistol.ogg";
 pub const MAP_FILE_PATH: &str = "assets/maps/tilemap.tmx";
 pub const RUN_SPRITE_OFFSET: usize = 64;
+pub const STILL_SPRITE_OFFSET: usize = 32;

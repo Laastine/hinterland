@@ -3,7 +3,7 @@ use graphics::orientation::{Orientation, Stance};
 use graphics::Dimensions;
 use graphics::camera::CameraInputState;
 use cgmath::Matrix4;
-use game::constants::{ASPECT_RATIO, ZOMBIESHEET_TOTAL_WIDTH, SPRITE_OFFSET};
+use game::constants::{ASPECT_RATIO, ZOMBIESHEET_TOTAL_WIDTH, SPRITE_OFFSET, STILL_SPRITE_OFFSET};
 use critter::{CritterData, ZombieSprite};
 use gfx_app::{ColorFormat, DepthFormat};
 use cgmath;
@@ -19,7 +19,7 @@ pub struct ZombieDrawable {
   projection: Projection,
   position: Position,
   orientation: Orientation,
-  stance: Stance,
+  pub stance: Stance,
   direction: Orientation
 }
 
@@ -34,15 +34,15 @@ impl ZombieDrawable {
       position: Position {
         position: [256.0, 0.0],
       },
-      orientation: Orientation::Left,
-      stance: Stance::Normal,
-      direction: Orientation::Left,
+      orientation: Orientation::Right,
+      stance: Stance::Still,
+      direction: Orientation::Right,
     }
   }
 
   pub fn update(&mut self, world_to_clip: &Projection) {
     self.projection = *world_to_clip;
-    self.stance = Stance::Normal;
+    self.stance = Stance::Still;
   }
 }
 
@@ -103,12 +103,15 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
 
   fn get_next_sprite(&self, zombie_idx: usize, drawable: &mut ZombieDrawable) -> CharacterSheet {
     let zombie_sprite =
-      if drawable.orientation == Orientation::Still && drawable.stance == Stance::Normal {
-        let sprite_idx = (drawable.direction as usize * 8 + zombie_idx) as usize;
+      if drawable.stance == Stance::Still {
+        let sprite_idx = (drawable.direction as usize * 4 + zombie_idx) as usize;
+        (&self.data[sprite_idx], sprite_idx)
+      } else if drawable.orientation != Orientation::Still && drawable.stance == Stance::Walking {
+        let sprite_idx = (drawable.direction as usize * 8 + zombie_idx + STILL_SPRITE_OFFSET) as usize;
         (&self.data[sprite_idx], sprite_idx)
       } else {
         drawable.direction = drawable.orientation;
-        let sprite_idx = (drawable.orientation as usize * 8 + zombie_idx) as usize;
+        let sprite_idx = (drawable.orientation as usize * 8 + zombie_idx + STILL_SPRITE_OFFSET) as usize;
         (&self.data[sprite_idx], sprite_idx)
       };
 

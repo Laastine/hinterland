@@ -41,7 +41,7 @@ impl CharacterDrawable {
         position: [0.0, 0.0],
       },
       orientation: Orientation::Right,
-      stance: Stance::Normal,
+      stance: Stance::Walking,
       direction: Orientation::Right,
       audio: audio::CharacterAudio::new(),
     }
@@ -60,7 +60,7 @@ impl CharacterDrawable {
         self.audio.play_pistol();
       }
     } else {
-      self.stance = Stance::Normal;
+      self.stance = Stance::Walking;
       let dx = new_position.position[0] - self.position.position[0];
       let dy = new_position.position[1] - self.position.position[1];
       self.orientation =
@@ -136,10 +136,10 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
 
   fn get_next_sprite(&self, character_idx: usize, character_fire_idx: usize, drawable: &mut CharacterDrawable) -> CharacterSheet {
     let char_sprite =
-      if drawable.orientation == Orientation::Still && drawable.stance == Stance::Normal {
+      if drawable.orientation == Orientation::Still && drawable.stance == Stance::Walking {
         let sprite_idx = (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET) as usize;
         (&self.data[sprite_idx], sprite_idx)
-      } else if drawable.stance == Stance::Normal {
+      } else if drawable.stance == Stance::Walking {
         drawable.direction = drawable.orientation;
         let sprite_idx = (drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET) as usize;
         (&self.data[sprite_idx], sprite_idx)
