@@ -15,7 +15,7 @@ impl CharacterSprite {
   }
 
   pub fn update_run(&mut self) {
-    if self.character_idx < 13 {
+    if self.character_idx < 12 {
       self.character_idx += 1;
     } else {
       self.character_idx = 0;
@@ -24,7 +24,7 @@ impl CharacterSprite {
   }
 
   pub fn update_fire(&mut self) {
-    if self.character_fire_idx < 4 {
+    if self.character_fire_idx < 3 {
       self.character_fire_idx += 1;
     } else {
       self.character_fire_idx = 0;
@@ -49,7 +49,7 @@ impl ZombieSprite {
   }
 
   pub fn update_walk(&mut self) {
-    if self.zombie_idx < 8 {
+    if self.zombie_idx < 7 {
       self.zombie_idx += 1;
     } else {
       self.zombie_idx = 0;
