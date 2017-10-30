@@ -17,8 +17,8 @@ pub const SPRITE_OFFSET: f32 = 2.0;
 pub const ZOMBIESHEET_TOTAL_WIDTH: f32 = 7_872f32;
 
 //Assets
-pub const ZOMBIE_JSON_PATH: &'static str = "assets/zombie.json";
-pub const CHARACTER_JSON_PATH: &'static str = "assets/character.json";
-pub const PISTOL_AUDIO_PATH: &'static str = "assets/audio/pistol.ogg";
-pub const MAP_FILE_PATH: &'static str = "assets/maps/tilemap.tmx";
+pub const ZOMBIE_JSON_PATH: &str = "assets/zombie.json";
+pub const CHARACTER_JSON_PATH: &str = "assets/character.json";
+pub const PISTOL_AUDIO_PATH: &str = "assets/audio/pistol.ogg";
+pub const MAP_FILE_PATH: &str = "assets/maps/tilemap.tmx";
 pub const RUN_SPRITE_OFFSET: usize = 64;
