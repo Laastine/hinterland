@@ -91,6 +91,17 @@ pub fn load_zombie() -> Vec<CritterData> {
     Ok(res) => res,
     Err(e) => panic!("Character JSON parse error {:?}", e),
   };
+  for x in 0..7 {
+    for y in 0..4 {
+      let key = &format!("still_{}_{}", x, y);
+      sprites.push(CritterData::new([
+        zombie["frames"][key]["frame"]["x"].as_f32().unwrap(),
+        zombie["frames"][key]["frame"]["y"].as_f32().unwrap(),
+        zombie["frames"][key]["frame"]["w"].as_f32().unwrap(),
+        zombie["frames"][key]["frame"]["h"].as_f32().unwrap()
+      ]));
+    }
+  }
 
   for x in 0..7 {
     for y in 0..7 {
@@ -103,6 +114,5 @@ pub fn load_zombie() -> Vec<CritterData> {
       ]));
     }
   }
-
   sprites
 }
