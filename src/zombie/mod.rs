@@ -34,9 +34,9 @@ impl ZombieDrawable {
       position: Position {
         position: [256.0, 0.0],
       },
-      orientation: Orientation::Right,
+      orientation: Orientation::Left,
       stance: Stance::Still,
-      direction: Orientation::Right,
+      direction: Orientation::Left,
     }
   }
 
