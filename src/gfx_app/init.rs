@@ -41,7 +41,6 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
   world.register::<character::controls::CharacterInputState>();
   world.register::<MouseInputState>();
 
-//  let dimensions = Dimensions::new(viewport_size.0, viewport_size.1);
   world.add_resource(terrain::tilemap::generate());
   world.add_resource(Dimensions::new(viewport_size.0, viewport_size.1));
   world.add_resource(graphics::camera::CameraInputState::new());
@@ -102,10 +101,10 @@ fn dispatch_loop<W, D, F>(window: &mut W,
   let mut last_time = time::Instant::now();
   loop {
     let elapsed = last_time.elapsed();
-    let delta = elapsed.subsec_nanos() as f64 / 1e9 + elapsed.as_secs() as f64;
+    let delta = f64::from(elapsed.subsec_nanos()) / 1e9 + elapsed.as_secs() as f64;
     last_time = time::Instant::now();
 
-    dispatcher.dispatch(&mut w.res);
+    dispatcher.dispatch(&w.res);
 
     device_renderer.draw(window.get_device());
     w.maintain();

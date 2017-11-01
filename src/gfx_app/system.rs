@@ -61,21 +61,6 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
   fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut zombie, mut zombie_sprite, d): Self::SystemData) {
     use specs::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
-//    let (mut terrain, mut character, mut character_sprite, mut zombie, mut zombie_sprite) = arg.fetch(|w| {
-//      if self.cool_down == 0.0 {
-//        self.cool_down += 0.07;
-//      }
-//      if self.fire_cool_down == 0.0 {
-//        self.fire_cool_down += 0.2;
-//      }
-//      self.cool_down = (self.cool_down - delta).max(0.0);
-//      self.fire_cool_down = (self.fire_cool_down - delta).max(0.0);
-//      (w.write::<terrain::TerrainDrawable>(),
-//       w.write::<character::CharacterDrawable>(),
-//       w.write::<CharacterSprite>(),
-//       w.write::<zombie::ZombieDrawable>(),
-//       w.write::<ZombieSprite>())
-//    });
 
     let delta = d.0;
 
@@ -91,7 +76,7 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
     let current_time = Instant::now();
     self.frames += 1;
     if cfg!(feature = "fps") && (current_time.duration_since(self.game_time).as_secs()) >= 1 {
-      println!("{:?} ms/frames", 1000.0 / self.frames as f64);
+      println!("{:?} ms/frames", 1000.0 / f64::from(self.frames));
       self.frames = 0;
       self.game_time = Instant::now();
     }

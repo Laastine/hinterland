@@ -56,7 +56,6 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
   fn run(&mut self, (mut character_input, mut mouse_input): Self::SystemData) {
     use specs::Join;
 
-//    let (mut character_input, mut mouse_input) = arg.fetch(|w| (w.write::<CharacterInputState>(), w.write::<MouseInputState>()));
     while let Ok(control) = self.queue.try_recv() {
       match control {
         CharacterControl::Up => self.y_move = Some(0.7),

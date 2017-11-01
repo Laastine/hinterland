@@ -63,7 +63,6 @@ impl<'a> specs::System<'a> for CameraControlSystem {
   fn run(&mut self, (mut map_input, mut mouse_input): Self::SystemData) {
     use specs::Join;
 
-//    let (mut map_input, mut mouse_input) = arg.fetch(|w| (w.write::<CameraInputState>(), w.write::<MouseInputState>()));
     while let Ok(control) = self.queue.try_recv() {
       match control {
         CameraControl::ZoomIn => self.zoom_level = Some(2.0),

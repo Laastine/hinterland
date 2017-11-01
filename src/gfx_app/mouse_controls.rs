@@ -58,8 +58,6 @@ impl<'a> specs::System<'a> for MouseControlSystem {
   fn run(&mut self, mut mouse_input: Self::SystemData) {
     use specs::Join;
 
-//    let mut mouse_input = arg.fetch(|w| w.write::<MouseInputState>());
-
     while let Ok((control_value, value)) = self.queue.try_recv() {
       match control_value {
         MouseControl::LeftClick => {
