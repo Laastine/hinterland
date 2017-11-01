@@ -1,5 +1,6 @@
 use std::sync::mpsc;
 use specs;
+use specs::{WriteStorage};
 use gfx_app::mouse_controls::MouseInputState;
 
 #[derive(Clone, Debug)]
@@ -49,11 +50,13 @@ impl CharacterControlSystem {
   }
 }
 
-impl<C> specs::System<C> for CharacterControlSystem {
-  fn run(&mut self, arg: specs::RunArg, _: C) {
+impl<'a> specs::System<'a> for CharacterControlSystem {
+  type SystemData = (WriteStorage<'a, CharacterInputState>, WriteStorage<'a, MouseInputState>);
+
+  fn run(&mut self, (mut character_input, mut mouse_input): Self::SystemData) {
     use specs::Join;
 
-    let (mut character_input, mut mouse_input) = arg.fetch(|w| (w.write::<CharacterInputState>(), w.write::<MouseInputState>()));
+//    let (mut character_input, mut mouse_input) = arg.fetch(|w| (w.write::<CharacterInputState>(), w.write::<MouseInputState>()));
     while let Ok(control) = self.queue.try_recv() {
       match control {
         CharacterControl::Up => self.y_move = Some(0.7),

@@ -13,6 +13,7 @@ use graphics::{Dimensions, get_orientation};
 use graphics::camera::CameraInputState;
 use critter::{CharacterSprite, CritterData};
 use specs;
+use specs::{WriteStorage, Fetch};
 
 mod audio;
 pub mod controls;
@@ -179,17 +180,16 @@ impl PreDrawSystem {
   }
 }
 
-impl<C> specs::System<C> for PreDrawSystem {
-  fn run(&mut self, arg: specs::RunArg, _: C) {
+impl<'a> specs::System<'a> for PreDrawSystem {
+  type SystemData = (WriteStorage<'a, CharacterDrawable>,
+                     WriteStorage<'a, CameraInputState>,
+                     WriteStorage<'a, CharacterInputState>,
+                     WriteStorage<'a, CharacterSprite>,
+                     WriteStorage<'a, MouseInputState>,
+                     Fetch<'a, Dimensions>);
+
+  fn run(&mut self, (mut character, mut terrain_input, mut character_input, mut character_sprite, mut mouse_input, dim): Self::SystemData) {
     use specs::Join;
-    let (mut character, dim, mut terrain_input, mut character_input, mut character_sprite, mut mouse_input) =
-      arg.fetch(|w| (
-        w.write::<CharacterDrawable>(),
-        w.read_resource::<Dimensions>(),
-        w.write::<CameraInputState>(),
-        w.write::<CharacterInputState>(),
-        w.write::<CharacterSprite>(),
-        w.write::<MouseInputState>()));
 
     for (c, ti, ci, cs, mi) in (&mut character, &mut terrain_input, &mut character_input, &mut character_sprite, &mut mouse_input).join() {
       let world_to_clip = dim.world_to_projection(ti);

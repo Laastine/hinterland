@@ -5,11 +5,11 @@ use terrain;
 use character;
 use zombie;
 use specs;
+use specs::{Fetch, WriteStorage};
 use std::time::Instant;
 use critter::{CharacterSprite, ZombieSprite};
 use graphics::orientation::Stance;
-
-pub type Delta = f32;
+use graphics::DeltaTime;
 
 pub struct DrawSystem<D: gfx::Device> {
   render_target_view: gfx::handle::RenderTargetView<D::Resources, ColorFormat>,
@@ -20,8 +20,8 @@ pub struct DrawSystem<D: gfx::Device> {
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
   frames: u32,
-  cool_down: f32,
-  fire_cool_down: f32,
+  cool_down: f64,
+  fire_cool_down: f64,
 }
 
 impl<D: gfx::Device> DrawSystem<D> {
@@ -47,33 +47,51 @@ impl<D: gfx::Device> DrawSystem<D> {
   }
 }
 
-impl<D> specs::System<Delta> for DrawSystem<D>
+impl<'a, D> specs::System<'a> for DrawSystem<D>
   where D: gfx::Device,
         D::CommandBuffer: Send,
 {
-  fn run(&mut self, arg: specs::RunArg, delta: Delta) {
+  type SystemData = (WriteStorage<'a, terrain::TerrainDrawable>,
+                     WriteStorage<'a, character::CharacterDrawable>,
+                     WriteStorage<'a, CharacterSprite>,
+                     WriteStorage<'a, zombie::ZombieDrawable>,
+                     WriteStorage<'a, ZombieSprite>,
+                     Fetch<'a, DeltaTime>);
+
+  fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut zombie, mut zombie_sprite, d): Self::SystemData) {
     use specs::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
-    let (mut terrain, mut character, mut character_sprite, mut zombie, mut zombie_sprite) = arg.fetch(|w| {
-      if self.cool_down == 0.0 {
-        self.cool_down += 0.07;
-      }
-      if self.fire_cool_down == 0.0 {
-        self.fire_cool_down += 0.2;
-      }
-      self.cool_down = (self.cool_down - delta).max(0.0);
-      self.fire_cool_down = (self.fire_cool_down - delta).max(0.0);
-      (w.write::<terrain::TerrainDrawable>(),
-       w.write::<character::CharacterDrawable>(),
-       w.write::<CharacterSprite>(),
-       w.write::<zombie::ZombieDrawable>(),
-       w.write::<ZombieSprite>())
-    });
+//    let (mut terrain, mut character, mut character_sprite, mut zombie, mut zombie_sprite) = arg.fetch(|w| {
+//      if self.cool_down == 0.0 {
+//        self.cool_down += 0.07;
+//      }
+//      if self.fire_cool_down == 0.0 {
+//        self.fire_cool_down += 0.2;
+//      }
+//      self.cool_down = (self.cool_down - delta).max(0.0);
+//      self.fire_cool_down = (self.fire_cool_down - delta).max(0.0);
+//      (w.write::<terrain::TerrainDrawable>(),
+//       w.write::<character::CharacterDrawable>(),
+//       w.write::<CharacterSprite>(),
+//       w.write::<zombie::ZombieDrawable>(),
+//       w.write::<ZombieSprite>())
+//    });
+
+    let delta = d.0;
+
+    if self.cool_down == 0.0 {
+      self.cool_down += 0.07;
+    }
+    if self.fire_cool_down == 0.0 {
+      self.fire_cool_down += 0.2;
+    }
+    self.cool_down = (self.cool_down - delta).max(0.0);
+    self.fire_cool_down = (self.fire_cool_down - delta).max(0.0);
 
     let current_time = Instant::now();
     self.frames += 1;
     if cfg!(feature = "fps") && (current_time.duration_since(self.game_time).as_secs()) >= 1 {
-      println!("{:?} ms/frames", 1000.0 / self.frames as f32);
+      println!("{:?} ms/frames", 1000.0 / self.frames as f64);
       self.frames = 0;
       self.game_time = Instant::now();
     }

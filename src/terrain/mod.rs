@@ -4,6 +4,7 @@ use gfx_app::{ColorFormat, DepthFormat};
 use gfx;
 use graphics::{Dimensions};
 use specs;
+use specs::{Fetch, WriteStorage};
 use genmesh::{Vertices, Triangulate};
 use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
 use terrain::gfx_macros::{TileMapData, VertexData, pipe, TilemapSettings};
@@ -154,14 +155,13 @@ impl PreDrawSystem {
   }
 }
 
-impl<C> specs::System<C> for PreDrawSystem {
-  fn run(&mut self, arg: specs::RunArg, _: C) {
+impl<'a> specs::System<'a> for PreDrawSystem {
+  type SystemData = (WriteStorage<'a, TerrainDrawable>,
+                     WriteStorage<'a, CameraInputState>,
+                     Fetch<'a, Dimensions>);
+
+  fn run(&mut self, (mut terrain, mut input, dim): Self::SystemData) {
     use specs::Join;
-    let (mut terrain, dim, mut input) =
-      arg.fetch(|w| (
-        w.write::<TerrainDrawable>(),
-        w.read_resource::<Dimensions>(),
-        w.write::<CameraInputState>()));
 
     for (t, i) in (&mut terrain, &mut input).join() {
       let world_to_clip = dim.world_to_projection(i);

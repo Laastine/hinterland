@@ -1,5 +1,6 @@
 use std::sync::mpsc;
 use specs;
+use specs::{WriteStorage};
 use game::constants::VIEW_DISTANCE;
 use gfx_app::mouse_controls::MouseInputState;
 
@@ -57,11 +58,12 @@ impl CameraControlSystem {
   }
 }
 
-impl<C> specs::System<C> for CameraControlSystem {
-  fn run(&mut self, arg: specs::RunArg, _: C) {
+impl<'a> specs::System<'a> for CameraControlSystem {
+  type SystemData = (WriteStorage<'a, CameraInputState>, WriteStorage<'a, MouseInputState>);
+  fn run(&mut self, (mut map_input, mut mouse_input): Self::SystemData) {
     use specs::Join;
 
-    let (mut map_input, mut mouse_input) = arg.fetch(|w| (w.write::<CameraInputState>(), w.write::<MouseInputState>()));
+//    let (mut map_input, mut mouse_input) = arg.fetch(|w| (w.write::<CameraInputState>(), w.write::<MouseInputState>()));
     while let Ok(control) = self.queue.try_recv() {
       match control {
         CameraControl::ZoomIn => self.zoom_level = Some(2.0),

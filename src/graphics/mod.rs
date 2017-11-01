@@ -1,7 +1,6 @@
 use shaders::Projection;
 use cgmath;
 use cgmath::{Matrix4, Point3, Vector3, Point2, Rad};
-use specs;
 use game::constants::{RESOLUTION_X, RESOLUTION_Y, VIEW_DISTANCE};
 use graphics::orientation::Orientation;
 use gfx_app::mouse_controls::MouseInputState;
@@ -10,8 +9,8 @@ use std::f32::consts::PI;
 pub mod camera;
 pub mod orientation;
 
-pub type Delta = f32;
-pub type Planner = specs::Planner<Delta>;
+#[derive(Debug)]
+pub struct DeltaTime(pub f64);
 
 #[derive(Debug, Clone)]
 pub struct Dimensions {

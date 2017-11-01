@@ -1,6 +1,7 @@
 use cgmath::Point2;
 use std::sync::mpsc;
 use specs;
+use specs::{WriteStorage};
 
 type MouseEvent = mpsc::Sender<(MouseControl, Option<(f64, f64)>)>;
 
@@ -51,11 +52,13 @@ impl MouseControlSystem {
   }
 }
 
-impl<C> specs::System<C> for MouseControlSystem {
-  fn run(&mut self, arg: specs::RunArg, _: C) {
+impl<'a> specs::System<'a> for MouseControlSystem {
+  type SystemData = WriteStorage<'a, MouseInputState>;
+
+  fn run(&mut self, mut mouse_input: Self::SystemData) {
     use specs::Join;
 
-    let mut mouse_input = arg.fetch(|w| w.write::<MouseInputState>());
+//    let mut mouse_input = arg.fetch(|w| w.write::<MouseInputState>());
 
     while let Ok((control_value, value)) = self.queue.try_recv() {
       match control_value {

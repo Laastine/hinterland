@@ -9,6 +9,7 @@ use gfx_app::{ColorFormat, DepthFormat};
 use cgmath;
 use gfx;
 use specs;
+use specs::{Fetch, WriteStorage};
 use data;
 use gfx_app::graphics::load_texture;
 
@@ -144,15 +145,14 @@ impl PreDrawSystem {
   }
 }
 
-impl<C> specs::System<C> for PreDrawSystem {
-  fn run(&mut self, arg: specs::RunArg, _: C) {
+impl<'a> specs::System<'a> for PreDrawSystem {
+  type SystemData = (WriteStorage<'a, ZombieDrawable>,
+                     WriteStorage<'a, CameraInputState>,
+                     Fetch<'a, Dimensions>);
+
+
+  fn run(&mut self, (mut zombie, mut terrain_input, dim): Self::SystemData) {
     use specs::Join;
-    let (mut zombie, dim, mut terrain_input) =
-      arg.fetch(|w| (
-        w.write::<ZombieDrawable>(),
-        w.read_resource::<Dimensions>(),
-        w.write::<CameraInputState>()
-      ));
 
     for (z, ti) in (&mut zombie, &mut terrain_input).join() {
       let world_to_clip = dim.world_to_projection(ti);
