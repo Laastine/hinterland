@@ -94,3 +94,14 @@ pub fn get_orientation(mouse_input: &mut MouseInputState) -> Orientation {
     Orientation::Right
   }
 }
+
+pub fn collision_detection(screen_pos: [f32; 2]) -> bool {
+  let x_coord = screen_pos[0];
+  let y_coord = screen_pos[1];
+  let point = Point2 {
+    x: (x_coord / (64.0) + y_coord / (64.0)).trunc(),
+    y: (y_coord / (64.0) - (x_coord / 64.0)).trunc()
+  };
+  println!("screen tile {:?}", point);
+  false
+}

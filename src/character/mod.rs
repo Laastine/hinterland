@@ -2,6 +2,7 @@ use cgmath::Matrix4;
 use cgmath;
 use character::controls::CharacterInputState;
 use graphics::orientation::{Orientation, Stance};
+use graphics::collision_detection;
 use data;
 use game::constants::{ASPECT_RATIO, RUN_SPRITE_OFFSET, CHARSHEET_TOTAL_WIDTH, SPRITE_OFFSET};
 use shaders::{pipe, VertexData, CharacterSheet, Position, Projection};
@@ -64,6 +65,7 @@ impl CharacterDrawable {
       self.stance = Stance::Walking;
       let dx = new_position.position[0] - self.position.position[0];
       let dy = new_position.position[1] - self.position.position[1];
+      collision_detection(new_position.position);
       self.orientation =
         if dx == 0.0 && dy < 0.0       { Orientation::Down }
         else if dx > 0.0 && dy < 0.0   { Orientation::DownRight }
