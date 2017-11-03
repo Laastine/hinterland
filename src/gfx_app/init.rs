@@ -105,12 +105,12 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     last_time = time::Instant::now();
 
     dispatcher.dispatch(&w.res);
-
-    device_renderer.draw(window.get_device());
     w.maintain();
 
     let mut d = w.write_resource::<DeltaTime>();
     *d = DeltaTime(delta);
+
+    device_renderer.draw(window.get_device());
     window.swap_window();
 
     if let Some(quit_status) = window.poll_events() {
