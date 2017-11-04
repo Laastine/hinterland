@@ -95,13 +95,16 @@ pub fn get_orientation(mouse_input: &mut MouseInputState) -> Orientation {
   }
 }
 
-pub fn collision_detection(screen_pos: [f32; 2]) -> bool {
-  let x_coord = screen_pos[0];
-  let y_coord = screen_pos[1];
+fn is_out_of_map_borders(point: Point2<f64>) -> bool {
+  point.x > 0.0 && point.x <= 64.0 && point.y > 0.0 && point.y <= 64.0
+}
+
+pub fn is_collision(screen_pos: [f32; 2]) -> bool {
+  let x_coord = screen_pos[0] as f64;
+  let y_coord = screen_pos[1] as f64;
   let point = Point2 {
-    x: (x_coord / (64.0) + y_coord / (64.0)).trunc(),
-    y: (y_coord / (64.0) - (x_coord / 64.0)).trunc()
+    x: (x_coord / (60.0) + y_coord / (60.0)).round() + 32.0,
+    y: (y_coord / (60.0) - (x_coord / 60.0)).round() + 32.0
   };
-  println!("screen tile {:?}", point);
-  false
+  is_out_of_map_borders(point)
 }
