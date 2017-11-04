@@ -137,7 +137,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
     use glutin::MouseButton;
     use glutin::WindowEvent::{Resized, Closed, MouseMoved, MouseInput};
     use glutin::ElementState::{Pressed, Released};
-    use glutin::VirtualKeyCode::{Escape, Minus, Equals, W, A, S, D};
+    use glutin::VirtualKeyCode::{Escape, Z, X, W, A, S, D};
 
     let controls = match self.controls {
       Some(ref mut c) => c,
@@ -153,10 +153,10 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
         match event {
           glutin::WindowEvent::KeyboardInput { input, .. } => match input {
             KeyboardInput { virtual_keycode: Some(Escape), .. } => process::exit(0),
-            KeyboardInput { state: Pressed, virtual_keycode: Some(Minus), .. } => controls.zoom_out(),
-            KeyboardInput { state: Pressed, virtual_keycode: Some(Equals), .. } => controls.zoom_in(),
-            KeyboardInput { state: Released, virtual_keycode: Some(Minus), .. } |
-            KeyboardInput { state: Released, virtual_keycode: Some(Equals), .. } => controls.zoom_stop(),
+            KeyboardInput { state: Pressed, virtual_keycode: Some(Z), .. } => controls.zoom_out(),
+            KeyboardInput { state: Pressed, virtual_keycode: Some(X), .. } => controls.zoom_in(),
+            KeyboardInput { state: Released, virtual_keycode: Some(Z), .. } |
+            KeyboardInput { state: Released, virtual_keycode: Some(X), .. } => controls.zoom_stop(),
             KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {
               controls.move_character_up();
               controls.move_map_up();

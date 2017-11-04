@@ -16,10 +16,10 @@ cargo run
 
 ## Controls
 
-`WASD` - Character controls<br/>
+`W,A,S,D` - Character move<br/>
 `Mouse left` - Fire<br/>
-`+` - zoom in<br/>
-`-` - zoom out<br/>
+`Z` - zoom in<br/>
+`X` - zoom out<br/>
 `Esc` - exit
 
 ## Development
