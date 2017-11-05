@@ -2,7 +2,8 @@ use cgmath::Matrix4;
 use cgmath;
 use character::controls::CharacterInputState;
 use graphics::orientation::{Orientation, Stance};
-use graphics::is_collision;
+use graphics::{Dimensions, get_orientation, is_collision};
+use graphics::camera::CameraInputState;
 use data;
 use game::constants::{ASPECT_RATIO, RUN_SPRITE_OFFSET, CHARSHEET_TOTAL_WIDTH, SPRITE_OFFSET};
 use shaders::{pipe, VertexData, CharacterSheet, Position, Projection};
@@ -10,8 +11,6 @@ use gfx;
 use gfx_app::graphics::load_texture;
 use gfx_app::mouse_controls::MouseInputState;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{Dimensions, get_orientation};
-use graphics::camera::CameraInputState;
 use critter::{CharacterSprite, CritterData};
 use specs;
 use specs::{WriteStorage, Fetch};
@@ -28,7 +27,8 @@ pub struct CharacterDrawable {
   orientation: Orientation,
   pub stance: Stance,
   direction: Orientation,
-  audio: audio::CharacterAudio
+  audio: audio::CharacterAudio,
+  pub is_collision: bool,
 }
 
 impl CharacterDrawable {
@@ -46,6 +46,7 @@ impl CharacterDrawable {
       stance: Stance::Walking,
       direction: Orientation::Right,
       audio: audio::CharacterAudio::new(),
+      is_collision: false,
     }
   }
 
@@ -79,6 +80,9 @@ impl CharacterDrawable {
 
       if is_collision(new_position.position) {
         self.position = new_position;
+        self.is_collision = false;
+      } else {
+        self.is_collision = true;
       }
     }
   }
