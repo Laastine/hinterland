@@ -76,7 +76,7 @@ impl CharacterDrawable {
         else if dx == 0.0 && dy > 0.0  { Orientation::Up }
         else if dx > 0.0 && dy > 0.0   { Orientation::UpRight }
         else if dx < 0.0 && dy > 0.0   { Orientation::UpLeft }
-        else { unreachable!() };
+        else { Orientation::Still };
 
       if is_collision(new_position.position) {
         self.position = new_position;
