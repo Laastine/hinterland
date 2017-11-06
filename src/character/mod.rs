@@ -70,7 +70,6 @@ impl CharacterDrawable {
         if dx == 0.0 && dy < 0.0       { Orientation::Down }
         else if dx > 0.0 && dy < 0.0   { Orientation::DownRight }
         else if dx < 0.0 && dy < 0.0   { Orientation::DownLeft }
-        else if dx == 0.0 && dy == 0.0 { Orientation::Still }
         else if dx > 0.0 && dy == 0.0  { Orientation::Right }
         else if dx < 0.0 && dy == 0.0  { Orientation::Left }
         else if dx == 0.0 && dy > 0.0  { Orientation::Up }

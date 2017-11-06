@@ -76,7 +76,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
   let draw = {
     let rtv = window.get_render_target_view();
     let dsv = window.get_depth_stencil_view();
-    DrawSystem::new(window.get_factory(), rtv, dsv, encoder_queue)
+    DrawSystem::new(window.get_factory(), &rtv, &dsv, encoder_queue)
   };
 
   let (_, game_state) = mpsc::channel::<GameStatus>();

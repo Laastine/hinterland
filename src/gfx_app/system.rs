@@ -26,8 +26,8 @@ pub struct DrawSystem<D: gfx::Device> {
 
 impl<D: gfx::Device> DrawSystem<D> {
   pub fn new<F>(factory: &mut F,
-                rtv: gfx::handle::RenderTargetView<D::Resources, ColorFormat>,
-                dsv: gfx::handle::DepthStencilView<D::Resources, DepthFormat>,
+                rtv: &gfx::handle::RenderTargetView<D::Resources, ColorFormat>,
+                dsv: &gfx::handle::DepthStencilView<D::Resources, DepthFormat>,
                 encoder_queue: EncoderQueue<D>)
                 -> DrawSystem<D>
     where F: gfx::Factory<D::Resources>
