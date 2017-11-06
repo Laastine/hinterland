@@ -1,7 +1,7 @@
 use shaders::Projection;
 use cgmath;
 use cgmath::{Matrix4, Point3, Vector3, Point2, Rad};
-use game::constants::{RESOLUTION_X, RESOLUTION_Y, VIEW_DISTANCE};
+use game::constants::{TILE_WIDTH, RESOLUTION_X, RESOLUTION_Y, VIEW_DISTANCE};
 use graphics::orientation::Orientation;
 use gfx_app::mouse_controls::MouseInputState;
 use std::f32::consts::PI;
@@ -100,11 +100,11 @@ fn is_out_of_map_borders(point: Point2<f64>) -> bool {
 }
 
 pub fn is_collision(screen_pos: [f32; 2]) -> bool {
-  let x_coord = screen_pos[0] as f64;
-  let y_coord = screen_pos[1] as f64;
+  let x_coord = f64::from(screen_pos[0]);
+  let y_coord = f64::from(screen_pos[1]);
   let point = Point2 {
-    x: (x_coord / (60.0) + y_coord / (60.0)).round() + 32.0,
-    y: (y_coord / (60.0) - (x_coord / 60.0)).round() + 32.0
+    x: (x_coord / TILE_WIDTH + y_coord / TILE_WIDTH).round() + 32.0,
+    y: (y_coord / TILE_WIDTH - x_coord / TILE_WIDTH).round() + 32.0
   };
   is_out_of_map_borders(point)
 }
