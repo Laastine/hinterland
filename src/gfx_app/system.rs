@@ -51,6 +51,7 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
   where D: gfx::Device,
         D::CommandBuffer: Send,
 {
+  #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
   type SystemData = (WriteStorage<'a, terrain::TerrainDrawable>,
                      WriteStorage<'a, character::CharacterDrawable>,
                      WriteStorage<'a, CharacterSprite>,

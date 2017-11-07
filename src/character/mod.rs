@@ -188,6 +188,7 @@ impl PreDrawSystem {
 }
 
 impl<'a> specs::System<'a> for PreDrawSystem {
+  #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
   type SystemData = (WriteStorage<'a, CharacterDrawable>,
                      WriteStorage<'a, CameraInputState>,
                      WriteStorage<'a, CharacterInputState>,
