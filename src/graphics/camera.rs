@@ -85,20 +85,17 @@ impl<'a> specs::System<'a> for CameraControlSystem {
       }
     }
     if let Some(x) = self.x_move {
-      if let Some(y) = self.y_move {
-        for (map, mi, c) in (&mut map_input, &mut mouse_input, &character).join() {
-          if mi.left_click_point.is_none() && !c.is_collision {
-            map.x_pos += x;
-            map.y_pos += y / 2.0;
-          }
-        }
-      }
-    }
-    if let Some(x) = self.x_move {
       if self.y_move == None {
         for (map, mi, c) in (&mut map_input, &mut mouse_input, &character).join() {
           if mi.left_click_point.is_none() && !c.is_collision {
             map.x_pos += x;
+          }
+        }
+      } else if let Some(y) = self.y_move {
+        for (map, mi, c) in (&mut map_input, &mut mouse_input, &character).join() {
+          if mi.left_click_point.is_none() && !c.is_collision {
+            map.x_pos += x;
+            map.y_pos += y / 2.0;
           }
         }
       }
