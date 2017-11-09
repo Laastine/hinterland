@@ -35,23 +35,19 @@ impl<D: gfx::Device> DeviceRenderer<D> {
      })
   }
 
-  pub fn draw(&mut self, device: &mut D) -> bool {
+  pub fn draw(&mut self, device: &mut D) {
     match self.queue.receiver.recv() {
       Ok(mut encoder) => {
         encoder.flush(device);
         match self.queue.sender.send(encoder) {
-          Ok(_) => {
-            true
-          },
+          Ok(_) => {},
           Err(e) => {
-            false
             panic!("Unable to send {}", e);
           }
         }
       }
       Err(e) => {
-        println!("Unable to receive {}", e);
-        false
+        panic!("Unable to receive {}", e);
       }
     }
   }
