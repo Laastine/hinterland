@@ -3,7 +3,6 @@ use gfx;
 use gfx_device_gl;
 use gfx_window_glutin;
 use glutin::GlContext;
-use std::process;
 use game::constants::{RESOLUTION_X, RESOLUTION_Y};
 
 pub mod init;
@@ -148,57 +147,86 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
     let m_dsv = &mut self.depth_stencil_view;
     let m_pos = &mut self.mouse_pos;
 
+    let mut game_status: Option<GameStatus> = None;
+
     self.events_loop.poll_events(|event| {
-      if let glutin::Event::WindowEvent { event, .. } = event {
+      game_status = if let glutin::Event::WindowEvent { event, .. } = event {
         match event {
           glutin::WindowEvent::KeyboardInput { input, .. } => match input {
-            KeyboardInput { virtual_keycode: Some(Escape), .. } => process::exit(0),
-            KeyboardInput { state: Pressed, virtual_keycode: Some(Z), .. } => controls.zoom_out(),
-            KeyboardInput { state: Pressed, virtual_keycode: Some(X), .. } => controls.zoom_in(),
+            KeyboardInput { virtual_keycode: Some(Escape), .. } => Some(GameStatus::Quit),
+            KeyboardInput { state: Pressed, virtual_keycode: Some(Z), .. } => { controls.zoom_out(); None },
+            KeyboardInput { state: Pressed, virtual_keycode: Some(X), .. } => {
+              controls.zoom_in();
+              None
+            },
             KeyboardInput { state: Released, virtual_keycode: Some(Z), .. } |
-            KeyboardInput { state: Released, virtual_keycode: Some(X), .. } => controls.zoom_stop(),
+            KeyboardInput { state: Released, virtual_keycode: Some(X), .. } => {
+              controls.zoom_stop();
+              None
+            },
             KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {
               controls.move_character_up();
               controls.move_map_up();
+              None
             },
             KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {
               controls.move_character_down();
               controls.move_map_down();
+              None
             },
             KeyboardInput { state: Released, virtual_keycode: Some(W), .. } |
             KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {
               controls.stop_character_y();
               controls.stop_map_y();
+              None
             },
             KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {
               controls.move_character_left();
               controls.move_map_left();
+              None
             },
             KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {
               controls.move_character_right();
               controls.move_map_right();
+              None
             },
             KeyboardInput { state: Released, virtual_keycode: Some(A), .. } |
             KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {
               controls.stop_character_x();
               controls.stop_map_x();
+              None
             },
-            _ => (),
+            _ => None,
           },
-          MouseInput { state: Pressed, button: MouseButton::Left, .. } => controls.mouse_left_click(Some(*m_pos)),
-          MouseInput { state: Released, button: MouseButton::Left, .. } => controls.mouse_left_click(None),
-          MouseInput { state: Pressed, button: MouseButton::Right, .. } => controls.mouse_right_click(Some(*m_pos)),
-          MouseInput { state: Released, button: MouseButton::Right, .. } => controls.mouse_right_click(None),
+          MouseInput { state: Pressed, button: MouseButton::Left, .. } => {
+            controls.mouse_left_click(Some(*m_pos));
+            None
+          },
+          MouseInput { state: Released, button: MouseButton::Left, .. } => {
+            controls.mouse_left_click(None);
+            None
+          },
+          MouseInput { state: Pressed, button: MouseButton::Right, .. } => {
+            controls.mouse_right_click(Some(*m_pos));
+            None
+          },
+          MouseInput { state: Released, button: MouseButton::Right, .. } => {
+            controls.mouse_right_click(None);
+            None
+          },
           MouseMoved { position, .. } => {
             *m_pos = position;
+            None
           },
-          Closed => process::exit(0),
-          Resized(_, _) => gfx_window_glutin::update_views(w, m_rtv, m_dsv),
-          _ => (),
+          Closed => Some(GameStatus::Quit),
+          Resized(_, _) => {gfx_window_glutin::update_views(w, m_rtv, m_dsv); Some(GameStatus::Quit)},
+          _ => None,
         }
-      }
+      } else {
+        None
+      };
     });
-    None
+    game_status
   }
 }
 

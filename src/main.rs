@@ -30,7 +30,7 @@ fn main() {
         println!("Game was quit");
         break;
       }
-      gfx_app::GameStatus::Render => println!("Render..."),
+      gfx_app::GameStatus::Render => (),
     }
   }
 }
