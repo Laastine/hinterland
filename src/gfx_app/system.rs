@@ -106,7 +106,7 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
     }
 
     if let Err(e) = self.encoder_queue.sender.send(encoder) {
-      println!("Disconnected, cannot return encoder to mpsc: {}", e);
+      panic!("Disconnected, cannot return encoder to mpsc: {}", e);
     };
   }
 }

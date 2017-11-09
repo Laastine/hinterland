@@ -23,17 +23,17 @@ impl TilemapControls {
 
   fn tc(&mut self, value: CameraControl) {
     if self.terrain_control.send(value).is_err() {
-      println!("Controls disconnected");
+      panic!("Controls disconnected");
     }
   }
   fn cc(&mut self, value: CharacterControl) {
     if self.character_control.send(value).is_err() {
-      println!("Controls disconnected");
+      panic!("Controls disconnected");
     }
   }
   fn mc(&mut self, contol_value: MouseControl, value: Option<(f64, f64)>) {
     if self.mouse_control.send((contol_value, value)).is_err() {
-      println!("Controls disconnected")
+      panic!("Controls disconnected")
     }
   }
 

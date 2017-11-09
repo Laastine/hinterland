@@ -44,8 +44,8 @@ impl<D: gfx::Device> DeviceRenderer<D> {
             true
           },
           Err(e) => {
-            println!("Unable to send {}", e);
             false
+            panic!("Unable to send {}", e);
           }
         }
       }
