@@ -1,10 +1,15 @@
-use shaders::Projection;
+use gfx::handle::ShaderResourceView;
+use gfx::{texture, Factory, Resources};
+use gfx::format::Rgba8;
 use cgmath;
 use cgmath::{Matrix4, Point3, Vector3, Point2, Rad};
 use game::constants::{TILE_WIDTH, RESOLUTION_X, RESOLUTION_Y, VIEW_DISTANCE};
 use graphics::orientation::Orientation;
 use gfx_app::mouse_controls::MouseInputState;
+use image;
+use shaders::Projection;
 use std::f32::consts::PI;
+use std::io::Cursor;
 
 pub mod camera;
 pub mod orientation;
@@ -107,4 +112,12 @@ pub fn is_collision(screen_pos: [f32; 2]) -> bool {
     y: (y_coord / TILE_WIDTH - x_coord / TILE_WIDTH).round() + 32.0
   };
   is_out_of_map_borders(point)
+}
+
+pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> Result<ShaderResourceView<R, [f32; 4]>, String> where R: Resources, F: Factory<R> {
+  let img = image::load(Cursor::new(data), image::PNG).unwrap().to_rgba();
+  let (width, height) = img.dimensions();
+  let kind = texture::Kind::D2(width as texture::Size, height as texture::Size, texture::AaMode::Single);
+  let (_, view) = factory.create_texture_immutable_u8::<Rgba8>(kind, &[&img]).unwrap();
+  Ok(view)
 }

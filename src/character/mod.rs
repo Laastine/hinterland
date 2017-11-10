@@ -8,7 +8,7 @@ use data;
 use game::constants::{ASPECT_RATIO, RUN_SPRITE_OFFSET, CHARSHEET_TOTAL_WIDTH, SPRITE_OFFSET};
 use shaders::{pipe, VertexData, CharacterSheet, Position, Projection};
 use gfx;
-use gfx_app::graphics::load_texture;
+use graphics::load_texture;
 use gfx_app::mouse_controls::MouseInputState;
 use gfx_app::{ColorFormat, DepthFormat};
 use critter::{CharacterSprite, CritterData};

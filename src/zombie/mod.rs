@@ -11,7 +11,7 @@ use gfx;
 use specs;
 use specs::{Fetch, WriteStorage};
 use data;
-use gfx_app::graphics::load_texture;
+use graphics::load_texture;
 
 const SHADER_VERT: &'static [u8] = include_bytes!("../shaders/character.v.glsl");
 const SHADER_FRAG: &'static [u8] = include_bytes!("../shaders/character.f.glsl");

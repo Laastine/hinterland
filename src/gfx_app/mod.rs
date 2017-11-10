@@ -10,7 +10,6 @@ pub mod renderer;
 pub mod system;
 pub mod controls;
 pub mod mouse_controls;
-pub mod graphics;
 
 pub type ColorFormat = gfx::format::Rgba8;
 pub type DepthFormat = gfx::format::DepthStencil;

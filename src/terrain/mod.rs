@@ -11,7 +11,7 @@ use terrain::gfx_macros::{TileMapData, VertexData, pipe, TilemapSettings};
 use shaders::Projection;
 use graphics::camera::CameraInputState;
 use game::constants::{TILEMAP_BUF_LENGTH, ASPECT_RATIO};
-use gfx_app::graphics::load_texture;
+use graphics::load_texture;
 use game::constants::{TILES_PCS_W, TILES_PCS_H};
 
 #[macro_use]
