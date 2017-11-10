@@ -107,8 +107,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     dispatcher.dispatch(&w.res);
     w.maintain();
 
-    let mut d = w.write_resource::<DeltaTime>();
-    *d = DeltaTime(delta);
+    *w.write_resource::<DeltaTime>() = DeltaTime(delta);
 
     device_renderer.draw(window.get_device());
     window.swap_window();
