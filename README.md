@@ -7,6 +7,14 @@ Project started as SDL2, but was later converted to use gfx-rs.
 
 <img src="assets/zombie-shooter-gl.gif" alt="preview">
 
+## Overview
+
+* Tiled base terrain
+* Running character
+* Shooting animation with sound effect
+* Still zombie
+* Very naive collision detection on map borders
+
 ## Build
 
 ```bash
