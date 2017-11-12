@@ -50,7 +50,7 @@ impl CharacterDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, cs: &mut CharacterSprite, mouse_input: &mut MouseInputState) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, cs: &mut CharacterSprite, mouse_input: &MouseInputState) {
     self.projection = *world_to_clip;
     let new_position = Position {
       position: [ci.x_movement, ci.y_movement]
@@ -191,15 +191,15 @@ impl<'a> specs::System<'a> for PreDrawSystem {
   #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
   type SystemData = (WriteStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, CameraInputState>,
-                     WriteStorage<'a, CharacterInputState>,
+                     ReadStorage<'a, CharacterInputState>,
                      WriteStorage<'a, CharacterSprite>,
-                     WriteStorage<'a, MouseInputState>,
+                     ReadStorage<'a, MouseInputState>,
                      Fetch<'a, Dimensions>);
 
-  fn run(&mut self, (mut character, camera_input, mut character_input, mut character_sprite, mut mouse_input, dim): Self::SystemData) {
+  fn run(&mut self, (mut character, camera_input, character_input, mut character_sprite, mouse_input, dim): Self::SystemData) {
     use specs::Join;
 
-    for (c, camera, ci, cs, mi) in (&mut character, &camera_input, &mut character_input, &mut character_sprite, &mut mouse_input).join() {
+    for (c, camera, ci, cs, mi) in (&mut character, &camera_input, &character_input, &mut character_sprite, &mouse_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
       c.update(&world_to_clip, ci, cs, mi);
     }
