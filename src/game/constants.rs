@@ -1,4 +1,4 @@
-pub const TILE_WIDTH: f64 = 60.0;
+pub const TILE_WIDTH: f64 = 62.0;
 
 pub const TILES_PCS_W: usize = 64;
 pub const TILES_PCS_H: usize = 64;

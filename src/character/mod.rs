@@ -2,7 +2,7 @@ use cgmath::Matrix4;
 use cgmath;
 use character::controls::CharacterInputState;
 use graphics::orientation::{Orientation, Stance};
-use graphics::{Dimensions, get_orientation, is_collision};
+use graphics::{Dimensions, get_orientation, can_move};
 use graphics::camera::CameraInputState;
 use data;
 use game::constants::{ASPECT_RATIO, RUN_SPRITE_OFFSET, CHARSHEET_TOTAL_WIDTH, SPRITE_OFFSET};
@@ -23,12 +23,12 @@ const SHADER_FRAG: &'static [u8] = include_bytes!("../shaders/character.f.glsl")
 
 pub struct CharacterDrawable {
   projection: Projection,
-  position: Position,
+  pub position: Position,
   orientation: Orientation,
   pub stance: Stance,
   direction: Orientation,
   audio: audio::CharacterAudio,
-  pub is_collision: bool,
+  pub can_move: bool,
 }
 
 impl CharacterDrawable {
@@ -46,7 +46,7 @@ impl CharacterDrawable {
       stance: Stance::Walking,
       direction: Orientation::Right,
       audio: audio::CharacterAudio::new(),
-      is_collision: false,
+      can_move: false,
     }
   }
 
@@ -77,11 +77,12 @@ impl CharacterDrawable {
         else if dx < 0.0 && dy > 0.0   { Orientation::UpLeft }
         else { Orientation::Still };
 
-      if is_collision(new_position.position) {
+      if can_move(new_position.position) {
         self.position = new_position;
-        self.is_collision = false;
+        self.can_move = true;
       } else {
-        self.is_collision = true;
+        self.can_move = false;
+        self.orientation = Orientation::Still;
       }
     }
   }

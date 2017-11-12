@@ -1,9 +1,7 @@
 use std::sync::mpsc;
 use specs;
-use specs::{ReadStorage, WriteStorage};
+use specs::WriteStorage;
 use game::constants::VIEW_DISTANCE;
-use gfx_app::mouse_controls::MouseInputState;
-use character::CharacterDrawable;
 
 #[derive(Clone, Debug)]
 pub struct CameraInputState {
@@ -60,8 +58,8 @@ impl CameraControlSystem {
 }
 
 impl<'a> specs::System<'a> for CameraControlSystem {
-  type SystemData = (WriteStorage<'a, CameraInputState>, WriteStorage<'a, MouseInputState>, ReadStorage<'a, CharacterDrawable>);
-  fn run(&mut self, (mut map_input, mut mouse_input, character): Self::SystemData) {
+  type SystemData = (WriteStorage<'a, CameraInputState>);
+  fn run(&mut self, mut map_input: Self::SystemData) {
     use specs::Join;
 
     while let Ok(control) = self.queue.try_recv() {
@@ -81,31 +79,6 @@ impl<'a> specs::System<'a> for CameraControlSystem {
       for m in (&mut map_input).join() {
         if m.distance > 200.0 && zoom < 0.0 || m.distance < 1000.0 && zoom > 0.0 {
           m.distance += zoom;
-        }
-      }
-    }
-    if let Some(x) = self.x_move {
-      if self.y_move == None {
-        for (map, mi, c) in (&mut map_input, &mut mouse_input, &character).join() {
-          if mi.left_click_point.is_none() && !c.is_collision {
-            map.x_pos += x;
-          }
-        }
-      } else if let Some(y) = self.y_move {
-        for (map, mi, c) in (&mut map_input, &mut mouse_input, &character).join() {
-          if mi.left_click_point.is_none() && !c.is_collision {
-            map.x_pos += x;
-            map.y_pos += y / 2.0;
-          }
-        }
-      }
-    }
-    if let Some(y) = self.y_move {
-      if self.x_move == None {
-        for (map, mi, c) in (&mut map_input, &mut mouse_input, &character).join() {
-          if mi.left_click_point.is_none() && !c.is_collision {
-            map.y_pos += y;
-          }
         }
       }
     }

@@ -100,18 +100,17 @@ pub fn get_orientation(mouse_input: &MouseInputState) -> Orientation {
   }
 }
 
-fn is_out_of_map_borders(point: Point2<f64>) -> bool {
+fn is_within_map_borders(point: Point2<f64>) -> bool {
   point.x > 0.0 && point.x <= 64.0 && point.y > 0.0 && point.y <= 64.0
 }
-
-pub fn is_collision(screen_pos: [f32; 2]) -> bool {
+pub fn can_move(screen_pos: [f32; 2]) -> bool {
   let x_coord = f64::from(screen_pos[0]);
   let y_coord = f64::from(screen_pos[1]);
   let point = Point2 {
     x: (x_coord / TILE_WIDTH + y_coord / TILE_WIDTH).round() + 32.0,
     y: (y_coord / TILE_WIDTH - x_coord / TILE_WIDTH).round() + 32.0
   };
-  is_out_of_map_borders(point)
+  is_within_map_borders(point)
 }
 
 pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> Result<ShaderResourceView<R, [f32; 4]>, String> where R: Resources, F: Factory<R> {
