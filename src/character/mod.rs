@@ -13,7 +13,7 @@ use gfx_app::mouse_controls::MouseInputState;
 use gfx_app::{ColorFormat, DepthFormat};
 use critter::{CharacterSprite, CritterData};
 use specs;
-use specs::{WriteStorage, Fetch};
+use specs::{Fetch, ReadStorage, WriteStorage};
 
 mod audio;
 pub mod controls;
@@ -190,17 +190,17 @@ impl PreDrawSystem {
 impl<'a> specs::System<'a> for PreDrawSystem {
   #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
   type SystemData = (WriteStorage<'a, CharacterDrawable>,
-                     WriteStorage<'a, CameraInputState>,
+                     ReadStorage<'a, CameraInputState>,
                      WriteStorage<'a, CharacterInputState>,
                      WriteStorage<'a, CharacterSprite>,
                      WriteStorage<'a, MouseInputState>,
                      Fetch<'a, Dimensions>);
 
-  fn run(&mut self, (mut character, mut terrain_input, mut character_input, mut character_sprite, mut mouse_input, dim): Self::SystemData) {
+  fn run(&mut self, (mut character, camera_input, mut character_input, mut character_sprite, mut mouse_input, dim): Self::SystemData) {
     use specs::Join;
 
-    for (c, ti, ci, cs, mi) in (&mut character, &mut terrain_input, &mut character_input, &mut character_sprite, &mut mouse_input).join() {
-      let world_to_clip = dim.world_to_projection(ti);
+    for (c, camera, ci, cs, mi) in (&mut character, &camera_input, &mut character_input, &mut character_sprite, &mut mouse_input).join() {
+      let world_to_clip = dim.world_to_projection(camera);
       c.update(&world_to_clip, ci, cs, mi);
     }
   }
