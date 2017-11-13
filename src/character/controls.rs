@@ -84,7 +84,7 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
         for (ci, mi, camera) in (&mut character_input, &mouse_input, &mut camera_input).join() {
           if mi.left_click_point.is_none() {
             ci.x_movement += x;
-            camera.x_pos += x / 1.95;
+            camera.x_pos += x / 1.9;
           }
         }
       }
