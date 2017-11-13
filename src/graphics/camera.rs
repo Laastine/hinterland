@@ -67,12 +67,7 @@ impl<'a> specs::System<'a> for CameraControlSystem {
         CameraControl::ZoomIn => self.zoom_level = Some(2.0),
         CameraControl::ZoomOut => self.zoom_level = Some(-2.0),
         CameraControl::ZoomStop => self.zoom_level = None,
-        CameraControl::Up => self.y_move = Some(-0.265),
-        CameraControl::Down => self.y_move = Some(0.265),
-        CameraControl::YMoveStop => self.y_move = None,
-        CameraControl::Right => self.x_move = Some(0.265),
-        CameraControl::Left => self.x_move = Some(-0.265),
-        CameraControl::XMoveStop => self.x_move = None,
+        _ => (),
       }
     }
     if let Some(zoom) = self.zoom_level {
