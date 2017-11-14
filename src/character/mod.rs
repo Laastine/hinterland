@@ -28,7 +28,6 @@ pub struct CharacterDrawable {
   pub stance: Stance,
   direction: Orientation,
   audio: audio::CharacterAudio,
-  pub can_move: bool,
 }
 
 impl CharacterDrawable {
@@ -46,7 +45,6 @@ impl CharacterDrawable {
       stance: Stance::Walking,
       direction: Orientation::Right,
       audio: audio::CharacterAudio::new(),
-      can_move: false,
     }
   }
 
@@ -79,9 +77,7 @@ impl CharacterDrawable {
 
       if can_move(new_position.position) {
         self.position = new_position;
-        self.can_move = true;
       } else {
-        self.can_move = false;
         self.orientation = Orientation::Still;
       }
     }
