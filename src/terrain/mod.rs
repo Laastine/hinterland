@@ -63,6 +63,7 @@ const SHADER_FRAG: &'static [u8] = include_bytes!("terrain.f.glsl");
 pub struct TerrainDrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, pipe::Data<R>>,
   data: Vec<TileMapData>,
+  is_tilemap_dirty: bool,
 }
 
 impl<R: gfx::Resources> TerrainDrawSystem<R> {
@@ -128,6 +129,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     TerrainDrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
       data: tilemap::generate().tiles,
+      is_tilemap_dirty: true,
     }
   }
 
@@ -137,10 +139,13 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     where C: gfx::CommandBuffer<R> {
     encoder.update_buffer(&self.bundle.data.tilemap, self.data.as_slice(), 0).unwrap();
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
-    encoder.update_constant_buffer(&self.bundle.data.tilemap_cb, &TilemapSettings {
-      world_size: [64.0, 64.0],
-      tilesheet_size: [32.0, 32.0],
-    });
+    if self.is_tilemap_dirty {
+      encoder.update_constant_buffer(&self.bundle.data.tilemap_cb, &TilemapSettings {
+        world_size: [64.0, 64.0],
+        tilesheet_size: [32.0, 32.0],
+      });
+      self.is_tilemap_dirty = false
+    }
 
     self.bundle.encode(encoder);
   }
