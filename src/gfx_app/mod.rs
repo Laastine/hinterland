@@ -165,18 +165,15 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             },
             KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {
               controls.move_character_up();
-              controls.move_map_up();
               None
             },
             KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {
               controls.move_character_down();
-              controls.move_map_down();
               None
             },
             KeyboardInput { state: Released, virtual_keycode: Some(W), .. } |
             KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {
               controls.stop_character_y();
-              controls.stop_map_y();
               None
             },
             KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {
@@ -186,13 +183,11 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             },
             KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {
               controls.move_character_right();
-              controls.move_map_right();
               None
             },
             KeyboardInput { state: Released, virtual_keycode: Some(A), .. } |
             KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {
               controls.stop_character_x();
-              controls.stop_map_x();
               None
             },
             _ => None,
