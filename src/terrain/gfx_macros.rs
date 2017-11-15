@@ -16,8 +16,13 @@ gfx_defines! {
       buf_pos: [f32; 2] = "a_BufPos",
   }
 
+  constant Position {
+    position: [f32; 2] = "a_position",
+  }
+
   pipeline pipe {
       vbuf: gfx::VertexBuffer<VertexData> = (),
+      position_cb: gfx::ConstantBuffer<Position> = "b_TileMapPosition",
       projection_cb: gfx::ConstantBuffer<Projection> = "b_VsLocals",
       tilemap: gfx::ConstantBuffer<TileMapData> = "b_TileMap",
       tilemap_cb: gfx::ConstantBuffer<TilemapSettings> = "b_PsLocals",

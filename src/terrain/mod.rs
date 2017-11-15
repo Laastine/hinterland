@@ -118,6 +118,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
 
     let pipeline_data = pipe::Data {
       vbuf: vertex_buf,
+      position_cb: factory.create_constant_buffer(1),
       projection_cb: factory.create_constant_buffer(1),
       tilemap: factory.create_constant_buffer(TILEMAP_BUF_LENGTH),
       tilemap_cb: factory.create_constant_buffer(1),
@@ -139,6 +140,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     where C: gfx::CommandBuffer<R> {
     encoder.update_buffer(&self.bundle.data.tilemap, self.data.as_slice(), 0).unwrap();
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
+    encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     if self.is_tilemap_dirty {
       encoder.update_constant_buffer(&self.bundle.data.tilemap_cb, &TilemapSettings {
         world_size: [64.0, 64.0],
@@ -163,14 +165,15 @@ impl PreDrawSystem {
 impl<'a> specs::System<'a> for PreDrawSystem {
   type SystemData = (WriteStorage<'a, TerrainDrawable>,
                      ReadStorage<'a, CameraInputState>,
+                     ReadStorage<'a, CharacterInputState>,
                      Fetch<'a, Dimensions>);
 
-  fn run(&mut self, (mut terrain, camera_input, dim): Self::SystemData) {
+  fn run(&mut self, (mut terrain, camera_input, character_input, dim): Self::SystemData) {
     use specs::Join;
 
-    for (t, camera) in (&mut terrain, &camera_input).join() {
+    for (t, camera, ci) in (&mut terrain, &camera_input, &character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      t.update(&world_to_clip);
+      t.update(&world_to_clip, ci);
     }
   }
 }

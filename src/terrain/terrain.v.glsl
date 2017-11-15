@@ -10,7 +10,11 @@ uniform b_VsLocals {
   mat4 u_Proj;
 };
 
+uniform b_TileMapPosition {
+  vec2 a_position;
+};
+
 void main() {
   v_BufPos = a_BufPos;
-  gl_Position = u_Proj * u_View * u_Model * vec4(a_Pos, 1.0);
+  gl_Position = vec4(a_position, 0.0, 0.0) + u_Proj * u_View * u_Model * vec4(a_Pos, 1.0);
 }
