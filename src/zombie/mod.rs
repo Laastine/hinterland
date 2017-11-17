@@ -1,27 +1,30 @@
-use shaders::{pipe, VertexData, CharacterSheet, Position, Projection};
-use graphics::orientation::{Orientation, Stance};
-use graphics::Dimensions;
-use graphics::camera::CameraInputState;
+use cgmath;
 use cgmath::Matrix4;
+use character::controls::CharacterInputState;
+use gfx;
+use gfx_app::{ColorFormat, DepthFormat};
+use graphics::orientation::{Orientation, Stance};
+use graphics::{Dimensions, load_texture};
+use graphics::camera::CameraInputState;
 use game::constants::{ASPECT_RATIO, ZOMBIESHEET_TOTAL_WIDTH, SPRITE_OFFSET, STILL_SPRITE_OFFSET};
 use critter::{CritterData, ZombieSprite};
-use gfx_app::{ColorFormat, DepthFormat};
-use cgmath;
-use gfx;
+use shaders::{pipe, VertexData, CharacterSheet, Position, Projection};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
 use data;
-use graphics::load_texture;
 
 const SHADER_VERT: &'static [u8] = include_bytes!("../shaders/character.v.glsl");
 const SHADER_FRAG: &'static [u8] = include_bytes!("../shaders/character.f.glsl");
 
+const ZOMBIE_START_POSITION: (f32, f32) = (256.0, -32.0);
+
+#[derive(Debug)]
 pub struct ZombieDrawable {
   projection: Projection,
   position: Position,
   orientation: Orientation,
   pub stance: Stance,
-  direction: Orientation
+  direction: Orientation,
 }
 
 impl ZombieDrawable {
@@ -41,9 +44,13 @@ impl ZombieDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState) {
     self.projection = *world_to_clip;
     self.stance = Stance::Still;
+    let new_position = Position {
+      position: [ZOMBIE_START_POSITION.0 + ci.x_movement, ZOMBIE_START_POSITION.1 + ci.y_movement]
+    };
+      self.position = new_position;
   }
 }
 
@@ -148,15 +155,16 @@ impl PreDrawSystem {
 impl<'a> specs::System<'a> for PreDrawSystem {
   type SystemData = (WriteStorage<'a, ZombieDrawable>,
                      ReadStorage<'a, CameraInputState>,
+                     ReadStorage<'a, CharacterInputState>,
                      Fetch<'a, Dimensions>);
 
 
-  fn run(&mut self, (mut zombie, camera_input, dim): Self::SystemData) {
+  fn run(&mut self, (mut zombie, camera_input, character_input, dim): Self::SystemData) {
     use specs::Join;
 
-    for (z, camera) in (&mut zombie, &camera_input).join() {
+    for (z, camera, ci) in (&mut zombie, &camera_input, &character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      z.update(&world_to_clip);
+      z.update(&world_to_clip, ci);
     }
   }
 }

@@ -2,7 +2,7 @@ use cgmath::Matrix4;
 use cgmath;
 use character::controls::CharacterInputState;
 use graphics::orientation::{Orientation, Stance};
-use graphics::{Dimensions, get_orientation, can_move};
+use graphics::{Dimensions, get_orientation};
 use graphics::camera::CameraInputState;
 use data;
 use game::constants::{ASPECT_RATIO, RUN_SPRITE_OFFSET, CHARSHEET_TOTAL_WIDTH, SPRITE_OFFSET};
@@ -50,9 +50,6 @@ impl CharacterDrawable {
 
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, cs: &mut CharacterSprite, mouse_input: &MouseInputState) {
     self.projection = *world_to_clip;
-    let new_position = Position {
-      position: [ci.x_movement, ci.y_movement]
-    };
 
     if mouse_input.left_click_point.is_some() {
       self.stance = Stance::Firing;
@@ -62,24 +59,7 @@ impl CharacterDrawable {
       }
     } else {
       self.stance = Stance::Walking;
-      let dx = new_position.position[0] - self.position.position[0];
-      let dy = new_position.position[1] - self.position.position[1];
-      self.orientation =
-        if dx == 0.0 && dy < 0.0       { Orientation::Down }
-        else if dx > 0.0 && dy < 0.0   { Orientation::DownRight }
-        else if dx < 0.0 && dy < 0.0   { Orientation::DownLeft }
-        else if dx > 0.0 && dy == 0.0  { Orientation::Right }
-        else if dx < 0.0 && dy == 0.0  { Orientation::Left }
-        else if dx == 0.0 && dy > 0.0  { Orientation::Up }
-        else if dx > 0.0 && dy > 0.0   { Orientation::UpRight }
-        else if dx < 0.0 && dy > 0.0   { Orientation::UpLeft }
-        else { Orientation::Still };
-
-      if can_move(new_position.position) {
-        self.position = new_position;
-      } else {
-        self.orientation = Orientation::Still;
-      }
+      self.orientation = ci.orientation;
     }
   }
 }

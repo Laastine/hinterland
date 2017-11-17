@@ -1,18 +1,19 @@
 use cgmath;
 use cgmath::{Matrix4};
+use character::controls::CharacterInputState;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx;
-use graphics::{Dimensions};
-use specs;
-use specs::{Fetch, ReadStorage, WriteStorage};
+use graphics::{Dimensions, can_move};
 use genmesh::{Vertices, Triangulate};
 use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
-use terrain::gfx_macros::{TileMapData, VertexData, pipe, TilemapSettings};
-use shaders::Projection;
 use graphics::camera::CameraInputState;
 use game::constants::{TILEMAP_BUF_LENGTH, ASPECT_RATIO};
 use graphics::load_texture;
 use game::constants::{TILES_PCS_W, TILES_PCS_H};
+use shaders::Projection;
+use specs;
+use specs::{Fetch, ReadStorage, WriteStorage};
+use terrain::gfx_macros::{pipe, Position, TileMapData, TilemapSettings, VertexData};
 
 #[macro_use]
 pub mod gfx_macros;
@@ -35,6 +36,7 @@ impl TileMapData {
 #[derive(Debug)]
 pub struct TerrainDrawable {
   projection: Projection,
+  pub position: Position,
 }
 
 impl TerrainDrawable {
@@ -43,13 +45,22 @@ impl TerrainDrawable {
       projection: Projection {
         model: view.into(),
         view: view.into(),
-        proj: cgmath::perspective(cgmath::Deg(60.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
-      }
+        proj: cgmath::perspective(cgmath::Deg(75.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
+      },
+      position: Position {
+        position: [0.0, 0.0],
+      },
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState) {
     self.projection = *world_to_clip;
+    let new_position = Position {
+      position: [ci.x_movement, ci.y_movement]
+    };
+    if can_move(new_position.position) {
+      self.position = new_position;
+    }
   }
 }
 
