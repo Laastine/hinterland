@@ -25,5 +25,5 @@ void main() {
   v_BufPos.x /= a_div;
   v_BufPos.x += a_index / a_div;
 
-  gl_Position = vec4(a_position, 0.0, 0.0) +  u_Proj * u_View * u_Model * vec4(a_Pos, 1.0);
+  gl_Position = vec4(a_position, 0.0, 0.0) + u_Proj * u_View * u_Model * vec4(a_Pos, 1.0);
 }
