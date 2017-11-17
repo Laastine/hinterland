@@ -49,7 +49,7 @@ impl Dimensions {
     Projection {
       model: view.into(),
       view: view.into(),
-      proj: cgmath::perspective(cgmath::Deg(60.0f32), aspect_ratio, 0.1, 4000.0).into(),
+      proj: cgmath::perspective(cgmath::Deg(75.0f32), aspect_ratio, 0.1, 4000.0).into(),
     }
   }
 }
