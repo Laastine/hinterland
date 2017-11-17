@@ -107,8 +107,8 @@ pub fn can_move(screen_pos: [f32; 2]) -> bool {
   let x_coord = f64::from(screen_pos[0]);
   let y_coord = f64::from(screen_pos[1]);
   let point = Point2 {
-    x: (x_coord / TILE_WIDTH + y_coord / TILE_WIDTH).round() + 32.0,
-    y: (y_coord / TILE_WIDTH - x_coord / TILE_WIDTH).round() + 31.0
+    x: (x_coord / TILE_WIDTH + y_coord / TILE_WIDTH).round() + 31.0,
+    y: (y_coord / TILE_WIDTH - x_coord / TILE_WIDTH).round() + 32.0
   };
   is_within_map_borders(point)
 }
