@@ -46,21 +46,27 @@ impl TilemapControls {
   pub fn zoom_stop(&mut self) {
     self.tc(CameraControl::ZoomStop)
   }
+  #[allow(dead_code)]
   pub fn move_map_left(&mut self) {
     self.tc(CameraControl::Left)
   }
+  #[allow(dead_code)]
   pub fn move_map_right(&mut self) {
     self.tc(CameraControl::Right)
   }
+  #[allow(dead_code)]
   pub fn move_map_up(&mut self) {
     self.tc(CameraControl::Up)
   }
+  #[allow(dead_code)]
   pub fn move_map_down(&mut self) {
     self.tc(CameraControl::Down)
   }
+  #[allow(dead_code)]
   pub fn stop_map_x(&mut self) {
     self.tc(CameraControl::XMoveStop)
   }
+  #[allow(dead_code)]
   pub fn stop_map_y(&mut self) {
     self.tc(CameraControl::YMoveStop)
   }
