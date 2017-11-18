@@ -71,7 +71,24 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
       }
     }
 
-    if let Some(x) = self.x_move {
+    if self.y_move.is_none() && self.x_move.is_none() {
+      for (ci, mi) in (&mut character_input, &mouse_input).join() {
+        if mi.left_click_point.is_none() {
+          ci.orientation = Orientation::Still;
+        }
+      }
+    } else if self.x_move.is_none() {
+      if let Some(y) = self.y_move {
+        for (ci, mi, camera) in (&mut character_input, &mouse_input, &mut camera_input).join() {
+          if mi.left_click_point.is_none() {
+            ci.y_movement += y;
+            camera.y_pos -= y;
+            ci.orientation =
+              if y < 0.0 { Orientation::Up } else if y > 0.0 { Orientation::Down } else { Orientation::Still };
+          }
+        }
+      }
+    } else if let Some(x) = self.x_move {
       if let Some(y) = self.y_move {
         for (ci, mi, camera) in (&mut character_input, &mouse_input, &mut camera_input).join() {
           if mi.left_click_point.is_none() {
@@ -80,58 +97,23 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
             camera.x_pos += x / 1.5;
             camera.y_pos -= y / 1.5;
 
-            if x > 0.0 {
-              if y > 0.0 {
-                ci.orientation = Orientation::DownLeft;
-              } else if y < 0.0 {
-                ci.orientation = Orientation::UpLeft;
-              }
-            } else if x < 0.0 {
-              if y > 0.0 {
-                ci.orientation = Orientation::DownRight;
-              } else if y < 0.0 {
-                ci.orientation = Orientation::UpRight;
-              }
-            }
+            ci.orientation = match (x, y) {
+              (x, y) if x > 0.0 && y > 0.0 => Orientation::DownLeft,
+              (x, y) if x > 0.0 && y < 0.0 => Orientation::UpLeft,
+              (x, y) if x < 0.0 && y > 0.0 => Orientation::DownRight,
+              (x, y) if x < 0.0 && y < 0.0 => Orientation::UpRight,
+              _ => Orientation::Still,
+            };
           }
         }
-      }
-    }
-    if let Some(x) = self.x_move {
-      if self.y_move == None {
+      } else if self.y_move.is_none() {
         for (ci, mi, camera) in (&mut character_input, &mouse_input, &mut camera_input).join() {
           if mi.left_click_point.is_none() {
             ci.x_movement += x;
             camera.x_pos += x;
-            if x < 0.0 {
-              ci.orientation = Orientation::Right;
-            } else if x > 0.0 {
-              ci.orientation = Orientation::Left;
-            }
+            ci.orientation =
+              if x < 0.0 { Orientation::Right } else if x > 0.0 { Orientation::Left } else { Orientation::Still };
           }
-        }
-      }
-    }
-    if let Some(y) = self.y_move {
-      if self.x_move == None {
-        for (ci, mi, camera) in (&mut character_input, &mouse_input, &mut camera_input).join() {
-          if mi.left_click_point.is_none() {
-            ci.y_movement += y;
-            camera.y_pos -= y;
-            if y < 0.0 {
-              ci.orientation = Orientation::Up;
-            } else if y > 0.0 {
-              ci.orientation = Orientation::Down;
-            }
-          }
-        }
-      }
-    }
-
-    if self.y_move.is_none() && self.x_move.is_none() {
-      for (ci, mi) in (&mut character_input, &mouse_input).join() {
-        if mi.left_click_point.is_none() {
-          ci.orientation = Orientation::Still;
         }
       }
     }
