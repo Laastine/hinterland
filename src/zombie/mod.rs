@@ -8,7 +8,7 @@ use graphics::{Dimensions, load_texture};
 use graphics::camera::CameraInputState;
 use game::constants::{ASPECT_RATIO, ZOMBIESHEET_TOTAL_WIDTH, SPRITE_OFFSET, STILL_SPRITE_OFFSET};
 use critter::{CritterData, ZombieSprite};
-use shaders::{pipe, VertexData, CharacterSheet, Position, Projection};
+use shaders::{critter_pipeline, VertexData, CharacterSheet, Position, Projection};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
 use data;
@@ -50,7 +50,7 @@ impl ZombieDrawable {
     let new_position = Position {
       position: [ZOMBIE_START_POSITION.0 + ci.x_movement, ZOMBIE_START_POSITION.1 + ci.y_movement]
     };
-      self.position = new_position;
+    self.position = new_position;
   }
 }
 
@@ -59,7 +59,7 @@ impl specs::Component for ZombieDrawable {
 }
 
 pub struct ZombieDrawSystem<R: gfx::Resources> {
-  bundle: gfx::pso::bundle::Bundle<R, pipe::Data<R>>,
+  bundle: gfx::pso::bundle::Bundle<R, critter_pipeline::Data<R>>,
   data: Vec<CritterData>,
 }
 
@@ -88,10 +88,10 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
     let pso = factory
       .create_pipeline_simple(SHADER_VERT,
                               SHADER_FRAG,
-                              pipe::new())
+                              critter_pipeline::new())
       .unwrap();
 
-    let pipeline_data = pipe::Data {
+    let pipeline_data = critter_pipeline::Data {
       vbuf: vertex_buf,
       projection_cb: factory.create_constant_buffer(1),
       position_cb: factory.create_constant_buffer(1),

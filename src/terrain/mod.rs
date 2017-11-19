@@ -10,13 +10,10 @@ use graphics::camera::CameraInputState;
 use game::constants::{TILEMAP_BUF_LENGTH, ASPECT_RATIO};
 use graphics::load_texture;
 use game::constants::{TILES_PCS_W, TILES_PCS_H};
-use shaders::Projection;
+use shaders::{Projection, Position, TileMapData, tilemap_pipeline, TilemapSettings, VertexData};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
-use terrain::gfx_macros::{pipe, Position, TileMapData, TilemapSettings, VertexData};
 
-#[macro_use]
-pub mod gfx_macros;
 pub mod tilemap;
 
 fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
@@ -68,11 +65,11 @@ impl specs::Component for TerrainDrawable {
   type Storage = specs::HashMapStorage<TerrainDrawable>;
 }
 
-const SHADER_VERT: &'static [u8] = include_bytes!("terrain.v.glsl");
-const SHADER_FRAG: &'static [u8] = include_bytes!("terrain.f.glsl");
+const SHADER_VERT: &'static [u8] = include_bytes!("../shaders/terrain.v.glsl");
+const SHADER_FRAG: &'static [u8] = include_bytes!("../shaders/terrain.f.glsl");
 
 pub struct TerrainDrawSystem<R: gfx::Resources> {
-  bundle: gfx::pso::bundle::Bundle<R, pipe::Data<R>>,
+  bundle: gfx::pso::bundle::Bundle<R, tilemap_pipeline::Data<R>>,
   data: Vec<TileMapData>,
   is_tilemap_dirty: bool,
 }
@@ -124,10 +121,10 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     let pso = factory
       .create_pipeline_simple(SHADER_VERT,
                               SHADER_FRAG,
-                              pipe::new())
+                              tilemap_pipeline::new())
       .unwrap();
 
-    let pipeline_data = pipe::Data {
+    let pipeline_data = tilemap_pipeline::Data {
       vbuf: vertex_buf,
       position_cb: factory.create_constant_buffer(1),
       projection_cb: factory.create_constant_buffer(1),

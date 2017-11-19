@@ -6,7 +6,7 @@ use graphics::{Dimensions, get_orientation};
 use graphics::camera::CameraInputState;
 use data;
 use game::constants::{ASPECT_RATIO, RUN_SPRITE_OFFSET, CHARSHEET_TOTAL_WIDTH, SPRITE_OFFSET};
-use shaders::{pipe, VertexData, CharacterSheet, Position, Projection};
+use shaders::{critter_pipeline, VertexData, CharacterSheet, Position, Projection};
 use gfx;
 use graphics::load_texture;
 use gfx_app::mouse_controls::MouseInputState;
@@ -69,7 +69,7 @@ impl specs::Component for CharacterDrawable {
 }
 
 pub struct CharacterDrawSystem<R: gfx::Resources> {
-  bundle: gfx::pso::bundle::Bundle<R, pipe::Data<R>>,
+  bundle: gfx::pso::bundle::Bundle<R, critter_pipeline::Data<R>>,
   data: Vec<CritterData>,
 }
 
@@ -98,10 +98,10 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
     let pso = factory
       .create_pipeline_simple(SHADER_VERT,
                               SHADER_FRAG,
-                              pipe::new())
+                              critter_pipeline::new())
       .unwrap();
 
-    let pipeline_data = pipe::Data {
+    let pipeline_data = critter_pipeline::Data {
       vbuf: vertex_buf,
       projection_cb: factory.create_constant_buffer(1),
       position_cb: factory.create_constant_buffer(1),
