@@ -26,10 +26,7 @@ fn main() {
   let mut window = gfx_app::GlutinWindow::new();
   loop {
     match gfx_app::init::run(&mut window) {
-      gfx_app::GameStatus::Quit => {
-        println!("Game was quit");
-        break;
-      }
+      gfx_app::GameStatus::Quit => break,
       gfx_app::GameStatus::Render => (),
     }
   }
