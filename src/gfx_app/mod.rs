@@ -65,13 +65,10 @@ impl GlutinWindow {
   }
 }
 
-#[allow(dead_code)]
 #[derive(Debug, PartialEq, Eq)]
 pub enum GameStatus {
-  Render,
   Quit,
 }
-
 
 pub trait Window<D: gfx::Device, F: gfx::Factory<D::Resources>> {
   fn swap_window(&mut self);

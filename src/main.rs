@@ -27,7 +27,6 @@ fn main() {
   loop {
     match gfx_app::init::run(&mut window) {
       gfx_app::GameStatus::Quit => break,
-      gfx_app::GameStatus::Render => (),
     }
   }
 }
