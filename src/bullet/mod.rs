@@ -7,6 +7,8 @@ use graphics::orientation::Orientation;
 use shaders::{bullet_pipeline, VertexData, Position, Projection};
 use specs;
 
+pub mod bullet;
+
 const SHADER_VERT: &'static [u8] = include_bytes!("../shaders/bullet.v.glsl");
 const SHADER_FRAG: &'static [u8] = include_bytes!("../shaders/bullet.f.glsl");
 
