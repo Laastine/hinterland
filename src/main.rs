@@ -12,6 +12,7 @@ extern crate glutin;
 extern crate image;
 extern crate rodio;
 
+mod bullet;
 mod gfx_app;
 mod game;
 mod data;

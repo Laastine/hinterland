@@ -24,13 +24,10 @@ gfx_defines! {
     position: [f32; 2] = "a_position",
   }
 
-  pipeline tilemap_pipeline {
+  pipeline bullet_pipeline {
     vbuf: gfx::VertexBuffer<VertexData> = (),
-    position_cb: gfx::ConstantBuffer<Position> = "b_TileMapPosition",
     projection_cb: gfx::ConstantBuffer<Projection> = "b_VsLocals",
-    tilemap: gfx::ConstantBuffer<TileMapData> = "b_TileMap",
-    tilemap_cb: gfx::ConstantBuffer<TilemapSettings> = "b_PsLocals",
-    tilesheet: gfx::TextureSampler<[f32; 4]> = "t_TileSheet",
+    position_cb: gfx::ConstantBuffer<Position> = "b_CharacterPosition",
     out_color: gfx::RenderTarget<gfx::format::Rgba8> = "Target0",
     out_depth: gfx::DepthTarget<gfx::format::DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
   }
@@ -41,6 +38,17 @@ gfx_defines! {
     position_cb: gfx::ConstantBuffer<Position> = "b_CharacterPosition",
     character_sprite_cb: gfx::ConstantBuffer<CharacterSheet> = "b_CharacterSprite",
     charactersheet: gfx::TextureSampler<[f32; 4]> = "t_CharacterSheet",
+    out_color: gfx::RenderTarget<gfx::format::Rgba8> = "Target0",
+    out_depth: gfx::DepthTarget<gfx::format::DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
+  }
+
+  pipeline tilemap_pipeline {
+    vbuf: gfx::VertexBuffer<VertexData> = (),
+    position_cb: gfx::ConstantBuffer<Position> = "b_TileMapPosition",
+    projection_cb: gfx::ConstantBuffer<Projection> = "b_VsLocals",
+    tilemap: gfx::ConstantBuffer<TileMapData> = "b_TileMap",
+    tilemap_cb: gfx::ConstantBuffer<TilemapSettings> = "b_PsLocals",
+    tilesheet: gfx::TextureSampler<[f32; 4]> = "t_TileSheet",
     out_color: gfx::RenderTarget<gfx::format::Rgba8> = "Target0",
     out_depth: gfx::DepthTarget<gfx::format::DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
   }
