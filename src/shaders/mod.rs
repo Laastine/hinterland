@@ -2,12 +2,12 @@ use gfx;
 
 gfx_defines! {
   constant TileMapData {
-      data: [f32; 4] = "data",
+    data: [f32; 4] = "data",
   }
 
   constant TilemapSettings {
-      world_size: [f32; 2] = "u_WorldSize",
-      tilesheet_size: [f32; 2] = "u_TilesheetSize",
+    world_size: [f32; 2] = "u_WorldSize",
+    tilesheet_size: [f32; 2] = "u_TilesheetSize",
   }
 
   vertex VertexData {
