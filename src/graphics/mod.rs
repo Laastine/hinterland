@@ -54,14 +54,14 @@ impl Dimensions {
   }
 }
 
-fn flip_y_axel(point: Point2<f32>) -> Point2<f32> {
+pub fn flip_y_axel(point: Point2<f32>) -> Point2<f32> {
   Point2 {
     x: point.x,
     y: RESOLUTION_Y as f32 - point.y
   }
 }
 
-fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> i32 {
+pub fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> i32 {
 
   let theta= cgmath::Angle::atan2(end_point.y - start_point.y, (end_point.x - start_point.x));
   let angle = match theta {
