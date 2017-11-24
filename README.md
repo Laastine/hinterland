@@ -34,7 +34,7 @@ cargo run
 
 Log frame render speed and run windowed mode with `cargo run --features windowed`
 
-Tested with Rust 1.21 (and nightly 1.23) with macOS and Linux
+Tested with Rust 1.22.1 (and nightly 1.23) with macOS and Linux
 
 ## Asset licences
 
