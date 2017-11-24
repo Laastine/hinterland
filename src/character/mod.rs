@@ -1,5 +1,5 @@
-use cgmath::Matrix4;
 use cgmath;
+use cgmath::Matrix4;
 use character::controls::CharacterInputState;
 use graphics::orientation::{Orientation, Stance};
 use graphics::{Dimensions, get_orientation};
@@ -176,9 +176,9 @@ impl<'a> specs::System<'a> for PreDrawSystem {
   fn run(&mut self, (mut character, camera_input, character_input, mut character_sprite, mouse_input, dim): Self::SystemData) {
     use specs::Join;
 
-    for (c, camera, ci, cs, mi) in (&mut character, &camera_input, &character_input, &mut character_sprite, &mouse_input).join() {
+    for (c, camera, ci, cs, mi/*, b*/) in (&mut character, &camera_input, &character_input, &mut character_sprite, &mouse_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      c.update(&world_to_clip, ci, cs, mi);
+      c.update(&world_to_clip, ci, cs, mi/*, b*/);
     }
   }
 }

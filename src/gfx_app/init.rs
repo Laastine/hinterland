@@ -1,3 +1,4 @@
+use bullet;
 use gfx_app::{Window, GameStatus};
 use gfx_app::renderer::{DeviceRenderer, EncoderQueue};
 use gfx_app::system::DrawSystem;
@@ -36,6 +37,7 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
   world.register::<graphics::camera::CameraInputState>();
   world.register::<character::CharacterDrawable>();
   world.register::<zombie::ZombieDrawable>();
+  world.register::<bullet::BulletDrawable>();
   world.register::<CharacterSprite>();
   world.register::<ZombieSprite>();
   world.register::<character::controls::CharacterInputState>();
@@ -46,6 +48,7 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
   world.add_resource(graphics::camera::CameraInputState::new());
   world.add_resource(character::controls::CharacterInputState::new());
   world.add_resource(MouseInputState::new());
+  world.add_resource(bullet::BulletDrawable::new());
   world.add_resource(character::CharacterDrawable::new(view_matrix));
   world.add_resource(zombie::ZombieDrawable::new(view_matrix));
   world.add_resource(zombie::ZombieDrawable::new(view_matrix));
@@ -56,6 +59,7 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
     .with(terrain::TerrainDrawable::new(view_matrix))
     .with(character::CharacterDrawable::new(view_matrix))
     .with(zombie::ZombieDrawable::new(view_matrix))
+    .with(bullet::BulletDrawable::new())
     .with(CharacterSprite::new())
     .with(ZombieSprite::new())
     .with(graphics::camera::CameraInputState::new())
@@ -91,6 +95,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     .add(terrain::PreDrawSystem::new(), "draw-prep-terrain", &["drawing"])
     .add(character::PreDrawSystem::new(), "draw-prep-character", &["drawing"])
     .add(zombie::PreDrawSystem::new(), "draw-prep-zombie", &["drawing"])
+    .add(bullet::PreDrawSystem::new(), "draw-prep-bullet", &["drawing"])
     .add(terrain_system, "terrain-system", &[])
     .add(character_system, "character-system", &[])
     .add(mouse_system, "mouse-system", &[])

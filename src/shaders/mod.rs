@@ -27,7 +27,7 @@ gfx_defines! {
   pipeline bullet_pipeline {
     vbuf: gfx::VertexBuffer<VertexData> = (),
     projection_cb: gfx::ConstantBuffer<Projection> = "b_VsLocals",
-    position_cb: gfx::ConstantBuffer<Position> = "b_CharacterPosition",
+    position_cb: gfx::ConstantBuffer<Position> = "b_BulletPosition",
     out_color: gfx::RenderTarget<gfx::format::Rgba8> = "Target0",
     out_depth: gfx::DepthTarget<gfx::format::DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
   }

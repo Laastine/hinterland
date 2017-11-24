@@ -1,6 +1,7 @@
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::renderer::EncoderQueue;
 use gfx;
+use bullet;
 use terrain;
 use character;
 use zombie;
@@ -17,6 +18,7 @@ pub struct DrawSystem<D: gfx::Device> {
   terrain_system: terrain::TerrainDrawSystem<D::Resources>,
   character_system: character::CharacterDrawSystem<D::Resources>,
   zombie_system: zombie::ZombieDrawSystem<D::Resources>,
+  bullet_system: bullet::BulletDrawSystem<D::Resources>,
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
   frames: u32,
@@ -38,6 +40,7 @@ impl<D: gfx::Device> DrawSystem<D> {
       terrain_system: terrain::TerrainDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       character_system: character::CharacterDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       zombie_system: zombie::ZombieDrawSystem::new(factory, rtv.clone(), dsv.clone()),
+      bullet_system: bullet::BulletDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       encoder_queue,
       game_time: Instant::now(),
       frames: 0,
@@ -57,9 +60,10 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
                      WriteStorage<'a, CharacterSprite>,
                      WriteStorage<'a, zombie::ZombieDrawable>,
                      WriteStorage<'a, ZombieSprite>,
+                     WriteStorage<'a, bullet::BulletDrawable>,
                      Fetch<'a, DeltaTime>);
 
-  fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut zombie, mut zombie_sprite, d): Self::SystemData) {
+  fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut zombie, mut zombie_sprite, mut bullets, d): Self::SystemData) {
     use specs::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
 
@@ -85,7 +89,7 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 16.0 / 256.0, 20.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
-    for (t, c, cs, z, zs) in (&mut terrain, &mut character, &mut character_sprite, &mut zombie, &mut zombie_sprite).join() {
+    for (t, c, cs, z, zs, b) in (&mut terrain, &mut character, &mut character_sprite, &mut zombie, &mut zombie_sprite, &mut bullets).join() {
       self.terrain_system.draw(t, &mut encoder);
 
       if self.cool_down == 0.0 {
@@ -103,6 +107,10 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
       }
       self.character_system.draw(c, cs, &mut encoder);
       self.zombie_system.draw(z, zs, &mut encoder);
+
+      if !b.bullets.is_empty() {
+        self.bullet_system.draw(b, &mut encoder);
+      }
     }
 
     if let Err(e) = self.encoder_queue.sender.send(encoder) {
