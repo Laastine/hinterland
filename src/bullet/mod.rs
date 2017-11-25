@@ -82,12 +82,12 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
 
     let vertex_data: Vec<VertexData> =
       vec![
-        VertexData::new([-2.0, -2.0, 0.0], [0.0, 1.0]),
-        VertexData::new([2.0, -2.0, 0.0], [1.0, 1.0]),
-        VertexData::new([2.0, 2.0, 0.0], [1.0, 0.0]),
-        VertexData::new([-2.0, -2.0, 0.0], [0.0, 1.0]),
-        VertexData::new([2.0, 2.0, 0.0], [1.0, 0.0]),
-        VertexData::new([-2.0, 2.0, 0.0], [0.0, 0.0]),
+        VertexData::new([-0.5, -0.5, 0.0], [0.0, 1.0]),
+        VertexData::new([0.5, -0.5, 0.0], [1.0, 1.0]),
+        VertexData::new([0.5, 0.5, 0.0], [1.0, 0.0]),
+        VertexData::new([-0.5, -0.5, 0.0], [0.0, 1.0]),
+        VertexData::new([0.5, 0.5, 0.0], [1.0, 0.0]),
+        VertexData::new([-0.5, 0.5, 0.0], [0.0, 0.0]),
       ];
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());
