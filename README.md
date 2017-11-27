@@ -9,11 +9,15 @@ Project started as SDL2, but was later converted to use gfx-rs.
 
 ## Overview
 
-* Tiled base terrain
-* Running character
-* Shooting animation with sound effect
-* Still zombie
-* Very naive collision detection on map borders
+- [x] Tiled base terrain
+- [x] Running character
+- [x] Shooting animation with sound effect
+- [x] Still zombie
+- [x] Very naive collision detection on map borders
+- [ ] Render multiple bullets
+- [ ] Bullet collision detection
+- [ ] Zombie death animation
+- [ ] Trees, builds, other assets
 
 ## Build
 
@@ -32,7 +36,7 @@ cargo run
 
 ## Development
 
-Log frame render speed and run windowed mode with `cargo run --features windowed`
+Run windowed mode with `cargo run --features windowed`
 
 Tested with Rust 1.22.1 (and nightly 1.23) with macOS and Linux
 
