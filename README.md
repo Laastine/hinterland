@@ -14,7 +14,7 @@ Project started as SDL2, but was later converted to use gfx-rs.
 - [x] Shooting animation with sound effect
 - [x] Still zombie
 - [x] Very naive collision detection on map borders
-- [ ] Render multiple bullets
+- [ ] Render multiple bullets *Currently under development*
 - [ ] Bullet collision detection
 - [ ] Zombie death animation
 - [ ] Trees, builds, other assets
@@ -38,7 +38,7 @@ cargo run
 
 Run windowed mode with `cargo run --features windowed`
 
-Tested with Rust 1.22.1 (and nightly 1.23) with macOS and Linux
+Tested with Rust 1.22.1 (and nightly 1.24) with macOS and Linux
 
 ## Asset licences
 
