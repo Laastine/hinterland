@@ -1,4 +1,5 @@
 use bullet;
+use cgmath;
 use gfx_app::{Window, GameStatus};
 use gfx_app::renderer::{DeviceRenderer, EncoderQueue};
 use gfx_app::system::DrawSystem;
@@ -27,11 +28,11 @@ pub fn run<W, D, F>(window: &mut W) -> GameStatus
   let (mut device_renderer, enc_queue) = DeviceRenderer::new(window.create_buffers(2));
 
   let mut w = specs::World::new();
-  setup_world(&mut w, window.get_viewport_size());
-  dispatch_loop(window, &mut device_renderer, &mut w, enc_queue)
+  let eid = setup_world(&mut w, window.get_viewport_size());
+  dispatch_loop(window, &mut device_renderer, &mut w, enc_queue, &eid)
 }
 
-fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
+fn setup_world(world: &mut World, viewport_size: (u32, u32)) -> specs::Entity {
   let view_matrix = Dimensions::get_view_matrix();
   world.register::<terrain::TerrainDrawable>();
   world.register::<graphics::camera::CameraInputState>();
@@ -53,18 +54,22 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
     .with(terrain::TerrainDrawable::new(view_matrix))
     .with(character::CharacterDrawable::new(view_matrix))
     .with(zombie::ZombieDrawable::new(view_matrix))
-    .with(bullet::BulletDrawable::new())
+    .with(bullet::BulletDrawable::new(cgmath::Point2 {
+      x: 0.0,
+      y: 0.0,
+    }, 90))
     .with(CharacterSprite::new())
     .with(ZombieSprite::new())
     .with(graphics::camera::CameraInputState::new())
     .with(character::controls::CharacterInputState::new())
-    .with(MouseInputState::new()).build();
+    .with(MouseInputState::new()).build()
 }
 
 fn dispatch_loop<W, D, F>(window: &mut W,
                           device_renderer: &mut DeviceRenderer<D>,
                           w: &mut World,
-                          encoder_queue: EncoderQueue<D>) -> GameStatus
+                          encoder_queue: EncoderQueue<D>,
+                          eid: &specs::Entity) -> GameStatus
   where W: Window<D, F>,
         D: gfx::Device + 'static,
         F: gfx::Factory<D::Resources>,
@@ -81,7 +86,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
 
   let (terrain_system, terrain_control) = CameraControlSystem::new();
   let (character_system, character_control) = CharacterControlSystem::new();
-  let (mouse_system, mouse_control) = MouseControlSystem::new();
+  let (mouse_system, mouse_control, ) = MouseControlSystem::new(eid);
   let controls = TilemapControls::new(terrain_control, character_control, mouse_control);
 
   let mut dispatcher = DispatcherBuilder::new()

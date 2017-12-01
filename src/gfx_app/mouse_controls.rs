@@ -1,7 +1,8 @@
 use cgmath::Point2;
 use std::sync::mpsc;
 use specs;
-use specs::{WriteStorage};
+use specs::WriteStorage;
+use bullet::BulletDrawable;
 
 type MouseEvent = mpsc::Sender<(MouseControl, Option<(f64, f64)>)>;
 
@@ -37,15 +38,17 @@ pub enum MouseControl {
 #[derive(Debug)]
 pub struct MouseControlSystem {
   queue: mpsc::Receiver<(MouseControl, Option<(f64, f64)>)>,
+  eid: specs::Entity,
   left_click_pos: Option<(f64, f64)>,
   right_click_pos: Option<(f64, f64)>,
 }
 
 impl MouseControlSystem {
-  pub fn new() -> (MouseControlSystem, MouseEvent) {
+  pub fn new(eid: &specs::Entity) -> (MouseControlSystem, MouseEvent) {
     let (tx, rx) = mpsc::channel();
     (MouseControlSystem {
       queue: rx,
+      eid: *eid,
       left_click_pos: None,
       right_click_pos: None,
     }, tx)
@@ -53,9 +56,10 @@ impl MouseControlSystem {
 }
 
 impl<'a> specs::System<'a> for MouseControlSystem {
-  type SystemData = WriteStorage<'a, MouseInputState>;
+  type SystemData = (WriteStorage<'a, MouseInputState>,
+                     WriteStorage<'a, BulletDrawable>);
 
-  fn run(&mut self, mut mouse_input: Self::SystemData) {
+  fn run(&mut self, (mut mouse_input, mut bullet): Self::SystemData) {
     use specs::Join;
 
     while let Ok((control_value, value)) = self.queue.try_recv() {
@@ -64,6 +68,10 @@ impl<'a> specs::System<'a> for MouseControlSystem {
           for mi in (&mut mouse_input).join() {
             if let Some(val) = value {
               mi.left_click_point = Some(Point2::new(val.0 as f32, val.1 as f32));
+              bullet.insert(self.eid, BulletDrawable::new(Point2 {
+                x: 0.0,
+                y: 0.0,
+              }, 90));
             } else {
               mi.left_click_point = None;
             }

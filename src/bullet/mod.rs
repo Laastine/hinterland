@@ -1,69 +1,48 @@
 use cgmath;
-use game::constants::{ASPECT_RATIO, RESOLUTION_X, RESOLUTION_Y};
+use character::controls::CharacterInputState;
+use game::constants::ASPECT_RATIO;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use gfx_app::mouse_controls::MouseInputState;
-use graphics::{Dimensions, direction, flip_y_axel};
+use graphics::Dimensions;
 use graphics::camera::CameraInputState;
 use shaders::{bullet_pipeline, VertexData, Position, Projection};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
 
-pub mod bullet;
-
 const SHADER_VERT: &'static [u8] = include_bytes!("../shaders/bullet.v.glsl");
 const SHADER_FRAG: &'static [u8] = include_bytes!("../shaders/bullet.f.glsl");
 
 #[derive(Debug, Clone)]
-pub struct Bullet {
+pub struct BulletDrawable {
+  projection: Projection,
   pub position: Position,
   pub direction: u32,
 }
 
-impl Bullet {
-  pub fn new(position: cgmath::Point2<f32>, direction: i32) -> Bullet {
-    Bullet {
-      position: Position {
-        position: [position.x, position.y],
-      },
-      direction: direction as u32
-    }
-  }
-}
-
-#[derive(Debug, Clone)]
-pub struct BulletDrawable {
-  projection: Projection,
-  pub bullets: Vec<Bullet>
-}
-
 impl BulletDrawable {
-  pub fn new() -> BulletDrawable {
+  pub fn new(position: cgmath::Point2<f32>, direction: i32) -> BulletDrawable {
     let view = Dimensions::get_view_matrix();
-
     BulletDrawable {
       projection: Projection {
         model: view.into(),
         view: view.into(),
         proj: cgmath::perspective(cgmath::Deg(75.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       },
-      bullets: vec![],
+      position: Position {
+        position: [position.x, position.y],
+      },
+      direction: direction as u32
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, mouse_input: &MouseInputState) {
+  pub fn update(&mut self, world_to_clip: &Projection, character: &CharacterInputState) {
     self.projection = *world_to_clip;
-    if let Some(end_point_gl) = mouse_input.left_click_point {
-      let start_point = cgmath::Point2 {
-        x: (RESOLUTION_X / 2) as f32,
-        y: (RESOLUTION_Y / 2) as f32
-      };
-      let angle_in_degrees = direction(start_point, flip_y_axel(end_point_gl));
-      self.bullets.push(Bullet::new(cgmath::Point2 {
-        x: 0.0,
-        y: 0.0
-      }, angle_in_degrees));
-    }
+    self.position = Position {
+      position: [
+        self.position.position[0] + character.x_movement + 5.0,
+        self.position.position[1] + character.y_movement
+      ]
+    };
   }
 }
 
@@ -117,6 +96,7 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
+    encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     self.bundle.encode(encoder);
   }
 }
@@ -132,16 +112,16 @@ impl PreDrawSystem {
 
 impl<'a> specs::System<'a> for PreDrawSystem {
   type SystemData = (ReadStorage<'a, CameraInputState>,
-                      WriteStorage<'a, BulletDrawable>,
-                     ReadStorage<'a, MouseInputState>,
+                     WriteStorage<'a, BulletDrawable>,
+                     ReadStorage<'a, CharacterInputState>,
                      Fetch<'a, Dimensions>);
 
-  fn run(&mut self, (camera_input, mut bullet, mouse_input, dim): Self::SystemData) {
+  fn run(&mut self, (camera_input, mut bullet, character, dim): Self::SystemData) {
     use specs::Join;
 
-    for (camera, b, mi) in (&camera_input, &mut bullet, &mouse_input).join() {
+    for (camera, b, c) in (&camera_input, &mut bullet, &character).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      b.update(&world_to_clip, mi);
+      b.update(&world_to_clip, c);
     }
   }
 }
