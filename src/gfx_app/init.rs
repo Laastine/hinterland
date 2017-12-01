@@ -48,12 +48,6 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
   world.add_resource(graphics::camera::CameraInputState::new());
   world.add_resource(character::controls::CharacterInputState::new());
   world.add_resource(MouseInputState::new());
-  world.add_resource(bullet::BulletDrawable::new());
-  world.add_resource(character::CharacterDrawable::new(view_matrix));
-  world.add_resource(zombie::ZombieDrawable::new(view_matrix));
-  world.add_resource(zombie::ZombieDrawable::new(view_matrix));
-  world.add_resource(CharacterSprite::new());
-  world.add_resource(ZombieSprite::new());
   world.add_resource(DeltaTime(0.0));
   world.create_entity()
     .with(terrain::TerrainDrawable::new(view_matrix))
