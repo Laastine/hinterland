@@ -9,8 +9,8 @@ use shaders::{bullet_pipeline, VertexData, Position, Projection};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
 
-const SHADER_VERT: &'static [u8] = include_bytes!("../shaders/bullet.v.glsl");
-const SHADER_FRAG: &'static [u8] = include_bytes!("../shaders/bullet.f.glsl");
+const SHADER_VERT: &[u8] = include_bytes!("../shaders/bullet.v.glsl");
+const SHADER_FRAG: &[u8] = include_bytes!("../shaders/bullet.f.glsl");
 
 #[derive(Debug, Clone)]
 pub struct BulletDrawable {

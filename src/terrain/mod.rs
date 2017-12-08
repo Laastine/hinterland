@@ -65,8 +65,8 @@ impl specs::Component for TerrainDrawable {
   type Storage = specs::HashMapStorage<TerrainDrawable>;
 }
 
-const SHADER_VERT: &'static [u8] = include_bytes!("../shaders/terrain.v.glsl");
-const SHADER_FRAG: &'static [u8] = include_bytes!("../shaders/terrain.f.glsl");
+const SHADER_VERT: &[u8] = include_bytes!("../shaders/terrain.v.glsl");
+const SHADER_FRAG: &[u8] = include_bytes!("../shaders/terrain.f.glsl");
 
 pub struct TerrainDrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, tilemap_pipeline::Data<R>>,

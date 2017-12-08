@@ -18,8 +18,8 @@ use specs::{Fetch, ReadStorage, WriteStorage};
 mod audio;
 pub mod controls;
 
-const SHADER_VERT: &'static [u8] = include_bytes!("../shaders/character.v.glsl");
-const SHADER_FRAG: &'static [u8] = include_bytes!("../shaders/character.f.glsl");
+const SHADER_VERT: &[u8] = include_bytes!("../shaders/character.v.glsl");
+const SHADER_FRAG: &[u8] = include_bytes!("../shaders/character.f.glsl");
 
 pub struct CharacterDrawable {
   projection: Projection,

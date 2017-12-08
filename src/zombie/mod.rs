@@ -13,8 +13,8 @@ use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
 use data;
 
-const SHADER_VERT: &'static [u8] = include_bytes!("../shaders/character.v.glsl");
-const SHADER_FRAG: &'static [u8] = include_bytes!("../shaders/character.f.glsl");
+const SHADER_VERT: &[u8] = include_bytes!("../shaders/character.v.glsl");
+const SHADER_FRAG: &[u8] = include_bytes!("../shaders/character.f.glsl");
 
 const ZOMBIE_START_POSITION: (f32, f32) = (256.0, -32.0);
 
