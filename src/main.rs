@@ -25,6 +25,7 @@ mod zombie;
 
 fn main() {
   let mut window = gfx_app::GlutinWindow::new();
+  #[allow(unknown_lints)]
   #[allow(never_loop)]
   loop {
     match gfx_app::init::run(&mut window) {
