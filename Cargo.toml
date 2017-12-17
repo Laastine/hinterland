@@ -4,8 +4,8 @@ version = "0.2.0"
 authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 
 [dependencies]
-cgmath = "0.15"
-gfx = "0.16.1"
+cgmath = "0.15.0"
+gfx = "0.16.2"
 gfx_device_gl = "0.14.1"
 gfx_window_glutin = "0.17.0"
 glutin = "0.9.1"
