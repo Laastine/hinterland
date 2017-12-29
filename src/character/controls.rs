@@ -84,7 +84,9 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
             ci.y_movement += y;
             camera.y_pos -= y;
             ci.orientation =
-              if y < 0.0 { Orientation::Up } else if y > 0.0 { Orientation::Down } else { Orientation::Still };
+              if y < 0.0 { Orientation::Up }
+              else if y > 0.0 { Orientation::Down }
+              else { Orientation::Still };
           }
         }
       }
@@ -112,7 +114,9 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
             ci.x_movement += x;
             camera.x_pos += x;
             ci.orientation =
-              if x < 0.0 { Orientation::Right } else if x > 0.0 { Orientation::Left } else { Orientation::Still };
+              if x < 0.0 { Orientation::Right }
+              else if x > 0.0 { Orientation::Left }
+              else { Orientation::Still };
           }
         }
       }
