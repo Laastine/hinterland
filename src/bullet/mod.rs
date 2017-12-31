@@ -12,10 +12,14 @@ use specs::{Fetch, ReadStorage, WriteStorage};
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/bullet.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/bullet.f.glsl");
 
+const BULLET_SPEED: f32 = 5.0;
+
 #[derive(Debug, Clone)]
 pub struct BulletDrawable {
   projection: Projection,
   pub position: Position,
+  previous_position: Position,
+  offset_delta: Position,
   pub direction: u32,
 }
 
@@ -29,20 +33,43 @@ impl BulletDrawable {
         proj: cgmath::perspective(cgmath::Deg(75.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       },
       position: Position {
-        position: [position.x, position.y],
+        position: [position.x, position.y + 15.0],
+      },
+      previous_position: Position {
+        position: [0.0, 0.0],
+      },
+      offset_delta: Position {
+        position: [0.0, 0.0],
       },
       direction: direction as u32
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, character: &CharacterInputState) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState) {
     self.projection = *world_to_clip;
-    self.position = Position {
-      position: [
-        self.position.position[0] + character.x_movement + 5.0,
-        self.position.position[1] + character.y_movement
-      ]
+
+    self.offset_delta =
+      if ci.x_movement == self.previous_position.position[0] || ci.y_movement == self.previous_position.position[1] {
+        Position {
+          position: [ci.x_movement - self.previous_position.position[0], ci.y_movement - self.previous_position.position[1]]
+        }
+      } else {
+        Position {
+          position: [self.offset_delta.position[0], self.offset_delta.position[1]]
+        }
+      };
+
+    self.previous_position = Position {
+      position: [ci.x_movement, ci.y_movement],
     };
+
+    self.position =
+      Position {
+        position: [
+          self.position.position[0] + self.offset_delta.position[0] + BULLET_SPEED,
+          self.position.position[1] + self.offset_delta.position[1]
+        ]
+      };
   }
 }
 
@@ -116,12 +143,12 @@ impl<'a> specs::System<'a> for PreDrawSystem {
                      ReadStorage<'a, CharacterInputState>,
                      Fetch<'a, Dimensions>);
 
-  fn run(&mut self, (camera_input, mut bullet, character, dim): Self::SystemData) {
+  fn run(&mut self, (camera_input, mut bullet, character_input, dim): Self::SystemData) {
     use specs::Join;
 
-    for (camera, b, c) in (&camera_input, &mut bullet, &character).join() {
+    for (camera, b, ci) in (&camera_input, &mut bullet, &character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      b.update(&world_to_clip, c);
+      b.update(&world_to_clip, ci);
     }
   }
 }
