@@ -47,10 +47,9 @@ impl ZombieDrawable {
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState) {
     self.projection = *world_to_clip;
     self.stance = Stance::Still;
-    let new_position = Position {
+    self.position = Position {
       position: [ZOMBIE_START_POSITION.0 + ci.x_movement, ZOMBIE_START_POSITION.1 + ci.y_movement]
     };
-    self.position = new_position;
   }
 }
 
