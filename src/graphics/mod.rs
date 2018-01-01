@@ -76,6 +76,14 @@ pub fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> i32 {
   anglei.floor() as i32
 }
 
+pub fn direction_movement(direction: i32) -> Point2<f32> {
+  
+  Point2 {
+    x: 0.0,
+    y: 0.0
+  }
+}
+
 pub fn get_orientation(mouse_input: &MouseInputState) -> Orientation {
   if let Some(end_point_gl) = mouse_input.left_click_point {
     let start_point = Point2 {

@@ -63,6 +63,8 @@ impl BulletDrawable {
       position: [ci.x_movement, ci.y_movement],
     };
 
+    let bullet_movement =
+
     self.position =
       Position {
         position: [
