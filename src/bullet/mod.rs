@@ -3,7 +3,7 @@ use character::controls::CharacterInputState;
 use game::constants::ASPECT_RATIO;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::Dimensions;
+use graphics::{Dimensions, direction_movement};
 use graphics::camera::CameraInputState;
 use shaders::{bullet_pipeline, VertexData, Position, Projection};
 use specs;
@@ -63,13 +63,13 @@ impl BulletDrawable {
       position: [ci.x_movement, ci.y_movement],
     };
 
-    let bullet_movement =
+    let bullet_movement = direction_movement(self.direction);
 
     self.position =
       Position {
         position: [
-          self.position.position[0] + self.offset_delta.position[0] + BULLET_SPEED,
-          self.position.position[1] + self.offset_delta.position[1]
+          self.position.position[0] + self.offset_delta.position[0] + bullet_movement.x + BULLET_SPEED,
+          self.position.position[1] + self.offset_delta.position[1] + bullet_movement.y
         ]
       };
   }

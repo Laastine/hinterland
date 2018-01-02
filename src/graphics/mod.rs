@@ -76,8 +76,8 @@ pub fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> i32 {
   anglei.floor() as i32
 }
 
-pub fn direction_movement(direction: i32) -> Point2<f32> {
-  
+pub fn direction_movement(direction: u32) -> Point2<f32> {
+  println!("Implement direction x,y calculation {}", direction);
   Point2 {
     x: 0.0,
     y: 0.0
