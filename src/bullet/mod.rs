@@ -8,6 +8,7 @@ use graphics::camera::CameraInputState;
 use shaders::{bullet_pipeline, VertexData, Position, Projection};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
+use std;
 
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/bullet.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/bullet.f.glsl");
@@ -49,7 +50,7 @@ impl BulletDrawable {
     self.projection = *world_to_clip;
 
     self.offset_delta =
-      if ci.x_movement == self.previous_position.position[0] || ci.y_movement == self.previous_position.position[1] {
+      if (ci.x_movement - self.previous_position.position[0]).abs() > std::f32::EPSILON || (ci.y_movement - self.previous_position.position[1]).abs() > std::f32::EPSILON {
         Position {
           position: [ci.x_movement - self.previous_position.position[0], ci.y_movement - self.previous_position.position[1]]
         }
