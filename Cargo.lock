@@ -1182,7 +1182,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "zombie-shooter"
+name = "zombie_shooter"
 version = "0.2.0"
 dependencies = [
  "cgmath 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",

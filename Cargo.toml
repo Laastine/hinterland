@@ -1,7 +1,15 @@
 [package]
-name = "zombie-shooter"
+name = "zombie_shooter"
 version = "0.2.0"
 authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
+
+[lib]
+name = "zombie_shooter_lib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "zombie_shooter_bin"
+path = "src/main.rs"
 
 [dependencies]
 cgmath = "0.15.0"

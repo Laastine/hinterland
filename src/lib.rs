@@ -1,0 +1,39 @@
+extern crate json;
+extern crate tiled;
+
+extern crate cgmath;
+#[macro_use]
+extern crate gfx;
+extern crate specs;
+extern crate genmesh;
+extern crate gfx_device_gl;
+extern crate gfx_window_glutin;
+extern crate glutin;
+extern crate image;
+extern crate rodio;
+
+mod bullet;
+mod gfx_app;
+mod game;
+mod data;
+mod critter;
+pub mod graphics;
+mod terrain;
+mod character;
+mod shaders;
+mod zombie;
+
+pub fn testi(foo: i32) -> i32 {
+  foo + 2
+}
+
+pub fn main() {
+  let mut window = gfx_app::GlutinWindow::new();
+  #[allow(unknown_lints)]
+  #[allow(never_loop)]
+  loop {
+    match gfx_app::init::run(&mut window) {
+      gfx_app::GameStatus::Quit => break,
+    }
+  }
+}
