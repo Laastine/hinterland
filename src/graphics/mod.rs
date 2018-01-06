@@ -2,13 +2,12 @@ use gfx::handle::ShaderResourceView;
 use gfx::{texture, Factory, Resources};
 use gfx::format::Rgba8;
 use cgmath;
-use cgmath::{Matrix4, Point3, Vector3, Point2, Rad};
+use cgmath::{Angle, Deg, Matrix4, Point3, Vector3, Point2, Rad};
 use game::constants::{TILE_WIDTH, RESOLUTION_X, RESOLUTION_Y, VIEW_DISTANCE};
 use graphics::orientation::Orientation;
 use gfx_app::mouse_controls::MouseInputState;
 use image;
 use shaders::Projection;
-use std::f32::consts::PI;
 use std::io::Cursor;
 
 pub mod camera;
@@ -62,26 +61,25 @@ pub fn flip_y_axel(point: Point2<f32>) -> Point2<f32> {
 }
 
 pub fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> i32 {
-
-  let theta= cgmath::Angle::atan2(end_point.y - start_point.y, (end_point.x - start_point.x));
+  let theta= cgmath::Angle::atan2(end_point.y - start_point.y, end_point.x - start_point.x);
   let angle = match theta {
-    Rad(i) => i
+    Deg(i) => i
   };
-  let rad_to_deg = 180.0 / PI;
-  let anglei = if angle < 0.0 {
-    (angle + 2.0 * PI) * rad_to_deg
-  } else {
-    angle * rad_to_deg
-  };
-  anglei.floor() as i32
+  let a = angle.floor() as i32;
+  if a < 0 { 360 + a } else { a }
 }
 
 pub fn direction_movement(direction: u32) -> Point2<f32> {
   println!("Implement direction x,y calculation {}", direction);
-  Point2 {
-    x: 0.0,
-    y: 0.0
-  }
+
+  let f_direction = (direction as f32 - 360.0).abs() + 90.0;
+
+  let foo = Point2 {
+    x: Angle::sin(Rad(f_direction)),
+    y: Angle::cos(Rad(f_direction)),
+  };
+  print!("movement {:?}", foo);
+  foo
 }
 
 pub fn get_orientation(mouse_input: &MouseInputState) -> Orientation {
