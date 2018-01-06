@@ -1,7 +1,9 @@
 use cgmath::Point2;
+use character::CharacterDrawable;
+use graphics::direction;
 use std::sync::mpsc;
 use specs;
-use specs::WriteStorage;
+use specs::{ReadStorage, WriteStorage};
 use bullet::BulletDrawable;
 
 type MouseEvent = mpsc::Sender<(MouseControl, Option<(f64, f64)>)>;
@@ -57,21 +59,23 @@ impl MouseControlSystem {
 
 impl<'a> specs::System<'a> for MouseControlSystem {
   type SystemData = (WriteStorage<'a, MouseInputState>,
+                     ReadStorage<'a, CharacterDrawable>,
                      WriteStorage<'a, BulletDrawable>);
 
-  fn run(&mut self, (mut mouse_input, mut bullet): Self::SystemData) {
+  fn run(&mut self, (mut mouse_input, character, mut bullet): Self::SystemData) {
     use specs::Join;
 
     while let Ok((control_value, value)) = self.queue.try_recv() {
       match control_value {
         MouseControl::LeftClick => {
-          for mi in (&mut mouse_input).join() {
+          for (mi, c) in (&mut mouse_input, &character).join() {
             if let Some(val) = value {
               mi.left_click_point = Some(Point2::new(val.0 as f32, val.1 as f32));
+              let direction = direction(Point2::new(c.position.position[0], c.position.position[1]), Point2::new(val.0 as f32, val.1 as f32));
               bullet.insert(self.eid, BulletDrawable::new(Point2 {
                 x: 0.0,
                 y: 0.0,
-              }, 90));
+              }, direction));
             } else {
               mi.left_click_point = None;
             }
