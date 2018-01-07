@@ -18,8 +18,8 @@ pub struct DeltaTime(pub f64);
 
 #[derive(Debug, Clone)]
 pub struct Dimensions {
-  width: u32,
-  height: u32,
+  pub width: u32,
+  pub height: u32,
 }
 
 impl Dimensions {
