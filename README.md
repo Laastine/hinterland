@@ -7,17 +7,8 @@ Project started as SDL2, but was later converted to use gfx-rs.
 
 <img src="assets/zombie-shooter-gl.gif" alt="preview">
 
-## Overview
-
-- [x] Tiled base terrain
-- [x] Running character
-- [x] Shooting animation with sound effect
-- [x] Still zombie
-- [x] Very naive collision detection on map borders
-- [ ] Render multiple bullets *Currently under development*
-- [ ] Bullet collision detection
-- [ ] Zombie death animation
-- [ ] Trees, builds, other assets
+## Project overview
+- Project [wiki](https://github.com/Laastine/zombie-shooter/projects/1)
 
 ## Build
 
