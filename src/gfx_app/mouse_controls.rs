@@ -1,6 +1,6 @@
 use cgmath::Point2;
 use character::CharacterDrawable;
-use graphics::direction;
+use graphics::{direction, direction_movement};
 use std::sync::mpsc;
 use specs;
 use specs::{ReadStorage, WriteStorage};
@@ -71,11 +71,11 @@ impl<'a> specs::System<'a> for MouseControlSystem {
           for (mi, c) in (&mut mouse_input, &character).join() {
             if let Some(val) = value {
               mi.left_click_point = Some(Point2::new(val.0 as f32, val.1 as f32));
-              let direction = direction(Point2::new(c.position.position[0], c.position.position[1]), Point2::new(val.0 as f32, val.1 as f32));
+              let movement_direction = direction_movement(direction(Point2::new(c.position.position[0], c.position.position[1]), Point2::new(val.0 as f32, val.1 as f32)));
               bullet.insert(self.eid, BulletDrawable::new(Point2 {
                 x: 0.0,
                 y: 0.0,
-              }, direction));
+              }, movement_direction));
             } else {
               mi.left_click_point = None;
             }

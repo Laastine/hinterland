@@ -57,7 +57,10 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) -> specs::Entity {
     .with(bullet::BulletDrawable::new(cgmath::Point2 {
       x: 0.0,
       y: 0.0,
-    }, 0))
+    }, cgmath::Point2 {
+      x: 1.0,
+      y: 0.0,
+    }))
     .with(CharacterSprite::new())
     .with(ZombieSprite::new())
     .with(graphics::camera::CameraInputState::new())

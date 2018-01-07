@@ -1,9 +1,10 @@
 use cgmath;
+use cgmath::Point2;
 use character::controls::CharacterInputState;
 use game::constants::ASPECT_RATIO;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{Dimensions, direction_movement};
+use graphics::Dimensions;
 use graphics::camera::CameraInputState;
 use shaders::{bullet_pipeline, VertexData, Position, Projection};
 use specs;
@@ -21,11 +22,11 @@ pub struct BulletDrawable {
   pub position: Position,
   previous_position: Position,
   offset_delta: Position,
-  pub direction: u32,
+  pub movement_direction: Point2<f32>,
 }
 
 impl BulletDrawable {
-  pub fn new(position: cgmath::Point2<f32>, direction: i32) -> BulletDrawable {
+  pub fn new(position: cgmath::Point2<f32>, movement_direction: Point2<f32>) -> BulletDrawable {
     let view = Dimensions::get_view_matrix();
     BulletDrawable {
       projection: Projection {
@@ -42,7 +43,7 @@ impl BulletDrawable {
       offset_delta: Position {
         position: [0.0, 0.0],
       },
-      direction: direction as u32
+      movement_direction
     }
   }
 
@@ -64,13 +65,11 @@ impl BulletDrawable {
       position: [ci.x_movement, ci.y_movement],
     };
 
-    let bullet_movement = direction_movement(self.direction);
-
     self.position =
       Position {
         position: [
-          self.position.position[0] + self.offset_delta.position[0] + bullet_movement.x + BULLET_SPEED,
-          self.position.position[1] + self.offset_delta.position[1] + bullet_movement.y
+          self.position.position[0] + self.offset_delta.position[0] + (self.movement_direction.x * BULLET_SPEED),
+          self.position.position[1] + self.offset_delta.position[1] + (self.movement_direction.y * BULLET_SPEED)
         ]
       };
   }
