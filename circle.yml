@@ -19,4 +19,4 @@ test:
   override:
     - LD_LIBRARY_PATH=~/rust/lib/ cargo clippy
     - ./scripts/install-rust.sh $RUST_HOME default
-    - cargo build
+    - cargo test
