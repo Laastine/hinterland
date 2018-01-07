@@ -38,7 +38,7 @@ cargo run
 
 Run windowed mode with `cargo run --features windowed`
 
-Tested with Rust 1.23 (and nightly 1.24) with macOS and Linux
+Tested with Rust 1.23 (and nightly 1.25) with macOS and Linux
 
 ## Asset licences
 
