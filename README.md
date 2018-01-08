@@ -8,7 +8,8 @@ Project started as SDL2, but was later converted to use gfx-rs.
 <img src="assets/zombie-shooter-gl.gif" alt="preview">
 
 ## Project overview
-- Project [wiki](https://github.com/Laastine/zombie-shooter/projects/1)
+- [Project wiki](https://github.com/Laastine/zombie-shooter/projects/1)
+- [Blog post](https://laastine.kapsi.fi/code/2018/01/07/zombie-shooter.html)
 
 ## Build
 
