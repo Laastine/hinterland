@@ -72,11 +72,10 @@ impl<'a> specs::System<'a> for MouseControlSystem {
         MouseControl::LeftClick => {
           for (mi, ca) in (&mut mouse_input, &camera).join() {
             if let Some(val) = value {
-              mi.left_click_point = Some(Point2::new(val.0 as f32, val.1 as f32));
               let start_point =  Point2::new(dim.width as f32 / 2.0, dim.height as f32 / 2.0);
               let end_point = Point2::new(val.0 as f32, val.1 as f32);
-              let direction = direction(start_point, end_point);
-              let movement_direction = direction_movement(direction);
+              mi.left_click_point = Some(end_point);
+              let movement_direction = direction_movement(direction(start_point, end_point));
               bullet.insert(self.eid, BulletDrawable::new(Point2 {x: -ca.x_pos, y: ca.y_pos}, movement_direction));
             } else {
               mi.left_click_point = None;
