@@ -17,6 +17,8 @@ pub struct MouseInputState {
   pub right_click_point: Option<Point2<f32>>,
 }
 
+#[allow(unknown_lints)]
+#[allow(new_without_default_derive)]
 impl MouseInputState {
   pub fn new() -> MouseInputState {
     MouseInputState {
