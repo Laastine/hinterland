@@ -23,10 +23,6 @@ mod character;
 mod shaders;
 mod zombie;
 
-pub fn testi(foo: i32) -> i32 {
-  foo + 2
-}
-
 pub fn main() {
   let mut window = gfx_app::GlutinWindow::new();
   #[allow(unknown_lints)]
