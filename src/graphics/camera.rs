@@ -10,8 +10,7 @@ pub struct CameraInputState {
   pub y_pos: f32,
 }
 
-#[allow(unknown_lints)]
-#[allow(new_without_default_derive)]
+#[cfg_attr(feature = "cargo-clippy", allow(new_without_default_derive))]
 impl CameraInputState {
   pub fn new() -> CameraInputState {
     CameraInputState {

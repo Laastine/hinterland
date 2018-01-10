@@ -25,8 +25,7 @@ mod zombie;
 
 pub fn main() {
   let mut window = gfx_app::GlutinWindow::new();
-  #[allow(unknown_lints)]
-  #[allow(never_loop)]
+  #[cfg_attr(feature = "cargo-clippy", allow(never_loop))]
   loop {
     match gfx_app::init::run(&mut window) {
       gfx_app::GameStatus::Quit => break,
