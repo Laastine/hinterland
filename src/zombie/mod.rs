@@ -1,10 +1,11 @@
+use bullet::BulletDrawable;
 use cgmath;
 use cgmath::Matrix4;
 use character::controls::CharacterInputState;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use graphics::orientation::{Orientation, Stance};
-use graphics::{Dimensions, load_texture};
+use graphics::{Dimensions, load_texture, overlaps};
 use graphics::camera::CameraInputState;
 use game::constants::{ASPECT_RATIO, ZOMBIESHEET_TOTAL_WIDTH, SPRITE_OFFSET, STILL_SPRITE_OFFSET};
 use critter::{CritterData, ZombieSprite};
@@ -21,7 +22,7 @@ const ZOMBIE_START_POSITION: (f32, f32) = (256.0, -32.0);
 #[derive(Debug)]
 pub struct ZombieDrawable {
   projection: Projection,
-  position: Position,
+  pub position: Position,
   orientation: Orientation,
   pub stance: Stance,
   direction: Orientation,
@@ -44,12 +45,15 @@ impl ZombieDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, bullet: &BulletDrawable) {
     self.projection = *world_to_clip;
     self.stance = Stance::Still;
     self.position = Position {
       position: [ZOMBIE_START_POSITION.0 + ci.x_movement, ZOMBIE_START_POSITION.1 + ci.y_movement]
     };
+    if overlaps(self.position, bullet.position, 80.0, 80.0) {
+      println!("HIT");
+    }
   }
 }
 
@@ -155,15 +159,16 @@ impl<'a> specs::System<'a> for PreDrawSystem {
   type SystemData = (WriteStorage<'a, ZombieDrawable>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
+                     ReadStorage<'a, BulletDrawable>,
                      Fetch<'a, Dimensions>);
 
 
-  fn run(&mut self, (mut zombie, camera_input, character_input, dim): Self::SystemData) {
+  fn run(&mut self, (mut zombie, camera_input, character_input, bullet, dim): Self::SystemData) {
     use specs::Join;
 
-    for (z, camera, ci) in (&mut zombie, &camera_input, &character_input).join() {
+    for (z, camera, ci, b) in (&mut zombie, &camera_input, &character_input, &bullet).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      z.update(&world_to_clip, ci);
+      z.update(&world_to_clip, ci, b);
     }
   }
 }
