@@ -7,7 +7,7 @@ use game::constants::{TILE_WIDTH, RESOLUTION_X, RESOLUTION_Y, VIEW_DISTANCE};
 use graphics::orientation::Orientation;
 use gfx_app::mouse_controls::MouseInputState;
 use image;
-use shaders::Projection;
+use shaders::{Position ,Projection};
 use std::io::Cursor;
 
 pub mod camera;
@@ -99,6 +99,13 @@ pub fn get_orientation(mouse_input: &MouseInputState) -> Orientation {
   } else {
     Orientation::Right
   }
+}
+
+pub fn overlaps(a: Position, b: Position, width: f32, height: f32) -> bool {
+  a.position[0] < b.position[0] + width &&
+    a.position[0] + width > b.position[0] &&
+    a.position[1] < b.position[1] + height &&
+    a.position[1] + a.position[1] > b.position[1]
 }
 
 fn is_within_map_borders(point: Point2<f64>) -> bool {
