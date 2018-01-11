@@ -55,7 +55,7 @@ pub fn load_character() -> Vec<CritterData> {
   let character_json = read_sprite_file(CHARACTER_JSON_PATH);
   let character = match json::parse(&character_json) {
     Ok(res) => res,
-    Err(e) => panic!("Character JSON parse error {:?}", e),
+    Err(e) => panic!("Character {} parse error {:?}", CHARACTER_JSON_PATH, e),
   };
   for x in 0..16 {
     for y in 0..14 {
@@ -86,10 +86,10 @@ pub fn load_character() -> Vec<CritterData> {
 
 pub fn load_zombie() -> Vec<CritterData> {
   let mut sprites = Vec::with_capacity(128);
-  let character_json = read_sprite_file(ZOMBIE_JSON_PATH);
-  let zombie = match json::parse(&character_json) {
+  let zombie_json = read_sprite_file(ZOMBIE_JSON_PATH);
+  let zombie = match json::parse(&zombie_json) {
     Ok(res) => res,
-    Err(e) => panic!("Character JSON parse error {:?}", e),
+    Err(e) =>  panic!("Zombie {} parse error {:?}", ZOMBIE_JSON_PATH, e),
   };
   for x in 0..7 {
     for y in 0..4 {
