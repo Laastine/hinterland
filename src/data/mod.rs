@@ -5,7 +5,7 @@ use std::path::Path;
 use std::vec::Vec;
 use std::io::BufReader;
 use json;
-use game::constants::{CHARACTER_JSON_PATH, CHARACTER_BUF_LENGTH, ZOMBIE_JSON_PATH};
+use game::constants::{CHARACTER_JSON_PATH, CHARACTER_BUF_LENGTH, ZOMBIE_DEATH_JSON_PATH, ZOMBIE_JSON_PATH};
 use tiled::Map;
 use tiled;
 use critter::CritterData;
@@ -111,6 +111,38 @@ pub fn load_zombie() -> Vec<CritterData> {
         zombie["frames"][key]["frame"]["y"].as_f32().unwrap(),
         zombie["frames"][key]["frame"]["w"].as_f32().unwrap(),
         zombie["frames"][key]["frame"]["h"].as_f32().unwrap()
+      ]));
+    }
+  }
+  sprites
+}
+
+pub fn load_zombie_death() -> Vec<CritterData> {
+  let mut sprites = Vec::with_capacity(128);
+  let zombie_death_json = read_sprite_file(ZOMBIE_DEATH_JSON_PATH);
+  let zombie_death = match json::parse(&zombie_death_json) {
+    Ok(res) => res,
+    Err(e) => panic!("Zombie {} parse error {:?}", ZOMBIE_DEATH_JSON_PATH, e),
+  };
+  for x in 0..7 {
+    for y in 0..7 {
+      let key = &format!("critical_{}_{}", x, y);
+      sprites.push(CritterData::new([
+        zombie_death["frames"][key]["frame"]["x"].as_f32().unwrap(),
+        zombie_death["frames"][key]["frame"]["y"].as_f32().unwrap(),
+        zombie_death["frames"][key]["frame"]["w"].as_f32().unwrap(),
+        zombie_death["frames"][key]["frame"]["h"].as_f32().unwrap()
+      ]));
+    }
+  }
+  for x in 0..7 {
+    for y in 0..5 {
+      let key = &format!("normal_{}_{}", x, y);
+      sprites.push(CritterData::new([
+        zombie_death["frames"][key]["frame"]["x"].as_f32().unwrap(),
+        zombie_death["frames"][key]["frame"]["y"].as_f32().unwrap(),
+        zombie_death["frames"][key]["frame"]["w"].as_f32().unwrap(),
+        zombie_death["frames"][key]["frame"]["h"].as_f32().unwrap()
       ]));
     }
   }
