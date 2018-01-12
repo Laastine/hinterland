@@ -31,17 +31,21 @@ impl Display for Orientation {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Stance {
-  Walking = 0,
-  Firing = 1,
-  Still = 2,
+  Walking,
+  Firing,
+  Still,
+  NormalDeath,
+  CriticalDeath,
 }
 
 impl Display for Stance {
   fn fmt(&self, f: &mut Formatter) -> Result {
     match *self {
-      Stance::Walking => write!(f, "0"),
-      Stance::Firing => write!(f, "1"),
-      Stance::Still => write!(f, "2"),
+      Stance::Walking => write!(f, "Walking"),
+      Stance::Firing => write!(f, "Firing"),
+      Stance::Still => write!(f, "Still"),
+      Stance::NormalDeath => write!(f, "NormalDeath"),
+      Stance::CriticalDeath => write!(f, "CriticalDeath"),
     }
   }
 }
