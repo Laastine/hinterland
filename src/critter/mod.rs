@@ -71,6 +71,12 @@ impl ZombieSprite {
       self.zombie_death_idx += 1;
     }
   }
+
+  pub fn update_critical_death(&mut self) {
+    if self.zombie_death_idx < 7 {
+      self.zombie_death_idx += 1;
+    }
+  }
 }
 
 impl specs::Component for ZombieSprite {

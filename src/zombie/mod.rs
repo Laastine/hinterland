@@ -2,17 +2,18 @@ use bullet::BulletDrawable;
 use cgmath;
 use cgmath::Matrix4;
 use character::controls::CharacterInputState;
+use critter::{CritterData, ZombieSprite};
+use data;
+use game::get_random_bool;
+use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, ZOMBIE_STILL_SPRITE_OFFSET, ZOMBIESHEET_TOTAL_WIDTH};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use graphics::orientation::{Orientation, Stance};
 use graphics::{Dimensions, load_texture, overlaps};
 use graphics::camera::CameraInputState;
-use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, ZOMBIE_STILL_SPRITE_OFFSET, ZOMBIESHEET_TOTAL_WIDTH};
-use critter::{CritterData, ZombieSprite};
 use shaders::{critter_pipeline, VertexData, CharacterSheet, Position, Projection};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
-use data;
 
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/character.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/character.f.glsl");
@@ -51,7 +52,12 @@ impl ZombieDrawable {
       position: [ZOMBIE_START_POSITION.0 + ci.x_movement, ZOMBIE_START_POSITION.1 + ci.y_movement]
     };
     if overlaps(self.position, bullet.position, 80.0, 80.0) {
-      self.stance = Stance::NormalDeath;
+      self.stance =
+        if get_random_bool() {
+          Stance::NormalDeath
+        } else {
+          Stance::CriticalDeath
+        };
     }
   }
 }
@@ -121,6 +127,9 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
         (&self.data[sprite_idx], sprite_idx)
       } else if drawable.orientation != Orientation::Still && drawable.stance == Stance::NormalDeath {
         let sprite_idx = (drawable.direction as usize * 6 + zombie.zombie_death_idx + NORMAL_DEATH_SPRITE_OFFSET) as usize;
+        (&self.data[sprite_idx], sprite_idx)
+      } else if drawable.orientation != Orientation::Still && drawable.stance == Stance::CriticalDeath {
+        let sprite_idx = (drawable.direction as usize * 8 + zombie.zombie_death_idx) as usize;
         (&self.data[sprite_idx], sprite_idx)
       } else {
         drawable.direction = drawable.orientation;
