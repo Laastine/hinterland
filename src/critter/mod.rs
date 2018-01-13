@@ -39,12 +39,14 @@ impl specs::Component for CharacterSprite {
 #[derive(Debug)]
 pub struct ZombieSprite {
   pub zombie_idx: usize,
+  pub zombie_death_idx: usize,
 }
 
 impl ZombieSprite {
   pub fn new() -> ZombieSprite {
     ZombieSprite {
       zombie_idx: 0,
+      zombie_death_idx: 0
     }
   }
 
@@ -61,6 +63,12 @@ impl ZombieSprite {
       self.zombie_idx += 1;
     } else {
       self.zombie_idx = 0;
+    }
+  }
+
+  pub fn update_normal_death(&mut self) {
+    if self.zombie_death_idx < 5 {
+      self.zombie_death_idx += 1;
     }
   }
 }

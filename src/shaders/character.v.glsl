@@ -11,7 +11,9 @@ uniform b_VsLocals {
 };
 
 uniform b_CharacterSprite {
-   float a_div;
+   float x_div;
+   float y_div;
+   int a_row;
    float a_index;
 };
 
@@ -22,8 +24,12 @@ uniform b_CharacterPosition {
 void main() {
   v_BufPos = vec2(a_BufPos);
 
-  v_BufPos.x /= a_div;
-  v_BufPos.x += a_index / a_div;
+  v_BufPos.y += y_div;
+  if (a_row > 1) {
+    v_BufPos.y /= 2.0;
+  }
+  v_BufPos.x /= x_div;
+  v_BufPos.x += a_index / x_div;
 
   gl_Position = vec4(a_position, 0.0, 0.0) + u_Proj * u_View * u_Model * vec4(a_Pos, 1.0);
 }

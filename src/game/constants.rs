@@ -16,13 +16,14 @@ pub const VIEW_DISTANCE: f32 = 300.0;
 pub const CHARSHEET_TOTAL_WIDTH: f32 = 16_128f32;
 pub const SPRITE_OFFSET: f32 = 2.0;
 
-pub const ZOMBIESHEET_TOTAL_WIDTH: f32 = 7_872f32;
+pub const ZOMBIESHEET_TOTAL_WIDTH: f32 = 9_184f32;
 
 //Assets
 pub const ZOMBIE_JSON_PATH: &str = "assets/zombie.json";
-pub const ZOMBIE_DEATH_JSON_PATH: &str = "assets/zombie-death.json";
 pub const CHARACTER_JSON_PATH: &str = "assets/character.json";
 pub const PISTOL_AUDIO_PATH: &str = "assets/audio/pistol.ogg";
 pub const MAP_FILE_PATH: &str = "assets/maps/tilemap.tmx";
+
 pub const RUN_SPRITE_OFFSET: usize = 64;
-pub const STILL_SPRITE_OFFSET: usize = 32;
+pub const ZOMBIE_STILL_SPRITE_OFFSET: usize = 32;
+pub const NORMAL_DEATH_SPRITE_OFFSET: usize = 64;

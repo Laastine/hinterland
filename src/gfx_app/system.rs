@@ -96,6 +96,9 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
         if c.stance == Stance::Walking {
           cs.update_run();
         }
+        if z.stance == Stance::NormalDeath {
+          zs.update_normal_death();
+        }
         if z.stance == Stance::Walking {
           zs.update_walk();
         }

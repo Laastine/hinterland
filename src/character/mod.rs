@@ -135,7 +135,9 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
 
     let elements_x = CHARSHEET_TOTAL_WIDTH / (char_sprite.0.data[2] + SPRITE_OFFSET);
     CharacterSheet {
-      div: elements_x,
+      x_div: elements_x,
+      y_div: 0.0,
+      row_idx: 0,
       index: char_sprite.1 as f32
     }
   }

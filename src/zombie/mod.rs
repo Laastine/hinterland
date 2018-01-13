@@ -7,7 +7,7 @@ use gfx_app::{ColorFormat, DepthFormat};
 use graphics::orientation::{Orientation, Stance};
 use graphics::{Dimensions, load_texture, overlaps};
 use graphics::camera::CameraInputState;
-use game::constants::{ASPECT_RATIO, ZOMBIESHEET_TOTAL_WIDTH, SPRITE_OFFSET, STILL_SPRITE_OFFSET};
+use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, ZOMBIE_STILL_SPRITE_OFFSET, ZOMBIESHEET_TOTAL_WIDTH};
 use critter::{CritterData, ZombieSprite};
 use shaders::{critter_pipeline, VertexData, CharacterSheet, Position, Projection};
 use specs;
@@ -47,12 +47,11 @@ impl ZombieDrawable {
 
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, bullet: &BulletDrawable) {
     self.projection = *world_to_clip;
-    self.stance = Stance::Still;
     self.position = Position {
       position: [ZOMBIE_START_POSITION.0 + ci.x_movement, ZOMBIE_START_POSITION.1 + ci.y_movement]
     };
     if overlaps(self.position, bullet.position, 80.0, 80.0) {
-      println!("HIT");
+      self.stance = Stance::NormalDeath;
     }
   }
 }
@@ -112,23 +111,34 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
     }
   }
 
-  fn get_next_sprite(&self, zombie_idx: usize, drawable: &mut ZombieDrawable) -> CharacterSheet {
+  fn get_next_sprite(&self, zombie: &ZombieSprite, drawable: &mut ZombieDrawable) -> CharacterSheet {
     let zombie_sprite =
       if drawable.stance == Stance::Still {
-        let sprite_idx = (drawable.direction as usize * 4 + zombie_idx) as usize;
+        let sprite_idx = (drawable.direction as usize * 4 + zombie.zombie_idx) as usize;
         (&self.data[sprite_idx], sprite_idx)
       } else if drawable.orientation != Orientation::Still && drawable.stance == Stance::Walking {
-        let sprite_idx = (drawable.direction as usize * 8 + zombie_idx + STILL_SPRITE_OFFSET) as usize;
+        let sprite_idx = (drawable.direction as usize * 8 + zombie.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize;
+        (&self.data[sprite_idx], sprite_idx)
+      } else if drawable.orientation != Orientation::Still && drawable.stance == Stance::NormalDeath {
+        let sprite_idx = (drawable.direction as usize * 6 + zombie.zombie_death_idx + NORMAL_DEATH_SPRITE_OFFSET) as usize;
         (&self.data[sprite_idx], sprite_idx)
       } else {
         drawable.direction = drawable.orientation;
-        let sprite_idx = (drawable.orientation as usize * 8 + zombie_idx + STILL_SPRITE_OFFSET) as usize;
+        let sprite_idx = (drawable.orientation as usize * 8 + zombie.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize;
         (&self.data[sprite_idx], sprite_idx)
       };
 
+    let (y_div, row_idx) = if drawable.stance == Stance::NormalDeath || drawable.stance == Stance::CriticalDeath {
+      (0.0, 2)
+    } else {
+      (1.0, 2)
+    };
+
     let elements_x = ZOMBIESHEET_TOTAL_WIDTH / (zombie_sprite.0.data[2] + SPRITE_OFFSET);
     CharacterSheet {
-      div: elements_x,
+      x_div: elements_x,
+      y_div,
+      row_idx,
       index: zombie_sprite.1 as f32
     }
   }
@@ -141,7 +151,7 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb,
-                                   &self.get_next_sprite(zombie.zombie_idx, &mut drawable));
+                                   &self.get_next_sprite(zombie, &mut drawable));
     self.bundle.encode(encoder);
   }
 }

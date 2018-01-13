@@ -16,7 +16,9 @@ gfx_defines! {
   }
 
   constant CharacterSheet {
-    div: f32 = "a_div",
+    x_div: f32 = "x_div",
+    y_div: f32 = "y_div",
+    row_idx: u32 = "a_row",
     index: f32 = "a_index",
   }
 
