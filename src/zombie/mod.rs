@@ -51,7 +51,7 @@ impl ZombieDrawable {
     self.position = Position {
       position: [ZOMBIE_START_POSITION.0 + ci.x_movement, ZOMBIE_START_POSITION.1 + ci.y_movement]
     };
-    if overlaps(self.position, bullet.position, 80.0, 80.0) {
+    if overlaps(self.position, bullet.position, 80.0, 80.0) && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
       self.stance =
         if get_random_bool() {
           Stance::NormalDeath
