@@ -1,7 +1,7 @@
 use cgmath;
 use cgmath::Point2;
 use character::controls::CharacterInputState;
-use game::constants::ASPECT_RATIO;
+use game::constants::{ASPECT_RATIO, BULLET_SPEED};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use graphics::Dimensions;
@@ -13,8 +13,6 @@ use std;
 
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/bullet.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/bullet.f.glsl");
-
-const BULLET_SPEED: f32 = 2.0;
 
 #[derive(Debug, Clone)]
 pub struct BulletDrawable {

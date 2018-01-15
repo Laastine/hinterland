@@ -18,6 +18,8 @@ pub const SPRITE_OFFSET: f32 = 2.0;
 
 pub const ZOMBIESHEET_TOTAL_WIDTH: f32 = 9_184f32;
 
+pub const BULLET_SPEED: f32 = 2.0;
+
 //Assets
 pub const ZOMBIE_JSON_PATH: &str = "assets/zombie.json";
 pub const CHARACTER_JSON_PATH: &str = "assets/character.json";
