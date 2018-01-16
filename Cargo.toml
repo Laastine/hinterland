@@ -12,7 +12,7 @@ name = "zombie_shooter_bin"
 path = "src/main.rs"
 
 [dependencies]
-cgmath = "0.15.0"
+cgmath = "0.16.0"
 gfx = "0.16.3"
 gfx_device_gl = "0.14.6"
 gfx_window_glutin = "0.17.0"
