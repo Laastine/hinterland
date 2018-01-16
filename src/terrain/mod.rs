@@ -1,5 +1,4 @@
 use cgmath;
-use cgmath::{Matrix4};
 use character::controls::CharacterInputState;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx;
@@ -37,7 +36,8 @@ pub struct TerrainDrawable {
 }
 
 impl TerrainDrawable {
-  pub fn new(view: Matrix4<f32>) -> TerrainDrawable {
+  pub fn new() -> TerrainDrawable {
+    let view = Dimensions::get_view_matrix();
     TerrainDrawable {
       projection: Projection {
         model: view.into(),

@@ -1,5 +1,4 @@
 use cgmath;
-use cgmath::Matrix4;
 use character::controls::CharacterInputState;
 use graphics::orientation::{Orientation, Stance};
 use graphics::{Dimensions, get_orientation};
@@ -31,7 +30,8 @@ pub struct CharacterDrawable {
 }
 
 impl CharacterDrawable {
-  pub fn new(view: Matrix4<f32>) -> CharacterDrawable {
+  pub fn new() -> CharacterDrawable {
+    let view = Dimensions::get_view_matrix();
     CharacterDrawable {
       projection: Projection {
         model: view.into(),

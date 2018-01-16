@@ -33,10 +33,11 @@ pub fn run<W, D, F>(window: &mut W) -> GameStatus
 }
 
 fn setup_world(world: &mut World, viewport_size: (u32, u32)) -> specs::Entity {
-  let view_matrix = Dimensions::get_view_matrix();
   world.register::<terrain::TerrainDrawable>();
   world.register::<graphics::camera::CameraInputState>();
   world.register::<character::CharacterDrawable>();
+  world.register::<zombie::ZombieDrawable>();
+  world.register::<zombie::ZombieDrawable>();
   world.register::<zombie::ZombieDrawable>();
   world.register::<bullet::BulletDrawable>();
   world.register::<CharacterSprite>();
@@ -51,9 +52,9 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) -> specs::Entity {
   world.add_resource(MouseInputState::new());
   world.add_resource(DeltaTime(0.0));
   world.create_entity()
-    .with(terrain::TerrainDrawable::new(view_matrix))
-    .with(character::CharacterDrawable::new(view_matrix))
-    .with(zombie::ZombieDrawable::new(view_matrix))
+    .with(terrain::TerrainDrawable::new())
+    .with(character::CharacterDrawable::new())
+    .with(zombie::ZombieDrawable::new())
     .with(bullet::BulletDrawable::new(cgmath::Point2 {
       x: 0.0,
       y: 0.0,

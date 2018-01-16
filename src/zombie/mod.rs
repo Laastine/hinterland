@@ -1,6 +1,5 @@
 use bullet::BulletDrawable;
 use cgmath;
-use cgmath::Matrix4;
 use character::controls::CharacterInputState;
 use critter::{CritterData, ZombieSprite};
 use data;
@@ -30,7 +29,8 @@ pub struct ZombieDrawable {
 }
 
 impl ZombieDrawable {
-  pub fn new(view: Matrix4<f32>) -> ZombieDrawable {
+  pub fn new() -> ZombieDrawable {
+    let view = Dimensions::get_view_matrix();
     ZombieDrawable {
       projection: Projection {
         model: view.into(),
