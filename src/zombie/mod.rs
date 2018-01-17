@@ -1,5 +1,6 @@
 use bullet::BulletDrawable;
 use cgmath;
+use cgmath::{Deg, Point2};
 use character::controls::CharacterInputState;
 use critter::{CritterData, ZombieSprite};
 use data;
@@ -17,39 +18,64 @@ use specs::{Fetch, ReadStorage, WriteStorage};
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/character.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/character.f.glsl");
 
-const ZOMBIE_START_POSITION: (f32, f32) = (256.0, -32.0);
-
 #[derive(Debug)]
 pub struct ZombieDrawable {
   projection: Projection,
   pub position: Position,
+  previous_position: Position,
+  offset_delta: Position,
   orientation: Orientation,
   pub stance: Stance,
   direction: Orientation,
+  pub movement_direction: Point2<f32>,
 }
 
 impl ZombieDrawable {
-  pub fn new() -> ZombieDrawable {
+  pub fn new(position: Position) -> ZombieDrawable {
     let view = Dimensions::get_view_matrix();
     ZombieDrawable {
       projection: Projection {
         model: view.into(),
         view: view.into(),
-        proj: cgmath::perspective(cgmath::Deg(60.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
+        proj: cgmath::perspective(Deg(60.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       },
-      position: Position {
-        position: [256.0, 0.0],
+      position,
+      previous_position: Position {
+        position: [0.0, 0.0],
+      },
+      offset_delta: Position {
+        position: [0.0, 0.0],
       },
       orientation: Orientation::Left,
       stance: Stance::Still,
       direction: Orientation::Left,
+      movement_direction: Point2 {
+        x: 0.0,
+        y: 0.0,
+      },
     }
   }
 
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, bullet: &BulletDrawable) {
     self.projection = *world_to_clip;
+
+    self.offset_delta =
+      Position {
+        position: [ci.x_movement - self.previous_position.position[0], ci.y_movement - self.previous_position.position[1]]
+      };
+
+    self.previous_position = Position {
+      position: [
+        ci.x_movement,
+        ci.y_movement
+      ]
+    };
+
     self.position = Position {
-      position: [ZOMBIE_START_POSITION.0 + ci.x_movement, ZOMBIE_START_POSITION.1 + ci.y_movement]
+      position: [
+        self.position.position[0] + self.offset_delta.position[0] + (self.movement_direction.x),
+        self.position.position[1] + self.offset_delta.position[1] - (self.movement_direction.y)
+      ]
     };
     if overlaps(self.position, bullet.position, 80.0, 80.0) && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
       self.stance =

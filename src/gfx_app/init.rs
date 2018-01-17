@@ -54,7 +54,9 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) -> specs::Entity {
   world.create_entity()
     .with(terrain::TerrainDrawable::new())
     .with(character::CharacterDrawable::new())
-    .with(zombie::ZombieDrawable::new())
+    .with(zombie::ZombieDrawable::new(Position {
+      position: [200.0, -10.0]
+    }))
     .with(bullet::BulletDrawable::new(cgmath::Point2 {
       x: 0.0,
       y: 0.0,
