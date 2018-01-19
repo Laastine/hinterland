@@ -11,10 +11,10 @@ uniform b_VsLocals {
 };
 
 uniform b_CharacterSprite {
-   float x_div;
-   float y_div;
-   int a_row;
-   float a_index;
+  float x_div;
+  float y_div;
+  int a_row;
+  float a_index;
 };
 
 uniform b_CharacterPosition {
