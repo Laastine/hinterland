@@ -1,3 +1,4 @@
+use bullet::bullets::Bullets;
 use cgmath;
 use cgmath::Point2;
 use character::controls::CharacterInputState;
@@ -11,6 +12,8 @@ use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
 use std;
 
+pub mod bullets;
+
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/bullet.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/bullet.f.glsl");
 
@@ -21,6 +24,7 @@ pub struct BulletDrawable {
   previous_position: Position,
   offset_delta: Position,
   pub movement_direction: Point2<f32>,
+  pub lifetime: usize,
 }
 
 impl BulletDrawable {
@@ -41,7 +45,8 @@ impl BulletDrawable {
       offset_delta: Position {
         position: [0.0, 0.0],
       },
-      movement_direction
+      movement_direction,
+      lifetime: 0,
     }
   }
 
@@ -73,11 +78,9 @@ impl BulletDrawable {
           self.position.position[1] + self.offset_delta.position[1] - (self.movement_direction.y * BULLET_SPEED)
         ]
       };
-  }
-}
 
-impl specs::Component for BulletDrawable {
-  type Storage = specs::VecStorage<BulletDrawable>;
+    self.lifetime += 1;
+  }
 }
 
 pub struct BulletDrawSystem<R: gfx::Resources> {
@@ -125,8 +128,8 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
                  drawable: &mut BulletDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
-    encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
-    encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
+      encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
+      encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     self.bundle.encode(encoder);
   }
 }
@@ -142,16 +145,21 @@ impl PreDrawSystem {
 
 impl<'a> specs::System<'a> for PreDrawSystem {
   type SystemData = (ReadStorage<'a, CameraInputState>,
-                     WriteStorage<'a, BulletDrawable>,
+                     WriteStorage<'a, Bullets>,
                      ReadStorage<'a, CharacterInputState>,
                      Fetch<'a, Dimensions>);
 
-  fn run(&mut self, (camera_input, mut bullet, character_input, dim): Self::SystemData) {
+  fn run(&mut self, (camera_input, mut bullets, character_input, dim): Self::SystemData) {
     use specs::Join;
 
-    for (camera, b, ci) in (&camera_input, &mut bullet, &character_input).join() {
+    for (camera, bs, ci) in (&camera_input, &mut bullets, &character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      b.update(&world_to_clip, ci);
+
+      let updated_bullets = bs.clone().bullets.into_iter().map(|mut b| {
+        b.update(&world_to_clip, ci);
+        b
+      }).collect();
+      Bullets::update_bullets(bs, updated_bullets);
     }
   }
 }

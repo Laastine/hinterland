@@ -1,4 +1,5 @@
 use bullet::BulletDrawable;
+use bullet::bullets::Bullets;
 use cgmath;
 use cgmath::{Deg, Point2};
 use character::controls::CharacterInputState;
@@ -56,7 +57,7 @@ impl ZombieDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, bullet: &BulletDrawable) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, bullets: &Vec<BulletDrawable>) {
     self.projection = *world_to_clip;
 
     self.offset_delta =
@@ -77,14 +78,16 @@ impl ZombieDrawable {
         self.position.position[1] + self.offset_delta.position[1] - (self.movement_direction.y)
       ]
     };
-    if overlaps(self.position, bullet.position, 80.0, 80.0) && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
-      self.stance =
-        if get_random_bool() {
-          Stance::NormalDeath
-        } else {
-          Stance::CriticalDeath
-        };
-    }
+    bullets.iter().for_each(|bullet| {
+      if overlaps(self.position, bullet.position, 80.0, 80.0) && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
+        self.stance =
+          if get_random_bool() {
+            Stance::NormalDeath
+          } else {
+            Stance::CriticalDeath
+          };
+      }
+    });
   }
 }
 
@@ -205,16 +208,16 @@ impl<'a> specs::System<'a> for PreDrawSystem {
   type SystemData = (WriteStorage<'a, ZombieDrawable>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
-                     ReadStorage<'a, BulletDrawable>,
+                     ReadStorage<'a, Bullets>,
                      Fetch<'a, Dimensions>);
 
 
-  fn run(&mut self, (mut zombie, camera_input, character_input, bullet, dim): Self::SystemData) {
+  fn run(&mut self, (mut zombie, camera_input, character_input, bullets, dim): Self::SystemData) {
     use specs::Join;
 
-    for (z, camera, ci, b) in (&mut zombie, &camera_input, &character_input, &bullet).join() {
+    for (z, camera, ci, bs) in (&mut zombie, &camera_input, &character_input, &bullets).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      z.update(&world_to_clip, ci, b);
+      z.update(&world_to_clip, ci, &bs.bullets);
     }
   }
 }

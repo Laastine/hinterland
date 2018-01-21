@@ -1,5 +1,5 @@
 use bullet;
-use cgmath;
+use bullet::bullets::Bullets;
 use gfx_app::{Window, GameStatus};
 use gfx_app::renderer::{DeviceRenderer, EncoderQueue};
 use gfx_app::system::DrawSystem;
@@ -7,6 +7,7 @@ use gfx;
 use std::time;
 use std::sync::mpsc;
 use terrain;
+use shaders::Position;
 use specs;
 use specs::{World};
 use specs::DispatcherBuilder;
@@ -37,9 +38,8 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) -> specs::Entity {
   world.register::<graphics::camera::CameraInputState>();
   world.register::<character::CharacterDrawable>();
   world.register::<zombie::ZombieDrawable>();
-  world.register::<zombie::ZombieDrawable>();
-  world.register::<zombie::ZombieDrawable>();
-  world.register::<bullet::BulletDrawable>();
+  world.register::<Bullets>();
+//  world.register::<bullet::BulletDrawable>();
   world.register::<CharacterSprite>();
   world.register::<ZombieSprite>();
   world.register::<character::controls::CharacterInputState>();
@@ -51,36 +51,32 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) -> specs::Entity {
   world.add_resource(character::controls::CharacterInputState::new());
   world.add_resource(MouseInputState::new());
   world.add_resource(DeltaTime(0.0));
-  world.create_entity()
+
+  let player_entity = world.create_entity()
     .with(terrain::TerrainDrawable::new())
     .with(character::CharacterDrawable::new())
     .with(zombie::ZombieDrawable::new(Position {
       position: [200.0, -10.0]
     }))
-    .with(bullet::BulletDrawable::new(cgmath::Point2 {
-      x: 0.0,
-      y: 0.0,
-    }, cgmath::Point2 {
-      x: 1.0,
-      y: 0.0,
-    }))
+    .with(Bullets::new())
     .with(CharacterSprite::new())
     .with(ZombieSprite::new())
     .with(graphics::camera::CameraInputState::new())
     .with(character::controls::CharacterInputState::new())
-    .with(MouseInputState::new()).build()
+    .with(MouseInputState::new()).build();
+
+  player_entity
 }
 
 fn dispatch_loop<W, D, F>(window: &mut W,
                           device_renderer: &mut DeviceRenderer<D>,
                           w: &mut World,
                           encoder_queue: EncoderQueue<D>,
-                          eid: &specs::Entity) -> GameStatus
+                          player_eid: &specs::Entity) -> GameStatus
   where W: Window<D, F>,
         D: gfx::Device + 'static,
         F: gfx::Factory<D::Resources>,
         D::CommandBuffer: Send {
-
 
   let draw = {
     let rtv = window.get_render_target_view();
@@ -92,7 +88,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
 
   let (terrain_system, terrain_control) = CameraControlSystem::new();
   let (character_system, character_control) = CharacterControlSystem::new();
-  let (mouse_system, mouse_control, ) = MouseControlSystem::new(eid);
+  let (mouse_system, mouse_control, ) = MouseControlSystem::new(player_eid);
   let controls = TilemapControls::new(terrain_control, character_control, mouse_control);
 
   let mut dispatcher = DispatcherBuilder::new()

@@ -60,7 +60,7 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
                      WriteStorage<'a, CharacterSprite>,
                      WriteStorage<'a, zombie::ZombieDrawable>,
                      WriteStorage<'a, ZombieSprite>,
-                     WriteStorage<'a, bullet::BulletDrawable>,
+                     WriteStorage<'a, bullet::bullets::Bullets>,
                      Fetch<'a, DeltaTime>);
 
   fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut zombie, mut zombie_sprite, mut bullets, d): Self::SystemData) {
@@ -89,7 +89,7 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 16.0 / 256.0, 20.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
-    for (t, c, cs, z, zs, b) in (&mut terrain, &mut character, &mut character_sprite, &mut zombie, &mut zombie_sprite, &mut bullets).join() {
+    for (t, c, cs, z, zs, bs) in (&mut terrain, &mut character, &mut character_sprite, &mut zombie, &mut zombie_sprite, &mut bullets).join() {
       self.terrain_system.draw(t, &mut encoder);
 
       if self.cool_down == 0.0 {
@@ -113,7 +113,9 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
       }
       self.character_system.draw(c, cs, &mut encoder);
       self.zombie_system.draw(z, zs, &mut encoder);
-      self.bullet_system.draw(b, &mut encoder);
+      bs.bullets.iter().for_each(|b| {
+        self.bullet_system.draw(&mut b.clone(), &mut encoder);
+      })
     }
 
     if let Err(e) = self.encoder_queue.sender.send(encoder) {
