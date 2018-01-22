@@ -8,7 +8,7 @@ use zombie;
 use specs;
 use specs::{Fetch, WriteStorage};
 use std::time::Instant;
-use critter::{CharacterSprite, ZombieSprite};
+use critter::CharacterSprite;
 use graphics::orientation::Stance;
 use graphics::DeltaTime;
 
@@ -58,12 +58,11 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
   type SystemData = (WriteStorage<'a, terrain::TerrainDrawable>,
                      WriteStorage<'a, character::CharacterDrawable>,
                      WriteStorage<'a, CharacterSprite>,
-                     WriteStorage<'a, zombie::ZombieDrawable>,
-                     WriteStorage<'a, ZombieSprite>,
+                     WriteStorage<'a, zombie::zombies::Zombies>,
                      WriteStorage<'a, bullet::bullets::Bullets>,
                      Fetch<'a, DeltaTime>);
 
-  fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut zombie, mut zombie_sprite, mut bullets, d): Self::SystemData) {
+  fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut zombies, mut bullets, d): Self::SystemData) {
     use specs::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
 
@@ -89,30 +88,27 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 16.0 / 256.0, 20.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
-    for (t, c, cs, z, zs, bs) in (&mut terrain, &mut character, &mut character_sprite, &mut zombie, &mut zombie_sprite, &mut bullets).join() {
+    for (t, c, cs, zs, bs) in (&mut terrain, &mut character, &mut character_sprite, &mut zombies, &mut bullets).join() {
       self.terrain_system.draw(t, &mut encoder);
 
       if self.cool_down == 0.0 {
         if c.stance == Stance::Walking {
           cs.update_run();
         }
-        if z.stance == Stance::NormalDeath {
-          zs.update_normal_death();
-        }
-        if z.stance == Stance::CriticalDeath {
-          zs.update_critical_death();
-        }
-        if z.stance == Stance::Walking {
-          zs.update_walk();
-        }
-        if z.stance == Stance::Still {
-          zs.update_still();
-        }
       } else if self.fire_cool_down == 0.0 && c.stance == Stance::Firing {
         cs.update_fire();
       }
       self.character_system.draw(c, cs, &mut encoder);
-      self.zombie_system.draw(z, zs, &mut encoder);
+      for mut z in zs.zombies.iter_mut() {
+        self.zombie_system.draw(&mut z, &mut encoder);
+        match z.stance {
+          Stance::NormalDeath => z.update_normal_death(),
+          Stance::CriticalDeath => z.update_critical_death(),
+          Stance::Walking => z.update_walk(),
+          Stance::Still => z.update_still(),
+          _ => ()
+        };
+      }
       for b in bs.bullets.iter_mut() {
         self.bullet_system.draw(&b, &mut encoder);
       }

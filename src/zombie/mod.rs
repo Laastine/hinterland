@@ -3,7 +3,7 @@ use bullet::bullets::Bullets;
 use cgmath;
 use cgmath::{Deg, Point2};
 use character::controls::CharacterInputState;
-use critter::{CritterData, ZombieSprite};
+use critter::CritterData;
 use data;
 use game::get_random_bool;
 use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, ZOMBIE_STILL_SPRITE_OFFSET, ZOMBIESHEET_TOTAL_WIDTH};
@@ -15,11 +15,14 @@ use graphics::camera::CameraInputState;
 use shaders::{critter_pipeline, VertexData, CharacterSheet, Position, Projection};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
+use zombie::zombies::Zombies;
+
+pub mod zombies;
 
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/character.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/character.f.glsl");
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ZombieDrawable {
   projection: Projection,
   pub position: Position,
@@ -29,6 +32,8 @@ pub struct ZombieDrawable {
   pub stance: Stance,
   direction: Orientation,
   pub movement_direction: Point2<f32>,
+  zombie_idx: usize,
+  zombie_death_idx: usize,
 }
 
 impl ZombieDrawable {
@@ -54,6 +59,8 @@ impl ZombieDrawable {
         x: 0.0,
         y: 0.0,
       },
+      zombie_idx: 0,
+      zombie_death_idx: 0,
     }
   }
 
@@ -89,10 +96,34 @@ impl ZombieDrawable {
       }
     });
   }
-}
 
-impl specs::Component for ZombieDrawable {
-  type Storage = specs::VecStorage<ZombieDrawable>;
+  pub fn update_walk(&mut self) {
+    if self.zombie_idx < 7 {
+      self.zombie_idx += 1;
+    } else {
+      self.zombie_idx = 0;
+    }
+  }
+
+  pub fn update_still(&mut self) {
+    if self.zombie_idx < 3 {
+      self.zombie_idx += 1;
+    } else {
+      self.zombie_idx = 0;
+    }
+  }
+
+  pub fn update_normal_death(&mut self) {
+    if self.zombie_death_idx < 5 {
+      self.zombie_death_idx += 1;
+    }
+  }
+
+  pub fn update_critical_death(&mut self) {
+    if self.zombie_death_idx < 7 {
+      self.zombie_death_idx += 1;
+    }
+  }
 }
 
 pub struct ZombieDrawSystem<R: gfx::Resources> {
@@ -146,23 +177,23 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
     }
   }
 
-  fn get_next_sprite(&self, zombie: &ZombieSprite, drawable: &mut ZombieDrawable) -> CharacterSheet {
+  fn get_next_sprite(&self, drawable: &mut ZombieDrawable) -> CharacterSheet {
     let zombie_sprite =
       if drawable.stance == Stance::Still {
-        let sprite_idx = (drawable.direction as usize * 4 + zombie.zombie_idx) as usize;
+        let sprite_idx = (drawable.direction as usize * 4 + drawable.zombie_idx) as usize;
         (&self.data[sprite_idx], sprite_idx)
       } else if drawable.orientation != Orientation::Still && drawable.stance == Stance::Walking {
-        let sprite_idx = (drawable.direction as usize * 8 + zombie.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize;
+        let sprite_idx = (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize;
         (&self.data[sprite_idx], sprite_idx)
       } else if drawable.orientation != Orientation::Still && drawable.stance == Stance::NormalDeath {
-        let sprite_idx = (drawable.direction as usize * 6 + zombie.zombie_death_idx + NORMAL_DEATH_SPRITE_OFFSET) as usize;
+        let sprite_idx = (drawable.direction as usize * 6 + drawable.zombie_death_idx + NORMAL_DEATH_SPRITE_OFFSET) as usize;
         (&self.data[sprite_idx], sprite_idx)
       } else if drawable.orientation != Orientation::Still && drawable.stance == Stance::CriticalDeath {
-        let sprite_idx = (drawable.direction as usize * 8 + zombie.zombie_death_idx) as usize;
+        let sprite_idx = (drawable.direction as usize * 8 + drawable.zombie_death_idx) as usize;
         (&self.data[sprite_idx], sprite_idx)
       } else {
         drawable.direction = drawable.orientation;
-        let sprite_idx = (drawable.orientation as usize * 8 + zombie.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize;
+        let sprite_idx = (drawable.orientation as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize;
         (&self.data[sprite_idx], sprite_idx)
       };
 
@@ -183,13 +214,12 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
 
   pub fn draw<C>(&mut self,
                  mut drawable: &mut ZombieDrawable,
-                 zombie: &ZombieSprite,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb,
-                                   &self.get_next_sprite(zombie, &mut drawable));
+                                   &self.get_next_sprite(&mut drawable));
     self.bundle.encode(encoder);
   }
 }
@@ -205,19 +235,22 @@ impl PreDrawSystem {
 
 impl<'a> specs::System<'a> for PreDrawSystem {
   #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
-  type SystemData = (WriteStorage<'a, ZombieDrawable>,
+  type SystemData = (WriteStorage<'a, Zombies>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
                      ReadStorage<'a, Bullets>,
                      Fetch<'a, Dimensions>);
 
 
-  fn run(&mut self, (mut zombie, camera_input, character_input, bullets, dim): Self::SystemData) {
+  fn run(&mut self, (mut zombies, camera_input, character_input, bullets, dim): Self::SystemData) {
     use specs::Join;
 
-    for (z, camera, ci, bs) in (&mut zombie, &camera_input, &character_input, &bullets).join() {
+    for (zs, camera, ci, bs) in (&mut zombies, &camera_input, &character_input, &bullets).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      z.update(&world_to_clip, ci, &bs.bullets);
+
+      for z in zs.zombies.iter_mut() {
+        z.update(&world_to_clip, ci, &bs.bullets);
+      }
     }
   }
 }

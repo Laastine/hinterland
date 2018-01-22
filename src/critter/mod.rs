@@ -37,53 +37,6 @@ impl specs::Component for CharacterSprite {
 }
 
 #[derive(Debug)]
-pub struct ZombieSprite {
-  pub zombie_idx: usize,
-  pub zombie_death_idx: usize,
-}
-
-impl ZombieSprite {
-  pub fn new() -> ZombieSprite {
-    ZombieSprite {
-      zombie_idx: 0,
-      zombie_death_idx: 0
-    }
-  }
-
-  pub fn update_walk(&mut self) {
-    if self.zombie_idx < 7 {
-      self.zombie_idx += 1;
-    } else {
-      self.zombie_idx = 0;
-    }
-  }
-
-  pub fn update_still(&mut self) {
-    if self.zombie_idx < 3 {
-      self.zombie_idx += 1;
-    } else {
-      self.zombie_idx = 0;
-    }
-  }
-
-  pub fn update_normal_death(&mut self) {
-    if self.zombie_death_idx < 5 {
-      self.zombie_death_idx += 1;
-    }
-  }
-
-  pub fn update_critical_death(&mut self) {
-    if self.zombie_death_idx < 7 {
-      self.zombie_death_idx += 1;
-    }
-  }
-}
-
-impl specs::Component for ZombieSprite {
-  type Storage = specs::VecStorage<ZombieSprite>;
-}
-
-#[derive(Debug)]
 pub struct CritterData {
   pub data: [f32; 4]
 }
