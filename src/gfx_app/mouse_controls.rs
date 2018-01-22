@@ -42,17 +42,15 @@ pub enum MouseControl {
 #[derive(Debug)]
 pub struct MouseControlSystem {
   queue: mpsc::Receiver<(MouseControl, Option<(f64, f64)>)>,
-  eid: specs::Entity,
   left_click_pos: Option<(f64, f64)>,
   right_click_pos: Option<(f64, f64)>,
 }
 
 impl MouseControlSystem {
-  pub fn new(eid: &specs::Entity) -> (MouseControlSystem, MouseEvent) {
+  pub fn new() -> (MouseControlSystem, MouseEvent) {
     let (tx, rx) = mpsc::channel();
     (MouseControlSystem {
       queue: rx,
-      eid: *eid,
       left_click_pos: None,
       right_click_pos: None,
     }, tx)
