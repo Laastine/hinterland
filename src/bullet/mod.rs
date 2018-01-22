@@ -128,8 +128,8 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
                  drawable: &mut BulletDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
-      encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
-      encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
+    encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
+    encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     self.bundle.encode(encoder);
   }
 }
@@ -155,11 +155,9 @@ impl<'a> specs::System<'a> for PreDrawSystem {
     for (camera, bs, ci) in (&camera_input, &mut bullets, &character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
 
-      let updated_bullets = bs.clone().bullets.into_iter().map(|mut b| {
+      for b in bs.bullets.iter_mut() {
         b.update(&world_to_clip, ci);
-        b
-      }).collect();
-      Bullets::update_bullets(bs, updated_bullets);
+      }
     }
   }
 }
