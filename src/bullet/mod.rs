@@ -125,7 +125,7 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
   }
 
   pub fn draw<C>(&mut self,
-                 drawable: &mut BulletDrawable,
+                 drawable: &BulletDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);

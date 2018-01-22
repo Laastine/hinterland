@@ -113,9 +113,9 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
       }
       self.character_system.draw(c, cs, &mut encoder);
       self.zombie_system.draw(z, zs, &mut encoder);
-      bs.bullets.iter().for_each(|b| {
-        self.bullet_system.draw(&mut b.clone(), &mut encoder);
-      })
+      for b in bs.bullets.iter_mut() {
+        self.bullet_system.draw(&b, &mut encoder);
+      }
     }
 
     if let Err(e) = self.encoder_queue.sender.send(encoder) {
