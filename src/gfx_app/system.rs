@@ -99,7 +99,7 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
         cs.update_fire();
       }
       self.character_system.draw(c, cs, &mut encoder);
-      for mut z in zs.zombies.iter_mut() {
+      for mut z in &mut zs.zombies {
         self.zombie_system.draw(&mut z, &mut encoder);
         match z.stance {
           Stance::NormalDeath => z.update_normal_death(),
@@ -109,8 +109,8 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
           _ => ()
         };
       }
-      for b in bs.bullets.iter_mut() {
-        self.bullet_system.draw(&b, &mut encoder);
+      for b in &mut bs.bullets {
+        self.bullet_system.draw(b, &mut encoder);
       }
     }
 

@@ -155,7 +155,7 @@ impl<'a> specs::System<'a> for PreDrawSystem {
     for (camera, bs, ci) in (&camera_input, &mut bullets, &character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
 
-      for b in bs.bullets.iter_mut() {
+      for b in &mut bs.bullets {
         b.update(&world_to_clip, ci);
       }
     }

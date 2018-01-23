@@ -64,7 +64,7 @@ impl ZombieDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, bullets: &Vec<BulletDrawable>) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, bullets: &[BulletDrawable]) {
     self.projection = *world_to_clip;
 
     self.offset_delta =
@@ -248,7 +248,7 @@ impl<'a> specs::System<'a> for PreDrawSystem {
     for (zs, camera, ci, bs) in (&mut zombies, &camera_input, &character_input, &bullets).join() {
       let world_to_clip = dim.world_to_projection(camera);
 
-      for z in zs.zombies.iter_mut() {
+      for z in &mut zs.zombies {
         z.update(&world_to_clip, ci, &bs.bullets);
       }
     }
