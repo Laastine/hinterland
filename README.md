@@ -5,7 +5,7 @@
 Simple isometric game written in Rust.<br/>
 Project started as SDL2, but was later converted to use gfx-rs.
 
-<img src="assets/zombie-shooter-gl-01-2018.gif" alt="preview">
+<img src="assets/zombie-shooter-gl-2018-01-24.gif" alt="preview">
 
 ## Project overview
 - [Project wiki](https://github.com/Laastine/zombie-shooter/projects/1)
