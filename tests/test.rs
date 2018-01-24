@@ -91,4 +91,15 @@ fn direction_movement_test() {
                  y: -1.0,
                })
              ), "(-2,-2) to (-1,-1) should be 45deg");
+
+  assert_eq!(Point2 { x: -0.71, y: -0.71 }, // 0.71 = sqrt(2) / 2.0
+             zombie_shooter_lib::graphics::direction_movement(
+               zombie_shooter_lib::graphics::direction(Point2 {
+                 x: -1.0,
+                 y: -1.0,
+               }, Point2 {
+                 x: -2.0,
+                 y: -2.0,
+               })
+             ), "(-1,-1) to (-2,-2) should be 225deg");
 }
