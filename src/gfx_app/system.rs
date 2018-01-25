@@ -95,20 +95,22 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
         if c.stance == Stance::Walking {
           cs.update_run();
         }
+        for mut z in &mut zs.zombies {
+          match z.stance {
+            Stance::NormalDeath => z.update_normal_death(),
+            Stance::CriticalDeath => z.update_critical_death(),
+            Stance::Walking => z.update_walk(),
+            Stance::Still => z.update_still(),
+            _ => ()
+          };
+        }
       } else if self.fire_cool_down == 0.0 && c.stance == Stance::Firing {
         cs.update_fire();
       }
-      self.character_system.draw(c, cs, &mut encoder);
       for mut z in &mut zs.zombies {
         self.zombie_system.draw(&mut z, &mut encoder);
-        match z.stance {
-          Stance::NormalDeath => z.update_normal_death(),
-          Stance::CriticalDeath => z.update_critical_death(),
-          Stance::Walking => z.update_walk(),
-          Stance::Still => z.update_still(),
-          _ => ()
-        };
       }
+      self.character_system.draw(c, cs, &mut encoder);
       for b in &mut bs.bullets {
         self.bullet_system.draw(b, &mut encoder);
       }
