@@ -108,9 +108,17 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
         cs.update_fire();
       }
       for mut z in &mut zs.zombies {
-        self.zombie_system.draw(&mut z, &mut encoder);
+        if c.position.position[1] <= z.position.position[1] {
+          self.zombie_system.draw(&mut z, &mut encoder);
+        }
       }
       self.character_system.draw(c, cs, &mut encoder);
+      for mut z in &mut zs.zombies {
+        if c.position.position[1] > z.position.position[1] {
+          self.zombie_system.draw(&mut z, &mut encoder);
+        }
+      }
+
       for b in &mut bs.bullets {
         self.bullet_system.draw(b, &mut encoder);
       }
