@@ -38,9 +38,7 @@ impl CharacterDrawable {
         view: view.into(),
         proj: cgmath::perspective(cgmath::Deg(75.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       },
-      position: Position {
-        position: [0.0, 0.0],
-      },
+      position: Position::new([0.0, 0.0]),
       orientation: Orientation::Right,
       stance: Stance::Walking,
       direction: Orientation::Right,

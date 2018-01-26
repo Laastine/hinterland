@@ -36,15 +36,9 @@ impl BulletDrawable {
         view: view.into(),
         proj: cgmath::perspective(cgmath::Deg(75.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       },
-      position: Position {
-        position: [position.x, position.y + 15.0],
-      },
-      previous_position: Position {
-        position: [0.0, 0.0],
-      },
-      offset_delta: Position {
-        position: [0.0, 0.0],
-      },
+      position: Position::new([position.x, position.y + 15.0]),
+      previous_position: Position::new([0.0, 0.0]),
+      offset_delta: Position::new([0.0, 0.0]),
       movement_direction,
       lifetime: 0,
     }
@@ -56,28 +50,20 @@ impl BulletDrawable {
     self.offset_delta =
       if (ci.x_movement - self.previous_position.position[0]).abs() > std::f32::EPSILON ||
         (ci.y_movement - self.previous_position.position[1]).abs() > std::f32::EPSILON {
-        Position {
-          position: [ci.x_movement - self.previous_position.position[0], ci.y_movement - self.previous_position.position[1]]
-        }
+        Position::new([ci.x_movement - self.previous_position.position[0], ci.y_movement - self.previous_position.position[1]])
       } else {
-        Position {
-          position: [self.offset_delta.position[0], self.offset_delta.position[1]]
-        }
+        Position::new([self.offset_delta.position[0], self.offset_delta.position[1]])
       };
 
-    self.previous_position = Position {
-      position: [
-        ci.x_movement - (self.movement_direction.x * BULLET_SPEED),
-        ci.y_movement + (self.movement_direction.y * BULLET_SPEED)],
-    };
+    self.previous_position = Position::new([
+      ci.x_movement - (self.movement_direction.x * BULLET_SPEED),
+      ci.y_movement + (self.movement_direction.y * BULLET_SPEED)]);
 
     self.position =
-      Position {
-        position: [
-          self.position.position[0] + self.offset_delta.position[0] + (self.movement_direction.x * BULLET_SPEED),
-          self.position.position[1] + self.offset_delta.position[1] - (self.movement_direction.y * BULLET_SPEED)
-        ]
-      };
+      Position::new([
+        self.position.position[0] + self.offset_delta.position[0] + (self.movement_direction.x * BULLET_SPEED),
+        self.position.position[1] + self.offset_delta.position[1] - (self.movement_direction.y * BULLET_SPEED)
+      ]);
 
     self.lifetime += 1;
   }

@@ -54,10 +54,7 @@ impl Dimensions {
 }
 
 pub fn flip_y_axel(point: Point2<f32>) -> Point2<f32> {
-  Point2 {
-    x: point.x,
-    y: RESOLUTION_Y as f32 - point.y,
-  }
+  Point2::new(point.x, RESOLUTION_Y as f32 - point.y)
 }
 
 pub fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> u32 {
@@ -71,10 +68,8 @@ pub fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> u32 {
 
 pub fn direction_movement(direction: u32) -> Point2<f32> {
   let f_direction = direction as f32;
-  Point2 {
-    x: (Angle::cos(Deg(f_direction)) * 100.0).round() / 100.0,
-    y: (Angle::sin(Deg(f_direction)) * 100.0).round() / 100.0,
-  }
+  Point2::new((Angle::cos(Deg(f_direction)) * 100.0).round() / 100.0,
+              (Angle::sin(Deg(f_direction)) * 100.0).round() / 100.0)
 }
 
 pub fn get_orientation(start_point: Point2<f32>, end_point: Point2<f32>) -> Orientation {
@@ -95,10 +90,7 @@ pub fn get_orientation(start_point: Point2<f32>, end_point: Point2<f32>) -> Orie
 
 pub fn get_orientation_from_center(mouse_input: &MouseInputState) -> Orientation {
   if let Some(end_point_gl) = mouse_input.left_click_point {
-    let start_point = Point2 {
-      x: (RESOLUTION_X / 2) as f32,
-      y: (RESOLUTION_Y / 2) as f32,
-    };
+    let start_point = Point2::new((RESOLUTION_X / 2) as f32, (RESOLUTION_Y / 2) as f32);
     get_orientation(start_point, flip_y_axel(end_point_gl))
   } else {
     Orientation::Right
@@ -119,10 +111,9 @@ fn is_within_map_borders(point: Point2<f64>) -> bool {
 pub fn can_move(screen_pos: [f32; 2]) -> bool {
   let x_coord = f64::from(screen_pos[0]);
   let y_coord = f64::from(screen_pos[1]);
-  let point = Point2 {
-    x: (x_coord / TILE_WIDTH + y_coord / TILE_WIDTH).round() + 31.0,
-    y: (y_coord / TILE_WIDTH - x_coord / TILE_WIDTH).round() + 32.0,
-  };
+  let point = Point2::new(
+    (x_coord / TILE_WIDTH + y_coord / TILE_WIDTH).round() + 31.0,
+    (y_coord / TILE_WIDTH - x_coord / TILE_WIDTH).round() + 32.0);
   is_within_map_borders(point)
 }
 

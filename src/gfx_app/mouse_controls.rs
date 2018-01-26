@@ -75,7 +75,7 @@ impl<'a> specs::System<'a> for MouseControlSystem {
               let end_point = Point2::new(val.0 as f32, val.1 as f32);
               mi.left_click_point = Some(end_point);
               let movement_direction = direction_movement(direction(start_point, end_point));
-              Bullets::add_bullet(bs, Point2 { x: -ca.x_pos, y: ca.y_pos }, movement_direction);
+              Bullets::add_bullet(bs, Point2::new(-ca.x_pos, ca.y_pos), movement_direction);
             } else {
               mi.left_click_point = None;
             }

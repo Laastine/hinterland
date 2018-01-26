@@ -47,19 +47,12 @@ impl ZombieDrawable {
         proj: cgmath::perspective(Deg(60.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       },
       position,
-      previous_position: Position {
-        position: [0.0, 0.0],
-      },
-      offset_delta: Position {
-        position: [0.0, 0.0],
-      },
+      previous_position: Position::new([0.0, 0.0]),
+      offset_delta: Position::new([0.0, 0.0]),
       orientation: Orientation::Left,
       stance: Stance::Still,
       direction: Orientation::Left,
-      movement_direction: Point2 {
-        x: 0.0,
-        y: 0.0,
-      },
+      movement_direction: Point2::new(0.0, 0.0),
       zombie_idx: 0,
       zombie_death_idx: 0,
     }
@@ -69,16 +62,12 @@ impl ZombieDrawable {
     self.projection = *world_to_clip;
 
     self.offset_delta =
-      Position {
-        position: [ci.x_movement - self.previous_position.position[0], ci.y_movement - self.previous_position.position[1]]
-      };
+      Position::new([ci.x_movement - self.previous_position.position[0], ci.y_movement - self.previous_position.position[1]]);
 
-    self.previous_position = Position {
-      position: [
-        ci.x_movement,
-        ci.y_movement
-      ]
-    };
+    self.previous_position = Position::new([
+      ci.x_movement,
+      ci.y_movement
+    ]);
 
     if self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
       self.direction = get_orientation(
@@ -86,12 +75,10 @@ impl ZombieDrawable {
         Point2::new(c.position.position[0], c.position.position[1]));
     }
 
-    self.position = Position {
-      position: [
-        self.position.position[0] + self.offset_delta.position[0] + (self.movement_direction.x),
-        self.position.position[1] + self.offset_delta.position[1] - (self.movement_direction.y)
-      ]
-    };
+    self.position = Position::new([
+      self.position.position[0] + self.offset_delta.position[0] + (self.movement_direction.x),
+      self.position.position[1] + self.offset_delta.position[1] - (self.movement_direction.y)
+    ]);
     bullets.iter().for_each(|bullet| {
       if overlaps(self.position, bullet.position, 80.0, 80.0) && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
         self.stance =

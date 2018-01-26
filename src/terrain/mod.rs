@@ -19,16 +19,6 @@ fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
   ((point_x - point_y), (point_x + point_y) / 2.0)
 }
 
-impl TileMapData {
-  pub fn new_empty() -> TileMapData {
-    TileMapData { data: [32.0, 32.0, 0.0, 0.0] }
-  }
-
-  pub fn new(data: [f32; 4]) -> TileMapData {
-    TileMapData { data }
-  }
-}
-
 #[derive(Debug)]
 pub struct TerrainDrawable {
   projection: Projection,
@@ -44,17 +34,13 @@ impl TerrainDrawable {
         view: view.into(),
         proj: cgmath::perspective(cgmath::Deg(75.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       },
-      position: Position {
-        position: [0.0, 0.0],
-      },
+      position: Position::new([0.0, 0.0]),
     }
   }
 
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState) {
     self.projection = *world_to_clip;
-    let new_position = Position {
-      position: [ci.x_movement, ci.y_movement]
-    };
+    let new_position = Position::new([ci.x_movement, ci.y_movement]);
     if can_move(new_position.position) {
       self.position = new_position;
     }

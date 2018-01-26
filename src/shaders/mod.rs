@@ -70,3 +70,17 @@ impl VertexData {
     }
   }
 }
+
+impl TileMapData {
+  pub fn new_empty() -> TileMapData {
+    TileMapData { data: [32.0, 32.0, 0.0, 0.0] }
+  }
+
+  pub fn new(data: [f32; 4]) -> TileMapData {
+    TileMapData { data }
+  }
+}
+
+impl Position {
+  pub fn new(position: [f32; 2]) -> Position { Position { position } }
+}

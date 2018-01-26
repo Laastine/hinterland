@@ -11,10 +11,10 @@ impl Zombies {
   pub fn new() -> Zombies {
     Zombies {
       zombies: vec![
-        ZombieDrawable::new(Position { position: [200.0, 10.0] }),
-        ZombieDrawable::new(Position { position: [-200.0, 10.0] }),
-        ZombieDrawable::new(Position { position: [10.0, 200.0] }),
-        ZombieDrawable::new(Position { position: [10.0, -200.0] }),
+        ZombieDrawable::new(Position::new([200.0, 10.0])),
+        ZombieDrawable::new(Position::new([-200.0, 10.0])),
+        ZombieDrawable::new(Position::new([10.0, 200.0])),
+        ZombieDrawable::new(Position::new([10.0, -200.0])),
       ]
     }
   }
