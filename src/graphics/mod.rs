@@ -77,25 +77,29 @@ pub fn direction_movement(direction: u32) -> Point2<f32> {
   }
 }
 
-pub fn get_orientation(mouse_input: &MouseInputState) -> Orientation {
+pub fn get_orientation(start_point: Point2<f32>, end_point: Point2<f32>) -> Orientation {
+  let angle_in_degrees = direction(start_point, end_point);
+
+  match angle_in_degrees {
+    345 ... 360 | 0 ... 22 => Orientation::Right,
+    23 ... 68 => Orientation::UpRight,
+    69 ... 114 => Orientation::Up,
+    115 ... 160 => Orientation::UpLeft,
+    161 ... 206 => Orientation::Left,
+    207 ... 252 => Orientation::DownLeft,
+    253 ... 298 => Orientation::Down,
+    299 ... 344 => Orientation::DownRight,
+    _ => unreachable!("Invalid orientation")
+  }
+}
+
+pub fn get_orientation_from_center(mouse_input: &MouseInputState) -> Orientation {
   if let Some(end_point_gl) = mouse_input.left_click_point {
     let start_point = Point2 {
       x: (RESOLUTION_X / 2) as f32,
-      y: (RESOLUTION_Y / 2) as f32
+      y: (RESOLUTION_Y / 2) as f32,
     };
-    let angle_in_degrees = direction(start_point, flip_y_axel(end_point_gl));
-
-    match angle_in_degrees {
-      345 ... 360 | 0 ... 22 => Orientation::Right,
-      23 ... 68 => Orientation::UpRight,
-      69 ... 114 => Orientation::Up,
-      115 ... 160 => Orientation::UpLeft,
-      161 ... 206 => Orientation::Left,
-      207 ... 252 => Orientation::DownLeft,
-      253 ... 298 => Orientation::Down,
-      299 ... 344 => Orientation::DownRight,
-      _ => unreachable!("Invalid orientation")
-    }
+    get_orientation(start_point, flip_y_axel(end_point_gl))
   } else {
     Orientation::Right
   }

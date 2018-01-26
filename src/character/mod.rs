@@ -1,7 +1,7 @@
 use cgmath;
 use character::controls::CharacterInputState;
 use graphics::orientation::{Orientation, Stance};
-use graphics::{Dimensions, get_orientation};
+use graphics::{Dimensions, get_orientation_from_center};
 use graphics::camera::CameraInputState;
 use data;
 use game::constants::{ASPECT_RATIO, RUN_SPRITE_OFFSET, CHARSHEET_TOTAL_WIDTH, SPRITE_OFFSET};
@@ -53,7 +53,7 @@ impl CharacterDrawable {
 
     if mouse_input.left_click_point.is_some() {
       self.stance = Stance::Firing;
-      self.orientation = get_orientation(mouse_input);
+      self.orientation = get_orientation_from_center(mouse_input);
       if cs.character_fire_idx == 1 {
         self.audio.play_pistol();
       }
