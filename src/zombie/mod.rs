@@ -142,7 +142,7 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> ZombieDrawSystem<R>
-    where F: gfx::Factory<R> {
+                where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
     let zombie_bytes = include_bytes!("../../assets/zombie.png");
@@ -180,7 +180,7 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
 
     ZombieDrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
-      data
+      data,
     }
   }
 
@@ -215,14 +215,14 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
       x_div: elements_x,
       y_div,
       row_idx,
-      index: zombie_sprite.1 as f32
+      index: zombie_sprite.1 as f32,
     }
   }
 
   pub fn draw<C>(&mut self,
                  mut drawable: &mut ZombieDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
-    where C: gfx::CommandBuffer<R> {
+                 where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb,

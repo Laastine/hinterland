@@ -32,7 +32,7 @@ impl<D: gfx::Device> DrawSystem<D> {
                 dsv: &gfx::handle::DepthStencilView<D::Resources, DepthFormat>,
                 encoder_queue: EncoderQueue<D>)
                 -> DrawSystem<D>
-    where F: gfx::Factory<D::Resources>
+                where F: gfx::Factory<D::Resources>
   {
     DrawSystem {
       render_target_view: rtv.clone(),
@@ -45,7 +45,7 @@ impl<D: gfx::Device> DrawSystem<D> {
       game_time: Instant::now(),
       frames: 0,
       cool_down: 1.0,
-      fire_cool_down: 1.0
+      fire_cool_down: 1.0,
     }
   }
 }

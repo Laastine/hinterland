@@ -39,7 +39,7 @@ impl GlutinWindow {
         glutin::get_available_monitors().nth(0).expect("Please enter a valid ID")
       };
       window_title.with_fullscreen(monitor)
-        .with_dimensions(RESOLUTION_X, RESOLUTION_Y)
+                  .with_dimensions(RESOLUTION_X, RESOLUTION_Y)
     };
 
     let context = glutin::ContextBuilder::new()
@@ -60,7 +60,7 @@ impl GlutinWindow {
       factory,
       render_target_view: rtv,
       depth_stencil_view: dsv,
-      mouse_pos: (0.0, 0.0)
+      mouse_pos: (0.0, 0.0),
     }
   }
 }
@@ -88,8 +88,8 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
   fn swap_window(&mut self) {
     use gfx::Device;
     self.window
-      .swap_buffers()
-      .expect("Unable to swap buffers");
+        .swap_buffers()
+        .expect("Unable to swap buffers");
     self.device.cleanup();
   }
 
@@ -107,8 +107,8 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
 
   fn get_viewport_size(&mut self) -> (u32, u32) {
     self.window
-      .get_inner_size_pixels()
-      .unwrap_or((RESOLUTION_X, RESOLUTION_Y))
+        .get_inner_size_pixels()
+        .unwrap_or((RESOLUTION_X, RESOLUTION_Y))
   }
 
   fn get_device(&mut self) -> &mut gfx_device_gl::Device {
@@ -150,67 +150,73 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
         match event {
           glutin::WindowEvent::KeyboardInput { input, .. } => match input {
             KeyboardInput { virtual_keycode: Some(Escape), .. } => Some(GameStatus::Quit),
-            KeyboardInput { state: Pressed, virtual_keycode: Some(Z), .. } => { controls.zoom_out(); None },
+            KeyboardInput { state: Pressed, virtual_keycode: Some(Z), .. } => {
+              controls.zoom_out();
+              None
+            }
             KeyboardInput { state: Pressed, virtual_keycode: Some(X), .. } => {
               controls.zoom_in();
               None
-            },
+            }
             KeyboardInput { state: Released, virtual_keycode: Some(Z), .. } |
             KeyboardInput { state: Released, virtual_keycode: Some(X), .. } => {
               controls.zoom_stop();
               None
-            },
+            }
             KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {
               controls.move_character_up();
               None
-            },
+            }
             KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {
               controls.move_character_down();
               None
-            },
+            }
             KeyboardInput { state: Released, virtual_keycode: Some(W), .. } |
             KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {
               controls.stop_character_y();
               None
-            },
+            }
             KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {
               controls.move_character_left();
               controls.move_map_left();
               None
-            },
+            }
             KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {
               controls.move_character_right();
               None
-            },
+            }
             KeyboardInput { state: Released, virtual_keycode: Some(A), .. } |
             KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {
               controls.stop_character_x();
               None
-            },
+            }
             _ => None,
           },
           MouseInput { state: Pressed, button: MouseButton::Left, .. } => {
             controls.mouse_left_click(Some(*m_pos));
             None
-          },
+          }
           MouseInput { state: Released, button: MouseButton::Left, .. } => {
             controls.mouse_left_click(None);
             None
-          },
+          }
           MouseInput { state: Pressed, button: MouseButton::Right, .. } => {
             controls.mouse_right_click(Some(*m_pos));
             None
-          },
+          }
           MouseInput { state: Released, button: MouseButton::Right, .. } => {
             controls.mouse_right_click(None);
             None
-          },
+          }
           MouseMoved { position, .. } => {
             *m_pos = position;
             None
-          },
+          }
           Closed => Some(GameStatus::Quit),
-          Resized(_, _) => {gfx_window_glutin::update_views(w, m_rtv, m_dsv); Some(GameStatus::Quit)},
+          Resized(_, _) => {
+            gfx_window_glutin::update_views(w, m_rtv, m_dsv);
+            Some(GameStatus::Quit)
+          }
           _ => None,
         }
       } else {

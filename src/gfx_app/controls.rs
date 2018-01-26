@@ -77,15 +77,15 @@ impl TilemapControls {
   pub fn move_character_right(&mut self) {
     self.cc(CharacterControl::Right)
   }
-  pub fn stop_character_x(&mut self) { self.cc(CharacterControl::XMoveStop)}
+  pub fn stop_character_x(&mut self) { self.cc(CharacterControl::XMoveStop) }
   pub fn move_character_up(&mut self) {
     self.cc(CharacterControl::Up)
   }
   pub fn move_character_down(&mut self) {
     self.cc(CharacterControl::Down)
   }
-  pub fn stop_character_y(&mut self) { self.cc(CharacterControl::YMoveStop)}
+  pub fn stop_character_y(&mut self) { self.cc(CharacterControl::YMoveStop) }
 
-  pub fn mouse_left_click(&mut self, mouse_pos: Option<(f64, f64)>) { self.mc(MouseControl::LeftClick, mouse_pos)}
-  pub fn mouse_right_click(&mut self, mouse_pos: Option<(f64, f64)>) { self.mc(MouseControl::RightClick, mouse_pos)}
+  pub fn mouse_left_click(&mut self, mouse_pos: Option<(f64, f64)>) { self.mc(MouseControl::LeftClick, mouse_pos) }
+  pub fn mouse_right_click(&mut self, mouse_pos: Option<(f64, f64)>) { self.mc(MouseControl::RightClick, mouse_pos) }
 }

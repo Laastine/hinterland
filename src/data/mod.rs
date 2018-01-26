@@ -89,7 +89,7 @@ pub fn load_zombie() -> Vec<CritterData> {
   let zombie_json = read_sprite_file(ZOMBIE_JSON_PATH);
   let zombie = match json::parse(&zombie_json) {
     Ok(res) => res,
-    Err(e) =>  panic!("Zombie {} parse error {:?}", ZOMBIE_JSON_PATH, e),
+    Err(e) => panic!("Zombie {} parse error {:?}", ZOMBIE_JSON_PATH, e),
   };
   for x in 0..7 {
     for y in 0..7 {

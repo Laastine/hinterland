@@ -8,7 +8,7 @@ use std::time;
 use std::sync::mpsc;
 use terrain;
 use specs;
-use specs::{World};
+use specs::World;
 use specs::DispatcherBuilder;
 use graphics::{Dimensions, DeltaTime};
 use gfx_app::controls::TilemapControls;
@@ -22,10 +22,10 @@ use zombie::zombies::Zombies;
 use graphics;
 
 pub fn run<W, D, F>(window: &mut W) -> GameStatus
-  where W: Window<D, F>,
-        D: gfx::Device + 'static,
-        F: gfx::Factory<D::Resources>,
-        D::CommandBuffer: Send {
+                    where W: Window<D, F>,
+                          D: gfx::Device + 'static,
+                          F: gfx::Factory<D::Resources>,
+                          D::CommandBuffer: Send {
   let (mut device_renderer, enc_queue) = DeviceRenderer::new(window.create_buffers(2));
 
   let mut w = specs::World::new();
@@ -51,25 +51,24 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
   world.add_resource(DeltaTime(0.0));
 
   world.create_entity()
-    .with(terrain::TerrainDrawable::new())
-    .with(character::CharacterDrawable::new())
-    .with(Zombies::new())
-    .with(Bullets::new())
-    .with(CharacterSprite::new())
-    .with(graphics::camera::CameraInputState::new())
-    .with(character::controls::CharacterInputState::new())
-    .with(MouseInputState::new()).build();
+       .with(terrain::TerrainDrawable::new())
+       .with(character::CharacterDrawable::new())
+       .with(Zombies::new())
+       .with(Bullets::new())
+       .with(CharacterSprite::new())
+       .with(graphics::camera::CameraInputState::new())
+       .with(character::controls::CharacterInputState::new())
+       .with(MouseInputState::new()).build();
 }
 
 fn dispatch_loop<W, D, F>(window: &mut W,
                           device_renderer: &mut DeviceRenderer<D>,
                           w: &mut World,
                           encoder_queue: EncoderQueue<D>) -> GameStatus
-  where W: Window<D, F>,
-        D: gfx::Device + 'static,
-        F: gfx::Factory<D::Resources>,
-        D::CommandBuffer: Send {
-
+                          where W: Window<D, F>,
+                                D: gfx::Device + 'static,
+                                F: gfx::Factory<D::Resources>,
+                                D::CommandBuffer: Send {
   let draw = {
     let rtv = window.get_render_target_view();
     let dsv = window.get_depth_stencil_view();

@@ -91,7 +91,7 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> BulletDrawSystem<R>
-    where F: gfx::Factory<R> {
+                where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
     let vertex_data: Vec<VertexData> =
@@ -127,7 +127,7 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
   pub fn draw<C>(&mut self,
                  drawable: &BulletDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
-    where C: gfx::CommandBuffer<R> {
+                 where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     self.bundle.encode(encoder);

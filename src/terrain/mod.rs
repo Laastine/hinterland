@@ -79,7 +79,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>)
                 -> TerrainDrawSystem<R>
-    where F: gfx::Factory<R>
+                where F: gfx::Factory<R>
   {
     use gfx::traits::FactoryExt;
 
@@ -91,37 +91,37 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
 
     let tilesheet_bytes = &include_bytes!("../../assets/maps/terrain.png")[..];
     let plane = Plane::subdivide(width, width);
-    let vertex_data: Vec<VertexData> = plane.shared_vertex_iter()
-      .map(|vertex| {
-        let (raw_x, raw_y) = cartesian_to_isometric(vertex.pos[0], vertex.pos[1]);
-        let vertex_x = half_width as f32 * raw_x;
-        let vertex_y = half_height as f32 * raw_y;
+    let vertex_data: Vec<VertexData> =
+      plane.shared_vertex_iter()
+           .map(|vertex| {
+             let (raw_x, raw_y) = cartesian_to_isometric(vertex.pos[0], vertex.pos[1]);
+             let vertex_x = half_width as f32 * raw_x;
+             let vertex_y = half_height as f32 * raw_y;
 
-        let (u_pos, v_pos) = ((raw_x / 4.0 - raw_y / 2.0) + 0.5, (raw_x / 4.0 + raw_y / 2.0) + 0.5);
-        let tilemap_x = u_pos * width as f32;
-        let tilemap_y = v_pos * height as f32;
+             let (u_pos, v_pos) = ((raw_x / 4.0 - raw_y / 2.0) + 0.5, (raw_x / 4.0 + raw_y / 2.0) + 0.5);
+             let tilemap_x = u_pos * width as f32;
+             let tilemap_y = v_pos * height as f32;
 
-        VertexData {
-          pos: [vertex_x, vertex_y, 0.0],
-          buf_pos: [tilemap_x as f32, tilemap_y as f32]
-        }
-      })
-      .collect();
+             VertexData {
+               pos: [vertex_x, vertex_y, 0.0],
+               buf_pos: [tilemap_x as f32, tilemap_y as f32],
+             }
+           })
+           .collect();
 
-    let index_data: Vec<u32> = plane.indexed_polygon_iter()
-      .triangulate()
-      .vertices()
-      .map(|i| i as u32)
-      .collect();
+    let index_data: Vec<u32> =
+      plane.indexed_polygon_iter()
+           .triangulate()
+           .vertices()
+           .map(|i| i as u32)
+           .collect();
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
 
     let tile_texture = load_texture(factory, tilesheet_bytes).unwrap();
 
     let pso = factory
-      .create_pipeline_simple(SHADER_VERT,
-                              SHADER_FRAG,
-                              tilemap_pipeline::new())
+      .create_pipeline_simple(SHADER_VERT, SHADER_FRAG, tilemap_pipeline::new())
       .unwrap();
 
     let pipeline_data = tilemap_pipeline::Data {
@@ -145,7 +145,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
   pub fn draw<C>(&mut self,
                  drawable: &TerrainDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
-    where C: gfx::CommandBuffer<R> {
+                 where C: gfx::CommandBuffer<R> {
     encoder.update_buffer(&self.bundle.data.tilemap, self.data.as_slice(), 0).unwrap();
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);

@@ -77,7 +77,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> CharacterDrawSystem<R>
-    where F: gfx::Factory<R> {
+                where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
     let charter_bytes = &include_bytes!("../../assets/character.png")[..];
@@ -115,7 +115,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
 
     CharacterDrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
-      data
+      data,
     }
   }
 
@@ -138,7 +138,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
       x_div: elements_x,
       y_div: 0.0,
       row_idx: 0,
-      index: char_sprite.1 as f32
+      index: char_sprite.1 as f32,
     }
   }
 
@@ -146,13 +146,13 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
                  mut drawable: &mut CharacterDrawable,
                  character: &CharacterSprite,
                  encoder: &mut gfx::Encoder<R, C>)
-    where C: gfx::CommandBuffer<R> {
+                 where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb,
                                    &self.get_next_sprite(character.character_idx,
-                                                             character.character_fire_idx,
-                                                             &mut drawable));
+                                                         character.character_fire_idx,
+                                                         &mut drawable));
     self.bundle.encode(encoder);
   }
 }

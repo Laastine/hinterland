@@ -13,4 +13,5 @@ indent_style = space
 # For project specific files
 [*.{rs,toml,lock,glsl}]
 indent_size = 2
+max_line_length = 120
 trim_trailing_whitespace = true

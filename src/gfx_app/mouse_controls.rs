@@ -71,11 +71,11 @@ impl<'a> specs::System<'a> for MouseControlSystem {
         MouseControl::LeftClick => {
           for (mi, bs, ca) in (&mut mouse_input, &mut bullets, &camera).join() {
             if let Some(val) = value {
-              let start_point =  Point2::new(dim.width as f32 / 2.0, dim.height as f32 / 2.0);
+              let start_point = Point2::new(dim.width as f32 / 2.0, dim.height as f32 / 2.0);
               let end_point = Point2::new(val.0 as f32, val.1 as f32);
               mi.left_click_point = Some(end_point);
               let movement_direction = direction_movement(direction(start_point, end_point));
-              Bullets::add_bullet(bs,Point2 {x: -ca.x_pos, y: ca.y_pos}, movement_direction);
+              Bullets::add_bullet(bs, Point2 { x: -ca.x_pos, y: ca.y_pos }, movement_direction);
             } else {
               mi.left_click_point = None;
             }

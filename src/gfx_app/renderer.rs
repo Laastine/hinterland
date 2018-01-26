@@ -40,7 +40,7 @@ impl<D: gfx::Device> DeviceRenderer<D> {
       Ok(mut encoder) => {
         encoder.flush(device);
         match self.queue.sender.send(encoder) {
-          Ok(_) => {},
+          Ok(_) => {}
           Err(e) => {
             panic!("Unable to send {}", e);
           }

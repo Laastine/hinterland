@@ -7,7 +7,7 @@ use game::constants::{TILE_WIDTH, RESOLUTION_X, RESOLUTION_Y, VIEW_DISTANCE};
 use graphics::orientation::Orientation;
 use gfx_app::mouse_controls::MouseInputState;
 use image;
-use shaders::{Position ,Projection};
+use shaders::{Position, Projection};
 use std::io::Cursor;
 
 pub mod camera;
@@ -56,12 +56,12 @@ impl Dimensions {
 pub fn flip_y_axel(point: Point2<f32>) -> Point2<f32> {
   Point2 {
     x: point.x,
-    y: RESOLUTION_Y as f32 - point.y
+    y: RESOLUTION_Y as f32 - point.y,
   }
 }
 
 pub fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> u32 {
-  let theta= cgmath::Angle::atan2(end_point.y - start_point.y, end_point.x - start_point.x);
+  let theta = cgmath::Angle::atan2(end_point.y - start_point.y, end_point.x - start_point.x);
   let angle = match theta {
     Deg(i) => i
   };
@@ -115,12 +115,13 @@ pub fn overlaps(a: Position, b: Position, width: f32, height: f32) -> bool {
 fn is_within_map_borders(point: Point2<f64>) -> bool {
   point.x > 0.0 && point.x < 63.0 && point.y > 0.0 && point.y < 63.0
 }
+
 pub fn can_move(screen_pos: [f32; 2]) -> bool {
   let x_coord = f64::from(screen_pos[0]);
   let y_coord = f64::from(screen_pos[1]);
   let point = Point2 {
     x: (x_coord / TILE_WIDTH + y_coord / TILE_WIDTH).round() + 31.0,
-    y: (y_coord / TILE_WIDTH - x_coord / TILE_WIDTH).round() + 32.0
+    y: (y_coord / TILE_WIDTH - x_coord / TILE_WIDTH).round() + 32.0,
   };
   is_within_map_borders(point)
 }
