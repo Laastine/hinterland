@@ -2,6 +2,7 @@ use bullet::BulletDrawable;
 use bullet::bullets::Bullets;
 use cgmath;
 use cgmath::{Deg, Point2};
+use character::CharacterDrawable;
 use character::controls::CharacterInputState;
 use critter::CritterData;
 use data;
@@ -10,7 +11,7 @@ use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, Z
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use graphics::orientation::{Orientation, Stance};
-use graphics::{Dimensions, load_texture, overlaps};
+use graphics::{Dimensions, get_orientation, load_texture, overlaps};
 use graphics::camera::CameraInputState;
 use shaders::{critter_pipeline, VertexData, CharacterSheet, Position, Projection};
 use specs;
@@ -64,7 +65,7 @@ impl ZombieDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, bullets: &[BulletDrawable]) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, c: &CharacterDrawable, bullets: &[BulletDrawable]) {
     self.projection = *world_to_clip;
 
     self.offset_delta =
@@ -78,6 +79,12 @@ impl ZombieDrawable {
         ci.y_movement
       ]
     };
+
+    if self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
+      self.direction = get_orientation(
+        Point2::new(self.position.position[0], self.position.position[1]),
+        Point2::new(c.position.position[0], c.position.position[1]));
+    }
 
     self.position = Position {
       position: [
@@ -238,18 +245,19 @@ impl<'a> specs::System<'a> for PreDrawSystem {
   type SystemData = (WriteStorage<'a, Zombies>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
+                     ReadStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, Bullets>,
                      Fetch<'a, Dimensions>);
 
 
-  fn run(&mut self, (mut zombies, camera_input, character_input, bullets, dim): Self::SystemData) {
+  fn run(&mut self, (mut zombies, camera_input, character_input, character, bullets, dim): Self::SystemData) {
     use specs::Join;
 
-    for (zs, camera, ci, bs) in (&mut zombies, &camera_input, &character_input, &bullets).join() {
+    for (zs, camera, ci, c, bs) in (&mut zombies, &camera_input, &character_input, &character, &bullets).join() {
       let world_to_clip = dim.world_to_projection(camera);
 
       for z in &mut zs.zombies {
-        z.update(&world_to_clip, ci, &bs.bullets);
+        z.update(&world_to_clip, ci, c, &bs.bullets);
       }
     }
   }
