@@ -1,5 +1,6 @@
 use bullet;
 use bullet::bullets::Bullets;
+use bullet::collision::CollisionSystem;
 use gfx_app::{Window, GameStatus};
 use gfx_app::renderer::{DeviceRenderer, EncoderQueue};
 use gfx_app::system::DrawSystem;
@@ -91,6 +92,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     .add(terrain_system, "terrain-system", &[])
     .add(character_system, "character-system", &[])
     .add(mouse_system, "mouse-system", &[])
+    .add(CollisionSystem::new(), "collision-system", &["mouse-system"])
     .build();
 
   window.set_controls(controls);

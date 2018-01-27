@@ -108,9 +108,9 @@ fn is_within_map_borders(point: Point2<f64>) -> bool {
   point.x > 0.0 && point.x < 63.0 && point.y > 0.0 && point.y < 63.0
 }
 
-pub fn can_move(screen_pos: [f32; 2]) -> bool {
-  let x_coord = f64::from(screen_pos[0]);
-  let y_coord = f64::from(screen_pos[1]);
+pub fn can_move(screen_pos: Position) -> bool {
+  let x_coord = f64::from(screen_pos.position[0]);
+  let y_coord = f64::from(screen_pos.position[1]);
   let point = Point2::new(
     (x_coord / TILE_WIDTH + y_coord / TILE_WIDTH).round() + 31.0,
     (y_coord / TILE_WIDTH - x_coord / TILE_WIDTH).round() + 32.0);

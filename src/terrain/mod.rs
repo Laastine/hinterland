@@ -41,7 +41,7 @@ impl TerrainDrawable {
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState) {
     self.projection = *world_to_clip;
     let new_position = Position::new([ci.x_movement, ci.y_movement]);
-    if can_move(new_position.position) {
+    if can_move(new_position) {
       self.position = new_position;
     }
   }

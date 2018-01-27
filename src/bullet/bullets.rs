@@ -1,4 +1,5 @@
 use bullet::BulletDrawable;
+use bullet::collision::Collision;
 use cgmath;
 use specs;
 
@@ -17,8 +18,12 @@ impl Bullets {
   pub fn add_bullet(&mut self, position: cgmath::Point2<f32>, movement_direction: cgmath::Point2<f32>) {
     self.bullets.push(BulletDrawable::new(position, movement_direction));
   }
+
+  pub fn remove_old_bullets(&mut self) {
+    self.bullets.retain(|ref mut b| b.status == Collision::Flying);
+  }
 }
 
 impl specs::Component for Bullets {
-  type Storage = specs::VecStorage<Bullets>;
+  type Storage = specs::DenseVecStorage<Bullets>;
 }

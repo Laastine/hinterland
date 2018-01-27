@@ -1,11 +1,12 @@
 use bullet::bullets::Bullets;
+use bullet::collision::Collision;
 use cgmath;
 use cgmath::Point2;
 use character::controls::CharacterInputState;
 use game::constants::{ASPECT_RATIO, BULLET_SPEED};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::Dimensions;
+use graphics::{Dimensions, can_move};
 use graphics::camera::CameraInputState;
 use shaders::{bullet_pipeline, VertexData, Position, Projection};
 use specs;
@@ -13,18 +14,19 @@ use specs::{Fetch, ReadStorage, WriteStorage};
 use std;
 
 pub mod bullets;
+pub mod collision;
 
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/bullet.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/bullet.f.glsl");
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct BulletDrawable {
   projection: Projection,
   pub position: Position,
   previous_position: Position,
   offset_delta: Position,
   pub movement_direction: Point2<f32>,
-  pub lifetime: usize,
+  pub status: collision::Collision,
 }
 
 impl BulletDrawable {
@@ -36,11 +38,11 @@ impl BulletDrawable {
         view: view.into(),
         proj: cgmath::perspective(cgmath::Deg(75.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       },
-      position: Position::new([position.x, position.y + 15.0]),
+      position: Position::new([position.x, position.y]),
       previous_position: Position::new([0.0, 0.0]),
       offset_delta: Position::new([0.0, 0.0]),
       movement_direction,
-      lifetime: 0,
+      status: Collision::Flying,
     }
   }
 
@@ -64,8 +66,9 @@ impl BulletDrawable {
         self.position.position[0] + self.offset_delta.position[0] + (self.movement_direction.x * BULLET_SPEED),
         self.position.position[1] + self.offset_delta.position[1] - (self.movement_direction.y * BULLET_SPEED)
       ]);
-
-    self.lifetime += 1;
+    if !can_move(self.position) {
+      self.status = Collision::OutOfBounds;
+    }
   }
 }
 
