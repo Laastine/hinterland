@@ -2,14 +2,14 @@
 
 [![CircleCI](https://circleci.com/bb/laastine-ci/zombie-shooter/tree/master.svg?style=svg&circle-token=6f849c254dd78a3b0a19eccb75197d5325235b3f)](https://circleci.com/bb/laastine-ci/zombie-shooter/tree/master)
 
-Simple isometric game written in Rust.<br/>
+Isometric zombie survival game written in Rust.
 Project started as SDL2, but was later converted to use gfx-rs.
 
 <img src="assets/zombie-shooter-gl-2018-01-24.gif" alt="preview">
 
 ## Project overview
-- [Project wiki](https://github.com/Laastine/zombie-shooter/projects/1)
 - [Blog post](https://laastine.kapsi.fi/code/2018/01/07/zombie-shooter.html)
+- [Project's task board](https://github.com/Laastine/zombie-shooter/projects/1)
 
 ## Build
 
