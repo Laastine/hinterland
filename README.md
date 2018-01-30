@@ -1,7 +1,5 @@
 # Hinterland
 
-[![CircleCI](https://circleci.com/bb/laastine-ci/hinterland/tree/master.svg?style=svg&circle-token=6f849c254dd78a3b0a19eccb75197d5325235b3f)](https://circleci.com/bb/laastine-ci/hinterland/tree/master)
-
 Isometric zombie survival game written in Rust.
 Project started as SDL2, but was later converted to use gfx-rs.
 
