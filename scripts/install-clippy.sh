@@ -2,7 +2,7 @@
 
 set -e
 
-pushd ~/zombie-shooter
+pushd ~/hinterland
 
 if type ~/.cargo/bin/cargo-clippy > /dev/null; then
   echo "Using cache Rust nightly and clippy"

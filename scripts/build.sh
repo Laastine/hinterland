@@ -1,16 +1,16 @@
 #!/bin/bash
 
 pushd .. && cargo build --release && popd
-mkdir -p zombie-shooter
-mkdir -p zombie-shooter/assets
-cp ../assets/*.png zombie-shooter/assets
-cp ../assets/*.json zombie-shooter/assets
-cp -r ../assets/maps zombie-shooter/assets
-cp -r ../assets/audio zombie-shooter/assets
-cp ../target/release/zombie-shooter zombie-shooter
-find zombie-shooter -name '.DS_Store' -type f -delete
+mkdir -p hinterland
+mkdir -p hinterland/assets
+cp ../assets/*.png hinterland/assets
+cp ../assets/*.json hinterland/assets
+cp -r ../assets/maps hinterland/assets
+cp -r ../assets/audio hinterland/assets
+cp ../target/release/hinterland hinterland
+find hinterland -name '.DS_Store' -type f -delete
 
-tar zcfv zombie-shooter.tgz zombie-shooter
-rm -r zombie-shooter
+tar zcfv hinterland.tgz hinterland
+rm -r hinterland
 
 echo 'done'
