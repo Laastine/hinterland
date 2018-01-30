@@ -1,13 +1,12 @@
 machine:
   environment:
     RUST_HOME: ~/rust
-    PATH: $PATH:$RUST_HOME/bin:~/.cargo/bin
+    PATH: $RUST_HOME/bin:$PATH
     LD_LIBRARY_PATH: $LD_LIBRARY_PATH:~/rust/lib/
 
 dependencies:
   post:
-    - ./scripts/install-rust.sh $RUST_HOME nightly
-    - ./scripts/install-clippy.sh
+    - ./scripts/install-rust.sh $RUST_HOME default
     - ./scripts/install-alsa.sh
     - rustc --version --verbose
 
@@ -16,7 +15,5 @@ dependencies:
     - "~/.cargo"
 
 test:
-  override:
-    - LD_LIBRARY_PATH=~/rust/lib/ cargo clippy
-    - ./scripts/install-rust.sh $RUST_HOME default
+  post:
     - cargo test
