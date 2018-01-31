@@ -10,7 +10,18 @@ os:
   - linux
   - osx
 
-sudo: false
+sudo: required
+
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      sudo: required
+    - os: osx
+      osx_image: xcode9.2
+
+install:
+  - ./scripts/install-alsa.sh
 
 script:
   - cargo build
