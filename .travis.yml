@@ -1,0 +1,17 @@
+language: rust
+
+cache: cargo
+
+rust:
+  - stable
+  - nightly
+
+os:
+  - linux
+  - osx
+
+sudo: false
+
+script:
+  - cargo build
+  - cargo test
