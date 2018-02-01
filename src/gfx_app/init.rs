@@ -1,26 +1,28 @@
 use bullet;
 use bullet::bullets::Bullets;
 use bullet::collision::CollisionSystem;
+use cgmath;
+use character;
+use character::controls::CharacterControlSystem;
+use critter::CharacterSprite;
 use gfx_app::{Window, GameStatus};
 use gfx_app::renderer::{DeviceRenderer, EncoderQueue};
 use gfx_app::system::DrawSystem;
 use gfx;
+use gfx_app::controls::TilemapControls;
+use gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
+use graphics;
+use graphics::{Dimensions, DeltaTime};
+use graphics::camera::CameraControlSystem;
+use house;
+use terrain;
 use std::time;
 use std::sync::mpsc;
-use terrain;
 use specs;
 use specs::World;
 use specs::DispatcherBuilder;
-use graphics::{Dimensions, DeltaTime};
-use gfx_app::controls::TilemapControls;
-use gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
-use graphics::camera::CameraControlSystem;
-use character::controls::CharacterControlSystem;
-use critter::CharacterSprite;
-use character;
 use zombie;
 use zombie::zombies::Zombies;
-use graphics;
 
 pub fn run<W, D, F>(window: &mut W) -> GameStatus
                     where W: Window<D, F>,
@@ -38,6 +40,7 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
   world.register::<terrain::TerrainDrawable>();
   world.register::<graphics::camera::CameraInputState>();
   world.register::<character::CharacterDrawable>();
+  world.register::<house::HouseDrawable>();
   world.register::<Zombies>();
   world.register::<Bullets>();
   world.register::<CharacterSprite>();
@@ -54,6 +57,7 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
   world.create_entity()
        .with(terrain::TerrainDrawable::new())
        .with(character::CharacterDrawable::new())
+       .with(house::HouseDrawable::new(cgmath::Point2::new(0.0, 750.0)))
        .with(Zombies::new())
        .with(Bullets::new())
        .with(CharacterSprite::new())
@@ -90,6 +94,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     .add(zombie::PreDrawSystem::new(), "draw-prep-zombie", &["drawing"])
     .add(bullet::PreDrawSystem::new(), "draw-prep-bullet", &["drawing"])
     .add(terrain_system, "terrain-system", &[])
+    .add(house::PreDrawSystem::new(), "draw-prep-house", &["terrain-system"])
     .add(character_system, "character-system", &[])
     .add(mouse_system, "mouse-system", &[])
     .add(CollisionSystem::new(), "collision-system", &["mouse-system"])

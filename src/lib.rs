@@ -19,6 +19,7 @@ mod game;
 mod data;
 mod critter;
 pub mod graphics;
+mod house;
 mod terrain;
 mod character;
 mod shaders;

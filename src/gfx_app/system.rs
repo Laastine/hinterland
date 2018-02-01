@@ -4,6 +4,7 @@ use gfx;
 use bullet;
 use terrain;
 use character;
+use house;
 use zombie;
 use specs;
 use specs::{Fetch, WriteStorage};
@@ -19,6 +20,7 @@ pub struct DrawSystem<D: gfx::Device> {
   character_system: character::CharacterDrawSystem<D::Resources>,
   zombie_system: zombie::ZombieDrawSystem<D::Resources>,
   bullet_system: bullet::BulletDrawSystem<D::Resources>,
+  house_system: house::HouseDrawSystem<D::Resources>,
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
   frames: u32,
@@ -41,6 +43,7 @@ impl<D: gfx::Device> DrawSystem<D> {
       character_system: character::CharacterDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       zombie_system: zombie::ZombieDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       bullet_system: bullet::BulletDrawSystem::new(factory, rtv.clone(), dsv.clone()),
+      house_system: house::HouseDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       encoder_queue,
       game_time: Instant::now(),
       frames: 0,
@@ -60,9 +63,10 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
                      WriteStorage<'a, CharacterSprite>,
                      WriteStorage<'a, zombie::zombies::Zombies>,
                      WriteStorage<'a, bullet::bullets::Bullets>,
+                     WriteStorage<'a, house::HouseDrawable>,
                      Fetch<'a, DeltaTime>);
 
-  fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut zombies, mut bullets, d): Self::SystemData) {
+  fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut zombies, mut bullets, mut house, d): Self::SystemData) {
     use specs::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
 
@@ -88,8 +92,9 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 16.0 / 256.0, 20.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
-    for (t, c, cs, zs, bs) in (&mut terrain, &mut character, &mut character_sprite, &mut zombies, &mut bullets).join() {
+    for (t, c, cs, zs, bs, h) in (&mut terrain, &mut character, &mut character_sprite, &mut zombies, &mut bullets, &mut house).join() {
       self.terrain_system.draw(t, &mut encoder);
+      self.house_system.draw(h, &mut encoder);
 
       if self.cool_down == 0.0 {
         if c.stance == Stance::Walking {
