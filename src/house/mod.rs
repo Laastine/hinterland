@@ -78,7 +78,7 @@ impl<R: gfx::Resources> HouseDrawSystem<R> {
         VertexData::new([-120.0, 120.0, 0.0], [0.0, 0.0]),
       ];
 
-    let house_bytes = &include_bytes!("../../assets/house.png")[..];
+    let house_bytes = &include_bytes!("../../assets/maps/house.png")[..];
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());
 
