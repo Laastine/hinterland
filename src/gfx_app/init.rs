@@ -47,9 +47,7 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
   world.register::<character::controls::CharacterInputState>();
   world.register::<MouseInputState>();
 
-  world.add_resource(terrain::tilemap::generate());
   world.add_resource(Dimensions::new(viewport_size.0, viewport_size.1));
-  world.add_resource(graphics::camera::CameraInputState::new());
   world.add_resource(character::controls::CharacterInputState::new());
   world.add_resource(MouseInputState::new());
   world.add_resource(DeltaTime(0.0));
