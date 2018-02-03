@@ -65,8 +65,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>)
                 -> TerrainDrawSystem<R>
-                where F: gfx::Factory<R>
-  {
+                where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
     let tile_size = 32;
@@ -121,9 +120,11 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
       out_depth: dsv,
     };
 
+    let terrain = tilemap::Terrain::new();
+
     TerrainDrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
-      data: tilemap::generate().tiles,
+      data: terrain.tiles,
       is_tilemap_dirty: true,
     }
   }
