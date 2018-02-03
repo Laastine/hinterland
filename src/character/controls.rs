@@ -62,11 +62,11 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
 
     while let Ok(control) = self.queue.try_recv() {
       match control {
-        CharacterControl::Up => self.y_move = Some(-0.9),
-        CharacterControl::Down => self.y_move = Some(0.9),
+        CharacterControl::Up => self.y_move = Some(-0.45),
+        CharacterControl::Down => self.y_move = Some(0.45),
         CharacterControl::YMoveStop => self.y_move = None,
-        CharacterControl::Right => self.x_move = Some(-1.0),
-        CharacterControl::Left => self.x_move = Some(1.0),
+        CharacterControl::Right => self.x_move = Some(-0.5),
+        CharacterControl::Left => self.x_move = Some(0.5),
         CharacterControl::XMoveStop => self.x_move = None,
       }
     }

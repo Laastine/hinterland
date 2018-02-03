@@ -133,10 +133,10 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
                  drawable: &TerrainDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
                  where C: gfx::CommandBuffer<R> {
-    encoder.update_buffer(&self.bundle.data.tilemap, self.data.as_slice(), 0).unwrap();
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     if self.is_tilemap_dirty {
+      encoder.update_buffer(&self.bundle.data.tilemap, self.data.as_slice(), 0).unwrap();
       encoder.update_constant_buffer(&self.bundle.data.tilemap_cb, &TilemapSettings {
         world_size: [64.0, 64.0],
         tilesheet_size: [32.0, 32.0],
