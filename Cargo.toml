@@ -1,14 +1,14 @@
 [package]
-name = "zombie_shooter"
+name = "hinterland"
 version = "0.2.0"
 authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 
 [lib]
-name = "zombie_shooter_lib"
+name = "hinterland_lib"
 path = "src/lib.rs"
 
 [[bin]]
-name = "zombie_shooter_bin"
+name = "hinterland_bin"
 path = "src/main.rs"
 
 [dependencies]

@@ -1,5 +1,5 @@
-extern crate zombie_shooter_lib;
+extern crate hinterland_lib;
 
 pub fn main() {
-  zombie_shooter_lib::main();
+  hinterland_lib::main();
 }
