@@ -10,7 +10,7 @@ fn calc_index(xpos: usize, ypos: usize) -> usize {
 fn populate_tilemap(mut tiles: Vec<TileMapData>, map: &Map) -> Vec<TileMapData> {
   for ypos in 0..TILES_PCS_H {
     for xpos in 0..TILES_PCS_W {
-      let map_val = get_map_tile(&map, 0, xpos, ypos);
+      let map_val = get_map_tile(map, 0, xpos, ypos);
       let tex_x = map_val % 32;
       let y = (map_val - tex_x) / 32;
       let x = if tex_x < 1 { 1 } else { tex_x - 1 };
