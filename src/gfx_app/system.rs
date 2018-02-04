@@ -94,7 +94,6 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
 
     for (t, c, cs, zs, bs, h) in (&mut terrain, &mut character, &mut character_sprite, &mut zombies, &mut bullets, &mut house).join() {
       self.terrain_system.draw(t, &mut encoder);
-      self.house_system.draw(h, &mut encoder);
 
       if self.cool_down == 0.0 {
         if c.stance == Stance::Walking {
@@ -117,7 +116,13 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
           self.zombie_system.draw(&mut z, &mut encoder);
         }
       }
-      self.character_system.draw(c, cs, &mut encoder);
+      if c.position.position[1] <= h.position.position[1] {
+        self.house_system.draw(h, &mut encoder);
+        self.character_system.draw(c, cs, &mut encoder);
+      } else {
+        self.character_system.draw(c, cs, &mut encoder);
+        self.house_system.draw(h, &mut encoder);
+      }
       for mut z in &mut zs.zombies {
         if c.position.position[1] > z.position.position[1] {
           self.zombie_system.draw(&mut z, &mut encoder);
