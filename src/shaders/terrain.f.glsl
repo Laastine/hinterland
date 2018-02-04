@@ -8,6 +8,7 @@ struct TileMapData {
 };
 
 const int TILEMAP_BUF_LENGTH = 2304;
+const float SHADING_MULTIPLIER = 0.5;
 
 uniform b_TileMap {
   TileMapData u_Data[TILEMAP_BUF_LENGTH];
@@ -28,5 +29,9 @@ void main() {
   vec4 entry = u_Data[bufIdx].data;
   vec2 uvCoords = (entry.xy + rawUvOffsets) / u_TilesheetSize.xy;
 
-  Target0 = texture(t_TileSheet, uvCoords);
+  vec4 t0 = texture(t_TileSheet, uvCoords);
+  t0.r *= SHADING_MULTIPLIER;
+  t0.g *= SHADING_MULTIPLIER;
+  t0.b *= SHADING_MULTIPLIER;
+  Target0 = t0;
 }
