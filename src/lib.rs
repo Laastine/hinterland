@@ -19,7 +19,7 @@ mod game;
 mod data;
 mod critter;
 pub mod graphics;
-mod terrain_objects;
+mod terrain_object;
 mod terrain;
 mod character;
 mod shaders;

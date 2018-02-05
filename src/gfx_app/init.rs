@@ -1,7 +1,6 @@
 use bullet;
 use bullet::bullets::Bullets;
 use bullet::collision::CollisionSystem;
-use cgmath;
 use character;
 use character::controls::CharacterControlSystem;
 use critter::CharacterSprite;
@@ -20,7 +19,7 @@ use specs::World;
 use std::sync::mpsc;
 use std::time;
 use terrain;
-use terrain_objects;
+use terrain_object;
 use zombie;
 use zombie::zombies::Zombies;
 
@@ -40,7 +39,7 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
   world.register::<terrain::TerrainDrawable>();
   world.register::<graphics::camera::CameraInputState>();
   world.register::<character::CharacterDrawable>();
-  world.register::<terrain_objects::TerrainObjectDrawable>();
+  world.register::<terrain_object::terrain_objects::TerrainObjects>();
   world.register::<Zombies>();
   world.register::<Bullets>();
   world.register::<CharacterSprite>();
@@ -55,7 +54,7 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
   world.create_entity()
        .with(terrain::TerrainDrawable::new())
        .with(character::CharacterDrawable::new())
-       .with(terrain_objects::TerrainObjectDrawable::new(cgmath::Point2::new(0.0, 750.0)))
+       .with(terrain_object::terrain_objects::TerrainObjects::new())
        .with(Zombies::new())
        .with(Bullets::new())
        .with(CharacterSprite::new())
@@ -92,7 +91,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     .add(zombie::PreDrawSystem::new(), "draw-prep-zombie", &["drawing"])
     .add(bullet::PreDrawSystem::new(), "draw-prep-bullet", &["drawing"])
     .add(terrain_system, "terrain-system", &[])
-    .add(terrain_objects::PreDrawSystem::new(), "draw-prep-terrain_objects", &["terrain-system"])
+    .add(terrain_object::PreDrawSystem::new(), "draw-prep-terrain_object", &["terrain-system"])
     .add(character_system, "character-system", &[])
     .add(mouse_system, "mouse-system", &[])
     .add(CollisionSystem::new(), "collision-system", &["mouse-system"])

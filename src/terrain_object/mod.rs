@@ -8,6 +8,9 @@ use graphics::camera::CameraInputState;
 use shaders::{Position, Projection, static_element_pipeline, VertexData};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
+use terrain_object::terrain_objects::TerrainObjects;
+
+pub mod terrain_objects;
 
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/static_element.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/static_element.f.glsl");
@@ -125,17 +128,19 @@ impl PreDrawSystem {
 
 impl<'a> specs::System<'a> for PreDrawSystem {
   type SystemData = (ReadStorage<'a, CameraInputState>,
-                     WriteStorage<'a, TerrainObjectDrawable>,
                      ReadStorage<'a, CharacterInputState>,
+                     WriteStorage<'a, TerrainObjects>,
                      Fetch<'a, Dimensions>);
 
-  fn run(&mut self, (camera_input, mut house, character_input, dim): Self::SystemData) {
+  fn run(&mut self, (camera_input, character_input, mut terrain_objects, dim): Self::SystemData) {
     use specs::Join;
 
-    for (camera, h, ci) in (&camera_input, &mut house, &character_input).join() {
+    for (camera, ci, obj) in (&camera_input, &character_input, &mut terrain_objects).join() {
       let world_to_clip = dim.world_to_projection(camera);
 
-      h.update(&world_to_clip, ci);
+      for o in &mut obj.objects {
+        o.update(&world_to_clip, ci);
+      }
     }
   }
 }
