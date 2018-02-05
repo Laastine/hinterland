@@ -32,7 +32,7 @@ Run windowed mode with `cargo run --features windowed`
 
 Tested with Rust 1.23 (and nightly 1.25) with macOS and Linux
 
-## Asset licences
+## External asset licence list
 
 * Character: [graphics](http://opengameart.org/content/tmim-heroine-bleeds-game-art) Creative Commons V3
 * Zombie [zombie](http://opengameart.org/content/zombie-sprites) Creative Commons V3
