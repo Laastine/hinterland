@@ -1,6 +1,6 @@
 use cgmath;
 use character::controls::CharacterInputState;
-use game::constants::{ASPECT_RATIO, TILEMAP_BUF_LENGTH};
+use game::constants::{ASPECT_RATIO, TILE_MAP_BUF_LENGTH};
 use game::constants::{TILES_PCS_H, TILES_PCS_W};
 use genmesh::{Triangulate, Vertices};
 use genmesh::generators::{IndexedPolygon, Plane, SharedVertex};
@@ -13,7 +13,7 @@ use shaders::{Position, Projection, tilemap_pipeline, TileMapData, TilemapSettin
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
 
-pub mod tilemap;
+pub mod tile_map;
 
 fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
   ((point_x - point_y), (point_x + point_y) / 2.0)
@@ -57,7 +57,7 @@ const SHADER_FRAG: &[u8] = include_bytes!("../shaders/terrain.f.glsl");
 pub struct TerrainDrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, tilemap_pipeline::Data<R>>,
   data: Vec<TileMapData>,
-  is_tilemap_dirty: bool,
+  is_tile_map_dirty: bool,
 }
 
 impl<R: gfx::Resources> TerrainDrawSystem<R> {
@@ -74,7 +74,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     let half_width = (tile_size * width) / 2;
     let half_height = (tile_size * height) / 2;
 
-    let tilesheet_bytes = &include_bytes!("../../assets/maps/terrain.png")[..];
+    let tile_sheet_bytes = &include_bytes!("../../assets/maps/terrain.png")[..];
     let plane = Plane::subdivide(width, width);
     let vertex_data: Vec<VertexData> =
       plane.shared_vertex_iter()
@@ -84,12 +84,12 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
              let vertex_y = half_height as f32 * raw_y;
 
              let (u_pos, v_pos) = ((raw_x / 4.0 - raw_y / 2.0) + 0.5, (raw_x / 4.0 + raw_y / 2.0) + 0.5);
-             let tilemap_x = u_pos * width as f32;
-             let tilemap_y = v_pos * height as f32;
+             let tile_map_x = u_pos * width as f32;
+             let tile_map_y = v_pos * height as f32;
 
              VertexData {
                pos: [vertex_x, vertex_y, 0.0],
-               buf_pos: [tilemap_x as f32, tilemap_y as f32],
+               buf_pos: [tile_map_x as f32, tile_map_y as f32],
              }
            })
            .collect();
@@ -103,7 +103,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
 
-    let tile_texture = load_texture(factory, tilesheet_bytes).unwrap();
+    let tile_texture = load_texture(factory, tile_sheet_bytes).unwrap();
 
     let pso = factory
       .create_pipeline_simple(SHADER_VERT, SHADER_FRAG, tilemap_pipeline::new())
@@ -113,19 +113,19 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
       vbuf: vertex_buf,
       position_cb: factory.create_constant_buffer(1),
       projection_cb: factory.create_constant_buffer(1),
-      tilemap: factory.create_constant_buffer(TILEMAP_BUF_LENGTH),
+      tilemap: factory.create_constant_buffer(TILE_MAP_BUF_LENGTH),
       tilemap_cb: factory.create_constant_buffer(1),
       tilesheet: (tile_texture, factory.create_sampler_linear()),
       out_color: rtv,
       out_depth: dsv,
     };
 
-    let terrain = tilemap::Terrain::new();
+    let terrain = tile_map::Terrain::new();
 
     TerrainDrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
       data: terrain.tiles,
-      is_tilemap_dirty: true,
+      is_tile_map_dirty: true,
     }
   }
 
@@ -135,13 +135,13 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
                  where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
-    if self.is_tilemap_dirty {
+    if self.is_tile_map_dirty {
       encoder.update_buffer(&self.bundle.data.tilemap, self.data.as_slice(), 0).unwrap();
       encoder.update_constant_buffer(&self.bundle.data.tilemap_cb, &TilemapSettings {
         world_size: [64.0, 64.0],
         tilesheet_size: [32.0, 32.0],
       });
-      self.is_tilemap_dirty = false
+      self.is_tile_map_dirty = false
     }
 
     self.bundle.encode(encoder);

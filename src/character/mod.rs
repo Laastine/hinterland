@@ -2,7 +2,7 @@ use cgmath;
 use character::controls::CharacterInputState;
 use critter::{CharacterSprite, CritterData};
 use data;
-use game::constants::{ASPECT_RATIO, CHARSHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET};
+use game::constants::{ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::mouse_controls::MouseInputState;
@@ -131,7 +131,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
         (&self.data[sprite_idx], sprite_idx)
       };
 
-    let elements_x = CHARSHEET_TOTAL_WIDTH / (char_sprite.0.data[2] + SPRITE_OFFSET);
+    let elements_x = CHARACTER_SHEET_TOTAL_WIDTH / (char_sprite.0.data[2] + SPRITE_OFFSET);
     CharacterSheet {
       x_div: elements_x,
       y_div: 0.0,

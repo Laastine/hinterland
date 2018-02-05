@@ -6,7 +6,7 @@ use character::CharacterDrawable;
 use character::controls::CharacterInputState;
 use critter::CritterData;
 use data;
-use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, ZOMBIE_STILL_SPRITE_OFFSET, ZOMBIESHEET_TOTAL_WIDTH};
+use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, ZOMBIE_STILL_SPRITE_OFFSET, ZOMBIE_SHEET_TOTAL_WIDTH};
 use game::get_random_bool;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
@@ -197,7 +197,7 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
       (1.0, 2)
     };
 
-    let elements_x = ZOMBIESHEET_TOTAL_WIDTH / (zombie_sprite.0.data[2] + SPRITE_OFFSET);
+    let elements_x = ZOMBIE_SHEET_TOTAL_WIDTH / (zombie_sprite.0.data[2] + SPRITE_OFFSET);
     CharacterSheet {
       x_div: elements_x,
       y_div,
