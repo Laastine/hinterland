@@ -1,11 +1,11 @@
-use gfx::handle::ShaderResourceView;
-use gfx::{texture, Factory, Resources};
-use gfx::format::Rgba8;
 use cgmath;
-use cgmath::{Angle, Deg, Matrix4, Point3, Vector3, Point2};
-use game::constants::{TILE_WIDTH, RESOLUTION_X, RESOLUTION_Y, VIEW_DISTANCE};
-use graphics::orientation::Orientation;
+use cgmath::{Angle, Deg, Matrix4, Point2, Point3, Vector3};
+use game::constants::{RESOLUTION_X, RESOLUTION_Y, TILE_WIDTH, VIEW_DISTANCE};
+use gfx::{Factory, Resources, texture};
+use gfx::format::Rgba8;
+use gfx::handle::ShaderResourceView;
 use gfx_app::mouse_controls::MouseInputState;
+use graphics::orientation::Orientation;
 use image;
 use shaders::{Position, Projection};
 use std::io::Cursor;

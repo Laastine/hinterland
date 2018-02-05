@@ -1,17 +1,17 @@
+use bullet;
+use character;
+use critter::CharacterSprite;
+use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::renderer::EncoderQueue;
-use gfx;
-use bullet;
-use terrain;
-use character;
-use terrain_objects;
-use zombie;
+use graphics::DeltaTime;
+use graphics::orientation::Stance;
 use specs;
 use specs::{Fetch, WriteStorage};
 use std::time::Instant;
-use critter::CharacterSprite;
-use graphics::orientation::Stance;
-use graphics::DeltaTime;
+use terrain;
+use terrain_objects;
+use zombie;
 
 pub struct DrawSystem<D: gfx::Device> {
   render_target_view: gfx::handle::RenderTargetView<D::Resources, ColorFormat>,
@@ -34,8 +34,7 @@ impl<D: gfx::Device> DrawSystem<D> {
                 dsv: &gfx::handle::DepthStencilView<D::Resources, DepthFormat>,
                 encoder_queue: EncoderQueue<D>)
                 -> DrawSystem<D>
-                where F: gfx::Factory<D::Resources>
-  {
+                where F: gfx::Factory<D::Resources> {
     DrawSystem {
       render_target_view: rtv.clone(),
       depth_stencil_view: dsv.clone(),
@@ -55,8 +54,7 @@ impl<D: gfx::Device> DrawSystem<D> {
 
 impl<'a, D> specs::System<'a> for DrawSystem<D>
   where D: gfx::Device,
-        D::CommandBuffer: Send,
-{
+        D::CommandBuffer: Send {
   #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
   type SystemData = (WriteStorage<'a, terrain::TerrainDrawable>,
                      WriteStorage<'a, character::CharacterDrawable>,

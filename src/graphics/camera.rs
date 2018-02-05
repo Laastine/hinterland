@@ -1,7 +1,7 @@
-use std::sync::mpsc;
+use game::constants::VIEW_DISTANCE;
 use specs;
 use specs::WriteStorage;
-use game::constants::VIEW_DISTANCE;
+use std::sync::mpsc;
 
 #[derive(Clone, Debug)]
 pub struct CameraInputState {

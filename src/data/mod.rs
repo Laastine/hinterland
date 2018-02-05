@@ -1,14 +1,14 @@
-use std::io::prelude::*;
-use std::fs::File;
-use std::string::String;
-use std::path::Path;
-use std::vec::Vec;
-use std::io::BufReader;
-use json;
-use game::constants::{CHARACTER_JSON_PATH, CHARACTER_BUF_LENGTH, ZOMBIE_JSON_PATH};
-use tiled::Map;
-use tiled;
 use critter::CritterData;
+use game::constants::{CHARACTER_BUF_LENGTH, CHARACTER_JSON_PATH, ZOMBIE_JSON_PATH};
+use json;
+use std::fs::File;
+use std::io::BufReader;
+use std::io::prelude::*;
+use std::path::Path;
+use std::string::String;
+use std::vec::Vec;
+use tiled;
+use tiled::Map;
 
 pub fn load_map_file(filename: &str) -> Map {
   let file = match File::open(&Path::new(&filename)) {

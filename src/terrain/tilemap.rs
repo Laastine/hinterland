@@ -1,6 +1,6 @@
+use data::{get_map_tile, load_map_file};
+use game::constants::{MAP_FILE_PATH, TILEMAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W};
 use shaders::TileMapData;
-use data::{load_map_file, get_map_tile};
-use game::constants::{MAP_FILE_PATH, TILEMAP_BUF_LENGTH, TILES_PCS_W, TILES_PCS_H};
 use tiled::{Map, Tileset};
 
 fn calc_index(xpos: usize, ypos: usize) -> usize {

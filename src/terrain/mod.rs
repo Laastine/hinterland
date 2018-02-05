@@ -1,15 +1,15 @@
 use cgmath;
 use character::controls::CharacterInputState;
-use gfx_app::{ColorFormat, DepthFormat};
+use game::constants::{ASPECT_RATIO, TILEMAP_BUF_LENGTH};
+use game::constants::{TILES_PCS_H, TILES_PCS_W};
+use genmesh::{Triangulate, Vertices};
+use genmesh::generators::{IndexedPolygon, Plane, SharedVertex};
 use gfx;
-use graphics::{Dimensions, can_move};
-use genmesh::{Vertices, Triangulate};
-use genmesh::generators::{Plane, SharedVertex, IndexedPolygon};
+use gfx_app::{ColorFormat, DepthFormat};
+use graphics::{can_move, Dimensions};
 use graphics::camera::CameraInputState;
-use game::constants::{TILEMAP_BUF_LENGTH, ASPECT_RATIO};
 use graphics::load_texture;
-use game::constants::{TILES_PCS_W, TILES_PCS_H};
-use shaders::{Projection, Position, TileMapData, tilemap_pipeline, TilemapSettings, VertexData};
+use shaders::{Position, Projection, tilemap_pipeline, TileMapData, TilemapSettings, VertexData};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
 

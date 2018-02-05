@@ -1,6 +1,6 @@
 use bullet::bullets::Bullets;
 use specs;
-use specs::{WriteStorage};
+use specs::WriteStorage;
 
 #[derive(Debug)]
 pub struct CollisionSystem;

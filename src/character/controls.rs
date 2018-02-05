@@ -1,9 +1,9 @@
-use std::sync::mpsc;
-use specs;
-use specs::{ReadStorage, WriteStorage};
 use gfx_app::mouse_controls::MouseInputState;
 use graphics::camera::CameraInputState;
 use graphics::orientation::Orientation;
+use specs;
+use specs::{ReadStorage, WriteStorage};
+use std::sync::mpsc;
 
 #[derive(Clone, Debug)]
 pub struct CharacterInputState {

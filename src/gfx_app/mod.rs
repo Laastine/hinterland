@@ -1,9 +1,9 @@
-use glutin;
+use game::constants::{RESOLUTION_X, RESOLUTION_Y};
 use gfx;
 use gfx_device_gl;
 use gfx_window_glutin;
+use glutin;
 use glutin::GlContext;
-use game::constants::{RESOLUTION_X, RESOLUTION_Y};
 
 pub mod init;
 pub mod renderer;

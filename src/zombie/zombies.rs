@@ -1,6 +1,6 @@
-use zombie::ZombieDrawable;
 use shaders::Position;
 use specs;
+use zombie::ZombieDrawable;
 
 #[derive(Debug, Clone)]
 pub struct Zombies {

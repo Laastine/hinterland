@@ -1,7 +1,7 @@
-use std::sync::mpsc;
-use graphics::camera::CameraControl;
 use character::controls::CharacterControl;
 use gfx_app::mouse_controls::MouseControl;
+use graphics::camera::CameraControl;
+use std::sync::mpsc;
 
 #[derive(Debug, Clone)]
 pub struct TilemapControls {

@@ -1,16 +1,16 @@
 use cgmath;
 use character::controls::CharacterInputState;
-use graphics::orientation::{Orientation, Stance};
+use critter::{CharacterSprite, CritterData};
+use data;
+use game::constants::{ASPECT_RATIO, CHARSHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET};
+use gfx;
+use gfx_app::{ColorFormat, DepthFormat};
+use gfx_app::mouse_controls::MouseInputState;
 use graphics::{Dimensions, get_orientation_from_center};
 use graphics::camera::CameraInputState;
-use data;
-use game::constants::{ASPECT_RATIO, RUN_SPRITE_OFFSET, CHARSHEET_TOTAL_WIDTH, SPRITE_OFFSET};
-use shaders::{critter_pipeline, VertexData, CharacterSheet, Position, Projection};
-use gfx;
 use graphics::load_texture;
-use gfx_app::mouse_controls::MouseInputState;
-use gfx_app::{ColorFormat, DepthFormat};
-use critter::{CharacterSprite, CritterData};
+use graphics::orientation::{Orientation, Stance};
+use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
 
