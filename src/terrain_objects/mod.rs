@@ -13,17 +13,17 @@ const SHADER_VERT: &[u8] = include_bytes!("../shaders/static_element.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/static_element.f.glsl");
 
 #[derive(Debug, Clone)]
-pub struct HouseDrawable {
+pub struct TerrainObjectDrawable {
   projection: Projection,
   pub position: Position,
   previous_position: Position,
   offset_delta: Position,
 }
 
-impl HouseDrawable {
-  pub fn new(position: cgmath::Point2<f32>) -> HouseDrawable {
+impl TerrainObjectDrawable {
+  pub fn new(position: cgmath::Point2<f32>) -> TerrainObjectDrawable {
     let view = Dimensions::get_view_matrix();
-    HouseDrawable {
+    TerrainObjectDrawable {
       projection: Projection {
         model: view.into(),
         view: view.into(),
@@ -53,18 +53,18 @@ impl HouseDrawable {
   }
 }
 
-impl specs::Component for HouseDrawable {
-  type Storage = specs::VecStorage<HouseDrawable>;
+impl specs::Component for TerrainObjectDrawable {
+  type Storage = specs::VecStorage<TerrainObjectDrawable>;
 }
 
-pub struct HouseDrawSystem<R: gfx::Resources> {
+pub struct TerrainObjectDrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, static_element_pipeline::Data<R>>,
 }
 
-impl<R: gfx::Resources> HouseDrawSystem<R> {
+impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
-                dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> HouseDrawSystem<R>
+                dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> TerrainObjectDrawSystem<R>
                 where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
@@ -82,7 +82,7 @@ impl<R: gfx::Resources> HouseDrawSystem<R> {
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());
 
-    let house_texture = load_texture(factory, house_bytes).unwrap();
+    let terrain_object_texture = load_texture(factory, house_bytes).unwrap();
 
     let pso = factory
       .create_pipeline_simple(SHADER_VERT,
@@ -94,18 +94,18 @@ impl<R: gfx::Resources> HouseDrawSystem<R> {
       vbuf: vertex_buf,
       position_cb: factory.create_constant_buffer(1),
       projection_cb: factory.create_constant_buffer(1),
-      static_element_sheet: (house_texture, factory.create_sampler_linear()),
+      static_element_sheet: (terrain_object_texture, factory.create_sampler_linear()),
       out_color: rtv,
       out_depth: dsv,
     };
 
-    HouseDrawSystem {
+    TerrainObjectDrawSystem {
       bundle: gfx::Bundle::new(slice, pso, pipeline_data),
     }
   }
 
   pub fn draw<C>(&mut self,
-                 drawable: &HouseDrawable,
+                 drawable: &TerrainObjectDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
                  where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
@@ -125,7 +125,7 @@ impl PreDrawSystem {
 
 impl<'a> specs::System<'a> for PreDrawSystem {
   type SystemData = (ReadStorage<'a, CameraInputState>,
-                     WriteStorage<'a, HouseDrawable>,
+                     WriteStorage<'a, TerrainObjectDrawable>,
                      ReadStorage<'a, CharacterInputState>,
                      Fetch<'a, Dimensions>);
 
