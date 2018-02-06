@@ -107,7 +107,7 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
     }
   }
 
-  pub fn draw<C>(&mut self,
+  pub fn draw<C>(&self,
                  drawable: &TerrainObjectDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
                  where C: gfx::CommandBuffer<R> {

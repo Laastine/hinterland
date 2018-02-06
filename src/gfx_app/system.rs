@@ -116,7 +116,7 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
       }
       for mut o in &mut obj.objects {
         if c.position.position[1] <= o.position.position[1] {
-          self.terrain_object_system.draw(&mut o, &mut encoder);
+          self.terrain_object_system.draw(&o, &mut encoder);
         }
       }
       self.character_system.draw(c, cs, &mut encoder);
@@ -127,7 +127,7 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
       }
       for mut o in &mut obj.objects {
         if c.position.position[1] > o.position.position[1] {
-          self.terrain_object_system.draw(&mut o, &mut encoder);
+          self.terrain_object_system.draw(&o, &mut encoder);
         }
       }
 
