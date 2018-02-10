@@ -3,6 +3,7 @@ pub const TILE_WIDTH: f64 = 46.0;
 pub const TILES_PCS_W: usize = 64;
 pub const TILES_PCS_H: usize = 64;
 
+#[cfg_attr(feature = "cargo-clippy", allow(decimal_literal_representation))]
 pub const TILE_MAP_BUF_LENGTH: usize = 4096;
 pub const CHARACTER_BUF_LENGTH: usize = 224;
 
