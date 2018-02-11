@@ -36,9 +36,9 @@ impl GlutinWindow {
       window_title.with_dimensions(RESOLUTION_X, RESOLUTION_Y)
     } else {
       let monitor = {
-        glutin::get_available_monitors().nth(0).expect("Please enter a valid ID")
+        events_loop.get_available_monitors().nth(0).expect("Please enter a valid ID")
       };
-      window_title.with_fullscreen(monitor)
+      window_title.with_fullscreen(Some(monitor))
                   .with_dimensions(RESOLUTION_X, RESOLUTION_Y)
     };
 
@@ -107,7 +107,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
 
   fn get_viewport_size(&mut self) -> (u32, u32) {
     self.window
-        .get_inner_size_pixels()
+        .get_inner_size()
         .unwrap_or((RESOLUTION_X, RESOLUTION_Y))
   }
 
@@ -130,7 +130,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
   fn poll_events(&mut self) -> Option<GameStatus> {
     use glutin::KeyboardInput;
     use glutin::MouseButton;
-    use glutin::WindowEvent::{Resized, Closed, MouseMoved, MouseInput};
+    use glutin::WindowEvent::{Resized, Closed, CursorMoved, MouseInput};
     use glutin::ElementState::{Pressed, Released};
     use glutin::VirtualKeyCode::{Escape, Z, X, W, A, S, D};
 
@@ -208,7 +208,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             controls.mouse_right_click(None);
             None
           }
-          MouseMoved { position, .. } => {
+          CursorMoved { position, .. } => {
             *m_pos = position;
             None
           }
