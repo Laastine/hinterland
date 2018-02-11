@@ -139,12 +139,12 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
         VertexData::new([-25.0, -35.0, 0.0], [0.0, 1.0]),
         VertexData::new([25.0, -35.0, 0.0], [1.0, 1.0]),
         VertexData::new([25.0, 35.0, 0.0], [1.0, 0.0]),
-        VertexData::new([-25.0, -35.0, 0.0], [0.0, 1.0]),
-        VertexData::new([25.0, 35.0, 0.0], [1.0, 0.0]),
         VertexData::new([-25.0, 35.0, 0.0], [0.0, 0.0]),
       ];
 
-    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());
+    let index_data: [u16; 6] = [0, 1, 2, 2, 3, 0];
+
+    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
 
     let char_texture = load_texture(factory, zombie_bytes).unwrap();
     let pso = factory

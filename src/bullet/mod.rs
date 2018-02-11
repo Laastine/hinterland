@@ -88,12 +88,12 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
         VertexData::new([-1.0, -1.0, 0.0], [0.0, 1.0]),
         VertexData::new([1.0, -1.0, 0.0], [1.0, 1.0]),
         VertexData::new([1.0, 1.0, 0.0], [1.0, 0.0]),
-        VertexData::new([-1.0, -1.0, 0.0], [0.0, 1.0]),
-        VertexData::new([1.0, 1.0, 0.0], [1.0, 0.0]),
         VertexData::new([-1.0, 1.0, 0.0], [0.0, 0.0]),
       ];
 
-    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());
+    let index_data: [u16; 6] = [0, 1, 2, 2, 3, 0];
+
+    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
     let pso = factory
       .create_pipeline_simple(SHADER_VERT,
                               SHADER_FRAG,
