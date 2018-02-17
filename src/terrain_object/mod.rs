@@ -41,7 +41,7 @@ impl TerrainObjectDrawable {
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState) {
     self.projection = *world_to_clip;
 
-    self.offset_delta =
+    let offset_delta =
       Position::new([ci.x_movement - self.previous_position.position[0], ci.y_movement - self.previous_position.position[1]]);
 
     self.previous_position = Position::new([
@@ -50,8 +50,8 @@ impl TerrainObjectDrawable {
     ]);
 
     self.position = Position::new([
-      self.position.position[0] + self.offset_delta.position[0],
-      self.position.position[1] + self.offset_delta.position[1],
+      self.position.position[0] + offset_delta.position[0],
+      self.position.position[1] + offset_delta.position[1],
     ]);
   }
 }

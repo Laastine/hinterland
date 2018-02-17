@@ -28,7 +28,6 @@ pub struct ZombieDrawable {
   projection: Projection,
   pub position: Position,
   previous_position: Position,
-  offset_delta: Position,
   orientation: Orientation,
   pub stance: Stance,
   direction: Orientation,
@@ -48,7 +47,6 @@ impl ZombieDrawable {
       },
       position,
       previous_position: Position::new([0.0, 0.0]),
-      offset_delta: Position::new([0.0, 0.0]),
       orientation: Orientation::Left,
       stance: Stance::Still,
       direction: Orientation::Left,
@@ -61,7 +59,7 @@ impl ZombieDrawable {
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, c: &CharacterDrawable, bullets: &[BulletDrawable]) {
     self.projection = *world_to_clip;
 
-    self.offset_delta =
+    let offset_delta =
       Position::new([ci.x_movement - self.previous_position.position[0], ci.y_movement - self.previous_position.position[1]]);
 
     self.previous_position = Position::new([
@@ -76,8 +74,8 @@ impl ZombieDrawable {
     }
 
     self.position = Position::new([
-      self.position.position[0] + self.offset_delta.position[0] + (self.movement_direction.x),
-      self.position.position[1] + self.offset_delta.position[1] - (self.movement_direction.y)
+      self.position.position[0] + offset_delta.position[0] + (self.movement_direction.x),
+      self.position.position[1] + offset_delta.position[1] - (self.movement_direction.y)
     ]);
     bullets.iter().for_each(|bullet| {
       if overlaps(self.position, bullet.position, 80.0, 80.0) && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
