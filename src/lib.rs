@@ -12,6 +12,7 @@ extern crate rodio;
 extern crate specs;
 extern crate tiled;
 
+mod audio;
 mod bullet;
 mod gfx_app;
 mod game;

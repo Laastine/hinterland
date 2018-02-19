@@ -1,3 +1,4 @@
+use audio::AudioSystem;
 use bullet;
 use bullet::bullets::Bullets;
 use bullet::collision::CollisionSystem;
@@ -79,6 +80,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
 
   let (_, game_state) = mpsc::channel::<GameStatus>();
 
+  let (audio_system, audio_control) = AudioSystem::new();
   let (terrain_system, terrain_control) = CameraControlSystem::new();
   let (character_system, character_control) = CharacterControlSystem::new();
   let (mouse_system, mouse_control, ) = MouseControlSystem::new();
