@@ -10,8 +10,7 @@ pub struct CharacterAudio {
 
 impl CharacterAudio {
   pub fn new() -> CharacterAudio {
-    #[allow(deprecated)]
-    let endpoint = rodio::get_default_endpoint().unwrap();
+    let endpoint = rodio::default_endpoint().unwrap();
     CharacterAudio {
       sink: Sink::new(&endpoint),
     }
