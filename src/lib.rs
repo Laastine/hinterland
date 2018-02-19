@@ -1,6 +1,3 @@
-extern crate json;
-extern crate tiled;
-
 extern crate cgmath;
 extern crate genmesh;
 #[macro_use]
@@ -9,9 +6,11 @@ extern crate gfx_device_gl;
 extern crate gfx_window_glutin;
 extern crate glutin;
 extern crate image;
+extern crate json;
 extern crate rand;
 extern crate rodio;
 extern crate specs;
+extern crate tiled;
 
 mod bullet;
 mod gfx_app;
