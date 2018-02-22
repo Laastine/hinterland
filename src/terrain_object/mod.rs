@@ -76,14 +76,14 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
         VertexData::new([-120.0, -120.0, 0.0], [0.0, 1.0]),
         VertexData::new([120.0, -120.0, 0.0], [1.0, 1.0]),
         VertexData::new([120.0, 120.0, 0.0], [1.0, 0.0]),
-        VertexData::new([-120.0, -120.0, 0.0], [0.0, 1.0]),
-        VertexData::new([120.0, 120.0, 0.0], [1.0, 0.0]),
         VertexData::new([-120.0, 120.0, 0.0], [0.0, 0.0]),
       ];
 
+    let index_data: [u16; 6] = [0, 1, 2, 2, 3, 0];
+
     let house_bytes = &include_bytes!("../../assets/maps/house.png")[..];
 
-    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, ());
+    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
 
     let terrain_object_texture = load_texture(factory, house_bytes).unwrap();
 
