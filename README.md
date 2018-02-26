@@ -5,7 +5,7 @@
 Isometric zombie survival game written in Rust.
 Project started as SDL2, but was later converted to use gfx-rs.
 
-<img src="assets/zombie-shooter-gl-2018-01-24.gif" alt="preview">
+<img src="assets/hinterland-gl-2018-02-26.gif" alt="preview">
 
 ## Project overview
 - [Blog post](https://laastine.kapsi.fi/code/2018/01/07/zombie-shooter.html)
