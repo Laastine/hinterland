@@ -10,6 +10,7 @@ use specs;
 use specs::{Fetch, WriteStorage};
 use std::time::Instant;
 use terrain;
+use terrain_object::TerrainTexture;
 use terrain_object;
 use zombie;
 
@@ -20,7 +21,7 @@ pub struct DrawSystem<D: gfx::Device> {
   character_system: character::CharacterDrawSystem<D::Resources>,
   zombie_system: zombie::ZombieDrawSystem<D::Resources>,
   bullet_system: bullet::BulletDrawSystem<D::Resources>,
-  terrain_object_system: terrain_object::TerrainObjectDrawSystem<D::Resources>,
+  terrain_object_system: [terrain_object::TerrainObjectDrawSystem<D::Resources>; 2],
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
   frames: u32,
@@ -42,7 +43,10 @@ impl<D: gfx::Device> DrawSystem<D> {
       character_system: character::CharacterDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       zombie_system: zombie::ZombieDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       bullet_system: bullet::BulletDrawSystem::new(factory, rtv.clone(), dsv.clone()),
-      terrain_object_system: terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone()),
+      terrain_object_system: [
+        terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::House),
+        terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::Tree)
+      ],
       encoder_queue,
       game_time: Instant::now(),
       frames: 0,
@@ -116,7 +120,7 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
       }
       for mut o in &mut obj.objects {
         if c.position.position[1] <= o.position.position[1] {
-          self.terrain_object_system.draw(o, &mut encoder);
+          self.terrain_object_system[0].draw(o, &mut encoder);
         }
       }
       self.character_system.draw(c, cs, &mut encoder);
@@ -127,7 +131,7 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
       }
       for mut o in &mut obj.objects {
         if c.position.position[1] > o.position.position[1] {
-          self.terrain_object_system.draw(o, &mut encoder);
+          self.terrain_object_system[0].draw(o, &mut encoder);
         }
       }
 

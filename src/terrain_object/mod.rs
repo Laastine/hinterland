@@ -60,6 +60,12 @@ impl specs::Component for TerrainObjectDrawable {
   type Storage = specs::VecStorage<TerrainObjectDrawable>;
 }
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum TerrainTexture {
+  House,
+  Tree,
+}
+
 pub struct TerrainObjectDrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, static_element_pipeline::Data<R>>,
 }
@@ -67,7 +73,8 @@ pub struct TerrainObjectDrawSystem<R: gfx::Resources> {
 impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
-                dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> TerrainObjectDrawSystem<R>
+                dsv: gfx::handle::DepthStencilView<R, DepthFormat>,
+                texture: TerrainTexture) -> TerrainObjectDrawSystem<R>
                 where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
@@ -81,11 +88,14 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
 
     let index_data: [u16; 6] = [0, 1, 2, 2, 3, 0];
 
-    let house_bytes = &include_bytes!("../../assets/maps/house.png")[..];
+    let texture_bytes = match texture {
+      TerrainTexture::House => &include_bytes!("../../assets/maps/house.png")[..],
+      TerrainTexture::Tree => &include_bytes!("../../assets/maps/tree.png")[..],
+    };
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
 
-    let terrain_object_texture = load_texture(factory, house_bytes).unwrap();
+    let terrain_object_texture = load_texture(factory, texture_bytes).unwrap();
 
     let pso = factory
       .create_pipeline_simple(SHADER_VERT,
