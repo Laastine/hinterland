@@ -1,5 +1,5 @@
 use cgmath;
-use game::constants::{HOUSE_POSITIONS};
+use game::constants::{HOUSE_POSITIONS, TREE_POSITIONS};
 use shaders::Position;
 use specs;
 use terrain_object::TerrainObjectDrawable;
@@ -15,6 +15,8 @@ impl TerrainObjects {
       objects: vec![
         TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[0])),
         TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[1])),
+        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[0])),
+        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[1])),
       ]
     }
   }

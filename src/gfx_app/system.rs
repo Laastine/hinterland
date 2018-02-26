@@ -118,20 +118,28 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
           self.zombie_system.draw(&mut z, &mut encoder);
         }
       }
-      for mut o in &mut obj.objects {
-        if c.position.position[1] <= o.position.position[1] {
+      for (idx, o) in &mut obj.objects.iter().enumerate() {
+        if idx < 2 && c.position.position[1] <= o.position.position[1] {
           self.terrain_object_system[0].draw(o, &mut encoder);
+        }
+        else if idx > 1 && c.position.position[1] <= o.position.position[1] {
+          self.terrain_object_system[1].draw(o, &mut encoder);
         }
       }
       self.character_system.draw(c, cs, &mut encoder);
+
+      for (idx, o) in &mut obj.objects.iter().enumerate() {
+        if idx < 2 && c.position.position[1] > o.position.position[1] {
+          self.terrain_object_system[0].draw(o, &mut encoder);
+        }
+        else if idx > 1 && c.position.position[1] > o.position.position[1] {
+          self.terrain_object_system[1].draw(o, &mut encoder);
+        }
+      }
+
       for mut z in &mut zs.zombies {
         if c.position.position[1] > z.position.position[1] {
           self.zombie_system.draw(&mut z, &mut encoder);
-        }
-      }
-      for mut o in &mut obj.objects {
-        if c.position.position[1] > o.position.position[1] {
-          self.terrain_object_system[0].draw(o, &mut encoder);
         }
       }
 
