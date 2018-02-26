@@ -30,3 +30,5 @@ pub const MAP_FILE_PATH: &str = "assets/maps/tilemap.tmx";
 pub const RUN_SPRITE_OFFSET: usize = 64;
 pub const ZOMBIE_STILL_SPRITE_OFFSET: usize = 32;
 pub const NORMAL_DEATH_SPRITE_OFFSET: usize = 64;
+
+pub const HOUSE_POSITIONS: [[f32; 2]; 2] = [[-50.0, 650.0], [500.0, 250.0]];

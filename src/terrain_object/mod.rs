@@ -24,7 +24,7 @@ pub struct TerrainObjectDrawable {
 }
 
 impl TerrainObjectDrawable {
-  pub fn new(position: cgmath::Point2<f32>) -> TerrainObjectDrawable {
+  pub fn new(position: Position) -> TerrainObjectDrawable {
     let view = Dimensions::get_view_matrix();
     TerrainObjectDrawable {
       projection: Projection {
@@ -32,7 +32,7 @@ impl TerrainObjectDrawable {
         view: view.into(),
         proj: cgmath::perspective(cgmath::Deg(75.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
       },
-      position: Position::new([position.x, position.y]),
+      position,
       previous_position: Position::new([0.0, 0.0]),
       offset_delta: Position::new([0.0, 0.0]),
     }

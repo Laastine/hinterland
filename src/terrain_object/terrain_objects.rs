@@ -1,4 +1,6 @@
 use cgmath;
+use game::constants::{HOUSE_POSITIONS};
+use shaders::Position;
 use specs;
 use terrain_object::TerrainObjectDrawable;
 
@@ -11,8 +13,8 @@ impl TerrainObjects {
   pub fn new() -> TerrainObjects {
     TerrainObjects {
       objects: vec![
-        TerrainObjectDrawable::new(cgmath::Point2::new(0.0, 750.0)),
-        TerrainObjectDrawable::new(cgmath::Point2::new(850.0, 250.0)),
+        TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[0])),
+        TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[1])),
       ]
     }
   }
