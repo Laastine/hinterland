@@ -1,4 +1,3 @@
-use cgmath;
 use game::constants::{HOUSE_POSITIONS, TREE_POSITIONS};
 use shaders::Position;
 use specs;
