@@ -13,6 +13,8 @@ os:
 sudo: required
 
 matrix:
+  allow_failures:
+    - rust: nightly
   include:
     - os: linux
       dist: trusty
