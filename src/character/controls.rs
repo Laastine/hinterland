@@ -1,3 +1,4 @@
+use game::constants::{X_MOVEMENT, Y_MOVEMENT};
 use gfx_app::mouse_controls::MouseInputState;
 use graphics::can_move;
 use graphics::camera::CameraInputState;
@@ -64,8 +65,7 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
   fn run(&mut self, (mut character_input, mouse_input, mut camera_input): Self::SystemData) {
     use specs::Join;
 
-    let X_MOVEMENT = 1.0;
-    let Y_MOVEMENT = 0.9;
+
     while let Ok(control) = self.queue.try_recv() {
       match control {
         CharacterControl::Up => self.y_move = Some(-Y_MOVEMENT),
