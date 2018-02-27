@@ -1,6 +1,8 @@
 use gfx_app::mouse_controls::MouseInputState;
+use graphics::can_move;
 use graphics::camera::CameraInputState;
 use graphics::orientation::Orientation;
+use shaders::Position;
 use specs;
 use specs::{ReadStorage, WriteStorage};
 use std::sync::mpsc;
@@ -10,6 +12,7 @@ pub struct CharacterInputState {
   pub x_movement: f32,
   pub y_movement: f32,
   pub orientation: Orientation,
+  pub is_colliding: bool,
 }
 
 impl CharacterInputState {
@@ -18,12 +21,13 @@ impl CharacterInputState {
       x_movement: 0.0,
       y_movement: 0.0,
       orientation: Orientation::Still,
+      is_colliding: false
     }
   }
 }
 
 impl specs::Component for CharacterInputState {
-  type Storage = specs::HashMapStorage<CharacterInputState>;
+  type Storage = specs::DenseVecStorage<CharacterInputState>;
 }
 
 #[derive(Debug)]
@@ -60,13 +64,15 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
   fn run(&mut self, (mut character_input, mouse_input, mut camera_input): Self::SystemData) {
     use specs::Join;
 
+    let X_MOVEMENT = 1.0;
+    let Y_MOVEMENT = 0.9;
     while let Ok(control) = self.queue.try_recv() {
       match control {
-        CharacterControl::Up => self.y_move = Some(-0.9),
-        CharacterControl::Down => self.y_move = Some(0.9),
+        CharacterControl::Up => self.y_move = Some(-Y_MOVEMENT),
+        CharacterControl::Down => self.y_move = Some(Y_MOVEMENT),
         CharacterControl::YMoveStop => self.y_move = None,
-        CharacterControl::Right => self.x_move = Some(-1.0),
-        CharacterControl::Left => self.x_move = Some(1.0),
+        CharacterControl::Right => self.x_move = Some(-X_MOVEMENT),
+        CharacterControl::Left => self.x_move = Some(X_MOVEMENT),
         CharacterControl::XMoveStop => self.x_move = None,
       }
     }
@@ -80,7 +86,7 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
     } else if self.x_move.is_none() {
       if let Some(y) = self.y_move {
         for (ci, mi, camera) in (&mut character_input, &mouse_input, &mut camera_input).join() {
-          if mi.left_click_point.is_none() {
+          if mi.left_click_point.is_none() && !ci.is_colliding || can_move(Position::new([ci.x_movement, ci.y_movement + y])) {
             ci.y_movement += y;
             camera.y_pos -= y;
             ci.orientation =
@@ -91,7 +97,7 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
     } else if let Some(x) = self.x_move {
       if let Some(y) = self.y_move {
         for (ci, mi, camera) in (&mut character_input, &mouse_input, &mut camera_input).join() {
-          if mi.left_click_point.is_none() {
+          if mi.left_click_point.is_none() && !ci.is_colliding || can_move(Position::new([ci.x_movement + x, ci.y_movement + y])) {
             ci.x_movement += x / 1.5;
             ci.y_movement += y / 1.5;
             camera.x_pos += x / 1.5;
@@ -108,7 +114,7 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
         }
       } else if self.y_move.is_none() {
         for (ci, mi, camera) in (&mut character_input, &mouse_input, &mut camera_input).join() {
-          if mi.left_click_point.is_none() {
+          if mi.left_click_point.is_none() && !ci.is_colliding || can_move(Position::new([ci.x_movement + x, ci.y_movement])){
             ci.x_movement += x;
             camera.x_pos += x;
             ci.orientation =

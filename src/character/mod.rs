@@ -49,12 +49,14 @@ impl CharacterDrawable {
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, cs: &mut CharacterSprite, mouse_input: &MouseInputState) {
     self.projection = *world_to_clip;
 
-    if mouse_input.left_click_point.is_some() {
+    if mouse_input.left_click_point.is_some() && !ci.is_colliding {
       self.stance = Stance::Firing;
       self.orientation = get_orientation_from_center(mouse_input);
       if cs.character_fire_idx == 1 {
         self.audio.play_pistol();
       }
+    } else if ci.is_colliding {
+      self.stance = Stance::Still;
     } else {
       self.stance = Stance::Walking;
       self.orientation = ci.orientation;

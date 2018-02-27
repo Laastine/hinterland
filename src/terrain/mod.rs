@@ -38,11 +38,14 @@ impl TerrainDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &mut CharacterInputState) {
     self.projection = *world_to_clip;
     let new_position = Position::new([ci.x_movement, ci.y_movement]);
     if can_move(new_position) {
+      ci.is_colliding = false;
       self.position = new_position;
+    } else {
+      ci.is_colliding = true;
     }
   }
 }
@@ -160,13 +163,13 @@ impl PreDrawSystem {
 impl<'a> specs::System<'a> for PreDrawSystem {
   type SystemData = (WriteStorage<'a, TerrainDrawable>,
                      ReadStorage<'a, CameraInputState>,
-                     ReadStorage<'a, CharacterInputState>,
+                     WriteStorage<'a, CharacterInputState>,
                      Fetch<'a, Dimensions>);
 
-  fn run(&mut self, (mut terrain, camera_input, character_input, dim): Self::SystemData) {
+  fn run(&mut self, (mut terrain, camera_input, mut character_input, dim): Self::SystemData) {
     use specs::Join;
 
-    for (t, camera, ci) in (&mut terrain, &camera_input, &character_input).join() {
+    for (t, camera, ci) in (&mut terrain, &camera_input, &mut character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
       t.update(&world_to_clip, ci);
     }
