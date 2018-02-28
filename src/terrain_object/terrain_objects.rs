@@ -16,6 +16,9 @@ impl TerrainObjects {
         TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[1])),
         TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[0])),
         TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[1])),
+        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[2])),
+        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[3])),
+        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[4])),
       ]
     }
   }

@@ -35,4 +35,4 @@ pub const ZOMBIE_STILL_SPRITE_OFFSET: usize = 32;
 pub const NORMAL_DEATH_SPRITE_OFFSET: usize = 64;
 
 pub const HOUSE_POSITIONS: [[f32; 2]; 2] = [[-50.0, 650.0], [500.0, 250.0]];
-pub const TREE_POSITIONS: [[f32; 2]; 2] = [[-550.0, -250.0], [400.0, -400.0]];
+pub const TREE_POSITIONS: [[f32; 2]; 5] = [[-550.0, -250.0], [400.0, -400.0], [-700.0, -550.0], [-900.0, -100.0], [-700.0, 150.0]];
