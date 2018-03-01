@@ -1,4 +1,4 @@
-use audio::AudioSystem;
+use audio::{AudioData, AudioSystem};
 use bullet;
 use bullet::bullets::Bullets;
 use bullet::collision::CollisionSystem;
@@ -43,6 +43,7 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
   world.register::<terrain_object::terrain_objects::TerrainObjects>();
   world.register::<Zombies>();
   world.register::<Bullets>();
+  world.register::<AudioData>();
   world.register::<CharacterSprite>();
   world.register::<character::controls::CharacterInputState>();
   world.register::<MouseInputState>();
@@ -59,6 +60,7 @@ fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
        .with(Zombies::new())
        .with(Bullets::new())
        .with(CharacterSprite::new())
+       .with(AudioData::new())
        .with(graphics::camera::CameraInputState::new())
        .with(character::controls::CharacterInputState::new())
        .with(MouseInputState::new()).build();
@@ -83,8 +85,8 @@ fn dispatch_loop<W, D, F>(window: &mut W,
   let (audio_system, audio_control) = AudioSystem::new();
   let (terrain_system, terrain_control) = CameraControlSystem::new();
   let (character_system, character_control) = CharacterControlSystem::new();
-  let (mouse_system, mouse_control, ) = MouseControlSystem::new();
-  let controls = TilemapControls::new(terrain_control, character_control, mouse_control);
+  let (mouse_system, mouse_control) = MouseControlSystem::new();
+  let controls = TilemapControls::new(audio_control, terrain_control, character_control, mouse_control);
 
   let mut dispatcher = DispatcherBuilder::new()
     .add(draw, "drawing", &[])
@@ -96,6 +98,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     .add(terrain_object::PreDrawSystem::new(), "draw-prep-terrain_object", &["terrain-system"])
     .add(character_system, "character-system", &[])
     .add(mouse_system, "mouse-system", &[])
+    .add(audio_system, "audio-system", &[])
     .add(CollisionSystem::new(), "collision-system", &["mouse-system"])
     .build();
 

@@ -14,7 +14,6 @@ use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
 
-mod audio;
 pub mod controls;
 
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/character.v.glsl");
@@ -26,7 +25,6 @@ pub struct CharacterDrawable {
   orientation: Orientation,
   pub stance: Stance,
   direction: Orientation,
-  audio: audio::CharacterAudio,
 }
 
 impl CharacterDrawable {
@@ -42,19 +40,15 @@ impl CharacterDrawable {
       orientation: Orientation::Right,
       stance: Stance::Walking,
       direction: Orientation::Right,
-      audio: audio::CharacterAudio::new(),
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, cs: &mut CharacterSprite, mouse_input: &MouseInputState) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &MouseInputState) {
     self.projection = *world_to_clip;
 
     if mouse_input.left_click_point.is_some() && !ci.is_colliding {
       self.stance = Stance::Firing;
       self.orientation = get_orientation_from_center(mouse_input);
-      if cs.character_fire_idx == 1 {
-        self.audio.play_pistol();
-      }
     } else if ci.is_colliding {
       self.stance = Stance::Still;
     } else {
@@ -171,16 +165,15 @@ impl<'a> specs::System<'a> for PreDrawSystem {
   type SystemData = (WriteStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
-                     WriteStorage<'a, CharacterSprite>,
                      ReadStorage<'a, MouseInputState>,
                      Fetch<'a, Dimensions>);
 
-  fn run(&mut self, (mut character, camera_input, character_input, mut character_sprite, mouse_input, dim): Self::SystemData) {
+  fn run(&mut self, (mut character, camera_input, character_input, mouse_input, dim): Self::SystemData) {
     use specs::Join;
 
-    for (c, camera, ci, cs, mi) in (&mut character, &camera_input, &character_input, &mut character_sprite, &mouse_input).join() {
+    for (c, camera, ci, mi) in (&mut character, &camera_input, &character_input, &mouse_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      c.update(&world_to_clip, ci, cs, mi);
+      c.update(&world_to_clip, ci, mi);
     }
   }
 }
