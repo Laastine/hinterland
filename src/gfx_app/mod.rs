@@ -72,16 +72,14 @@ pub enum GameStatus {
 
 pub trait Window<D: gfx::Device, F: gfx::Factory<D::Resources>> {
   fn swap_window(&mut self);
-  fn poll_events(&mut self) -> Option<GameStatus>;
-
   fn create_buffers(&mut self, count: usize) -> Vec<D::CommandBuffer>;
   fn set_controls(&mut self, controls: controls::TilemapControls);
-
   fn get_viewport_size(&mut self) -> (u32, u32);
   fn get_device(&mut self) -> &mut D;
   fn get_factory(&mut self) -> &mut F;
   fn get_render_target_view(&mut self) -> gfx::handle::RenderTargetView<D::Resources, ColorFormat>;
   fn get_depth_stencil_view(&mut self) -> gfx::handle::DepthStencilView<D::Resources, DepthFormat>;
+  fn poll_events(&mut self) -> Option<GameStatus>;
 }
 
 impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
