@@ -30,7 +30,7 @@ impl GlutinWindow {
     let events_loop = glutin::EventsLoop::new();
 
     let window_title = glutin::WindowBuilder::new()
-      .with_title("Zombie shooter");
+      .with_title("Hinterland");
 
     let builder = if cfg!(feature = "windowed") {
       window_title.with_dimensions(RESOLUTION_X, RESOLUTION_Y)
