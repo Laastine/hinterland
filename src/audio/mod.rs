@@ -70,10 +70,7 @@ impl<'a> specs::System<'a> for AudioSystem {
     }
 
     for audio in (&mut audio_data).join() {
-      match self.effects {
-        Effects::PistolFire => audio.play_effect(),
-        _ => (),
-      }
+      if let Effects::PistolFire = self.effects { audio.play_effect() }
     }
   }
 }
