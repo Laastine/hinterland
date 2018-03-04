@@ -98,8 +98,11 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
             if mi.left_click_point.is_none() && !ci.is_colliding || can_move(Position::new([ci.x_movement, ci.y_movement + y])) {
               ci.y_movement += y;
               camera.y_pos -= y;
-              ci.orientation =
-                if y < 0.0 { Orientation::Up } else if y > 0.0 { Orientation::Down } else { Orientation::Still };
+              ci.orientation = match y {
+                y if y < 0.0 => Orientation::Up,
+                y if y > 0.0 => Orientation::Down,
+                _ => Orientation::Still,
+              };
             }
           }
         }
@@ -126,8 +129,11 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
             if mi.left_click_point.is_none() && !ci.is_colliding || can_move(Position::new([ci.x_movement + x, ci.y_movement])) {
               ci.x_movement += x;
               camera.x_pos += x;
-              ci.orientation =
-                if x < 0.0 { Orientation::Right } else if x > 0.0 { Orientation::Left } else { Orientation::Still };
+              ci.orientation = match x {
+                x if x < 0.0 => Orientation::Right,
+                x if x > 0.0 => Orientation::Left,
+                _ => Orientation::Still,
+              };
             }
           }
         }
