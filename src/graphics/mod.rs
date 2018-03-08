@@ -1,6 +1,6 @@
 use cgmath;
 use cgmath::{Angle, Deg, Matrix4, Point2, Point3, Vector3};
-use game::constants::{RESOLUTION_X, RESOLUTION_Y, TILE_WIDTH, VIEW_DISTANCE};
+use game::constants::{RESOLUTION_X, RESOLUTION_Y, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
 use gfx::{Factory, Resources, texture};
 use gfx::format::Rgba8;
 use gfx::handle::ShaderResourceView;
@@ -115,6 +115,22 @@ pub fn can_move(screen_pos: Position) -> bool {
     (x_coord / TILE_WIDTH + y_coord / TILE_WIDTH).round() + 31.0,
     (y_coord / TILE_WIDTH - x_coord / TILE_WIDTH).round() + 32.0);
   is_within_map_borders(point)
+}
+
+pub fn coords_to_tile(position: Position) -> Point2<usize> {
+  let pos = Point2 {
+    x: -position.position[0],
+    y: -position.position[1],
+  };
+  let tiles_w = TILES_PCS_W as f32 / 2.0;
+  let tiles_h = TILES_PCS_H as f32 / 2.0;
+  let tile_width = TILE_WIDTH as f32;
+  let x = if pos.x > 0.0 { pos.x.abs() / tile_width + tiles_w } else { tiles_w - (pos.x.abs() / tile_width) };
+  let y = if pos.y > 0.0 { pos.y.abs() / tile_width + tiles_h } else { tiles_h - (pos.y.abs() / tile_width) };
+  Point2 {
+    x: x.round() as usize,
+    y: y.round() as usize,
+  }
 }
 
 pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> Result<ShaderResourceView<R, [f32; 4]>, String> where R: Resources, F: Factory<R> {
