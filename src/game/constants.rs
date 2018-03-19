@@ -22,7 +22,7 @@ pub const ZOMBIE_SHEET_TOTAL_WIDTH: f32 = 9_184f32;
 pub const BULLET_SPEED: f32 = 1.0;
 
 pub const X_MOVEMENT: f32 = 1.0;
-pub const Y_MOVEMENT: f32 = 0.9;
+pub const Y_MOVEMENT: f32 = 1.0;
 
 //Assets
 pub const ZOMBIE_JSON_PATH: &str = "assets/zombie.json";

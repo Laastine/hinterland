@@ -7,8 +7,8 @@ use genmesh::generators::{IndexedPolygon, Plane, SharedVertex};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{can_move, Dimensions};
+use graphics::{coords_to_tile, load_texture};
 use graphics::camera::CameraInputState;
-use graphics::load_texture;
 use shaders::{Position, Projection, tilemap_pipeline, TileMapData, TilemapSettings, VertexData};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
@@ -44,6 +44,7 @@ impl TerrainDrawable {
     if can_move(new_position) {
       ci.is_colliding = false;
       self.position = new_position;
+      coords_to_tile(self.position);
     } else {
       ci.is_colliding = true;
     }

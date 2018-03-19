@@ -1,6 +1,6 @@
 use cgmath;
 use cgmath::{Angle, Deg, Matrix4, Point2, Point3, Vector3};
-use game::constants::{RESOLUTION_X, RESOLUTION_Y, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
+use game::constants::{RESOLUTION_X, RESOLUTION_Y, TILE_WIDTH, VIEW_DISTANCE};
 use gfx::{Factory, Resources, texture};
 use gfx::format::Rgba8;
 use gfx::handle::ShaderResourceView;
@@ -118,18 +118,17 @@ pub fn can_move(screen_pos: Position) -> bool {
 }
 
 pub fn coords_to_tile(position: Position) -> Point2<usize> {
+  let tile_width = TILE_WIDTH as f32 * 2.0;
+  let tile_height = TILE_WIDTH as f32;
   let pos = Point2 {
     x: -position.position[0],
-    y: -position.position[1],
+    y: position.position[1] + 1350.0,
   };
-  let tiles_w = TILES_PCS_W as f32 / 2.0;
-  let tiles_h = TILES_PCS_H as f32 / 2.0;
-  let tile_width = TILE_WIDTH as f32;
-  let x = if pos.x > 0.0 { pos.x.abs() / tile_width + tiles_w } else { tiles_w - (pos.x.abs() / tile_width) };
-  let y = if pos.y > 0.0 { pos.y.abs() / tile_width + tiles_h } else { tiles_h - (pos.y.abs() / tile_width) };
+  let x = (pos.x / tile_width + (pos.y / tile_height) * 2.0).round() as usize;
+  let y = (pos.y / tile_height - (pos.x / tile_width) * 2.0).round() as usize;
   Point2 {
-    x: x.round() as usize,
-    y: y.round() as usize,
+    x,
+    y,
   }
 }
 
