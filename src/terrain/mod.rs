@@ -16,7 +16,7 @@ use specs::{Fetch, ReadStorage, WriteStorage};
 pub mod tile_map;
 
 fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
-  ((point_x - point_y), (point_x + point_y) / 2.0)
+  ((point_x - point_y), (point_x + point_y) / 1.78)
 }
 
 #[derive(Debug)]
@@ -87,7 +87,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
              let vertex_x = half_width as f32 * raw_x;
              let vertex_y = half_height as f32 * raw_y;
 
-             let (u_pos, v_pos) = ((raw_x / 4.0 - raw_y / 2.0) + 0.5, (raw_x / 4.0 + raw_y / 2.0) + 0.5);
+             let (u_pos, v_pos) = ((raw_x / 4.0 - raw_y / 2.25) + 0.5, (raw_x / 4.0 + raw_y / 2.25) + 0.5);
              let tile_map_x = u_pos * width as f32;
              let tile_map_y = v_pos * height as f32;
 
