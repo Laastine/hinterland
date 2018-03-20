@@ -78,10 +78,10 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
 
     let vertex_data: Vec<VertexData> =
       vec![
-        VertexData::new([-20.0, -28.0, 0.0], [0.0, 1.0]),
-        VertexData::new([20.0, -28.0, 0.0], [1.0, 1.0]),
-        VertexData::new([20.0, 28.0, 0.0], [1.0, 0.0]),
-        VertexData::new([-20.0, 28.0, 0.0], [0.0, 0.0]),
+        VertexData::new([-20.0, -28.0], [0.0, 1.0]),
+        VertexData::new([20.0, -28.0], [1.0, 1.0]),
+        VertexData::new([20.0, 28.0], [1.0, 0.0]),
+        VertexData::new([-20.0, 28.0], [0.0, 0.0]),
       ];
 
     let index_data: [u16; 6] = [0, 1, 2, 2, 3, 0];

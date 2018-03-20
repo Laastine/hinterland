@@ -92,7 +92,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
              let tile_map_y = v_pos * height as f32;
 
              VertexData {
-               pos: [vertex_x, vertex_y, 0.0],
+               pos: [vertex_x, vertex_y],
                buf_pos: [tile_map_x as f32, tile_map_y as f32],
              }
            })

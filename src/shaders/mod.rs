@@ -11,7 +11,7 @@ gfx_defines! {
   }
 
   vertex VertexData {
-    pos: [f32; 3] = "a_Pos",
+    pos: [f32; 2] = "a_Pos",
     buf_pos: [f32; 2] = "a_BufPos",
   }
 
@@ -72,7 +72,7 @@ gfx_defines! {
 }
 
 impl VertexData {
-  pub fn new(pos: [f32; 3], buf_pos: [f32; 2]) -> VertexData {
+  pub fn new(pos: [f32; 2], buf_pos: [f32; 2]) -> VertexData {
     VertexData {
       pos,
       buf_pos,
