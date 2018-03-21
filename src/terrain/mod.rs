@@ -41,13 +41,13 @@ impl TerrainDrawable {
   pub fn update(&mut self, world_to_clip: &Projection, ci: &mut CharacterInputState) {
     self.projection = *world_to_clip;
     let new_position = Position::new([ci.x_movement, ci.y_movement]);
-    if can_move(new_position) {
+//    if can_move(new_position) {
       ci.is_colliding = false;
       self.position = new_position;
       coords_to_tile(self.position);
-    } else {
-      ci.is_colliding = true;
-    }
+//    } else {
+//      ci.is_colliding = true;
+//    }
   }
 }
 
