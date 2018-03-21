@@ -12,7 +12,7 @@ name = "hinterland_bin"
 path = "src/main.rs"
 
 [dependencies]
-cgmath = "0.16.0"
+cgmath = "0.16.1"
 gfx_core = "0.8.2"
 gfx_device_gl = "0.15.0"
 gfx_window_glutin = "0.20.0"
