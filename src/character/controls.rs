@@ -27,7 +27,7 @@ impl CharacterInputState {
   }
 
   pub fn update(&mut self, mi: &MouseInputState, camera: &mut CameraInputState, css: &CharacterControlSystem) {
-    let tile_width = TILE_WIDTH as f32;
+    let tile_width = TILE_WIDTH;
     if css.y_move.is_none() && css.x_move.is_none() {
       if mi.left_click_point.is_none() {
         self.orientation = Orientation::Still;

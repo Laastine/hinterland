@@ -104,16 +104,17 @@ pub fn overlaps(a: Position, b: Position, width: f32, height: f32) -> bool {
     a.position[1] + a.position[1] > b.position[1]
 }
 
-fn is_within_map_borders(point: Point2<f64>) -> bool {
+fn is_within_map_borders(point: Point2<f32>) -> bool {
   point.x > 0.0 && point.x < 63.0 && point.y > 0.0 && point.y < 63.0
 }
 
 pub fn can_move(screen_pos: Position) -> bool {
-  let x_coord = f64::from(screen_pos.position[0]);
-  let y_coord = f64::from(screen_pos.position[1]);
+  let tile_width = TILE_WIDTH;
+  let x_coord = screen_pos.position[0];
+  let y_coord = screen_pos.position[1];
   let point = Point2::new(
-    (x_coord / TILE_WIDTH + y_coord / TILE_WIDTH).round() + 31.0,
-    (y_coord / TILE_WIDTH - x_coord / TILE_WIDTH).round() + 32.0);
+    (x_coord / tile_width + y_coord / tile_width).round() + 31.0,
+    (y_coord / tile_width - x_coord / tile_width).round() + 32.0);
   is_within_map_borders(point)
 }
 
@@ -123,7 +124,7 @@ pub fn can_move_to_tile(screen_pos: Position) -> bool {
 }
 
 pub fn coords_to_tile(position: Position) -> Point2<usize> {
-  let tile_width = TILE_WIDTH as f32;
+  let tile_width = TILE_WIDTH;
   let pos = Point2 {
     x: -position.position[0],
     y: position.position[1] + 1500.0,
