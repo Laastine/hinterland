@@ -1,6 +1,6 @@
-use game::constants::{X_MOVEMENT, Y_MOVEMENT};
+use game::constants::{TILE_WIDTH, X_MOVEMENT, Y_MOVEMENT};
 use gfx_app::mouse_controls::MouseInputState;
-use graphics::{can_move, DeltaTime};
+use graphics::{can_move_to_tile, DeltaTime};
 use graphics::camera::CameraInputState;
 use graphics::orientation::Orientation;
 use shaders::Position;
@@ -27,13 +27,14 @@ impl CharacterInputState {
   }
 
   pub fn update(&mut self, mi: &MouseInputState, camera: &mut CameraInputState, css: &CharacterControlSystem) {
+    let tile_width = TILE_WIDTH as f32;
     if css.y_move.is_none() && css.x_move.is_none() {
       if mi.left_click_point.is_none() {
         self.orientation = Orientation::Still;
       }
     } else if css.x_move.is_none() {
       if let Some(y) = css.y_move {
-        if mi.left_click_point.is_none() && !self.is_colliding || can_move(Position::new([self.x_movement, self.y_movement + y])) {
+        if mi.left_click_point.is_none() && !self.is_colliding || can_move_to_tile(Position::new([self.x_movement, self.y_movement + y * tile_width])) {
           self.y_movement += y;
           camera.y_pos -= y;
           self.orientation = match y {
@@ -45,7 +46,7 @@ impl CharacterInputState {
       }
     } else if let Some(x) = css.x_move {
       if let Some(y) = css.y_move {
-        if mi.left_click_point.is_none() && !self.is_colliding || can_move(Position::new([self.x_movement + x, self.y_movement + y])) {
+        if mi.left_click_point.is_none() && !self.is_colliding || can_move_to_tile(Position::new([self.x_movement + x * tile_width, self.y_movement + y * tile_width])) {
           self.x_movement += x / 1.5;
           self.y_movement += y / 1.5;
           camera.x_pos += x / 1.5;
@@ -59,7 +60,7 @@ impl CharacterInputState {
             _ => Orientation::Still,
           };
         }
-      } else if css.y_move.is_none() && mi.left_click_point.is_none() && !self.is_colliding || can_move(Position::new([self.x_movement + x, self.y_movement])) {
+      } else if css.y_move.is_none() && mi.left_click_point.is_none() && !self.is_colliding || can_move_to_tile(Position::new([self.x_movement + x * tile_width, self.y_movement])) {
         self.x_movement += x;
         camera.x_pos += x;
         self.orientation = match x {

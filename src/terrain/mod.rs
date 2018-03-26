@@ -6,8 +6,7 @@ use genmesh::{Triangulate, Vertices};
 use genmesh::generators::{IndexedPolygon, Plane, SharedVertex};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{can_move, Dimensions};
-use graphics::{coords_to_tile, load_texture};
+use graphics::{can_move_to_tile, Dimensions, load_texture};
 use graphics::camera::CameraInputState;
 use shaders::{Position, Projection, tilemap_pipeline, TileMapData, TilemapSettings, VertexData};
 use specs;
@@ -41,13 +40,12 @@ impl TerrainDrawable {
   pub fn update(&mut self, world_to_clip: &Projection, ci: &mut CharacterInputState) {
     self.projection = *world_to_clip;
     let new_position = Position::new([ci.x_movement, ci.y_movement]);
-//    if can_move(new_position) {
+    if can_move_to_tile(new_position) {
       ci.is_colliding = false;
       self.position = new_position;
-      coords_to_tile(self.position);
-//    } else {
-//      ci.is_colliding = true;
-//    }
+    } else {
+      ci.is_colliding = true;
+    }
   }
 }
 

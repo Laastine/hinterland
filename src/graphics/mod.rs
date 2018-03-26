@@ -1,7 +1,6 @@
 use cgmath;
 use cgmath::{Angle, Deg, Matrix4, Point2, Point3, Vector3};
-use game::constants::{RESOLUTION_X, RESOLUTION_Y, TILE_WIDTH, VIEW_DISTANCE};
-use game::get_tenth_bool;
+use game::constants::{RESOLUTION_X, RESOLUTION_Y, TILES_PCS_H, TILES_PCS_W, TILE_WIDTH, VIEW_DISTANCE};
 use gfx::{Factory, Resources, texture};
 use gfx::format::Rgba8;
 use gfx::handle::ShaderResourceView;
@@ -118,23 +117,21 @@ pub fn can_move(screen_pos: Position) -> bool {
   is_within_map_borders(point)
 }
 
+pub fn can_move_to_tile(screen_pos: Position) -> bool {
+  let pos = coords_to_tile(screen_pos);
+  pos.x > 0 as usize && pos.y > 0 as usize && pos.x < TILES_PCS_W && pos.y < TILES_PCS_H
+}
+
 pub fn coords_to_tile(position: Position) -> Point2<usize> {
   let tile_width = TILE_WIDTH as f32;
-  let tile_height = TILE_WIDTH as f32;
   let pos = Point2 {
     x: -position.position[0],
     y: position.position[1] + 1500.0,
   };
-  let x = (pos.x / tile_width + (pos.y / tile_height)) as usize;
-  let y = (pos.y / tile_height - (pos.x / tile_width)) as usize;
-  let foo = Point2 {
-    x,
-    y,
-  };
-  if get_tenth_bool() {
-    println!("{:?} {:?}", pos, foo);
+  Point2 {
+    x : (pos.x / tile_width + (pos.y / tile_width)) as usize,
+    y: (pos.y / tile_width - (pos.x / tile_width)) as usize,
   }
-  foo
 }
 
 pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> Result<ShaderResourceView<R, [f32; 4]>, String> where R: Resources, F: Factory<R> {
