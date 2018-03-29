@@ -1,7 +1,6 @@
 use cgmath;
 use character::controls::CharacterInputState;
-use game::constants::{ASPECT_RATIO, TILE_MAP_BUF_LENGTH};
-use game::constants::{TILES_PCS_H, TILES_PCS_W};
+use game::constants::{ASPECT_RATIO, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W};
 use genmesh::{Triangulate, Vertices};
 use genmesh::generators::{IndexedPolygon, Plane, SharedVertex};
 use gfx;

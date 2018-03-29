@@ -8,7 +8,7 @@ use graphics::camera::CameraInputState;
 use shaders::{Position, Projection, static_element_pipeline, VertexData};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
-use terrain_object::terrain_objects::TerrainObjects;
+use terrain_object::terrain_objects::{TerrainObjects};
 
 pub mod terrain_objects;
 

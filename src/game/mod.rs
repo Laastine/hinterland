@@ -13,5 +13,3 @@ pub fn get_weighted_random(weight: f32) -> bool {
   let mut rnd = rand::thread_rng();
   rnd.gen::<f32>() < weight
 }
-
-
