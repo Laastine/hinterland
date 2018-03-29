@@ -117,7 +117,7 @@ pub fn can_move(screen_pos: Position) -> bool {
 }
 
 pub fn is_not_terrain_object(pos: Point2<usize>) -> bool {
-  !TERRAIN_OBJECTS.iter().any(|e| (e[0] == pos.x as f32) && (e[1] == pos.y as f32))
+  !TERRAIN_OBJECTS.iter().any(|e| (e[0] == pos.x) && (e[1] == pos.y))
 }
 
 fn is_map_tile(pos: Point2<usize>) -> bool {
