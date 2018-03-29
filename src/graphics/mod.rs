@@ -1,6 +1,6 @@
 use cgmath;
 use cgmath::{Angle, Deg, Matrix4, Point2, Point3, Vector3};
-use game::constants::{RESOLUTION_X, RESOLUTION_Y, TILES_PCS_H, TILES_PCS_W, TILE_WIDTH, VIEW_DISTANCE};
+use game::constants::{RESOLUTION_X, RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
 use gfx::{Factory, Resources, texture};
 use gfx::format::Rgba8;
 use gfx::handle::ShaderResourceView;
@@ -118,9 +118,17 @@ pub fn can_move(screen_pos: Position) -> bool {
   is_within_map_borders(point)
 }
 
+pub fn is_not_terrain_object(pos: Point2<usize>) -> bool {
+  !TERRAIN_OBJECTS.iter().any(|e| (e[0] == pos.x as f32) && (e[1] == pos.y as f32))
+}
+
+fn is_map_tile(pos: Point2<usize>) -> bool {
+  pos.x >= 1usize && pos.y >= 1usize && pos.x < TILES_PCS_W && pos.y < TILES_PCS_H
+}
+
 pub fn can_move_to_tile(screen_pos: Position) -> bool {
   let pos = coords_to_tile(screen_pos);
-  pos.x > 0 as usize && pos.y > 0 as usize && pos.x < TILES_PCS_W && pos.y < TILES_PCS_H
+  is_not_terrain_object(pos) && is_map_tile(pos)
 }
 
 pub fn coords_to_tile(position: Position) -> Point2<usize> {

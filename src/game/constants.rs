@@ -34,5 +34,10 @@ pub const RUN_SPRITE_OFFSET: usize = 64;
 pub const ZOMBIE_STILL_SPRITE_OFFSET: usize = 32;
 pub const NORMAL_DEATH_SPRITE_OFFSET: usize = 64;
 
-pub const HOUSE_POSITIONS: [[f32; 2]; 2] = [[-50.0, 650.0], [500.0, 250.0]];
-pub const TREE_POSITIONS: [[f32; 2]; 5] = [[-550.0, -250.0], [400.0, -400.0], [-700.0, -550.0], [-900.0, -100.0], [-700.0, 150.0]];
+pub const HOUSE_POSITIONS: [[f32; 2]; 1] = [[-2.0, 12.0]/*, [10.0, 5.0]*/];
+//pub const TREE_POSITIONS: [[f32; 2]; 5] = [[-11.0, -5.0], [8.0, -8.0], [-16.0, -11.0], [-18.0, -3.0], [-14.0, 3.0]];
+
+pub const TERRAIN_OBJECTS: [[f32; 2]; 12] = [
+  [20.0, 23.0], [19.0, 23.0], [18.0, 23.0], [17.0, 23.0],
+  [20.0, 22.0], [19.0, 22.0], [18.0, 22.0], [17.0, 22.0],
+  [20.0, 21.0], [19.0, 21.0], [18.0, 21.0], [17.0, 21.0]];

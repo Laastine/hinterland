@@ -34,7 +34,7 @@ impl CharacterInputState {
       }
     } else if css.x_move.is_none() {
       if let Some(y) = css.y_move {
-        if mi.left_click_point.is_none() && !self.is_colliding || can_move_to_tile(Position::new([self.x_movement, self.y_movement + y * tile_width])) {
+        if mi.left_click_point.is_none() && !self.is_colliding || can_move_to_tile(Position::new([self.x_movement, self.y_movement + y])) {
           self.y_movement += y;
           camera.y_pos -= y;
           self.orientation = match y {
@@ -46,7 +46,7 @@ impl CharacterInputState {
       }
     } else if let Some(x) = css.x_move {
       if let Some(y) = css.y_move {
-        if mi.left_click_point.is_none() && !self.is_colliding || can_move_to_tile(Position::new([self.x_movement + x * tile_width, self.y_movement + y * tile_width])) {
+        if mi.left_click_point.is_none() && !self.is_colliding || can_move_to_tile(Position::new([self.x_movement + x * tile_width, self.y_movement + y])) {
           self.x_movement += x / 1.5;
           self.y_movement += y / 1.5;
           camera.x_pos += x / 1.5;
@@ -60,7 +60,7 @@ impl CharacterInputState {
             _ => Orientation::Still,
           };
         }
-      } else if css.y_move.is_none() && mi.left_click_point.is_none() && !self.is_colliding || can_move_to_tile(Position::new([self.x_movement + x * tile_width, self.y_movement])) {
+      } else if css.y_move.is_none() && mi.left_click_point.is_none() && !self.is_colliding || can_move_to_tile(Position::new([self.x_movement + x, self.y_movement])) {
         self.x_movement += x;
         camera.x_pos += x;
         self.orientation = match x {
