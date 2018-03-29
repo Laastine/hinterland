@@ -1,12 +1,7 @@
 use critter::CritterData;
 use game::constants::{CHARACTER_BUF_LENGTH, CHARACTER_JSON_PATH, ZOMBIE_JSON_PATH};
 use json;
-use std::fs::File;
-use std::io::BufReader;
-use std::io::prelude::*;
-use std::path::Path;
-use std::string::String;
-use std::vec::Vec;
+use std::{fs::File, io::BufReader, io::prelude::*, path::Path, string::String, vec::Vec};
 use tiled;
 use tiled::Map;
 

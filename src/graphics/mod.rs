@@ -1,9 +1,7 @@
 use cgmath;
 use cgmath::{Angle, Deg, Matrix4, Point2, Point3, Vector3};
 use game::constants::{RESOLUTION_X, RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
-use gfx::{Factory, Resources, texture};
-use gfx::format::Rgba8;
-use gfx::handle::ShaderResourceView;
+use gfx::{Factory, format::Rgba8, handle::ShaderResourceView, Resources, texture};
 use gfx_app::mouse_controls::MouseInputState;
 use graphics::orientation::Orientation;
 use image;

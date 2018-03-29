@@ -1,8 +1,6 @@
 use game::constants::{TILE_WIDTH, X_MOVEMENT, Y_MOVEMENT};
 use gfx_app::mouse_controls::MouseInputState;
-use graphics::{can_move_to_tile, DeltaTime};
-use graphics::camera::CameraInputState;
-use graphics::orientation::Orientation;
+use graphics::{camera::CameraInputState, can_move_to_tile, DeltaTime, orientation::Orientation};
 use shaders::Position;
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};

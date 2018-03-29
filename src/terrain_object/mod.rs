@@ -3,12 +3,11 @@ use character::controls::CharacterInputState;
 use game::constants::ASPECT_RATIO;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{Dimensions, load_texture};
-use graphics::camera::CameraInputState;
+use graphics::{camera::CameraInputState, Dimensions, load_texture};
 use shaders::{Position, Projection, static_element_pipeline, VertexData};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
-use terrain_object::terrain_objects::{TerrainObjects};
+use terrain_object::terrain_objects::TerrainObjects;
 
 pub mod terrain_objects;
 

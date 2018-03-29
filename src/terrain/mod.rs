@@ -1,12 +1,10 @@
 use cgmath;
 use character::controls::CharacterInputState;
 use game::constants::{ASPECT_RATIO, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W};
-use genmesh::{Triangulate, Vertices};
-use genmesh::generators::{IndexedPolygon, Plane, SharedVertex};
+use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Vertices};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{can_move_to_tile, Dimensions, load_texture};
-use graphics::camera::CameraInputState;
+use graphics::{camera::CameraInputState, can_move_to_tile, Dimensions, load_texture};
 use shaders::{Position, Projection, tilemap_pipeline, TileMapData, TilemapSettings, VertexData};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};

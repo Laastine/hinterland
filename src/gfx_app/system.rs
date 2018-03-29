@@ -4,14 +4,13 @@ use critter::CharacterSprite;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::renderer::EncoderQueue;
-use graphics::DeltaTime;
-use graphics::orientation::Stance;
+use graphics::{DeltaTime, orientation::Stance};
 use specs;
 use specs::{Fetch, WriteStorage};
 use std::time::Instant;
 use terrain;
-use terrain_object::TerrainTexture;
 use terrain_object;
+use terrain_object::TerrainTexture;
 use zombie;
 
 pub struct DrawSystem<D: gfx::Device> {

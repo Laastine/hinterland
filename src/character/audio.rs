@@ -1,8 +1,7 @@
 use game::constants::PISTOL_AUDIO_PATH;
 use rodio;
 use rodio::Sink;
-use std::fs::File;
-use std::io::BufReader;
+use std::{fs::File, io::BufReader};
 
 pub struct CharacterAudio {
   sink: Sink,

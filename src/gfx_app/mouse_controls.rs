@@ -1,10 +1,8 @@
 use bullet::bullets::Bullets;
 use cgmath::Point2;
-use graphics::{Dimensions, direction, direction_movement};
-use graphics::camera::CameraInputState;
+use graphics::{camera::CameraInputState, Dimensions, direction, direction_movement};
 use specs;
-use specs::{ReadStorage, WriteStorage};
-use specs::Fetch;
+use specs::{Fetch, ReadStorage, WriteStorage};
 use std::sync::mpsc;
 
 type MouseEvent = mpsc::Sender<(MouseControl, Option<(f64, f64)>)>;

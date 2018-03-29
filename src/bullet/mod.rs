@@ -6,12 +6,11 @@ use character::controls::CharacterInputState;
 use game::constants::{ASPECT_RATIO, BULLET_SPEED};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{can_move, Dimensions};
-use graphics::camera::CameraInputState;
+use graphics::{camera::CameraInputState, can_move, Dimensions};
 use shaders::{bullet_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
-use std;
+use std::f32;
 
 pub mod bullets;
 pub mod collision;
@@ -50,8 +49,8 @@ impl BulletDrawable {
     self.projection = *world_to_clip;
 
     self.offset_delta =
-      if (ci.x_movement - self.previous_position.position[0]).abs() > std::f32::EPSILON ||
-        (ci.y_movement - self.previous_position.position[1]).abs() > std::f32::EPSILON {
+      if (ci.x_movement - self.previous_position.position[0]).abs() > f32::EPSILON ||
+        (ci.y_movement - self.previous_position.position[1]).abs() > f32::EPSILON {
         Position::new([ci.x_movement - self.previous_position.position[0], ci.y_movement - self.previous_position.position[1]])
       } else {
         Position::new([self.offset_delta.position[0], self.offset_delta.position[1]])

@@ -3,9 +3,7 @@ use rodio;
 use rodio::Sink;
 use specs;
 use specs::WriteStorage;
-use std::fs::File;
-use std::io::BufReader;
-use std::sync::mpsc;
+use std::{fs::File, io::BufReader, sync::mpsc};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Effects {

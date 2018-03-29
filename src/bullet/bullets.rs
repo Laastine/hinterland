@@ -1,5 +1,4 @@
-use bullet::BulletDrawable;
-use bullet::collision::Collision;
+use bullet::{BulletDrawable, collision::Collision};
 use cgmath;
 use specs;
 
