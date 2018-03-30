@@ -8,7 +8,7 @@ use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, Z
 use game::get_random_bool;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, Dimensions, get_orientation, load_texture, orientation::{Orientation, Stance}, overlaps};
+use graphics::{camera::CameraInputState, Dimensions, direction, direction_movement, get_orientation, load_texture, orientation::{Orientation, Stance}, overlaps};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
@@ -67,9 +67,12 @@ impl ZombieDrawable {
     ]);
 
     if self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
-      self.direction = get_orientation(
+      let dir = direction(
         Point2::new(self.position.position[0], self.position.position[1]),
-        Point2::new(character.position.position[0], character.position.position[1]));
+        Point2::new(character.position.position[0], character.position.position[1])
+      );
+
+      self.direction = get_orientation(dir);
     }
 
     self.position = Position::new([

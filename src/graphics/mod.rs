@@ -70,9 +70,7 @@ pub fn direction_movement(direction: u32) -> Point2<f32> {
               (Angle::sin(Deg(f_direction)) * 100.0).round() / 100.0)
 }
 
-pub fn get_orientation(start_point: Point2<f32>, end_point: Point2<f32>) -> Orientation {
-  let angle_in_degrees = direction(start_point, end_point);
-
+pub fn get_orientation(angle_in_degrees: u32) -> Orientation {
   match angle_in_degrees {
     345 ... 360 | 0 ... 22 => Orientation::Right,
     23 ... 68 => Orientation::UpRight,
@@ -89,7 +87,8 @@ pub fn get_orientation(start_point: Point2<f32>, end_point: Point2<f32>) -> Orie
 pub fn get_orientation_from_center(mouse_input: &MouseInputState) -> Orientation {
   if let Some(end_point_gl) = mouse_input.left_click_point {
     let start_point = Point2::new((RESOLUTION_X / 2) as f32, (RESOLUTION_Y / 2) as f32);
-    get_orientation(start_point, flip_y_axel(end_point_gl))
+    let dir = direction(start_point, flip_y_axel(end_point_gl));
+    get_orientation(dir)
   } else {
     Orientation::Right
   }
