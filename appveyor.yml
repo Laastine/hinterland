@@ -1,0 +1,22 @@
+environment:
+  global:
+    PROJECT_NAME: hinterland
+  matrix:
+    - TARGET: i686-pc-windows-gnu
+    - TARGET: x86_64-pc-windows-msvc
+    - TARGET: x86_64-pc-windows-gnu
+
+install:
+  - set PATH=C:\msys64\usr\bin;%PATH%
+  - set PATH=C:\msys64\mingw32\bin;%PATH%
+  - if "%TARGET%" == "x86_64-pc-windows-gnu" set PATH=C:\msys64\mingw64\bin;%PATH%
+  - curl -sSf -o rustup-init.exe https://win.rustup.rs
+  - rustup-init.exe --default-host %TARGET% --default-toolchain stable -y
+  - set PATH=%PATH%;C:\Users\appveyor\.cargo\bin
+  - rustc -Vv
+  - cargo -V
+
+build: false
+
+test_script:
+  - cmd: 'cargo test'
