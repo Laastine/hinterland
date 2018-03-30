@@ -31,8 +31,7 @@ cargo run
 
 Run windowed mode with `cargo run --features windowed`
 
-Tested with Rust 1.25.0 with macOS and Linux. Windows not supported, but it _should_ work OK too.<br/>
-For some reason game is not working with Intel based GPUs.
+Tested with Rust 1.25.0 with macOS, Linux and Windows.<br/>
 
 ## External asset licence list
 
