@@ -1,6 +1,7 @@
 # Hinterland
 
 [![Build Status](https://travis-ci.org/Laastine/hinterland.svg?branch=master)](https://travis-ci.org/Laastine/hinterland)
+[![Build status](https://ci.appveyor.com/api/projects/status/q30iw99u5f3ua237?svg=true)](https://ci.appveyor.com/project/Laastine/hinterland)
 
 Isometric zombie survival game written in Rust.
 Project started as SDL2, but was later converted to use gfx-rs.
