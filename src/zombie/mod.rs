@@ -88,30 +88,16 @@ impl ZombieDrawable {
     });
   }
 
-  pub fn update_walk(&mut self) {
-    if self.zombie_idx < 7 {
+  pub fn update_alive_idx(&mut self, max_idx: usize) {
+    if self.zombie_idx < max_idx {
       self.zombie_idx += 1;
     } else {
       self.zombie_idx = 0;
     }
   }
 
-  pub fn update_still(&mut self) {
-    if self.zombie_idx < 3 {
-      self.zombie_idx += 1;
-    } else {
-      self.zombie_idx = 0;
-    }
-  }
-
-  pub fn update_normal_death(&mut self) {
-    if self.zombie_death_idx < 5 {
-      self.zombie_death_idx += 1;
-    }
-  }
-
-  pub fn update_critical_death(&mut self) {
-    if self.zombie_death_idx < 7 {
+  pub fn update_death_idx(&mut self, max_idx: usize) {
+    if self.zombie_death_idx < max_idx {
       self.zombie_death_idx += 1;
     }
   }

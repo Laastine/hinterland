@@ -102,10 +102,10 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
         }
         for mut z in &mut zs.zombies {
           match z.stance {
-            Stance::NormalDeath => z.update_normal_death(),
-            Stance::CriticalDeath => z.update_critical_death(),
-            Stance::Walking => z.update_walk(),
-            Stance::Still => z.update_still(),
+            Stance::NormalDeath => z.update_death_idx(5),
+            Stance::CriticalDeath => z.update_death_idx(7),
+            Stance::Walking => z.update_alive_idx(7),
+            Stance::Still => z.update_alive_idx(3),
             _ => ()
           };
         }
