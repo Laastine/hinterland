@@ -65,6 +65,7 @@ impl ZombieDrawable {
       ci.x_movement,
       ci.y_movement
     ]);
+    let movement_speed = 0.2;
 
     if self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
       let dir = direction(
@@ -73,11 +74,16 @@ impl ZombieDrawable {
       );
 
       self.direction = get_orientation(dir);
+
+      self.movement_direction = direction_movement(dir);
+      self.stance = Stance::Walking;
+    } else {
+      self.movement_direction = Point2::new(0.0, 0.0);
     }
 
     self.position = Position::new([
-      self.position.position[0] + offset_delta.position[0] + (self.movement_direction.x),
-      self.position.position[1] + offset_delta.position[1] - (self.movement_direction.y)
+      self.position.position[0] + offset_delta.position[0] + (self.movement_direction.x * movement_speed),
+      self.position.position[1] + offset_delta.position[1] + (self.movement_direction.y * movement_speed)
     ]);
     bullets.iter().for_each(|bullet| {
       if overlaps(self.position, bullet.position, 80.0, 80.0) && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
