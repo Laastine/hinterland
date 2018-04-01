@@ -40,12 +40,12 @@ impl CharacterDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &MouseInputState) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &MouseInputState, dimensions: &Dimensions) {
     self.projection = *world_to_clip;
 
     if mouse_input.left_click_point.is_some() && !ci.is_colliding {
       self.stance = Stance::Firing;
-      self.orientation = get_orientation_from_center(mouse_input);
+      self.orientation = get_orientation_from_center(mouse_input, dimensions);
     } else if ci.is_colliding {
       self.stance = Stance::Still;
     } else {
@@ -170,7 +170,7 @@ impl<'a> specs::System<'a> for PreDrawSystem {
 
     for (c, camera, ci, mi) in (&mut character, &camera_input, &character_input, &mouse_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      c.update(&world_to_clip, ci, mi);
+      c.update(&world_to_clip, ci, mi, &dim);
     }
   }
 }

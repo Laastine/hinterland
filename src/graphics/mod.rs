@@ -1,6 +1,6 @@
 use cgmath;
 use cgmath::{Angle, Deg, Matrix4, Point2, Point3, Vector3};
-use game::constants::{RESOLUTION_X, RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
+use game::constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
 use gfx::{Factory, format::Rgba8, handle::ShaderResourceView, Resources, texture};
 use gfx_app::mouse_controls::MouseInputState;
 use graphics::orientation::Orientation;
@@ -16,15 +16,15 @@ pub struct DeltaTime(pub f64);
 
 #[derive(Debug, Clone)]
 pub struct Dimensions {
-  pub width: u32,
-  pub height: u32,
+  pub window_width: f32,
+  pub window_height: f32,
 }
 
 impl Dimensions {
-  pub fn new(_window_width: u32, _window_height: u32) -> Dimensions {
+  pub fn new(window_width: f32, window_height: f32) -> Dimensions {
     Dimensions {
-      width: RESOLUTION_X,
-      height: RESOLUTION_Y,
+      window_width,
+      window_height,
     }
   }
 
@@ -42,7 +42,7 @@ impl Dimensions {
       Point3::new(0.0, 0.0, 0.0),
       Vector3::unit_y(),
     );
-    let aspect_ratio = self.width as f32 / self.height as f32;
+    let aspect_ratio = self.window_width / self.window_height;
     Projection {
       model: view.into(),
       view: view.into(),
@@ -84,9 +84,9 @@ pub fn get_orientation(angle_in_degrees: u32) -> Orientation {
   }
 }
 
-pub fn get_orientation_from_center(mouse_input: &MouseInputState) -> Orientation {
+pub fn get_orientation_from_center(mouse_input: &MouseInputState, dim: &Dimensions) -> Orientation {
   if let Some(end_point_gl) = mouse_input.left_click_point {
-    let start_point = Point2::new((RESOLUTION_X / 2) as f32, (RESOLUTION_Y / 2) as f32);
+    let start_point = Point2::new(dim.window_width / 2.0, dim.window_height / 2.0);
     let dir = direction(start_point, flip_y_axel(end_point_gl));
     get_orientation(dir)
   } else {

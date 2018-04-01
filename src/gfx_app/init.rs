@@ -34,7 +34,7 @@ pub fn run<W, D, F>(window: &mut W) -> GameStatus
   dispatch_loop(window, &mut device_renderer, &mut w, enc_queue)
 }
 
-fn setup_world(world: &mut World, viewport_size: (u32, u32)) {
+fn setup_world(world: &mut World, viewport_size: (f32, f32)) {
   world.register::<terrain::TerrainDrawable>();
   world.register::<graphics::camera::CameraInputState>();
   world.register::<character::CharacterDrawable>();

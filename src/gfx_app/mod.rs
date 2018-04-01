@@ -74,7 +74,7 @@ pub trait Window<D: gfx::Device, F: gfx::Factory<D::Resources>> {
   fn swap_window(&mut self);
   fn create_buffers(&mut self, count: usize) -> Vec<D::CommandBuffer>;
   fn set_controls(&mut self, controls: controls::TilemapControls);
-  fn get_viewport_size(&mut self) -> (u32, u32);
+  fn get_viewport_size(&mut self) -> (f32, f32);
   fn get_device(&mut self) -> &mut D;
   fn get_factory(&mut self) -> &mut F;
   fn get_render_target_view(&mut self) -> gfx::handle::RenderTargetView<D::Resources, ColorFormat>;
@@ -103,10 +103,11 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
     self.controls = Some(controls);
   }
 
-  fn get_viewport_size(&mut self) -> (u32, u32) {
-    self.window
+  fn get_viewport_size(&mut self) -> (f32, f32) {
+    let viewport = self.window
         .get_inner_size()
-        .unwrap_or((RESOLUTION_X, RESOLUTION_Y))
+        .unwrap_or((RESOLUTION_X, RESOLUTION_Y));
+    ((viewport.0 as f32), (viewport.1 as f32))
   }
 
   fn get_device(&mut self) -> &mut gfx_device_gl::Device {
@@ -124,7 +125,6 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
   fn get_depth_stencil_view(&mut self) -> gfx::handle::DepthStencilView<gfx_device_gl::Resources, DepthFormat> {
     self.depth_stencil_view.clone()
   }
-
   fn poll_events(&mut self) -> Option<GameStatus> {
     use glutin::KeyboardInput;
     use glutin::MouseButton;
