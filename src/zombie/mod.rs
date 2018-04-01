@@ -52,7 +52,7 @@ impl ZombieDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, character: &CharacterDrawable, bullets: &[BulletDrawable]) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, character: &CharacterDrawable/*, bullets: &[BulletDrawable]*/) {
     self.projection = *world_to_clip;
 
     let offset_delta =
@@ -85,6 +85,9 @@ impl ZombieDrawable {
       self.position.position[0] + offset_delta.position[0] + (self.movement_direction.x * movement_speed),
       self.position.position[1] + offset_delta.position[1] + (self.movement_direction.y * movement_speed)
     ]);
+  }
+
+  pub fn check_bullet_hits(&mut self, bullets: &[BulletDrawable]) {
     bullets.iter().for_each(|bullet| {
       if overlaps(self.position, bullet.position, 80.0, 80.0) && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
         self.stance =
@@ -242,7 +245,8 @@ impl<'a> specs::System<'a> for PreDrawSystem {
       let world_to_clip = dim.world_to_projection(camera);
 
       for z in &mut zs.zombies {
-        z.update(&world_to_clip, ci, c, &bs.bullets);
+        z.update(&world_to_clip, ci, c);
+        z.check_bullet_hits(&bs.bullets);
       }
     }
   }
