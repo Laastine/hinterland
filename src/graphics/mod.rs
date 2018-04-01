@@ -18,13 +18,15 @@ pub struct DeltaTime(pub f64);
 pub struct Dimensions {
   pub window_width: f32,
   pub window_height: f32,
+  pub hidpi_factor: f32,
 }
 
 impl Dimensions {
-  pub fn new(window_width: f32, window_height: f32) -> Dimensions {
+  pub fn new(window_width: f32, window_height: f32, hidpi_factor: f32) -> Dimensions {
     Dimensions {
       window_width,
       window_height,
+      hidpi_factor,
     }
   }
 
@@ -86,7 +88,8 @@ pub fn get_orientation(angle_in_degrees: u32) -> Orientation {
 
 pub fn get_orientation_from_center(mouse_input: &MouseInputState, dim: &Dimensions) -> Orientation {
   if let Some(end_point_gl) = mouse_input.left_click_point {
-    let start_point = Point2::new(dim.window_width / 2.0, dim.window_height / 2.0);
+    let start_point = Point2::new(dim.window_width / 2.0 * dim.hidpi_factor, dim.window_height / 2.0 * dim.hidpi_factor);
+    println!("start: {:?}, end: {:?}", start_point, mouse_input.left_click_point.unwrap());
     let dir = direction(start_point, flip_y_axel(end_point_gl));
     get_orientation(dir)
   } else {

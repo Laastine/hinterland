@@ -30,11 +30,11 @@ pub fn run<W, D, F>(window: &mut W) -> GameStatus
   let (mut device_renderer, enc_queue) = DeviceRenderer::new(window.create_buffers(2));
 
   let mut w = specs::World::new();
-  setup_world(&mut w, window.get_viewport_size());
+  setup_world(&mut w, window.get_viewport_size(), window.get_hidpi_factor());
   dispatch_loop(window, &mut device_renderer, &mut w, enc_queue)
 }
 
-fn setup_world(world: &mut World, viewport_size: (f32, f32)) {
+fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) {
   world.register::<terrain::TerrainDrawable>();
   world.register::<graphics::camera::CameraInputState>();
   world.register::<character::CharacterDrawable>();
@@ -46,7 +46,7 @@ fn setup_world(world: &mut World, viewport_size: (f32, f32)) {
   world.register::<character::controls::CharacterInputState>();
   world.register::<MouseInputState>();
 
-  world.add_resource(Dimensions::new(viewport_size.0, viewport_size.1));
+  world.add_resource(Dimensions::new(viewport_size.0, viewport_size.1, hidpi_factor));
   world.add_resource(character::controls::CharacterInputState::new());
   world.add_resource(MouseInputState::new());
   world.add_resource(DeltaTime(0.0));

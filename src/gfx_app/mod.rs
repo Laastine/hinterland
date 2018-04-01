@@ -77,6 +77,7 @@ pub trait Window<D: gfx::Device, F: gfx::Factory<D::Resources>> {
   fn get_viewport_size(&mut self) -> (f32, f32);
   fn get_device(&mut self) -> &mut D;
   fn get_factory(&mut self) -> &mut F;
+  fn get_hidpi_factor(&mut self) -> f32;
   fn get_render_target_view(&mut self) -> gfx::handle::RenderTargetView<D::Resources, ColorFormat>;
   fn get_depth_stencil_view(&mut self) -> gfx::handle::DepthStencilView<D::Resources, DepthFormat>;
   fn poll_events(&mut self) -> Option<GameStatus>;
@@ -116,6 +117,10 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
 
   fn get_factory(&mut self) -> &mut gfx_device_gl::Factory {
     &mut self.factory
+  }
+
+  fn get_hidpi_factor(&mut self) -> f32 {
+    self.window.hidpi_factor()
   }
 
   fn get_render_target_view(&mut self) -> gfx::handle::RenderTargetView<gfx_device_gl::Resources, ColorFormat> {
