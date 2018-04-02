@@ -89,7 +89,6 @@ pub fn get_orientation(angle_in_degrees: u32) -> Orientation {
 pub fn get_orientation_from_center(mouse_input: &MouseInputState, dim: &Dimensions) -> Orientation {
   if let Some(end_point_gl) = mouse_input.left_click_point {
     let start_point = Point2::new(dim.window_width / 2.0 * dim.hidpi_factor, dim.window_height / 2.0 * dim.hidpi_factor);
-    println!("start: {:?}, end: {:?}", start_point, mouse_input.left_click_point.unwrap());
     let dir = direction(start_point, flip_y_axel(end_point_gl));
     get_orientation(dir)
   } else {

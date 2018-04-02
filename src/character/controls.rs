@@ -116,7 +116,7 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
     let delta = d.0;
 
     if self.cool_down == 0.0 {
-      self.cool_down += 0.01;
+      self.cool_down += 0.1;
     } else {
       self.cool_down = (self.cool_down - delta).max(0.0);
       while let Ok(control) = self.queue.try_recv() {
