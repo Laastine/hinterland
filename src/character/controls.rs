@@ -1,4 +1,4 @@
-use game::constants::{TILE_WIDTH, X_MOVEMENT, Y_MOVEMENT};
+use game::constants::{X_MOVEMENT, Y_MOVEMENT};
 use gfx_app::mouse_controls::MouseInputState;
 use graphics::{camera::CameraInputState, can_move_to_tile, DeltaTime, orientation::Orientation};
 use shaders::Position;
@@ -25,7 +25,6 @@ impl CharacterInputState {
   }
 
   pub fn update(&mut self, mi: &MouseInputState, camera: &mut CameraInputState, css: &CharacterControlSystem) {
-    let tile_width = TILE_WIDTH;
     if css.y_move.is_none() && css.x_move.is_none() {
       if mi.left_click_point.is_none() {
         self.orientation = Orientation::Still;
@@ -44,7 +43,7 @@ impl CharacterInputState {
       }
     } else if let Some(x) = css.x_move {
       if let Some(y) = css.y_move {
-        if mi.left_click_point.is_none() && !self.is_colliding || can_move_to_tile(Position::new([self.x_movement + x * tile_width, self.y_movement + y])) {
+        if mi.left_click_point.is_none() && !self.is_colliding || can_move_to_tile(Position::new([self.x_movement + x, self.y_movement + y])) {
           self.x_movement += x / 1.5;
           self.y_movement += y / 1.5;
           camera.x_pos += x / 1.5;
