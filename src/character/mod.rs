@@ -73,13 +73,12 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
 
     let charter_bytes = &include_bytes!("../../assets/character.png")[..];
 
-    let vertex_data: Vec<VertexData> =
-      vec![
-        VertexData::new([-20.0, -28.0], [0.0, 1.0]),
-        VertexData::new([20.0, -28.0], [1.0, 1.0]),
-        VertexData::new([20.0, 28.0], [1.0, 0.0]),
-        VertexData::new([-20.0, 28.0], [0.0, 0.0]),
-      ];
+    let vertex_data: [VertexData; 4] = [
+      VertexData::new([-20.0, -28.0], [0.0, 1.0]),
+      VertexData::new([20.0, -28.0], [1.0, 1.0]),
+      VertexData::new([20.0, 28.0], [1.0, 0.0]),
+      VertexData::new([-20.0, 28.0], [0.0, 0.0]),
+    ];
 
     let index_data: [u16; 6] = [0, 1, 2, 2, 3, 0];
 

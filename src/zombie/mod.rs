@@ -129,17 +129,16 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
 
     let zombie_bytes = include_bytes!("../../assets/zombie.png");
 
-    let vertex_data: Vec<VertexData> =
-      vec![
-        VertexData::new([-25.0, -35.0], [0.0, 1.0]),
-        VertexData::new([25.0, -35.0], [1.0, 1.0]),
-        VertexData::new([25.0, 35.0], [1.0, 0.0]),
-        VertexData::new([-25.0, 35.0], [0.0, 0.0]),
-      ];
+    let vertex_data: [VertexData; 4] = [
+      VertexData::new([-25.0, -35.0], [0.0, 1.0]),
+      VertexData::new([25.0, -35.0], [1.0, 1.0]),
+      VertexData::new([25.0, 35.0], [1.0, 0.0]),
+      VertexData::new([-25.0, 35.0], [0.0, 0.0]),
+    ];
 
     let index_data: [u16; 6] = [0, 1, 2, 2, 3, 0];
 
-    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
+    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data[..], &index_data[..]);
 
     let char_texture = load_texture(factory, zombie_bytes).unwrap();
     let pso = factory

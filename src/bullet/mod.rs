@@ -82,8 +82,7 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
                 where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
-    let vertex_data: Vec<VertexData> =
-      vec![
+    let vertex_data: [VertexData; 4] = [
         VertexData::new([-1.0, -1.0], [0.0, 1.0]),
         VertexData::new([1.0, -1.0], [1.0, 1.0]),
         VertexData::new([1.0, 1.0], [1.0, 0.0]),

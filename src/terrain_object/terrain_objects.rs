@@ -5,13 +5,13 @@ use terrain_object::TerrainObjectDrawable;
 
 #[derive(Debug, Clone)]
 pub struct TerrainObjects {
-  pub objects: Vec<TerrainObjectDrawable>,
+  pub objects: [TerrainObjectDrawable; 7],
 }
 
 impl TerrainObjects {
   pub fn new() -> TerrainObjects {
     TerrainObjects {
-      objects: vec![
+      objects: [
         TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[0])),
         TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[1])),
         TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[0])),

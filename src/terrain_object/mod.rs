@@ -77,13 +77,12 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
                 where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
-    let vertex_data: Vec<VertexData> =
-      vec![
-        VertexData::new([-120.0, -120.0], [0.0, 1.0]),
-        VertexData::new([120.0, -120.0], [1.0, 1.0]),
-        VertexData::new([120.0, 120.0], [1.0, 0.0]),
-        VertexData::new([-120.0, 120.0], [0.0, 0.0]),
-      ];
+    let vertex_data: [VertexData; 4] = [
+      VertexData::new([-120.0, -120.0], [0.0, 1.0]),
+      VertexData::new([120.0, -120.0], [1.0, 1.0]),
+      VertexData::new([120.0, 120.0], [1.0, 0.0]),
+      VertexData::new([-120.0, 120.0], [0.0, 0.0]),
+    ];
 
     let index_data: [u16; 6] = [0, 1, 2, 2, 3, 0];
 
