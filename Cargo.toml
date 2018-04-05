@@ -14,7 +14,7 @@ path = "src/main.rs"
 [dependencies]
 cgmath = "0.16.1"
 gfx_core = "0.8.2"
-gfx_device_gl = "0.15.0"
+gfx_device_gl = "0.15.2"
 gfx_window_glutin = "0.21.0"
 gfx = "0.17.1"
 glutin = "0.13.1"
