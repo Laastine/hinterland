@@ -43,6 +43,7 @@ impl GlutinWindow {
     };
 
     let context = glutin::ContextBuilder::new()
+      .with_vsync(true)
       .with_pixel_format(24, 8)
       .with_gl(glutin::GlRequest::GlThenGles {
         opengles_version: (3, 0),

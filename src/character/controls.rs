@@ -1,4 +1,4 @@
-use game::constants::{X_MOVEMENT, Y_MOVEMENT};
+use game::constants::{CHARACTER_X_SPEED, CHARACTER_Y_SPEED};
 use gfx_app::mouse_controls::MouseInputState;
 use graphics::{camera::CameraInputState, can_move_to_tile, DeltaTime, orientation::Orientation};
 use shaders::Position;
@@ -120,11 +120,11 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
       self.cool_down = (self.cool_down - delta).max(0.0);
       while let Ok(control) = self.queue.try_recv() {
         match control {
-          CharacterControl::Up => self.y_move = Some(-Y_MOVEMENT),
-          CharacterControl::Down => self.y_move = Some(Y_MOVEMENT),
+          CharacterControl::Up => self.y_move = Some(-CHARACTER_Y_SPEED),
+          CharacterControl::Down => self.y_move = Some(CHARACTER_Y_SPEED),
           CharacterControl::YMoveStop => self.y_move = None,
-          CharacterControl::Right => self.x_move = Some(-X_MOVEMENT),
-          CharacterControl::Left => self.x_move = Some(X_MOVEMENT),
+          CharacterControl::Right => self.x_move = Some(-CHARACTER_X_SPEED),
+          CharacterControl::Left => self.x_move = Some(CHARACTER_X_SPEED),
           CharacterControl::XMoveStop => self.x_move = None,
         }
       }

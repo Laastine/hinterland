@@ -65,7 +65,7 @@ impl ZombieDrawable {
       ci.x_movement,
       ci.y_movement
     ]);
-    let movement_speed = 0.2;
+    let movement_speed = 1.0;
 
     if self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
       let dir = direction(
