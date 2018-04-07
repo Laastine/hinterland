@@ -52,7 +52,7 @@ impl ZombieDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, character: &CharacterDrawable/*, bullets: &[BulletDrawable]*/) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, character: &CharacterDrawable) {
     self.projection = *world_to_clip;
 
     let offset_delta =
@@ -235,7 +235,6 @@ impl<'a> specs::System<'a> for PreDrawSystem {
                      ReadStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, Bullets>,
                      Fetch<'a, Dimensions>);
-
 
   fn run(&mut self, (mut zombies, camera_input, character_input, character, bullets, dim): Self::SystemData) {
     use specs::Join;
