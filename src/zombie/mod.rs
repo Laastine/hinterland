@@ -30,6 +30,7 @@ pub struct ZombieDrawable {
   pub movement_direction: Point2<f32>,
   zombie_idx: usize,
   zombie_death_idx: usize,
+  is_colliding: bool,
 }
 
 impl ZombieDrawable {
@@ -49,6 +50,7 @@ impl ZombieDrawable {
       movement_direction: Point2::new(0.0, 0.0),
       zombie_idx: 0,
       zombie_death_idx: 0,
+      is_colliding: false
     }
   }
 

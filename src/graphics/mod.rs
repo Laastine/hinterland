@@ -7,6 +7,10 @@ use graphics::orientation::Orientation;
 use image;
 use shaders::{Position, Projection};
 use std::io::Cursor;
+use bullet::BulletDrawable;
+use character::CharacterDrawable;
+use terrain_object::TerrainObjectDrawable;
+use zombie::ZombieDrawable;
 
 pub mod camera;
 pub mod orientation;
@@ -151,4 +155,16 @@ pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> Result<ShaderResource
     Err(e) => panic!("Couldn't create texture {:?}", e)
   };
   Ok(view)
+}
+
+pub enum Drawables {
+  Bullet(BulletDrawable),
+  Character(CharacterDrawable),
+  TerrainHouse(TerrainObjectDrawable),
+  TerrainTree(TerrainObjectDrawable),
+  Zombie(ZombieDrawable),
+}
+
+pub trait DrawOrder {
+  fn get_zindex(&self) -> (f32, Drawables, &Self);
 }

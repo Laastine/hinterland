@@ -5,6 +5,7 @@ use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::renderer::EncoderQueue;
 use graphics::{DeltaTime, orientation::Stance};
+use graphics::Drawables;
 use specs;
 use specs::{Fetch, WriteStorage};
 use std::time::Instant;
@@ -112,38 +113,48 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
       } else if self.fire_cool_down == 0.0 && c.stance == Stance::Firing {
         cs.update_fire();
       }
-      for mut z in &mut zs.zombies {
-        if c.position.position[1] <= z.position.position[1] {
-          self.zombie_system.draw(&mut z, &mut encoder);
-        }
-      }
-      for (idx, o) in &mut obj.objects.iter().enumerate() {
-        if idx < 2 && c.position.position[1] <= o.position.position[1] {
-          self.terrain_object_system[0].draw(o, &mut encoder);
-        }
-        else if idx > 1 && c.position.position[1] <= o.position.position[1] {
-          self.terrain_object_system[1].draw(o, &mut encoder);
-        }
-      }
-      self.character_system.draw(c, cs, &mut encoder);
+      let mut drawables: Vec<Drawables> = vec![];
+      drawables.append(&mut bs.bullets.iter().map(|b| Drawables::Bullet(b.clone())).collect());
+      drawables.append(&mut zs.zombies.iter().map(|z| Drawables::Zombie(z.clone())).collect());
 
-      for (idx, o) in &mut obj.objects.iter().enumerate() {
-        if idx < 2 && c.position.position[1] > o.position.position[1] {
-          self.terrain_object_system[0].draw(o, &mut encoder);
-        }
-        else if idx > 1 && c.position.position[1] > o.position.position[1] {
-          self.terrain_object_system[1].draw(o, &mut encoder);
+      for (idx, o) in obj.objects.iter().enumerate() {
+        if idx < 2 {
+          drawables.push(Drawables::TerrainHouse(o.clone()));
+        } else {
+          drawables.push(Drawables::TerrainTree(o.clone()));
         }
       }
 
-      for mut z in &mut zs.zombies {
-        if c.position.position[1] > z.position.position[1] {
-          self.zombie_system.draw(&mut z, &mut encoder);
-        }
-      }
+      drawables.push(Drawables::Character(c.clone()));
 
-      for b in &mut bs.bullets {
-        self.bullet_system.draw(b, &mut encoder);
+      drawables.sort_by(|a,b| {
+        let a_val = match a {
+          Drawables::Bullet(e) => e.position.position[1],
+          Drawables::Zombie(e) => e.position.position[1],
+          Drawables::TerrainHouse(e) => e.position.position[1],
+          Drawables::TerrainTree(e) => e.position.position[1],
+          Drawables::Character(e) => e.position.position[1],
+        };
+
+        let b_val = match b {
+          Drawables::Bullet(e) => e.position.position[1],
+          Drawables::Zombie(e) => e.position.position[1],
+          Drawables::TerrainHouse(e) => e.position.position[1],
+          Drawables::TerrainTree(e) => e.position.position[1],
+          Drawables::Character(e) => e.position.position[1],
+        };
+
+        b_val.partial_cmp(&a_val).unwrap()
+      });
+
+      for mut e in &mut drawables {
+        match e {
+          Drawables::Bullet(e) => { self.bullet_system.draw(e, &mut encoder) },
+          Drawables::Zombie(e) => { self.zombie_system.draw(e, &mut encoder) },
+          Drawables::TerrainHouse(e) => { self.terrain_object_system[0].draw(e, &mut encoder) },
+          Drawables::TerrainTree(e) => { self.terrain_object_system[1].draw(e, &mut encoder) },
+          Drawables::Character(e) => {self.character_system.draw(e, cs, & mut encoder)},
+        }
       }
     }
 
