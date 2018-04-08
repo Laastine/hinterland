@@ -128,32 +128,32 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
       drawables.push(Drawables::Character(c.clone()));
 
       drawables.sort_by(|a,b| {
-        let a_val = match a {
-          Drawables::Bullet(e) => e.position.position[1],
-          Drawables::Zombie(e) => e.position.position[1],
-          Drawables::TerrainHouse(e) => e.position.position[1],
-          Drawables::TerrainTree(e) => e.position.position[1],
-          Drawables::Character(e) => e.position.position[1],
+        let a_val = match *a {
+          Drawables::Bullet(ref e) => e.position.position[1],
+          Drawables::Zombie(ref e) => e.position.position[1],
+          Drawables::TerrainHouse(ref e) => e.position.position[1],
+          Drawables::TerrainTree(ref e) => e.position.position[1],
+          Drawables::Character(ref e) => e.position.position[1],
         };
 
-        let b_val = match b {
-          Drawables::Bullet(e) => e.position.position[1],
-          Drawables::Zombie(e) => e.position.position[1],
-          Drawables::TerrainHouse(e) => e.position.position[1],
-          Drawables::TerrainTree(e) => e.position.position[1],
-          Drawables::Character(e) => e.position.position[1],
+        let b_val = match *b {
+          Drawables::Bullet(ref e) => e.position.position[1],
+          Drawables::Zombie(ref e) => e.position.position[1],
+          Drawables::TerrainHouse(ref e) => e.position.position[1],
+          Drawables::TerrainTree(ref e) => e.position.position[1],
+          Drawables::Character(ref e) => e.position.position[1],
         };
 
         b_val.partial_cmp(&a_val).unwrap()
       });
 
       for mut e in &mut drawables {
-        match e {
-          Drawables::Bullet(e) => { self.bullet_system.draw(e, &mut encoder) },
-          Drawables::Zombie(e) => { self.zombie_system.draw(e, &mut encoder) },
-          Drawables::TerrainHouse(e) => { self.terrain_object_system[0].draw(e, &mut encoder) },
-          Drawables::TerrainTree(e) => { self.terrain_object_system[1].draw(e, &mut encoder) },
-          Drawables::Character(e) => {self.character_system.draw(e, cs, & mut encoder)},
+        match *e {
+          Drawables::Bullet(ref e) => { self.bullet_system.draw(e, &mut encoder) },
+          Drawables::Zombie(ref mut e) => { self.zombie_system.draw(e, &mut encoder) },
+          Drawables::TerrainHouse(ref mut e) => { self.terrain_object_system[0].draw(e, &mut encoder) },
+          Drawables::TerrainTree(ref mut e) => { self.terrain_object_system[1].draw(e, &mut encoder) },
+          Drawables::Character(ref mut e) => {self.character_system.draw(e, cs, & mut encoder)},
         }
       }
     }
