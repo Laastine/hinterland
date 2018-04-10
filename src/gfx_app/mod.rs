@@ -182,7 +182,6 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             }
             KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {
               controls.move_character_left();
-              controls.move_map_left();
               None
             }
             KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {
