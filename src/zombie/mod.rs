@@ -8,7 +8,7 @@ use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, Z
 use game::get_random_bool;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, Dimensions, direction, direction_movement, get_orientation, load_texture, orientation::{Orientation, Stance}, overlaps};
+use graphics::{camera::CameraInputState, can_move_to_tile, Dimensions, direction, direction_movement, get_orientation, load_texture, orientation::{Orientation, Stance}, overlaps};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
@@ -83,10 +83,23 @@ impl ZombieDrawable {
       self.movement_direction = Point2::new(0.0, 0.0);
     }
 
-    self.position = Position::new([
+    let new_pos = Position::new([
       self.position.position[0] + offset_delta.position[0] + (self.movement_direction.x * movement_speed),
       self.position.position[1] + offset_delta.position[1] + (self.movement_direction.y * movement_speed)
     ]);
+
+    let new_pos_without_movement = Position::new([
+      self.position.position[0] + offset_delta.position[0],
+      self.position.position[1] + offset_delta.position[1]
+    ]);
+
+    let tile_pos = Position::new([ci.x_movement - new_pos.position[0], ci.y_movement - new_pos.position[1]]);
+
+    if can_move_to_tile(tile_pos) {
+      self.position = new_pos;
+    } else {
+      self.position = new_pos_without_movement;
+    }
   }
 
   pub fn check_bullet_hits(&mut self, bullets: &[BulletDrawable]) {
