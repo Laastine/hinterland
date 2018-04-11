@@ -23,7 +23,7 @@ cargo run
 ## Controls
 
 `W,A,S,D` - Character move<br/>
-`Mouse left` - Fire<br/>
+`Ctrl + Mouse left` - Fire<br/>
 `Z` - zoom in<br/>
 `X` - zoom out<br/>
 `Esc` - exit
