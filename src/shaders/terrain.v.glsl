@@ -1,4 +1,4 @@
-#version 410 core
+#version 330 core
 
 in vec2 a_Pos;
 in vec2 a_BufPos;
