@@ -193,7 +193,18 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
               controls.stop_character_x();
               None
             }
-            _ => None,
+            KeyboardInput { state: Pressed, modifiers, .. } => {
+              if modifiers.ctrl {
+                controls.ctrl_pressed();
+              }
+              None
+            }
+            KeyboardInput { state: Released, modifiers, .. } => {
+              if !modifiers.ctrl {
+                controls.ctrl_released();
+              }
+              None
+            }
           },
           MouseInput { state: Pressed, button: MouseButton::Left, .. } => {
             controls.mouse_left_click(Some(*m_pos));

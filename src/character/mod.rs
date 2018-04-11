@@ -44,7 +44,8 @@ impl CharacterDrawable {
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &MouseInputState, dimensions: &Dimensions) {
     self.projection = *world_to_clip;
 
-    if mouse_input.left_click_point.is_some() && !ci.is_colliding {
+
+    if ci.is_shooting && mouse_input.left_click_point.is_some() && !ci.is_colliding {
       self.stance = Stance::Firing;
       self.orientation = get_orientation_from_center(mouse_input, dimensions);
     } else if ci.is_colliding {

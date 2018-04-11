@@ -56,6 +56,12 @@ impl TilemapControls {
   pub fn zoom_stop(&mut self) {
     self.tc(CameraControl::ZoomStop)
   }
+  pub fn ctrl_pressed(&mut self) {
+    self.cc(CharacterControl::CtrlPressed)
+  }
+  pub fn ctrl_released(&mut self) {
+    self.cc(CharacterControl::CtrlReleased)
+  }
 
   pub fn move_character_left(&mut self) {
     self.cc(CharacterControl::Left)

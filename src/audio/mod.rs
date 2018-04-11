@@ -1,7 +1,9 @@
+use character::controls::CharacterInputState;
 use game::constants::PISTOL_AUDIO_PATH;
 use rodio;
 use rodio::Sink;
 use specs;
+use specs::ReadStorage;
 use specs::WriteStorage;
 use std::{fs::File, io::BufReader, sync::mpsc};
 
@@ -55,9 +57,10 @@ impl AudioSystem {
 }
 
 impl<'a> specs::System<'a> for AudioSystem {
-  type SystemData = WriteStorage<'a, AudioData>;
+  type SystemData = (WriteStorage<'a, AudioData>,
+                     ReadStorage<'a, CharacterInputState>);
 
-  fn run(&mut self, mut audio_data: Self::SystemData) {
+  fn run(&mut self, (mut audio_data, character_input): Self::SystemData) {
     use specs::Join;
 
     while let Ok(effect) = self.queue.try_recv() {
@@ -67,8 +70,8 @@ impl<'a> specs::System<'a> for AudioSystem {
       }
     }
 
-    for audio in (&mut audio_data).join() {
-      if let Effects::PistolFire = self.effects { audio.play_effect() }
+    for (audio, ci) in (&mut audio_data, &character_input).join() {
+      if let Effects::PistolFire = self.effects { if ci.is_shooting { audio.play_effect() } }
     }
   }
 }

@@ -1,5 +1,6 @@
 use bullet::bullets::Bullets;
 use cgmath::Point2;
+use character::controls::CharacterInputState;
 use graphics::{camera::CameraInputState, Dimensions, direction, direction_movement};
 use specs;
 use specs::{Fetch, ReadStorage, WriteStorage};
@@ -58,22 +59,25 @@ impl MouseControlSystem {
 impl<'a> specs::System<'a> for MouseControlSystem {
   type SystemData = (WriteStorage<'a, MouseInputState>,
                      ReadStorage<'a, CameraInputState>,
+                     ReadStorage<'a, CharacterInputState>,
                      WriteStorage<'a, Bullets>,
                      Fetch<'a, Dimensions>);
 
-  fn run(&mut self, (mut mouse_input, camera, mut bullets, dim): Self::SystemData) {
+  fn run(&mut self, (mut mouse_input, camera, character_input, mut bullets, dim): Self::SystemData) {
     use specs::Join;
 
     while let Ok((control_value, value)) = self.queue.try_recv() {
       match control_value {
         MouseControl::LeftClick => {
-          for (mi, bs, ca) in (&mut mouse_input, &mut bullets, &camera).join() {
+          for (mi, bs, ca, ci) in (&mut mouse_input, &mut bullets, &camera, &character_input).join() {
             if let Some(val) = value {
-              let start_point = Point2::new(dim.window_width / 2.0 * dim.hidpi_factor, dim.window_height / 2.0 * dim.hidpi_factor);
-              let end_point = Point2::new(val.0 as f32, val.1 as f32);
-              mi.left_click_point = Some(end_point);
-              let movement_direction = direction_movement(direction(start_point, end_point));
-              Bullets::add_bullet(bs, Point2::new(-ca.x_pos, ca.y_pos), movement_direction);
+              if ci.is_shooting {
+                let start_point = Point2::new(dim.window_width / 2.0 * dim.hidpi_factor, dim.window_height / 2.0 * dim.hidpi_factor);
+                let end_point = Point2::new(val.0 as f32, val.1 as f32);
+                mi.left_click_point = Some(end_point);
+                let movement_direction = direction_movement(direction(start_point, end_point));
+                Bullets::add_bullet(bs, Point2::new(-ca.x_pos, ca.y_pos), movement_direction);
+              }
             } else {
               mi.left_click_point = None;
             }

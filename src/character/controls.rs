@@ -12,6 +12,7 @@ pub struct CharacterInputState {
   pub y_movement: f32,
   pub orientation: Orientation,
   pub is_colliding: bool,
+  pub is_shooting: bool,
 }
 
 impl CharacterInputState {
@@ -20,7 +21,8 @@ impl CharacterInputState {
       x_movement: 0.0,
       y_movement: 0.0,
       orientation: Orientation::Still,
-      is_colliding: false
+      is_colliding: false,
+      is_shooting: false,
     }
   }
 
@@ -67,6 +69,7 @@ impl CharacterInputState {
         };
       }
     }
+    self.is_shooting = css.is_ctrl_pressed;
   }
 }
 
@@ -82,6 +85,8 @@ pub enum CharacterControl {
   Down,
   XMoveStop,
   YMoveStop,
+  CtrlPressed,
+  CtrlReleased,
 }
 
 #[derive(Debug)]
@@ -90,6 +95,7 @@ pub struct CharacterControlSystem {
   x_move: Option<f32>,
   y_move: Option<f32>,
   cool_down: f64,
+  is_ctrl_pressed: bool,
 }
 
 impl CharacterControlSystem {
@@ -100,6 +106,7 @@ impl CharacterControlSystem {
       x_move: None,
       y_move: None,
       cool_down: 1.0,
+      is_ctrl_pressed: false,
     }, tx)
   }
 }
@@ -126,6 +133,8 @@ impl<'a> specs::System<'a> for CharacterControlSystem {
           CharacterControl::Right => self.x_move = Some(-CHARACTER_X_SPEED),
           CharacterControl::Left => self.x_move = Some(CHARACTER_X_SPEED),
           CharacterControl::XMoveStop => self.x_move = None,
+          CharacterControl::CtrlPressed => self.is_ctrl_pressed = true,
+          CharacterControl::CtrlReleased => self.is_ctrl_pressed = false,
         }
       }
 
