@@ -1,11 +1,13 @@
 use bullet;
 use character;
 use critter::CharacterSprite;
+use game::{get_random_bool, get_random_edge_point};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::renderer::EncoderQueue;
 use graphics::{DeltaTime, orientation::Stance};
 use graphics::Drawables;
+use shaders::Position;
 use specs;
 use specs::{Fetch, WriteStorage};
 use std::time::Instant;
@@ -13,6 +15,7 @@ use terrain;
 use terrain_object;
 use terrain_object::TerrainTexture;
 use zombie;
+use zombie::ZombieDrawable;
 
 pub struct DrawSystem<D: gfx::Device> {
   render_target_view: gfx::handle::RenderTargetView<D::Resources, ColorFormat>,
@@ -100,6 +103,10 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
       if self.cool_down == 0.0 {
         if c.stance == Stance::Walking {
           cs.update_run();
+          let point = get_random_edge_point();
+          if get_random_bool() {
+            zs.zombies.push(ZombieDrawable::new(Position::new([point.0, point.1])))
+          }
         }
         for mut z in &mut zs.zombies {
           match z.stance {

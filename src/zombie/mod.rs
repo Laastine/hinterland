@@ -104,7 +104,7 @@ impl ZombieDrawable {
 
   pub fn check_bullet_hits(&mut self, bullets: &[BulletDrawable]) {
     bullets.iter().for_each(|bullet| {
-      if overlaps(self.position, bullet.position, 40.0, 80.0) && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
+      if overlaps(self.position, bullet.position, 80.0, 80.0) && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
         self.stance =
           if get_random_bool() {
             Stance::NormalDeath
