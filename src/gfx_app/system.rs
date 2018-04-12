@@ -1,7 +1,8 @@
 use bullet;
 use character;
+use character::controls::CharacterInputState;
 use critter::CharacterSprite;
-use game::{get_random_bool, get_random_edge_point};
+use game::{get_random_edge_point, get_weighted_random};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::renderer::EncoderQueue;
@@ -10,6 +11,7 @@ use graphics::Drawables;
 use shaders::Position;
 use specs;
 use specs::{Fetch, WriteStorage};
+use specs::ReadStorage;
 use std::time::Instant;
 use terrain;
 use terrain_object;
@@ -65,13 +67,14 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
   #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
   type SystemData = (WriteStorage<'a, terrain::TerrainDrawable>,
                      WriteStorage<'a, character::CharacterDrawable>,
+                     ReadStorage<'a, CharacterInputState>,
                      WriteStorage<'a, CharacterSprite>,
                      WriteStorage<'a, zombie::zombies::Zombies>,
                      WriteStorage<'a, bullet::bullets::Bullets>,
                      WriteStorage<'a, terrain_object::terrain_objects::TerrainObjects>,
                      Fetch<'a, DeltaTime>);
 
-  fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut zombies, mut bullets, mut terrain_objects, d): Self::SystemData) {
+  fn run(&mut self, (mut terrain, mut character, character_input, mut character_sprite, mut zombies, mut bullets, mut terrain_objects, d): Self::SystemData) {
     use specs::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
 
@@ -97,16 +100,16 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 16.0 / 256.0, 20.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
-    for (t, c, cs, zs, bs, obj) in (&mut terrain, &mut character, &mut character_sprite, &mut zombies, &mut bullets, &mut terrain_objects).join() {
+    for (t, c, ci, cs, zs, bs, obj) in (&mut terrain, &mut character, &character_input, &mut character_sprite, &mut zombies, &mut bullets, &mut terrain_objects).join() {
       self.terrain_system.draw(t, &mut encoder);
 
       if self.cool_down == 0.0 {
         if c.stance == Stance::Walking {
           cs.update_run();
-          let point = get_random_edge_point();
-          if get_random_bool() {
-            zs.zombies.push(ZombieDrawable::new(Position::new([point.0, point.1])))
-          }
+        }
+        let point = get_random_edge_point(ci);
+        if get_weighted_random(0.2) {
+          zs.zombies.push(ZombieDrawable::new(Position::new([point.0, point.1])))
         }
         for mut z in &mut zs.zombies {
           match z.stance {
