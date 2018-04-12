@@ -36,19 +36,17 @@ impl<D: gfx::Device> DeviceRenderer<D> {
   }
 
   pub fn draw(&mut self, device: &mut D) {
-    match self.queue.receiver.recv() {
-      Ok(mut encoder) => {
-        encoder.flush(device);
-        match self.queue.sender.send(encoder) {
-          Ok(_) => {}
-          Err(e) => {
-            panic!("Unable to send {}", e);
-          }
-        }
-      }
-      Err(e) => {
-        panic!("Unable to receive {}", e);
-      }
-    }
+    let _ = self.queue.receiver.recv()
+                .map(|mut encoder| {
+                  encoder.flush(device);
+                  let _ = self.queue.sender
+                              .send(encoder)
+                              .map_err(|e| {
+                                panic!("Unable to send {}", e)
+                              });
+                })
+                .map_err(|e| {
+                  panic!("Unable to receive {}", e);
+                });
   }
 }
