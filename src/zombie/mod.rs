@@ -155,7 +155,7 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data[..], &index_data[..]);
 
-    let char_texture = load_texture(factory, zombie_bytes).unwrap();
+    let char_texture = load_texture(factory, zombie_bytes);
     let pso = factory
       .create_pipeline_simple(SHADER_VERT,
                               SHADER_FRAG,

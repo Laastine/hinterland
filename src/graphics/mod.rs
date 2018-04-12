@@ -146,7 +146,7 @@ pub fn coords_to_tile(position: Position) -> Point2<usize> {
   }
 }
 
-pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> Result<ShaderResourceView<R, [f32; 4]>, String> where R: Resources, F: Factory<R> {
+pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> ShaderResourceView<R, [f32; 4]> where R: Resources, F: Factory<R> {
   let img = image::load(Cursor::new(data), image::PNG).unwrap().to_rgba();
   let (width, height) = img.dimensions();
   let kind = texture::Kind::D2(width as texture::Size, height as texture::Size, texture::AaMode::Single);
@@ -154,7 +154,7 @@ pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> Result<ShaderResource
     Ok(val) => val,
     Err(e) => panic!("Couldn't create texture {:?}", e)
   };
-  Ok(view)
+  view
 }
 
 pub enum Drawables {

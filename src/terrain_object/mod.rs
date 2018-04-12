@@ -93,7 +93,7 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
 
-    let terrain_object_texture = load_texture(factory, texture_bytes).unwrap();
+    let terrain_object_texture = load_texture(factory, texture_bytes);
 
     let pso = factory
       .create_pipeline_simple(SHADER_VERT,

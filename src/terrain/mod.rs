@@ -102,7 +102,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
 
     let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
 
-    let tile_texture = load_texture(factory, tile_sheet_bytes).unwrap();
+    let tile_texture = load_texture(factory, tile_sheet_bytes);
 
     let pso = factory
       .create_pipeline_simple(SHADER_VERT, SHADER_FRAG, tilemap_pipeline::new())
