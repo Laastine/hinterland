@@ -14,6 +14,7 @@ impl CollisionSystem {
 #[derive(Clone, Debug, PartialEq)]
 pub enum Collision {
   Flying,
+  Hit,
   OutOfBounds,
 }
 
