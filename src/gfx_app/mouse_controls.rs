@@ -57,6 +57,7 @@ impl MouseControlSystem {
 }
 
 impl<'a> specs::System<'a> for MouseControlSystem {
+  #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
   type SystemData = (WriteStorage<'a, MouseInputState>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,

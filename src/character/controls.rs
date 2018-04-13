@@ -73,6 +73,12 @@ impl CharacterInputState {
   }
 }
 
+impl Default for CharacterInputState {
+  fn default() -> Self {
+    CharacterInputState::new()
+  }
+}
+
 impl specs::Component for CharacterInputState {
   type Storage = specs::DenseVecStorage<CharacterInputState>;
 }

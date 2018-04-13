@@ -57,6 +57,12 @@ impl CharacterDrawable {
   }
 }
 
+impl Default for CharacterDrawable {
+  fn default() -> Self {
+    CharacterDrawable::new()
+  }
+}
+
 impl specs::Component for CharacterDrawable {
   type Storage = specs::VecStorage<CharacterDrawable>;
 }
