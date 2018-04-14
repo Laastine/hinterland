@@ -67,7 +67,7 @@ impl ZombieDrawable {
       ci.x_movement,
       ci.y_movement
     ]);
-    let movement_speed = 1.0;
+    let movement_speed = 1.4;
 
     let is_dead = self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
     if is_dead {

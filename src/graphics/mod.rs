@@ -1,5 +1,7 @@
+use bullet::BulletDrawable;
 use cgmath;
 use cgmath::{Angle, Deg, Matrix4, Point2, Point3, Vector3};
+use character::CharacterDrawable;
 use game::constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
 use gfx::{Factory, format::Rgba8, handle::ShaderResourceView, Resources, texture};
 use gfx_app::mouse_controls::MouseInputState;
@@ -7,8 +9,6 @@ use graphics::orientation::Orientation;
 use image;
 use shaders::{Position, Projection};
 use std::io::Cursor;
-use bullet::BulletDrawable;
-use character::CharacterDrawable;
 use terrain_object::TerrainObjectDrawable;
 use zombie::ZombieDrawable;
 
