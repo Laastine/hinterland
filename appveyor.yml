@@ -12,7 +12,7 @@ install:
   - set PATH=C:\msys64\usr\bin;%PATH%
   - set PATH=C:\msys64\mingw32\bin;%PATH%
   - if "%TARGET%" == "x86_64-pc-windows-gnu" set PATH=C:\msys64\mingw64\bin;%PATH%
-  - curl -sSf -m 300 -o rustup-init.exe https://win.rustup.rs
+  - appveyor-retry appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe
   - rustup-init.exe --default-host %TARGET% --default-toolchain stable -y
   - set PATH=%PATH%;C:\Users\appveyor\.cargo\bin
   - rustc -Vv
@@ -34,7 +34,7 @@ before_deploy:
   - cp assets\*.json hinterland\assets
   - xcopy assets\maps hinterland\assets
   - xcopy assets\audio hinterland\assets
-  - copy target\release\hinterland hinterland\hinterland
+  - copy target\release\hinterland_bin hinterland\hinterland
   - 7z a ../%PROJECT_NAME%-%TARGET%.zip *
 
 deploy:
