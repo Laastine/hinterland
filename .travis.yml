@@ -2,6 +2,9 @@ language: rust
 
 cache: cargo
 
+env:
+  - PACKAGE_NAME="hinterland-$TRAVIS_OS_NAME.tgz"
+
 rust:
   - stable
   - nightly
@@ -21,9 +24,30 @@ matrix:
       sudo: required
     - os: osx
 
-install:
-  - ./scripts/install-alsa.sh
-
 script:
+  - ./scripts/install-alsa.sh
   - cargo build
+  - cargo build --release
   - cargo test
+
+before_deploy:
+  - mkdir -p hinterland
+  - mkdir -p hinterland/assets
+  - cp assets/*.png hinterland/assets
+  - cp assets/*.json hinterland/assets
+  - cp -r assets/maps hinterland/assets
+  - cp -r assets/audio hinterland/assets
+  - cp target/release/hinterland_bin hinterland
+  - tar zcfv $PACKAGE_NAME hinterland
+  - rm -r hinterland
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  overwrite: true
+  api_key:
+    secure: p7m7Fe9rquO/GcLtbp+vu1HWUG+HxFr0DwBdfW96e/P8RAMH+R0u8QcNjb9n8/tH5K5XZcj2gMAthBjKSASNoXDiJ96ukru2m8hKugXt9QWirhwTJKFj1UUhQeSPFeK9aS99zwgnulYjdfEbWA7IomfH79GF9AKQMx78/fh9SLMz2C5SdfGSE6RXgw8/ASE4yef9UOO6ttCs2Vb3mUEw/mM/aZmGGZ49GCd4qBT2gHjzdXPXgCt18+Cqt/S/aYQia90AEHlK2DUX2w/IauPmNNOu4xqwijz8HXBfyBPxZerRBS0yVqUiMkNRYfLLdFgaWWGnjcOPUpHQMOLTDXO1LfLV0zNSAZPU8MT8cm9lFDJgCZWMYA+h+wxkFQgT6NSH0M/avjwkCpK1NLfhEcX79xKZ/Nv6FhZ+ZjeauVkNIeYL4v4SWteFfzMoCV0+oCmyYnyf1925p7MS5+qKpHUj6pBkJeS0Br17RyFLhGzFYht+5ejz1aStguHqcliYpioKikOa1WV0X+p9VpBH1RMWSCG/DpmZgtveX8kck8O4YKHHs7RYfH7k61TWh503f45Y51N7KlizgCUGmdQWz0ju7jU0e8yr7PZmiAPSYWX82t1D3a53atvethhOAMYc4+LbvPiT8TuHw/rrTEd7RUL41YfzN/KK9IyklhNQEDlE51I=
+  file: "$PACKAGE_NAME"
+  on:
+    tags: true
+    repo: Laastine/hinterland
