@@ -30,12 +30,12 @@ cache:
 before_deploy:
   - mkdir hinterland
   - mkdir hinterland\assets
-  - cp assets\*.png hinterland\assets
-  - cp assets\*.json hinterland\assets
-  - xcopy assets\maps hinterland\assets
-  - xcopy assets\audio hinterland\assets
-  - copy target\release\hinterland_bin hinterland\hinterland
-  - 7z a ../%PROJECT_NAME%-%TARGET%.zip *
+  - xcopy assets\*.png hinterland\assets /y /m
+  - xcopy assets\*.json hinterland\assets /y /m
+  - xcopy assets\maps hinterland\assets\maps /e /i /y /s
+  - xcopy assets\audio hinterland\assets\audio /e /i /y /s
+  - xcopy target\release\hinterland_bin.exe hinterland\hinterland.exe*
+  - 7z a ./%PROJECT_NAME%-%TARGET%.zip hinterland
 
 deploy:
   provider: Github
