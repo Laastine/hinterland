@@ -64,6 +64,14 @@ gfx_defines! {
     out_depth: gfx::DepthTarget<gfx::format::DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
   }
 
+  pipeline text_pipeline {
+    vbuf: gfx::VertexBuffer<VertexData> = (),
+    position_cb: gfx::ConstantBuffer<Position> = "b_TextPosition",
+    text_sheet: gfx::TextureSampler<[f32; 4]> = "t_TextSheet",
+    out_color: gfx::RenderTarget<gfx::format::Rgba8> = "Target0",
+    out_depth: gfx::DepthTarget<gfx::format::DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
+  }
+
   constant Projection {
     model: [[f32; 4]; 4] = "u_Model",
     view: [[f32; 4]; 4] = "u_View",

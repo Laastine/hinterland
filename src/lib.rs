@@ -9,6 +9,7 @@ extern crate image;
 extern crate json;
 extern crate rand;
 extern crate rodio;
+extern crate rusttype;
 extern crate specs;
 extern crate tiled;
 
@@ -19,6 +20,7 @@ mod game;
 mod data;
 mod critter;
 pub mod graphics;
+mod hud;
 mod terrain_object;
 mod terrain;
 mod character;
