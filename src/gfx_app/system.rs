@@ -6,8 +6,11 @@ use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::renderer::EncoderQueue;
 use graphics::{DeltaTime, orientation::Stance};
 use graphics::Drawables;
+use hud;
+use hud::TextDrawable;
 use specs;
 use specs::{Fetch, WriteStorage};
+use specs::ReadStorage;
 use std::time::Instant;
 use terrain;
 use terrain_object;
@@ -22,6 +25,7 @@ pub struct DrawSystem<D: gfx::Device> {
   zombie_system: zombie::ZombieDrawSystem<D::Resources>,
   bullet_system: bullet::BulletDrawSystem<D::Resources>,
   terrain_object_system: [terrain_object::TerrainObjectDrawSystem<D::Resources>; 2],
+  text_system: hud::TextDrawSystem<D::Resources>,
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
   frames: u32,
@@ -47,6 +51,7 @@ impl<D: gfx::Device> DrawSystem<D> {
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::House),
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::Tree)
       ],
+      text_system: hud::TextDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       encoder_queue,
       game_time: Instant::now(),
       frames: 0,
@@ -63,12 +68,13 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
   type SystemData = (WriteStorage<'a, terrain::TerrainDrawable>,
                      WriteStorage<'a, character::CharacterDrawable>,
                      WriteStorage<'a, CharacterSprite>,
+                     ReadStorage<'a, TextDrawable>,
                      WriteStorage<'a, zombie::zombies::Zombies>,
                      WriteStorage<'a, bullet::bullets::Bullets>,
                      WriteStorage<'a, terrain_object::terrain_objects::TerrainObjects>,
                      Fetch<'a, DeltaTime>);
 
-  fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut zombies, mut bullets, mut terrain_objects, d): Self::SystemData) {
+  fn run(&mut self, (mut terrain, mut character, mut character_sprite, text, mut zombies, mut bullets, mut terrain_objects, d): Self::SystemData) {
     use specs::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
 
@@ -85,7 +91,7 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
 
     let current_time = Instant::now();
     self.frames += 1;
-    if cfg!(feature = "fps") && (current_time.duration_since(self.game_time).as_secs()) >= 1 {
+    if cfg!(feature = "framerate") && (current_time.duration_since(self.game_time).as_secs()) >= 1 {
       println!("{:?} ms/frames", 1000.0 / f64::from(self.frames));
       self.frames = 0;
       self.game_time = Instant::now();
@@ -94,8 +100,10 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 16.0 / 256.0, 20.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
-    for (t, c, cs, zs, bs, obj) in (&mut terrain, &mut character, &mut character_sprite, &mut zombies, &mut bullets, &mut terrain_objects).join() {
+    for (t, c, cs, tx, zs, bs, obj) in (&mut terrain, &mut character, &mut character_sprite, &text, &mut zombies, &mut bullets, &mut terrain_objects).join() {
       self.terrain_system.draw(t, &mut encoder);
+
+      self.text_system.draw(tx, &mut encoder);
 
       if self.cool_down == 0.0 {
         if c.stance == Stance::Walking {
