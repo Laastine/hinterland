@@ -3,7 +3,7 @@ use rusttype::{Font, point, Scale};
 
 pub fn draw_text(font: &Font, font_size: f32, text: &str) -> (Point2<i32>, Vec<u8>) {
   let scale = Scale {
-    x: font_size,
+    x: font_size / 2.0,
     y: font_size,
   };
   let v_metrics = font.v_metrics(scale);
