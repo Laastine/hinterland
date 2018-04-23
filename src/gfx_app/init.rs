@@ -6,7 +6,7 @@ use character;
 use character::controls::CharacterControlSystem;
 use critter::CharacterSprite;
 use gfx;
-use gfx_app::{GameStatus, Window};
+use gfx_app::{Window};
 use gfx_app::controls::TilemapControls;
 use gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
 use gfx_app::renderer::{DeviceRenderer, EncoderQueue};
@@ -16,13 +16,13 @@ use graphics::{DeltaTime, Dimensions};
 use graphics::camera::CameraControlSystem;
 use specs;
 use specs::{DispatcherBuilder, World};
-use std::{sync::mpsc, time};
+use std::time;
 use terrain;
 use terrain_object;
 use zombie;
 use zombie::zombies::Zombies;
 
-pub fn run<W, D, F>(window: &mut W) -> GameStatus
+pub fn run<W, D, F>(window: &mut W)
                     where W: Window<D, F>,
                           D: gfx::Device + 'static,
                           F: gfx::Factory<D::Resources>,
@@ -31,7 +31,7 @@ pub fn run<W, D, F>(window: &mut W) -> GameStatus
 
   let mut w = specs::World::new();
   setup_world(&mut w, window.get_viewport_size(), window.get_hidpi_factor());
-  dispatch_loop(window, &mut device_renderer, &mut w, enc_queue)
+  dispatch_loop(window, &mut device_renderer, &mut w, enc_queue);
 }
 
 fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) {
@@ -67,7 +67,7 @@ fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) 
 fn dispatch_loop<W, D, F>(window: &mut W,
                           device_renderer: &mut DeviceRenderer<D>,
                           w: &mut World,
-                          encoder_queue: EncoderQueue<D>) -> GameStatus
+                          encoder_queue: EncoderQueue<D>)
                           where W: Window<D, F>,
                                 D: gfx::Device + 'static,
                                 F: gfx::Factory<D::Resources>,
@@ -77,8 +77,6 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     let dsv = window.get_depth_stencil_view();
     DrawSystem::new(window.get_factory(), &rtv, &dsv, encoder_queue)
   };
-
-  let (_, game_state) = mpsc::channel::<GameStatus>();
 
   let (audio_system, audio_control) = AudioSystem::new();
   let (terrain_system, terrain_control) = CameraControlSystem::new();
@@ -116,12 +114,8 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     device_renderer.draw(window.get_device());
     window.swap_window();
 
-    if let Some(quit_status) = window.poll_events() {
-      return quit_status;
-    }
-
-    if let Ok(quit_status) = game_state.try_recv() {
-      return quit_status;
+    if let Some(_) = window.poll_events() {
+      break
     }
   }
 }
