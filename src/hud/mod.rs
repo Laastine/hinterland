@@ -1,4 +1,3 @@
-use character::CharacterDrawable;
 use gfx;
 use gfx_app::ColorFormat;
 use gfx_app::DepthFormat;
@@ -6,7 +5,6 @@ use graphics::load_raw_texture;
 use rusttype::FontCollection;
 use shaders::{Position, text_pipeline, VertexData};
 use specs;
-use specs::{ReadStorage, WriteStorage};
 
 mod font;
 
@@ -25,10 +23,6 @@ impl<'a> TextDrawable {
       text: text.to_string(),
       position
     }
-  }
-
-  pub fn update(&mut self) {
-    println!("{}", self.text);
   }
 }
 
@@ -65,7 +59,7 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
     let font = FontCollection::from_bytes(font_bytes as &[u8])
       .unwrap_or_else(|e| panic!("Font loading error: {}", e))
       .into_font().unwrap_or_else(|e| panic!("into_font error: {}", e));
-    let (size, texture_data) = font::draw_text(&font, 100.0, "Hello world");
+    let (size, texture_data) = font::draw_text(&font, 100.0, "v0.2.0");
 
     let text_texture = load_raw_texture(factory, &texture_data[..], size);
 
@@ -88,27 +82,5 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
                  where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     self.bundle.encode(encoder);
-  }
-}
-
-#[derive(Debug)]
-pub struct PreDrawSystem;
-
-impl PreDrawSystem {
-  pub fn new() -> PreDrawSystem {
-    PreDrawSystem {}
-  }
-}
-
-impl<'a> specs::System<'a> for PreDrawSystem {
-  type SystemData = (WriteStorage<'a, TextDrawable>,
-                     ReadStorage<'a, CharacterDrawable>);
-
-  fn run(&mut self, (mut text, character): Self::SystemData) {
-    use specs::Join;
-
-    for (t, c) in (&mut text, &character).join() {
-      t.update()
-    }
   }
 }
