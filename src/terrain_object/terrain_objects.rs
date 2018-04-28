@@ -24,6 +24,6 @@ impl TerrainObjects {
   }
 }
 
-impl specs::Component for TerrainObjects {
-  type Storage = specs::VecStorage<TerrainObjects>;
+impl specs::prelude::Component for TerrainObjects {
+  type Storage = specs::storage::VecStorage<TerrainObjects>;
 }

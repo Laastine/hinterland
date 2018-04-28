@@ -3,7 +3,7 @@ use cgmath::Point2;
 use character::controls::CharacterInputState;
 use graphics::{camera::CameraInputState, Dimensions, direction, direction_movement};
 use specs;
-use specs::{Fetch, ReadStorage, WriteStorage};
+use specs::prelude::{ReadStorage, Read, WriteStorage};
 use std::sync::mpsc;
 
 type MouseEvent = mpsc::Sender<(MouseControl, Option<(f64, f64)>)>;
@@ -28,8 +28,8 @@ impl MouseInputState {
   }
 }
 
-impl specs::Component for MouseInputState {
-  type Storage = specs::HashMapStorage<MouseInputState>;
+impl specs::prelude::Component for MouseInputState {
+  type Storage = specs::storage::HashMapStorage<MouseInputState>;
 }
 
 #[derive(Debug)]
@@ -56,16 +56,16 @@ impl MouseControlSystem {
   }
 }
 
-impl<'a> specs::System<'a> for MouseControlSystem {
+impl<'a> specs::prelude::System<'a> for MouseControlSystem {
   #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
   type SystemData = (WriteStorage<'a, MouseInputState>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
                      WriteStorage<'a, Bullets>,
-                     Fetch<'a, Dimensions>);
+                     Read<'a, Dimensions>);
 
   fn run(&mut self, (mut mouse_input, camera, character_input, mut bullets, dim): Self::SystemData) {
-    use specs::Join;
+    use specs::join::Join;
 
     while let Ok((control_value, value)) = self.queue.try_recv() {
       match control_value {

@@ -6,7 +6,7 @@ use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{camera::CameraInputState, Dimensions, load_texture};
 use shaders::{Position, Projection, static_element_pipeline, VertexData};
 use specs;
-use specs::{Fetch, ReadStorage, WriteStorage};
+use specs::prelude::{ReadStorage, Read, WriteStorage};
 use terrain_object::terrain_objects::TerrainObjects;
 
 pub mod terrain_objects;
@@ -55,8 +55,8 @@ impl TerrainObjectDrawable {
   }
 }
 
-impl specs::Component for TerrainObjectDrawable {
-  type Storage = specs::VecStorage<TerrainObjectDrawable>;
+impl specs::prelude::Component for TerrainObjectDrawable {
+  type Storage = specs::storage::VecStorage<TerrainObjectDrawable>;
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -134,14 +134,14 @@ impl PreDrawSystem {
   }
 }
 
-impl<'a> specs::System<'a> for PreDrawSystem {
+impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   type SystemData = (ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
                      WriteStorage<'a, TerrainObjects>,
-                     Fetch<'a, Dimensions>);
+                     Read<'a, Dimensions>);
 
   fn run(&mut self, (camera_input, character_input, mut terrain_objects, dim): Self::SystemData) {
-    use specs::Join;
+    use specs::join::Join;
 
     for (camera, ci, obj) in (&camera_input, &character_input, &mut terrain_objects).join() {
       let world_to_clip = dim.world_to_projection(camera);

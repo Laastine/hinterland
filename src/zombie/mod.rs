@@ -11,7 +11,7 @@ use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{camera::CameraInputState, can_move_to_tile, Dimensions, direction, direction_movement, get_orientation, load_texture, orientation::{Orientation, Stance}, overlaps};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
-use specs::{Fetch, ReadStorage, WriteStorage};
+use specs::prelude::{ReadStorage, Read, WriteStorage};
 use zombie::zombies::Zombies;
 
 pub mod zombies;
@@ -243,17 +243,17 @@ impl PreDrawSystem {
   }
 }
 
-impl<'a> specs::System<'a> for PreDrawSystem {
+impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
   type SystemData = (WriteStorage<'a, Zombies>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
                      ReadStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, Bullets>,
-                     Fetch<'a, Dimensions>);
+                     Read<'a, Dimensions>);
 
   fn run(&mut self, (mut zombies, camera_input, character_input, character, bullets, dim): Self::SystemData) {
-    use specs::Join;
+    use specs::join::Join;
 
     for (zs, camera, ci, c, bs) in (&mut zombies, &camera_input, &character_input, &character, &bullets).join() {
       let world_to_clip = dim.world_to_projection(camera);

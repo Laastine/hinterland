@@ -9,8 +9,7 @@ use graphics::Drawables;
 use hud;
 use hud::TextDrawable;
 use specs;
-use specs::{Fetch, WriteStorage};
-use specs::ReadStorage;
+use specs::prelude::{ReadStorage, Read, WriteStorage};
 use std::time::Instant;
 use terrain;
 use terrain_object;
@@ -61,7 +60,7 @@ impl<D: gfx::Device> DrawSystem<D> {
   }
 }
 
-impl<'a, D> specs::System<'a> for DrawSystem<D>
+impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
   where D: gfx::Device,
         D::CommandBuffer: Send {
   #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
@@ -72,10 +71,10 @@ impl<'a, D> specs::System<'a> for DrawSystem<D>
                      WriteStorage<'a, zombie::zombies::Zombies>,
                      WriteStorage<'a, bullet::bullets::Bullets>,
                      WriteStorage<'a, terrain_object::terrain_objects::TerrainObjects>,
-                     Fetch<'a, DeltaTime>);
+                     Read<'a, DeltaTime>);
 
   fn run(&mut self, (mut terrain, mut character, mut character_sprite, text, mut zombies, mut bullets, mut terrain_objects, d): Self::SystemData) {
-    use specs::Join;
+    use specs::join::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
 
     let delta = d.0;

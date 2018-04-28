@@ -7,7 +7,7 @@ use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{camera::CameraInputState, can_move_to_tile, Dimensions, load_texture};
 use shaders::{Position, Projection, tilemap_pipeline, TileMapData, TilemapSettings, VertexData};
 use specs;
-use specs::{Fetch, ReadStorage, WriteStorage};
+use specs::prelude::{Read, ReadStorage, WriteStorage};
 
 pub mod tile_map;
 
@@ -46,8 +46,8 @@ impl TerrainDrawable {
   }
 }
 
-impl specs::Component for TerrainDrawable {
-  type Storage = specs::HashMapStorage<TerrainDrawable>;
+impl specs::prelude::Component for TerrainDrawable {
+  type Storage = specs::storage::HashMapStorage<TerrainDrawable>;
 }
 
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/terrain.v.glsl");
@@ -156,14 +156,14 @@ impl PreDrawSystem {
   }
 }
 
-impl<'a> specs::System<'a> for PreDrawSystem {
+impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   type SystemData = (WriteStorage<'a, TerrainDrawable>,
                      ReadStorage<'a, CameraInputState>,
                      WriteStorage<'a, CharacterInputState>,
-                     Fetch<'a, Dimensions>);
+                     Read<'a, Dimensions>);
 
   fn run(&mut self, (mut terrain, camera_input, mut character_input, dim): Self::SystemData) {
-    use specs::Join;
+    use specs::join::Join;
 
     for (t, camera, ci) in (&mut terrain, &camera_input, &mut character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);

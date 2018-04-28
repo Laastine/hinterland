@@ -16,8 +16,7 @@ use graphics::{DeltaTime, Dimensions};
 use graphics::camera::CameraControlSystem;
 use hud;
 use shaders::Position;
-use specs;
-use specs::{DispatcherBuilder, World};
+use specs::{prelude::DispatcherBuilder, world::World};
 use std::time;
 use terrain;
 use terrain_object;
@@ -31,7 +30,7 @@ pub fn run<W, D, F>(window: &mut W)
                           D::CommandBuffer: Send {
   let (mut device_renderer, enc_queue) = DeviceRenderer::new(window.create_buffers(2));
 
-  let mut w = specs::World::new();
+  let mut w = World::new();
   setup_world(&mut w, window.get_viewport_size(), window.get_hidpi_factor());
   dispatch_loop(window, &mut device_renderer, &mut w, enc_queue);
 }
@@ -89,17 +88,17 @@ fn dispatch_loop<W, D, F>(window: &mut W,
   let controls = TilemapControls::new(audio_control, terrain_control, character_control, mouse_control);
 
   let mut dispatcher = DispatcherBuilder::new()
-    .add(draw, "drawing", &[])
-    .add(terrain::PreDrawSystem::new(), "draw-prep-terrain", &["drawing"])
-    .add(character::PreDrawSystem::new(), "draw-prep-character", &["drawing"])
-    .add(zombie::PreDrawSystem::new(), "draw-prep-zombie", &["drawing"])
-    .add(bullet::PreDrawSystem::new(), "draw-prep-bullet", &["drawing"])
-    .add(terrain_system, "terrain-system", &[])
-    .add(terrain_object::PreDrawSystem::new(), "draw-prep-terrain_object", &["terrain-system"])
-    .add(character_system, "character-system", &[])
-    .add(mouse_system, "mouse-system", &[])
-    .add(audio_system, "audio-system", &[])
-    .add(CollisionSystem::new(), "collision-system", &["mouse-system"])
+    .with(draw, "drawing", &[])
+    .with(terrain::PreDrawSystem::new(), "draw-prep-terrain", &["drawing"])
+    .with(character::PreDrawSystem::new(), "draw-prep-character", &["drawing"])
+    .with(zombie::PreDrawSystem::new(), "draw-prep-zombie", &["drawing"])
+    .with(bullet::PreDrawSystem::new(), "draw-prep-bullet", &["drawing"])
+    .with(terrain_system, "terrain-system", &[])
+    .with(terrain_object::PreDrawSystem::new(), "draw-prep-terrain_object", &["terrain-system"])
+    .with(character_system, "character-system", &[])
+    .with(mouse_system, "mouse-system", &[])
+    .with(audio_system, "audio-system", &[])
+    .with(CollisionSystem::new(), "collision-system", &["mouse-system"])
     .build();
 
   window.set_controls(controls);

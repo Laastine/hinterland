@@ -9,7 +9,7 @@ use gfx_app::mouse_controls::MouseInputState;
 use graphics::{camera::CameraInputState, Dimensions, get_orientation_from_center, load_texture, orientation::{Orientation, Stance}};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
-use specs::{Fetch, ReadStorage, WriteStorage};
+use specs::prelude::{ReadStorage, Read, WriteStorage};
 
 pub mod controls;
 
@@ -63,8 +63,8 @@ impl Default for CharacterDrawable {
   }
 }
 
-impl specs::Component for CharacterDrawable {
-  type Storage = specs::VecStorage<CharacterDrawable>;
+impl specs::prelude::Component for CharacterDrawable {
+  type Storage = specs::storage::VecStorage<CharacterDrawable>;
 }
 
 pub struct CharacterDrawSystem<R: gfx::Resources> {
@@ -164,16 +164,16 @@ impl PreDrawSystem {
   }
 }
 
-impl<'a> specs::System<'a> for PreDrawSystem {
+impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
   type SystemData = (WriteStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
                      ReadStorage<'a, MouseInputState>,
-                     Fetch<'a, Dimensions>);
+                     Read<'a, Dimensions>);
 
   fn run(&mut self, (mut character, camera_input, character_input, mouse_input, dim): Self::SystemData) {
-    use specs::Join;
+    use specs::join::Join;
 
     for (c, camera, ci, mi) in (&mut character, &camera_input, &character_input, &mouse_input).join() {
       let world_to_clip = dim.world_to_projection(camera);

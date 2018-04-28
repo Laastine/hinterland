@@ -26,8 +26,8 @@ impl<'a> TextDrawable {
   }
 }
 
-impl specs::Component for TextDrawable {
-  type Storage = specs::DenseVecStorage<TextDrawable>;
+impl specs::prelude::Component for TextDrawable {
+  type Storage = specs::storage::DenseVecStorage<TextDrawable>;
 }
 
 pub struct TextDrawSystem<R: gfx::Resources> {

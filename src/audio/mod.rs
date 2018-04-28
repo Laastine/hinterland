@@ -3,8 +3,7 @@ use game::constants::PISTOL_AUDIO_PATH;
 use rodio;
 use rodio::Sink;
 use specs;
-use specs::ReadStorage;
-use specs::WriteStorage;
+use specs::prelude::{ReadStorage, WriteStorage};
 use std::{fs::File, io::BufReader, sync::mpsc};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -35,8 +34,8 @@ impl AudioData {
   }
 }
 
-impl specs::Component for AudioData {
-  type Storage = specs::VecStorage<AudioData>;
+impl specs::prelude::Component for AudioData {
+  type Storage = specs::storage::VecStorage<AudioData>;
 }
 
 pub struct AudioSystem {
@@ -56,12 +55,12 @@ impl AudioSystem {
   }
 }
 
-impl<'a> specs::System<'a> for AudioSystem {
+impl<'a> specs::prelude::System<'a> for AudioSystem {
   type SystemData = (WriteStorage<'a, AudioData>,
                      ReadStorage<'a, CharacterInputState>);
 
   fn run(&mut self, (mut audio_data, character_input): Self::SystemData) {
-    use specs::Join;
+    use specs::join::Join;
 
     while let Ok(effect) = self.queue.try_recv() {
       match effect {

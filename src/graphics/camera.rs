@@ -1,6 +1,6 @@
 use game::constants::VIEW_DISTANCE;
 use specs;
-use specs::WriteStorage;
+use specs::prelude::WriteStorage;
 use std::sync::mpsc;
 
 #[derive(Clone, Debug)]
@@ -21,8 +21,8 @@ impl CameraInputState {
   }
 }
 
-impl specs::Component for CameraInputState {
-  type Storage = specs::HashMapStorage<CameraInputState>;
+impl specs::prelude::Component for CameraInputState {
+  type Storage = specs::storage::HashMapStorage<CameraInputState>;
 }
 
 #[derive(Debug)]
@@ -58,10 +58,10 @@ impl CameraControlSystem {
   }
 }
 
-impl<'a> specs::System<'a> for CameraControlSystem {
+impl<'a> specs::prelude::System<'a> for CameraControlSystem {
   type SystemData = (WriteStorage<'a, CameraInputState>);
   fn run(&mut self, mut map_input: Self::SystemData) {
-    use specs::Join;
+    use specs::join::Join;
 
     while let Ok(control) = self.queue.try_recv() {
       match control {

@@ -32,8 +32,8 @@ impl CharacterSprite {
   }
 }
 
-impl specs::Component for CharacterSprite {
-  type Storage = specs::VecStorage<CharacterSprite>;
+impl specs::prelude::Component for CharacterSprite {
+  type Storage = specs::storage::VecStorage<CharacterSprite>;
 }
 
 #[derive(Debug)]

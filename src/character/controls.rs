@@ -3,7 +3,7 @@ use gfx_app::mouse_controls::MouseInputState;
 use graphics::{camera::CameraInputState, can_move_to_tile, DeltaTime, orientation::Orientation};
 use shaders::Position;
 use specs;
-use specs::{Fetch, ReadStorage, WriteStorage};
+use specs::prelude::{Read, ReadStorage, WriteStorage};
 use std::sync::mpsc;
 
 #[derive(Clone, Debug)]
@@ -79,8 +79,8 @@ impl Default for CharacterInputState {
   }
 }
 
-impl specs::Component for CharacterInputState {
-  type Storage = specs::DenseVecStorage<CharacterInputState>;
+impl specs::prelude::Component for CharacterInputState {
+  type Storage = specs::storage::DenseVecStorage<CharacterInputState>;
 }
 
 #[derive(Debug)]
@@ -117,14 +117,14 @@ impl CharacterControlSystem {
   }
 }
 
-impl<'a> specs::System<'a> for CharacterControlSystem {
+impl<'a> specs::prelude::System<'a> for CharacterControlSystem {
   type SystemData = (WriteStorage<'a, CharacterInputState>,
                      ReadStorage<'a, MouseInputState>,
                      WriteStorage<'a, CameraInputState>,
-                     Fetch<'a, DeltaTime>);
+                     Read<'a, DeltaTime>);
 
   fn run(&mut self, (mut character_input, mouse_input, mut camera_input, d): Self::SystemData) {
-    use specs::Join;
+    use specs::join::Join;
     let delta = d.0;
 
     if self.cool_down == 0.0 {

@@ -9,7 +9,7 @@ use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{camera::CameraInputState, can_move, Dimensions};
 use shaders::{bullet_pipeline, Position, Projection, VertexData};
 use specs;
-use specs::{Fetch, ReadStorage, WriteStorage};
+use specs::prelude::{ReadStorage, Read, WriteStorage};
 use std::f32;
 use graphics::can_move_to_tile;
 
@@ -136,14 +136,14 @@ impl PreDrawSystem {
   }
 }
 
-impl<'a> specs::System<'a> for PreDrawSystem {
+impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   type SystemData = (ReadStorage<'a, CameraInputState>,
                      WriteStorage<'a, Bullets>,
                      ReadStorage<'a, CharacterInputState>,
-                     Fetch<'a, Dimensions>);
+                     Read<'a, Dimensions>);
 
   fn run(&mut self, (camera_input, mut bullets, character_input, dim): Self::SystemData) {
-    use specs::Join;
+    use specs::join::Join;
 
     for (camera, bs, ci) in (&camera_input, &mut bullets, &character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);

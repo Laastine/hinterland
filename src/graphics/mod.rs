@@ -16,10 +16,10 @@ use gfx_app::ColorFormat;
 pub mod camera;
 pub mod orientation;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct DeltaTime(pub f64);
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug, Default)]
 pub struct Dimensions {
   pub window_width: f32,
   pub window_height: f32,

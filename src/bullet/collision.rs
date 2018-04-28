@@ -1,6 +1,6 @@
 use bullet::bullets::Bullets;
 use specs;
-use specs::WriteStorage;
+use specs::prelude::WriteStorage;
 
 #[derive(Debug)]
 pub struct CollisionSystem;
@@ -18,11 +18,11 @@ pub enum Collision {
   OutOfBounds,
 }
 
-impl<'a> specs::System<'a> for CollisionSystem {
+impl<'a> specs::prelude::System<'a> for CollisionSystem {
   type SystemData = (WriteStorage<'a, Bullets>);
 
   fn run(&mut self, mut bullets: Self::SystemData) {
-    use specs::Join;
+    use specs::join::Join;
 
     for bs in (&mut bullets).join() {
       Bullets::remove_old_bullets(bs);

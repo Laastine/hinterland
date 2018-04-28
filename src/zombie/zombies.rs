@@ -35,6 +35,6 @@ impl Zombies {
   }
 }
 
-impl specs::Component for Zombies {
-  type Storage = specs::VecStorage<Zombies>;
+impl specs::prelude::Component for Zombies {
+  type Storage = specs::storage::VecStorage<Zombies>;
 }
