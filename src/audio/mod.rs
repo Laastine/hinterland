@@ -18,7 +18,7 @@ pub struct AudioData {
 
 impl AudioData {
   pub fn new() -> AudioData {
-    let endpoint = rodio::default_endpoint().unwrap();
+    let endpoint = rodio::default_output_device().unwrap();
 
     AudioData {
       sink: Sink::new(&endpoint),

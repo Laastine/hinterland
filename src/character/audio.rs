@@ -9,7 +9,7 @@ pub struct CharacterAudio {
 
 impl CharacterAudio {
   pub fn new() -> CharacterAudio {
-    let endpoint = rodio::default_endpoint().unwrap();
+    let endpoint = rodio::default_output_device().unwrap();
     CharacterAudio {
       sink: Sink::new(&endpoint),
     }
