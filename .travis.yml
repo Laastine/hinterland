@@ -24,8 +24,12 @@ matrix:
       sudo: required
     - os: osx
 
+addons:
+  apt:
+    packages:
+    - libasound2-dev
+
 script:
-  - ./scripts/install-alsa.sh
   - cargo build
   - cargo build --release
   - cargo test
