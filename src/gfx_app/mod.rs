@@ -134,7 +134,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
   fn poll_events(&mut self) -> Option<GameStatus> {
     use glutin::KeyboardInput;
     use glutin::MouseButton;
-    use glutin::WindowEvent::{Resized, Closed, CursorMoved, MouseInput};
+    use glutin::WindowEvent::{Resized, CloseRequested, CursorMoved, MouseInput};
     use glutin::ElementState::{Pressed, Released};
     use glutin::VirtualKeyCode::{Escape, Z, X, W, A, S, D};
 
@@ -226,7 +226,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             *m_pos = position;
             None
           }
-          Closed => Some(GameStatus::Quit),
+          CloseRequested => Some(GameStatus::Quit),
           Resized(_, _) => {
             gfx_window_glutin::update_views(w, m_rtv, m_dsv);
             Some(GameStatus::Quit)
