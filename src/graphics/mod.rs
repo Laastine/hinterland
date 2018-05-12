@@ -101,11 +101,11 @@ pub fn get_orientation_from_center(mouse_input: &MouseInputState, dim: &Dimensio
   }
 }
 
-pub fn overlaps(a: Position, b: Position, width: f32, height: f32) -> bool {
-  a.position[0] < b.position[0] + width &&
-    a.position[0] + width > b.position[0] &&
-    a.position[1] < b.position[1] + height &&
-    a.position[1] + a.position[1] > b.position[1]
+pub fn overlaps(area: Position, el: Position, width: f32, height: f32) -> bool {
+  area.position[0] - width < el.position[0] &&
+    area.position[0] + width > el.position[0] &&
+    area.position[1] - height < el.position[1] &&
+    area.position[1] + height > el.position[1]
 }
 
 fn is_within_map_borders(point: Point2<f32>) -> bool {
