@@ -68,6 +68,7 @@ impl GlutinWindow {
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum GameStatus {
+  Running,
   Quit,
 }
 
@@ -81,7 +82,7 @@ pub trait Window<D: gfx::Device, F: gfx::Factory<D::Resources>> {
   fn get_hidpi_factor(&mut self) -> f32;
   fn get_render_target_view(&mut self) -> gfx::handle::RenderTargetView<D::Resources, ColorFormat>;
   fn get_depth_stencil_view(&mut self) -> gfx::handle::DepthStencilView<D::Resources, DepthFormat>;
-  fn poll_events(&mut self) -> Option<GameStatus>;
+  fn poll_events(&mut self) -> GameStatus;
 }
 
 impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
@@ -131,7 +132,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
   fn get_depth_stencil_view(&mut self) -> gfx::handle::DepthStencilView<gfx_device_gl::Resources, DepthFormat> {
     self.depth_stencil_view.clone()
   }
-  fn poll_events(&mut self) -> Option<GameStatus> {
+  fn poll_events(&mut self) -> GameStatus {
     use glutin::KeyboardInput;
     use glutin::MouseButton;
     use glutin::WindowEvent::{Resized, CloseRequested, CursorMoved, MouseInput};
@@ -147,94 +148,94 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
     let m_dsv = &mut self.depth_stencil_view;
     let m_pos = &mut self.mouse_pos;
 
-    let mut game_status: Option<GameStatus> = None;
+    let mut game_status = GameStatus::Running;
 
     self.events_loop.poll_events(|event| {
       game_status = if let glutin::Event::WindowEvent { event, .. } = event {
         match event {
           glutin::WindowEvent::KeyboardInput { input, .. } => match input {
-            KeyboardInput { virtual_keycode: Some(Escape), .. } => Some(GameStatus::Quit),
+            KeyboardInput { virtual_keycode: Some(Escape), .. } => GameStatus::Quit,
             KeyboardInput { state: Pressed, virtual_keycode: Some(Z), .. } => {
               controls.zoom_out();
-              None
+              GameStatus::Running
             }
             KeyboardInput { state: Pressed, virtual_keycode: Some(X), .. } => {
               controls.zoom_in();
-              None
+              GameStatus::Running
             }
             KeyboardInput { state: Released, virtual_keycode: Some(Z), .. } |
             KeyboardInput { state: Released, virtual_keycode: Some(X), .. } => {
               controls.zoom_stop();
-              None
+              GameStatus::Running
             }
             KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {
               controls.move_character_up();
-              None
+              GameStatus::Running
             }
             KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {
               controls.move_character_down();
-              None
+              GameStatus::Running
             }
             KeyboardInput { state: Released, virtual_keycode: Some(W), .. } |
             KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {
               controls.stop_character_y();
-              None
+              GameStatus::Running
             }
             KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {
               controls.move_character_left();
-              None
+              GameStatus::Running
             }
             KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {
               controls.move_character_right();
-              None
+              GameStatus::Running
             }
             KeyboardInput { state: Released, virtual_keycode: Some(A), .. } |
             KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {
               controls.stop_character_x();
-              None
+              GameStatus::Running
             }
             KeyboardInput { state: Pressed, modifiers, .. } => {
               if modifiers.ctrl {
                 controls.ctrl_pressed();
               }
-              None
+              GameStatus::Running
             }
             KeyboardInput { state: Released, modifiers, .. } => {
               if !modifiers.ctrl {
                 controls.ctrl_released();
               }
-              None
+              GameStatus::Running
             }
           },
           MouseInput { state: Pressed, button: MouseButton::Left, .. } => {
             controls.mouse_left_click(Some(*m_pos));
-            None
+            GameStatus::Running
           }
           MouseInput { state: Released, button: MouseButton::Left, .. } => {
             controls.mouse_left_click(None);
-            None
+            GameStatus::Running
           }
           MouseInput { state: Pressed, button: MouseButton::Right, .. } => {
             controls.mouse_right_click(Some(*m_pos));
-            None
+            GameStatus::Running
           }
           MouseInput { state: Released, button: MouseButton::Right, .. } => {
             controls.mouse_right_click(None);
-            None
+            GameStatus::Running
           }
           CursorMoved { position, .. } => {
             *m_pos = position;
-            None
+            GameStatus::Running
           }
-          CloseRequested => Some(GameStatus::Quit),
+          CloseRequested => GameStatus::Quit,
           Resized(_, _) => {
             gfx_window_glutin::update_views(w, m_rtv, m_dsv);
-            Some(GameStatus::Quit)
+            GameStatus::Quit
           }
-          _ => None,
+          _ => GameStatus::Running,
         }
       } else {
-        None
+        GameStatus::Running
       };
     });
     game_status
