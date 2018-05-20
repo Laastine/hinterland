@@ -9,6 +9,7 @@ use shaders::{Position, Projection, tilemap_pipeline, TileMapData, TilemapSettin
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 
+pub mod path_finding;
 pub mod tile_map;
 
 fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {

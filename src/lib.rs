@@ -7,6 +7,7 @@ extern crate gfx_window_glutin;
 extern crate glutin;
 extern crate image;
 extern crate json;
+extern crate pathfinding;
 extern crate rand;
 extern crate rodio;
 extern crate rusttype;

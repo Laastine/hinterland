@@ -4,7 +4,7 @@ use cgmath::{Deg, Point2};
 use character::{CharacterDrawable, controls::CharacterInputState};
 use critter::CritterData;
 use data;
-use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, TERRAIN_OBJECTS, ZOMBIE_SHEET_TOTAL_WIDTH, ZOMBIE_STILL_SPRITE_OFFSET};
+use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, ZOMBIE_SHEET_TOTAL_WIDTH, ZOMBIE_STILL_SPRITE_OFFSET};
 use game::get_random_bool;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
@@ -31,24 +31,11 @@ pub struct ZombieDrawable {
   zombie_idx: usize,
   zombie_death_idx: usize,
   is_colliding: bool,
-  empty_tiles: Vec<Point2<usize>>,
 }
 
 impl ZombieDrawable {
   pub fn new(position: Position) -> ZombieDrawable {
     let view = Dimensions::get_view_matrix();
-    let mut empty_tiles = [Point2::new(0,0); 64*64].to_vec();
-
-    for x in 0..64 {
-      for y in 0..64 {
-        empty_tiles[y + x * 64] = Point2::new(x, y);
-      }
-    }
-
-    empty_tiles = empty_tiles.iter()
-                             .filter(|ref e| !TERRAIN_OBJECTS.contains(&[e.x, e.y]))
-                             .cloned()
-                             .collect();
 
     ZombieDrawable {
       projection: Projection {
@@ -65,7 +52,6 @@ impl ZombieDrawable {
       zombie_idx: 0,
       zombie_death_idx: 0,
       is_colliding: false,
-      empty_tiles,
     }
   }
 
