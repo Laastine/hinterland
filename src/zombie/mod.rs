@@ -71,8 +71,8 @@ impl ZombieDrawable {
     ]);
     let movement_speed = 1.4;
 
-    let is_dead = self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
-    if is_dead {
+    let is_alive = self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
+    if is_alive {
       let dir = direction(
         Point2::new(self.position.position[0], self.position.position[1]),
         Point2::new(character.position.position[0], character.position.position[1])
