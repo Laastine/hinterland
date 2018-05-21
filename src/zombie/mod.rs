@@ -12,6 +12,7 @@ use graphics::{camera::CameraInputState, can_move_to_tile, Dimensions, direction
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
+use terrain::path_finding::calc_route;
 use zombie::zombies::Zombies;
 
 pub mod zombies;
@@ -76,6 +77,8 @@ impl ZombieDrawable {
         Point2::new(self.position.position[0], self.position.position[1]),
         Point2::new(character.position.position[0], character.position.position[1])
       );
+
+      calc_route(self.position, character.position);
 
       self.direction = get_orientation(dir);
 
