@@ -8,11 +8,11 @@ use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, Z
 use game::get_random_bool;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, can_move_to_tile, Dimensions, direction, direction_movement, get_orientation, load_texture, orientation::{Orientation, Stance}, overlaps};
+use graphics::{camera::CameraInputState, can_move_to_tile, Dimensions, direction_movement, get_orientation, load_texture, orientation::{Orientation, Stance}, overlaps};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
-use terrain::path_finding::calc_route;
+use terrain::path_finding::calc_next_movement;
 use zombie::zombies::Zombies;
 
 pub mod zombies;
@@ -73,12 +73,7 @@ impl ZombieDrawable {
 
     let is_alive = self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
     if is_alive {
-      let dir = direction(
-        Point2::new(self.position.position[0], self.position.position[1]),
-        Point2::new(character.position.position[0], character.position.position[1])
-      );
-
-      calc_route(self.position, character.position);
+      let dir = calc_next_movement(self.position, character.position) as u32;
 
       self.direction = get_orientation(dir);
 
