@@ -50,8 +50,7 @@ impl GlutinWindow {
         opengl_version: (4, 1),
       });
 
-    let (window, device, factory, rtv, dsv) = gfx_window_glutin::init::<ColorFormat,
-      DepthFormat>(builder, context, &events_loop);
+    let (window, device, factory, rtv, dsv) = gfx_window_glutin::init::<ColorFormat, DepthFormat>(builder, context, &events_loop);
 
     GlutinWindow {
       window,
@@ -230,7 +229,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
           CloseRequested => GameStatus::Quit,
           Resized(_, _) => {
             gfx_window_glutin::update_views(w, m_rtv, m_dsv);
-            GameStatus::Quit
+            GameStatus::Running
           }
           _ => GameStatus::Running,
         }
