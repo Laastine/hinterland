@@ -1,10 +1,11 @@
 use cgmath::Point2;
+use game::get_rand_from_range;
 use game::constants::TERRAIN_OBJECTS;
-use graphics::coords_to_tile;
+use graphics::coords_to_tile_offset;
 use pathfinding::{astar::astar, utils::absdiff};
 use shaders::Position;
 
-fn tiles(p: &Point2<usize>) -> Vec<(Point2<usize>, usize)> {
+fn tiles(p: &Point2<i32>) -> Vec<(Point2<i32>, i32)> {
   let e = Point2::new(p.x as i32, p.y as i32);
   let neighbours: Vec<Point2<i32>> = vec![Point2::new(e.x - 1, e.y),
                                           Point2::new(e.x - 1, e.y - 1),
@@ -18,18 +19,18 @@ fn tiles(p: &Point2<usize>) -> Vec<(Point2<usize>, usize)> {
 
   neighbours.iter()
             .filter(|ref e| !TERRAIN_OBJECTS.contains(&[e.x as usize, e.y as usize]))
-            .map(|p| (Point2::new(p.x as usize, p.y as usize), 1))
+            .map(|p| (Point2::new(p.x, p.y), 1))
             .collect()
 }
 
-pub fn calc_route(start_point: Position, end_point: Position) -> Option<(Vec<Point2<usize>>, usize)> {
-  let start = coords_to_tile(start_point);
-  let end = coords_to_tile(end_point);
+fn calc_route(start_point: Position, end_point: Position) -> Option<(Vec<Point2<i32>>, i32)> {
+  let start = coords_to_tile_offset(start_point);
+  let end = coords_to_tile_offset(end_point);
 
   astar(&start,
-        |p: &Point2<usize>| tiles(p),
-        |p: &Point2<usize>| absdiff(p.x, end.x) + absdiff(p.y, end.y),
-        |&p| p.x == end.x && p.y == end.y)
+        |p: &Point2<i32>| tiles(p),
+        |p: &Point2<i32>| absdiff(p.x, end.x) + absdiff(p.y, end.y),
+        |p: &Point2<i32>| p.x == end.x && p.y == end.y)
 }
 
 pub fn calc_next_movement(start_point: Position, end_point: Position) -> i32 {
@@ -43,9 +44,9 @@ pub fn calc_next_movement(start_point: Position, end_point: Position) -> i32 {
                    }
                  });
 
-  let start = coords_to_tile(start_point);
+  let start = coords_to_tile_offset(start_point);
 
-  let diff: (i32, i32) = (start.x as i32 - next_step.x, start.y as i32 - next_step.y);
+  let diff: (i32, i32) = (start.x - next_step.x, start.y - next_step.y);
   match diff {
     (1, 0) => 315,
     (1, 1) => 270,
@@ -55,6 +56,6 @@ pub fn calc_next_movement(start_point: Position, end_point: Position) -> i32 {
     (-1, -1) => 90,
     (0, -1) => 45,
     (1, -1) => 0,
-    _ => 0,
+    _ => get_rand_from_range(0, 359),
   }
 }

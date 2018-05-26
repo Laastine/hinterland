@@ -146,6 +146,18 @@ pub fn coords_to_tile(position: Position) -> Point2<usize> {
   }
 }
 
+pub fn coords_to_tile_offset(position: Position) -> Point2<i32> {
+  let tile_width = TILE_WIDTH;
+  let pos = Point2 {
+    x: -position.position[0],
+    y: position.position[1] + 1500.0,
+  };
+  Point2 {
+    x : (pos.x / tile_width + (pos.y / tile_width)) as i32,
+    y: (pos.y / tile_width - (pos.x / tile_width)) as i32,
+  }
+}
+
 pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> ShaderResourceView<R, [f32; 4]> where R: Resources, F: Factory<R> {
   let img = image::load(Cursor::new(data), image::PNG).unwrap().to_rgba();
   let (width, height) = img.dimensions();
