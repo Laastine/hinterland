@@ -1,8 +1,8 @@
-use graphics;
-
 #[test]
 fn direction_test() {
   use cgmath::Point2;
+  use graphics;
+
   assert_eq!(0, graphics::direction(Point2 {
     x: 1.0,
     y: 0.0,
@@ -57,6 +57,7 @@ fn direction_test() {
 #[test]
 fn direction_movement_test() {
   use cgmath::Point2;
+  use graphics;
 
   assert_eq!(Point2 { x: 1.0, y: 0.0 },
              graphics::direction_movement(
@@ -101,4 +102,13 @@ fn direction_movement_test() {
                  y: -2.0,
                })
              ), "(-1,-1) to (-2,-2) should be 225deg");
+}
+
+#[test]
+fn tile_to_coords_test() {
+  use cgmath::Point2;
+  use graphics;
+  use shaders::Position;
+
+  assert_eq!(Position::new([0.0, -1500.0]), graphics::tile_to_coords(Point2::new(0, 0)), "tile_to_coords_test");
 }

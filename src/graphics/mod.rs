@@ -141,22 +141,23 @@ pub fn coords_to_tile(position: Position) -> Point2<usize> {
     x: -position.position[0],
     y: position.position[1] + 1500.0,
   };
-  Point2 {
-    x : (pos.x / tile_width + (pos.y / tile_width)) as usize,
-    y: (pos.y / tile_width - (pos.x / tile_width)) as usize,
-  }
+  Point2::new((pos.x / tile_width + (pos.y / tile_width)) as usize,
+    (pos.y / tile_width - (pos.x / tile_width)) as usize)
 }
 
 pub fn coords_to_tile_offset(position: Position) -> Point2<i32> {
   let tile_width = TILE_WIDTH;
-  let pos = Point2 {
-    x: -position.position[0],
-    y: position.position[1] + 1500.0,
-  };
-  Point2 {
-    x : (pos.x / tile_width + (pos.y / tile_width)) as i32,
-    y: (pos.y / tile_width - (pos.x / tile_width)) as i32,
-  }
+  let pos = Point2::new(-position.position[0], position.position[1] + 1500.0);
+  Point2::new((pos.x / tile_width + (pos.y / tile_width)) as i32,
+              (pos.y / tile_width - (pos.x / tile_width)) as i32)
+}
+
+pub fn tile_to_coords(tile: Point2<usize>) -> Position {
+  let tile_width = TILE_WIDTH;
+  let new_tile = Point2::new(tile.x as f32, tile.y as f32);
+  let point = Point2::new(new_tile.x * tile_width - new_tile.y / tile_width,
+                          new_tile.y * tile_width - new_tile.x / tile_width);
+  Position::new([-point.x, point.y - 1500.0])
 }
 
 pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> ShaderResourceView<R, [f32; 4]> where R: Resources, F: Factory<R> {

@@ -1,6 +1,6 @@
 use cgmath::Point2;
 use game::get_rand_from_range;
-use game::constants::TERRAIN_OBJECTS;
+use game::constants::{TERRAIN_OBJECTS, TILES_PCS_W, TILES_PCS_H};
 use graphics::coords_to_tile_offset;
 use pathfinding::{astar::astar, utils::absdiff};
 use shaders::Position;
@@ -18,23 +18,24 @@ fn tiles(p: &Point2<i32>, impassable_tiles: &Vec<[usize; 2]>) -> Vec<(Point2<i32
   ];
 
   neighbours.iter()
+            .filter(|ref e| e.x >= 0 && e.x < TILES_PCS_W as i32 && e.y >= 0 && e.y < TILES_PCS_H as i32)
             .filter(|ref e| !impassable_tiles.contains(&[e.x as usize, e.y as usize]))
             .map(|p| (Point2::new(p.x, p.y), 1))
             .collect()
 }
 
-fn calc_route(start_point: Position, end_point: Position) -> Option<(Vec<Point2<i32>>, i32)> {
+pub fn calc_route(start_point: Position, end_point: Position, impassable_tiles: &Vec<[usize; 2]>) -> Option<(Vec<Point2<i32>>, i32)> {
   let start = coords_to_tile_offset(start_point);
   let end = coords_to_tile_offset(end_point);
 
   astar(&start,
-        |p: &Point2<i32>| tiles(p, &TERRAIN_OBJECTS.to_vec()),
+        |p: &Point2<i32>| tiles(p, &impassable_tiles.to_vec()),
         |p: &Point2<i32>| absdiff(p.x, end.x) + absdiff(p.y, end.y),
         |p: &Point2<i32>| p.x == end.x && p.y == end.y)
 }
 
 pub fn calc_next_movement(start_point: Position, end_point: Position) -> i32 {
-  let next_step: Point2<i32> = calc_route(start_point, end_point)
+  let next_step: Point2<i32> = calc_route(start_point, end_point, &TERRAIN_OBJECTS.to_vec())
     .map_or_else(|| Point2::new(0 as i32, 0 as i32),
                  |(route, _)| {
                    if route.len() > 1 {
