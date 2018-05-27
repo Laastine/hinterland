@@ -13,6 +13,7 @@ use terrain_object::TerrainObjectDrawable;
 use zombie::ZombieDrawable;
 
 pub mod camera;
+mod graphics_test;
 pub mod orientation;
 
 #[derive(Debug, Default)]
