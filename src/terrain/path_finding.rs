@@ -5,7 +5,7 @@ use graphics::coords_to_tile_offset;
 use pathfinding::{astar::astar, utils::absdiff};
 use shaders::Position;
 
-fn tiles(p: &Point2<i32>) -> Vec<(Point2<i32>, i32)> {
+fn tiles(p: &Point2<i32>, impassable_tiles: &Vec<[usize; 2]>) -> Vec<(Point2<i32>, i32)> {
   let e = Point2::new(p.x as i32, p.y as i32);
   let neighbours: Vec<Point2<i32>> = vec![Point2::new(e.x - 1, e.y),
                                           Point2::new(e.x - 1, e.y - 1),
@@ -18,7 +18,7 @@ fn tiles(p: &Point2<i32>) -> Vec<(Point2<i32>, i32)> {
   ];
 
   neighbours.iter()
-            .filter(|ref e| !TERRAIN_OBJECTS.contains(&[e.x as usize, e.y as usize]))
+            .filter(|ref e| !impassable_tiles.contains(&[e.x as usize, e.y as usize]))
             .map(|p| (Point2::new(p.x, p.y), 1))
             .collect()
 }
@@ -28,7 +28,7 @@ fn calc_route(start_point: Position, end_point: Position) -> Option<(Vec<Point2<
   let end = coords_to_tile_offset(end_point);
 
   astar(&start,
-        |p: &Point2<i32>| tiles(p),
+        |p: &Point2<i32>| tiles(p, &TERRAIN_OBJECTS.to_vec()),
         |p: &Point2<i32>| absdiff(p.x, end.x) + absdiff(p.y, end.y),
         |p: &Point2<i32>| p.x == end.x && p.y == end.y)
 }
