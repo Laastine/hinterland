@@ -135,20 +135,20 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
       drawables.push(Drawables::Character(c.clone()));
 
       drawables.sort_by(|a, b| {
-        let a_val = match *a {
-          Drawables::Bullet(ref e) => e.position.position[1],
-          Drawables::Zombie(ref e) => e.position.position[1],
-          Drawables::TerrainHouse(ref e) => e.position.position[1],
-          Drawables::TerrainTree(ref e) => e.position.position[1],
-          Drawables::Character(ref e) => e.position.position[1],
+        let a_val = match a {
+          Drawables::Bullet(e) => e.position.position[1],
+          Drawables::Zombie(e) => e.position.position[1],
+          Drawables::TerrainHouse(e) => e.position.position[1],
+          Drawables::TerrainTree(e) => e.position.position[1],
+          Drawables::Character(e) => e.position.position[1],
         };
 
-        let b_val = match *b {
-          Drawables::Bullet(ref e) => e.position.position[1],
-          Drawables::Zombie(ref e) => e.position.position[1],
-          Drawables::TerrainHouse(ref e) => e.position.position[1],
-          Drawables::TerrainTree(ref e) => e.position.position[1],
-          Drawables::Character(ref e) => e.position.position[1],
+        let b_val = match b {
+          Drawables::Bullet(e) => e.position.position[1],
+          Drawables::Zombie(e) => e.position.position[1],
+          Drawables::TerrainHouse(e) => e.position.position[1],
+          Drawables::TerrainTree(e) => e.position.position[1],
+          Drawables::Character(e) => e.position.position[1],
         };
 
         b_val.partial_cmp(&a_val).unwrap()
