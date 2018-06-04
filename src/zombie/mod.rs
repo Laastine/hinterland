@@ -1,14 +1,14 @@
 use bullet::{BulletDrawable, bullets::Bullets};
 use cgmath;
 use cgmath::{Deg, Point2};
-use character::{CharacterDrawable, controls::CharacterInputState};
+use character::controls::CharacterInputState;
 use critter::CritterData;
 use data;
 use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, ZOMBIE_SHEET_TOTAL_WIDTH, ZOMBIE_STILL_SPRITE_OFFSET};
 use game::get_random_bool;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, can_move_to_tile, Dimensions, direction_movement, get_orientation, load_texture, orientation::{Orientation, Stance}, overlaps};
+use graphics::{camera::CameraInputState, Dimensions, direction_movement, get_orientation, load_texture, orientation::{Orientation, Stance}, overlaps};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
@@ -56,7 +56,7 @@ impl ZombieDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, character: &CharacterDrawable) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState) {
     self.projection = *world_to_clip;
 
     let offset_delta =
@@ -73,7 +73,9 @@ impl ZombieDrawable {
 
     let is_alive = self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
     if is_alive {
-      let dir = calc_next_movement(self.position, character.position) as u32;
+      let zombie_pos = Position::new([ci.x_movement - self.position.position[0], ci.y_movement - self.position.position[1]]);
+
+      let dir = calc_next_movement(zombie_pos, self.previous_position) as u32;
 
       self.direction = get_orientation(dir);
 
@@ -88,18 +90,7 @@ impl ZombieDrawable {
       self.position.position[1] + offset_delta.position[1] + (self.movement_direction.y * movement_speed)
     ]);
 
-    let new_pos_without_movement = Position::new([
-      self.position.position[0] + offset_delta.position[0],
-      self.position.position[1] + offset_delta.position[1]
-    ]);
-
-    let tile_pos = Position::new([ci.x_movement - new_pos.position[0], ci.y_movement - new_pos.position[1]]);
-
-    if can_move_to_tile(tile_pos) {
-      self.position = new_pos;
-    } else {
-      self.position = new_pos_without_movement;
-    }
+    self.position = new_pos;
   }
 
   pub fn check_bullet_hits(&mut self, bullets: &[BulletDrawable]) {
@@ -247,18 +238,17 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   type SystemData = (WriteStorage<'a, Zombies>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
-                     ReadStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, Bullets>,
                      Read<'a, Dimensions>);
 
-  fn run(&mut self, (mut zombies, camera_input, character_input, character, bullets, dim): Self::SystemData) {
+  fn run(&mut self, (mut zombies, camera_input, character_input, bullets, dim): Self::SystemData) {
     use specs::join::Join;
 
-    for (zs, camera, ci, c, bs) in (&mut zombies, &camera_input, &character_input, &character, &bullets).join() {
+    for (zs, camera, ci, bs) in (&mut zombies, &camera_input, &character_input, &bullets).join() {
       let world_to_clip = dim.world_to_projection(camera);
 
       for z in &mut zs.zombies {
-        z.update(&world_to_clip, ci, c);
+        z.update(&world_to_clip, ci);
         z.check_bullet_hits(&bs.bullets);
       }
     }

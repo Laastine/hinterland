@@ -1,6 +1,6 @@
 use cgmath::Point2;
+use game::constants::{TERRAIN_OBJECTS, TILES_PCS_H, TILES_PCS_W};
 use game::get_rand_from_range;
-use game::constants::{TERRAIN_OBJECTS, TILES_PCS_W, TILES_PCS_H};
 use graphics::coords_to_tile_offset;
 use pathfinding::{astar::astar, utils::absdiff};
 use shaders::Position;
@@ -34,7 +34,7 @@ pub fn calc_route(start_point: Position, end_point: Position, impassable_tiles: 
         |p: &Point2<i32>| p.x == end.x && p.y == end.y)
 }
 
-pub fn calc_next_movement(start_point: Position, end_point: Position) -> i32 {
+pub fn calc_next_movement(start_point: Position, end_point: Position/*, offset: &CharacterInputState*/) -> i32 {
   let next_step: Point2<i32> = calc_route(start_point, end_point, &TERRAIN_OBJECTS.to_vec())
     .map_or_else(|| Point2::new(0 as i32, 0 as i32),
                  |(route, _)| {
@@ -46,8 +46,8 @@ pub fn calc_next_movement(start_point: Position, end_point: Position) -> i32 {
                  });
 
   let start = coords_to_tile_offset(start_point);
+  let diff: (i32, i32) = (next_step.x - start.x, next_step.y - start.y);
 
-  let diff: (i32, i32) = (start.x - next_step.x, start.y - next_step.y);
   match diff {
     (1, 0) => 315,
     (1, 1) => 270,
