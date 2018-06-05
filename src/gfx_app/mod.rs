@@ -142,7 +142,8 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
       Some(ref mut c) => c,
       None => panic!("Terrain controls have not been initialized"),
     };
-    let w = &self.window;
+    let window = &self.window;
+
     let m_rtv = &mut self.render_target_view;
     let m_dsv = &mut self.depth_stencil_view;
     let m_pos = &mut self.mouse_pos;
@@ -227,8 +228,9 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             GameStatus::Running
           }
           CloseRequested => GameStatus::Quit,
-          Resized(_, _) => {
-            gfx_window_glutin::update_views(w, m_rtv, m_dsv);
+          Resized(w, h) => {
+            window.resize(w, h);
+            gfx_window_glutin::update_views(&window, m_rtv, m_dsv);
             GameStatus::Running
           }
           _ => GameStatus::Running,
