@@ -6,7 +6,7 @@ use character;
 use character::controls::CharacterControlSystem;
 use critter::CharacterSprite;
 use gfx;
-use gfx_app::{GameStatus, Window};
+use gfx_app::{WindowStatus, Window};
 use gfx_app::controls::TilemapControls;
 use gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
 use gfx_app::renderer::{DeviceRenderer, EncoderQueue};
@@ -117,7 +117,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     device_renderer.draw(window.get_device());
     window.swap_window();
 
-    if let GameStatus::Quit = window.poll_events() {
+    if let WindowStatus::Close = window.poll_events() {
       break
     }
   }
