@@ -6,10 +6,11 @@ use game::constants::{ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFS
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::mouse_controls::MouseInputState;
-use graphics::{camera::CameraInputState, Dimensions, get_orientation_from_center, load_texture, orientation::{Orientation, Stance}};
+use graphics::{camera::CameraInputState, Dimensions, get_orientation_from_center, load_texture, orientation::{Orientation, Stance}, overlaps};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
-use specs::prelude::{ReadStorage, Read, WriteStorage};
+use specs::prelude::{Read, ReadStorage, WriteStorage};
+use zombie::{ZombieDrawable, zombies::Zombies};
 
 pub mod controls;
 
@@ -41,9 +42,14 @@ impl CharacterDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &MouseInputState, dimensions: &Dimensions) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &MouseInputState, dimensions: &Dimensions, zombies: &Vec<ZombieDrawable>) {
     self.projection = *world_to_clip;
 
+    if zombies.iter()
+      .any(|z| overlaps(Position::new([ci.x_movement, ci.y_movement]), z.position, 10.0, 10.0)
+    ) {
+      println!("Hit");
+    }
 
     if ci.is_shooting && mouse_input.left_click_point.is_some() && !ci.is_colliding {
       self.stance = Stance::Firing;
@@ -170,14 +176,15 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
                      ReadStorage<'a, MouseInputState>,
+                     ReadStorage<'a, Zombies>,
                      Read<'a, Dimensions>);
 
-  fn run(&mut self, (mut character, camera_input, character_input, mouse_input, dim): Self::SystemData) {
+  fn run(&mut self, (mut character, camera_input, character_input, mouse_input, zombies, dim): Self::SystemData) {
     use specs::join::Join;
 
-    for (c, camera, ci, mi) in (&mut character, &camera_input, &character_input, &mouse_input).join() {
+    for (c, camera, ci, mi, zs) in (&mut character, &camera_input, &character_input, &mouse_input, &zombies).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      c.update(&world_to_clip, ci, mi, &dim);
+      c.update(&world_to_clip, ci, mi, &dim, &zs.zombies);
     }
   }
 }
