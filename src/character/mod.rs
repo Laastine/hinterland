@@ -46,19 +46,22 @@ impl CharacterDrawable {
     self.projection = *world_to_clip;
 
     if zombies.iter()
-      .any(|z| overlaps(Position::new([ci.x_movement, ci.y_movement]), z.position, 10.0, 10.0)
-    ) {
-      println!("Hit");
+              .any(|z| self.stance != Stance::NormalDeath &&
+                overlaps(Position::new([ci.x_movement, ci.y_movement]), z.position, 20.0, 20.0)) {
+      self.stance = Stance::NormalDeath;
+      println!("Player died, press Esc to quit");
     }
 
-    if ci.is_shooting && mouse_input.left_click_point.is_some() && !ci.is_colliding {
-      self.stance = Stance::Firing;
-      self.orientation = get_orientation_from_center(mouse_input, dimensions);
-    } else if ci.is_colliding {
-      self.stance = Stance::Still;
-    } else {
-      self.stance = Stance::Walking;
-      self.orientation = ci.orientation;
+    if self.stance != Stance::NormalDeath {
+      if ci.is_shooting && mouse_input.left_click_point.is_some() && !ci.is_colliding {
+        self.stance = Stance::Firing;
+        self.orientation = get_orientation_from_center(mouse_input, dimensions);
+      } else if ci.is_colliding {
+        self.stance = Stance::Still;
+      } else {
+        self.stance = Stance::Walking;
+        self.orientation = ci.orientation;
+      }
     }
   }
 }

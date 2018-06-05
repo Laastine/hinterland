@@ -1,3 +1,4 @@
+use character::CharacterDrawable;
 use game::constants::{CHARACTER_X_SPEED, CHARACTER_Y_SPEED};
 use gfx_app::mouse_controls::MouseInputState;
 use graphics::{camera::CameraInputState, can_move_to_tile, DeltaTime, orientation::Orientation};
@@ -119,12 +120,14 @@ impl CharacterControlSystem {
 
 impl<'a> specs::prelude::System<'a> for CharacterControlSystem {
   type SystemData = (WriteStorage<'a, CharacterInputState>,
+                     ReadStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, MouseInputState>,
                      WriteStorage<'a, CameraInputState>,
                      Read<'a, DeltaTime>);
 
-  fn run(&mut self, (mut character_input, mouse_input, mut camera_input, d): Self::SystemData) {
+  fn run(&mut self, (mut character_input, character, mouse_input, mut camera_input, d): Self::SystemData) {
     use specs::join::Join;
+    use graphics::orientation::Stance;
     let delta = d.0;
 
     if self.cool_down == 0.0 {
@@ -144,8 +147,10 @@ impl<'a> specs::prelude::System<'a> for CharacterControlSystem {
         }
       }
 
-      for (ci, mi, camera) in (&mut character_input, &mouse_input, &mut camera_input).join() {
-        ci.update(mi, camera, self);
+      for (ci, c, mi, camera) in (&mut character_input, &character, &mouse_input, &mut camera_input).join() {
+        if c.stance != Stance::NormalDeath {
+          ci.update(mi, camera, self);
+        }
       }
     }
   }
