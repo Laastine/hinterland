@@ -46,8 +46,13 @@ impl CharacterDrawable {
     self.projection = *world_to_clip;
 
     if zombies.iter()
-              .any(|z| self.stance != Stance::NormalDeath &&
-                overlaps(Position::new([ci.x_movement, ci.y_movement]), z.position, 10.0, 10.0)) {
+              .any(|z| {
+                let zombie_pos = Position::new([ci.x_movement - z.position.position[0], ci.y_movement - z.position.position[1]]);
+                self.stance != Stance::NormalDeath &&
+                  z.stance != Stance::NormalDeath &&
+                  z.stance != Stance::CriticalDeath &&
+                  overlaps(Position::new([ci.x_movement, ci.y_movement]), zombie_pos, 10.0, 20.0)
+              }) {
       self.stance = Stance::NormalDeath;
       println!("Player died, press Esc to quit");
     }
