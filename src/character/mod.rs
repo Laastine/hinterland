@@ -10,6 +10,7 @@ use graphics::{camera::CameraInputState, Dimensions, get_orientation_from_center
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
+use std;
 use zombie::{ZombieDrawable, zombies::Zombies};
 
 pub mod controls;
@@ -54,7 +55,8 @@ impl CharacterDrawable {
                   overlaps(Position::new([ci.x_movement, ci.y_movement]), zombie_pos, 10.0, 20.0)
               }) {
       self.stance = Stance::NormalDeath;
-      println!("Player died, press Esc to quit");
+      println!("Player died");
+      std::process::exit(0);
     }
 
     if self.stance != Stance::NormalDeath {
