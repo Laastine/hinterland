@@ -119,6 +119,7 @@ impl CharacterControlSystem {
 }
 
 impl<'a> specs::prelude::System<'a> for CharacterControlSystem {
+  #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
   type SystemData = (WriteStorage<'a, CharacterInputState>,
                      ReadStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, MouseInputState>,

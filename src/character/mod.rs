@@ -43,7 +43,7 @@ impl CharacterDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &MouseInputState, dimensions: &Dimensions, zombies: &Vec<ZombieDrawable>) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &MouseInputState, dimensions: &Dimensions, zombies: &[ZombieDrawable]) {
     self.projection = *world_to_clip;
 
     if zombies.iter()

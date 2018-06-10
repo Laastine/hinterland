@@ -64,9 +64,7 @@ pub fn flip_y_axel(point: Point2<f32>) -> Point2<f32> {
 
 pub fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> u32 {
   let theta = cgmath::Angle::atan2(end_point.y - start_point.y, end_point.x - start_point.x);
-  let angle = match theta {
-    Deg(i) => i
-  };
+  let Deg(angle) = theta;
   let a = angle.floor() as i32;
   if a < 0 { (360 + a) as u32 } else { a as u32 }
 }

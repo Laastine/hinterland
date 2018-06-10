@@ -5,7 +5,7 @@ use graphics::coords_to_tile_offset;
 use pathfinding::{astar::astar, utils::absdiff};
 use shaders::Position;
 
-fn tiles(p: &Point2<i32>, impassable_tiles: &Vec<[usize; 2]>) -> Vec<(Point2<i32>, i32)> {
+fn tiles(p: &Point2<i32>, impassable_tiles: &[[usize; 2]]) -> Vec<(Point2<i32>, i32)> {
   let e = Point2::new(p.x as i32, p.y as i32);
   let neighbours: Vec<Point2<i32>> = vec![Point2::new(e.x - 1, e.y),
                                           Point2::new(e.x - 1, e.y - 1),
@@ -24,7 +24,7 @@ fn tiles(p: &Point2<i32>, impassable_tiles: &Vec<[usize; 2]>) -> Vec<(Point2<i32
             .collect()
 }
 
-pub fn calc_route(start_point: Position, end_point: Position, impassable_tiles: &Vec<[usize; 2]>) -> Option<(Vec<Point2<i32>>, i32)> {
+pub fn calc_route(start_point: Position, end_point: Position, impassable_tiles: &[[usize; 2]]) -> Option<(Vec<Point2<i32>>, i32)> {
   let start = coords_to_tile_offset(start_point);
   let end = coords_to_tile_offset(end_point);
 
