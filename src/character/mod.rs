@@ -46,14 +46,18 @@ impl CharacterDrawable {
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &MouseInputState, dimensions: &Dimensions, zombies: &[ZombieDrawable]) {
     self.projection = *world_to_clip;
 
+    fn zombie_not_dead(z: &ZombieDrawable) -> bool {
+      z.stance != Stance::NormalDeath &&
+      z.stance != Stance::CriticalDeath
+    }
+
     if zombies.iter()
-              .any(|z| {
-                let zombie_pos = Position::new([ci.x_movement - z.position.position[0], ci.y_movement - z.position.position[1]]);
-                self.stance != Stance::NormalDeath &&
-                  z.stance != Stance::NormalDeath &&
-                  z.stance != Stance::CriticalDeath &&
-                  overlaps(Position::new([ci.x_movement, ci.y_movement]), zombie_pos, 10.0, 20.0)
-              }) {
+              .any(|z|
+                zombie_not_dead(z) &&
+                  overlaps(Position::new([ci.x_movement, ci.y_movement]),
+                           Position::new([ci.x_movement - z.position.position[0], ci.y_movement - z.position.position[1]]),
+                           10.0,
+                           20.0)) {
       self.stance = Stance::NormalDeath;
       println!("Player died");
       std::process::exit(0);
