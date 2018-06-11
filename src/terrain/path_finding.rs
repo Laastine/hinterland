@@ -5,7 +5,7 @@ use graphics::coords_to_tile_offset;
 use pathfinding::{astar::astar, utils::absdiff};
 use shaders::Position;
 
-fn tiles(p: &Point2<i32>, impassable_tiles: &[[usize; 2]]) -> Vec<(Point2<i32>, i32)> {
+pub fn tiles(p: &Point2<i32>, impassable_tiles: &[[usize; 2]]) -> Vec<(Point2<i32>, i32)> {
   let e = Point2::new(p.x as i32, p.y as i32);
   let neighbours: Vec<Point2<i32>> = vec![Point2::new(e.x - 1, e.y),
                                           Point2::new(e.x - 1, e.y - 1),
@@ -24,9 +24,30 @@ fn tiles(p: &Point2<i32>, impassable_tiles: &[[usize; 2]]) -> Vec<(Point2<i32>, 
             .collect()
 }
 
+pub fn find_next_best_endpoint(end_point: Point2<i32>) -> Point2<i32> {
+  let player_and_its_neighbour_tiles: Vec<[usize; 2]> = vec![Point2::new(end_point.x - 1, end_point.y),
+                                                             Point2::new(end_point.x - 1, end_point.y - 1),
+                                                             Point2::new(end_point.x, end_point.y - 1),
+                                                             Point2::new(end_point.x + 1, end_point.y),
+                                                             Point2::new(end_point.x + 1, end_point.y + 1),
+                                                             Point2::new(end_point.x, end_point.y + 1),
+                                                             Point2::new(end_point.x - 1, end_point.y + 1),
+                                                             Point2::new(end_point.x + 1, end_point.y - 1)]
+    .iter()
+    .map(|p| [p.x as usize, p.y as usize])
+    .collect::<Vec<_>>();
+
+  if player_and_its_neighbour_tiles.iter().any(|e| e[0] == end_point.x as usize && e[1] == end_point.y as usize) {
+    let neighbours = tiles(&end_point, player_and_its_neighbour_tiles.as_slice());
+    neighbours[0].0
+  } else {
+    end_point
+  }
+}
+
 pub fn calc_route(start_point: Position, end_point: Position, impassable_tiles: &[[usize; 2]]) -> Option<(Vec<Point2<i32>>, i32)> {
   let start = coords_to_tile_offset(start_point);
-  let end = coords_to_tile_offset(end_point);
+  let end = find_next_best_endpoint(coords_to_tile_offset(end_point));
 
   astar(&start,
         |p: &Point2<i32>| tiles(p, &impassable_tiles),
