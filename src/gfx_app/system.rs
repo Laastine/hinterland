@@ -121,18 +121,18 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
         cs.update_fire();
       }
       let mut drawables: Vec<Drawables> = vec![];
-      drawables.append(&mut bs.bullets.iter().map(|b| Drawables::Bullet(b.clone())).collect());
-      drawables.append(&mut zs.zombies.iter().map(|z| Drawables::Zombie(z.clone())).collect());
+      drawables.append(&mut bs.bullets.iter().map(|b| Drawables::Bullet(b)).collect());
+      drawables.append(&mut zs.zombies.iter_mut().map(|z| Drawables::Zombie(z)).collect());
 
       for (idx, o) in obj.objects.iter().enumerate() {
         if idx < 2 {
-          drawables.push(Drawables::TerrainHouse(o.clone()));
+          drawables.push(Drawables::TerrainHouse(o));
         } else {
-          drawables.push(Drawables::TerrainTree(o.clone()));
+          drawables.push(Drawables::TerrainTree(o));
         }
       }
 
-      drawables.push(Drawables::Character(c.clone()));
+      drawables.push(Drawables::Character(c));
 
       drawables.sort_by(|a, b| {
         let a_val = match a {

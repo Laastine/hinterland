@@ -179,12 +179,12 @@ pub fn load_raw_texture<R, F>(factory: &mut F, data: &[u8], size: Point2<i32>) -
   }
 }
 
-pub enum Drawables {
-  Bullet(BulletDrawable),
-  Character(CharacterDrawable),
-  TerrainHouse(TerrainObjectDrawable),
-  TerrainTree(TerrainObjectDrawable),
-  Zombie(ZombieDrawable),
+pub enum Drawables <'a> {
+  Bullet(&'a BulletDrawable),
+  Character(&'a mut CharacterDrawable),
+  TerrainHouse(&'a TerrainObjectDrawable),
+  TerrainTree(&'a TerrainObjectDrawable),
+  Zombie(&'a mut ZombieDrawable),
 }
 
 pub trait DrawOrder {
