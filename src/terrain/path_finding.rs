@@ -29,13 +29,13 @@ pub fn calc_route(start_point: Position, end_point: Position, impassable_tiles: 
   let end = coords_to_tile_offset(end_point);
 
   astar(&start,
-        |p: &Point2<i32>| tiles(p, &impassable_tiles.to_vec()),
+        |p: &Point2<i32>| tiles(p, &impassable_tiles),
         |p: &Point2<i32>| absdiff(p.x, end.x) + absdiff(p.y, end.y),
         |p: &Point2<i32>| p.x == end.x && p.y == end.y)
 }
 
-pub fn calc_next_movement(start_point: Position, end_point: Position/*, offset: &CharacterInputState*/) -> i32 {
-  let next_step: Point2<i32> = calc_route(start_point, end_point, &TERRAIN_OBJECTS.to_vec())
+pub fn calc_next_movement(start_point: Position, end_point: Position) -> i32 {
+  let next_step: Point2<i32> = calc_route(start_point, end_point, &TERRAIN_OBJECTS)
     .map_or_else(|| Point2::new(0 as i32, 0 as i32),
                  |(route, _)| {
                    if route.len() > 1 {
