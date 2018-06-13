@@ -5,28 +5,30 @@ use graphics::coords_to_tile_offset;
 use pathfinding::{astar::astar, utils::absdiff};
 use shaders::Position;
 
-fn neighbours(curr_pos: Point2<i32>) -> Vec<Point2<i32>> {
-  vec![Point2::new(curr_pos.x - 1, curr_pos.y),
-       Point2::new(curr_pos.x - 1, curr_pos.y - 1),
-       Point2::new(curr_pos.x, curr_pos.y - 1),
-       Point2::new(curr_pos.x + 1, curr_pos.y),
-       Point2::new(curr_pos.x + 1, curr_pos.y + 1),
-       Point2::new(curr_pos.x, curr_pos.y + 1),
-       Point2::new(curr_pos.x - 1, curr_pos.y + 1),
-       Point2::new(curr_pos.x + 1, curr_pos.y - 1)
-  ]
+fn neighbours<'c>(curr_pos: &'c Point2<i32>, impassable_tiles: &[[usize; 2]], neighbours: &'c mut Vec<Point2<i32>>) -> Vec<&'c Point2<i32>> {
+  neighbours.push(Point2::new(curr_pos.x - 1, curr_pos.y));
+  neighbours.push(Point2::new(curr_pos.x - 1, curr_pos.y - 1));
+  neighbours.push(Point2::new(curr_pos.x, curr_pos.y - 1));
+  neighbours.push(Point2::new(curr_pos.x + 1, curr_pos.y));
+  neighbours.push(Point2::new(curr_pos.x + 1, curr_pos.y + 1));
+  neighbours.push(Point2::new(curr_pos.x, curr_pos.y + 1));
+  neighbours.push(Point2::new(curr_pos.x - 1, curr_pos.y + 1));
+  neighbours.push(Point2::new(curr_pos.x + 1, curr_pos.y - 1));
+
+  neighbours.iter()
+            .filter(|ref e| e.x >= 0 && e.x < TILES_PCS_W as i32 && e.y >= 0 && e.y < TILES_PCS_H as i32)
+            .filter(|ref e| !impassable_tiles.contains(&[e.x as usize, e.y as usize]))
+            .collect()
 }
 
 fn tiles(p: &Point2<i32>, impassable_tiles: &[[usize; 2]]) -> Vec<(Point2<i32>, i32)> {
-  neighbours(Point2::new(p.x as i32, p.y as i32)).iter()
-                                                 .filter(|ref e| e.x >= 0 && e.x < TILES_PCS_W as i32 && e.y >= 0 && e.y < TILES_PCS_H as i32)
-                                                 .filter(|ref e| !impassable_tiles.contains(&[e.x as usize, e.y as usize]))
-                                                 .map(|p| (Point2::new(p.x, p.y), 1))
-                                                 .collect()
+  neighbours(&Point2::new(p.x as i32, p.y as i32), &impassable_tiles, &mut vec![]).iter()
+                                                                                  .map(|p| (Point2::new(p.x, p.y), 1))
+                                                                                  .collect()
 }
 
-fn find_next_best_endpoint(end_point: Point2<i32>) -> Point2<i32> {
-  let player_and_its_neighbour_tiles: Vec<[usize; 2]> = neighbours(end_point)
+fn find_next_best_endpoint(end_point: Point2<i32>, impassable_tiles: &[[usize; 2]]) -> Point2<i32> {
+  let player_and_its_neighbour_tiles: Vec<[usize; 2]> = neighbours(&end_point, &impassable_tiles, &mut vec![])
     .iter()
     .map(|p| [p.x as usize, p.y as usize])
     .collect();
@@ -41,7 +43,7 @@ fn find_next_best_endpoint(end_point: Point2<i32>) -> Point2<i32> {
 
 pub fn calc_route(start_point: Position, end_point: Position, impassable_tiles: &[[usize; 2]]) -> Option<(Vec<Point2<i32>>, i32)> {
   let start = coords_to_tile_offset(start_point);
-  let end = find_next_best_endpoint(coords_to_tile_offset(end_point));
+  let end = find_next_best_endpoint(coords_to_tile_offset(end_point), &impassable_tiles);
 
   astar(&start,
         |p: &Point2<i32>| tiles(p, &impassable_tiles),
