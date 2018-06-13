@@ -5,37 +5,31 @@ use graphics::coords_to_tile_offset;
 use pathfinding::{astar::astar, utils::absdiff};
 use shaders::Position;
 
-fn tiles(p: &Point2<i32>, impassable_tiles: &[[usize; 2]]) -> Vec<(Point2<i32>, i32)> {
-  let e = Point2::new(p.x as i32, p.y as i32);
-  let neighbours: Vec<Point2<i32>> = vec![Point2::new(e.x - 1, e.y),
-                                          Point2::new(e.x - 1, e.y - 1),
-                                          Point2::new(e.x, e.y - 1),
-                                          Point2::new(e.x + 1, e.y),
-                                          Point2::new(e.x + 1, e.y + 1),
-                                          Point2::new(e.x, e.y + 1),
-                                          Point2::new(e.x - 1, e.y + 1),
-                                          Point2::new(e.x + 1, e.y - 1)
-  ];
+fn neighbours(curr_pos: Point2<i32>) -> Vec<Point2<i32>> {
+  vec![Point2::new(curr_pos.x - 1, curr_pos.y),
+       Point2::new(curr_pos.x - 1, curr_pos.y - 1),
+       Point2::new(curr_pos.x, curr_pos.y - 1),
+       Point2::new(curr_pos.x + 1, curr_pos.y),
+       Point2::new(curr_pos.x + 1, curr_pos.y + 1),
+       Point2::new(curr_pos.x, curr_pos.y + 1),
+       Point2::new(curr_pos.x - 1, curr_pos.y + 1),
+       Point2::new(curr_pos.x + 1, curr_pos.y - 1)
+  ]
+}
 
-  neighbours.iter()
-            .filter(|ref e| e.x >= 0 && e.x < TILES_PCS_W as i32 && e.y >= 0 && e.y < TILES_PCS_H as i32)
-            .filter(|ref e| !impassable_tiles.contains(&[e.x as usize, e.y as usize]))
-            .map(|p| (Point2::new(p.x, p.y), 1))
-            .collect()
+fn tiles(p: &Point2<i32>, impassable_tiles: &[[usize; 2]]) -> Vec<(Point2<i32>, i32)> {
+  neighbours(Point2::new(p.x as i32, p.y as i32)).iter()
+                                                 .filter(|ref e| e.x >= 0 && e.x < TILES_PCS_W as i32 && e.y >= 0 && e.y < TILES_PCS_H as i32)
+                                                 .filter(|ref e| !impassable_tiles.contains(&[e.x as usize, e.y as usize]))
+                                                 .map(|p| (Point2::new(p.x, p.y), 1))
+                                                 .collect()
 }
 
 fn find_next_best_endpoint(end_point: Point2<i32>) -> Point2<i32> {
-  let player_and_its_neighbour_tiles: Vec<[usize; 2]> = vec![Point2::new(end_point.x - 1, end_point.y),
-                                                             Point2::new(end_point.x - 1, end_point.y - 1),
-                                                             Point2::new(end_point.x, end_point.y - 1),
-                                                             Point2::new(end_point.x + 1, end_point.y),
-                                                             Point2::new(end_point.x + 1, end_point.y + 1),
-                                                             Point2::new(end_point.x, end_point.y + 1),
-                                                             Point2::new(end_point.x - 1, end_point.y + 1),
-                                                             Point2::new(end_point.x + 1, end_point.y - 1)]
+  let player_and_its_neighbour_tiles: Vec<[usize; 2]> = neighbours(end_point)
     .iter()
     .map(|p| [p.x as usize, p.y as usize])
-    .collect::<Vec<_>>();
+    .collect();
 
   if player_and_its_neighbour_tiles.iter().any(|e| e[0] == end_point.x as usize && e[1] == end_point.y as usize) {
     let neighbours = tiles(&end_point, player_and_its_neighbour_tiles.as_slice());
