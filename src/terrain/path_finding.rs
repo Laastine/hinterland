@@ -2,7 +2,7 @@ use cgmath::Point2;
 use game::constants::{TERRAIN_OBJECTS, TILES_PCS_H, TILES_PCS_W};
 use game::get_rand_from_range;
 use graphics::coords_to_tile_offset;
-use pathfinding::{astar::astar, utils::absdiff};
+use pathfinding::{directed::astar::astar, utils::absdiff};
 use shaders::Position;
 
 fn neighbours<'c>(curr_pos: &'c Point2<i32>, impassable_tiles: &[[usize; 2]], neighbour_tiles: &'c mut Vec<Point2<i32>>) -> Vec<&'c Point2<i32>> {
