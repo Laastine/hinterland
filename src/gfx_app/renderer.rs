@@ -1,10 +1,10 @@
+use crossbeam_channel as channel;
 use gfx;
-use std::sync::mpsc;
 
 #[derive(Debug)]
 pub struct EncoderQueue<D: gfx::Device> {
-  pub sender: mpsc::Sender<gfx::Encoder<D::Resources, D::CommandBuffer>>,
-  pub receiver: mpsc::Receiver<gfx::Encoder<D::Resources, D::CommandBuffer>>,
+  pub sender: channel::Sender<gfx::Encoder<D::Resources, D::CommandBuffer>>,
+  pub receiver: channel::Receiver<gfx::Encoder<D::Resources, D::CommandBuffer>>,
 }
 
 pub struct DeviceRenderer<D: gfx::Device> {
@@ -13,14 +13,13 @@ pub struct DeviceRenderer<D: gfx::Device> {
 
 impl<D: gfx::Device> DeviceRenderer<D> {
   pub fn new(buffers: Vec<D::CommandBuffer>) -> (DeviceRenderer<D>, EncoderQueue<D>) {
-    let (a_send, b_recv) = mpsc::channel();
-    let (b_send, a_recv) = mpsc::channel();
+    let (a_send, b_recv) = channel::unbounded();
+    let (b_send, a_recv) = channel::unbounded();
 
     for cb in buffers {
       let encoder = gfx::Encoder::from(cb);
       a_send
-        .send(encoder)
-        .expect("command buffers send failed");
+        .send(encoder);
     }
 
     (DeviceRenderer {
@@ -39,14 +38,7 @@ impl<D: gfx::Device> DeviceRenderer<D> {
     let _ = self.queue.receiver.recv()
                 .map(|mut encoder| {
                   encoder.flush(device);
-                  let _ = self.queue.sender
-                              .send(encoder)
-                              .map_err(|e| {
-                                panic!("Unable to send {}", e)
-                              });
-                })
-                .map_err(|e| {
-                  panic!("Unable to receive {}", e);
+                  self.queue.sender.send(encoder);
                 });
   }
 }

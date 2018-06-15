@@ -1,7 +1,7 @@
+use crossbeam_channel as channel;
 use game::constants::VIEW_DISTANCE;
 use specs;
 use specs::prelude::WriteStorage;
-use std::sync::mpsc;
 
 #[derive(Clone, Debug)]
 pub struct CameraInputState {
@@ -40,15 +40,15 @@ pub enum CameraControl {
 
 #[derive(Debug)]
 pub struct CameraControlSystem {
-  queue: mpsc::Receiver<CameraControl>,
+  queue: channel::Receiver<CameraControl>,
   zoom_level: Option<f32>,
   x_move: Option<f32>,
   y_move: Option<f32>,
 }
 
 impl CameraControlSystem {
-  pub fn new() -> (CameraControlSystem, mpsc::Sender<CameraControl>) {
-    let (tx, rx) = mpsc::channel();
+  pub fn new() -> (CameraControlSystem, channel::Sender<CameraControl>) {
+    let (tx, rx) = channel::unbounded();
     (CameraControlSystem {
       queue: rx,
       zoom_level: None,
@@ -63,7 +63,7 @@ impl<'a> specs::prelude::System<'a> for CameraControlSystem {
   fn run(&mut self, mut map_input: Self::SystemData) {
     use specs::join::Join;
 
-    while let Ok(control) = self.queue.try_recv() {
+    while let Some(control) = self.queue.try_recv() {
       match control {
         CameraControl::ZoomIn => self.zoom_level = Some(2.0),
         CameraControl::ZoomOut => self.zoom_level = Some(-2.0),

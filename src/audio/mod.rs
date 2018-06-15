@@ -1,10 +1,11 @@
 use character::controls::CharacterInputState;
+use crossbeam_channel as channel;
 use game::constants::PISTOL_AUDIO_PATH;
 use rodio;
 use rodio::Sink;
 use specs;
 use specs::prelude::{ReadStorage, WriteStorage};
-use std::{fs::File, io::BufReader, sync::mpsc};
+use std::{fs::File, io::BufReader};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Effects {
@@ -40,13 +41,13 @@ impl specs::prelude::Component for AudioData {
 
 pub struct AudioSystem {
   effects: Effects,
-  queue: mpsc::Receiver<Effects>
+  queue: channel::Receiver<Effects>
 }
 
 impl AudioSystem {
-  pub fn new() -> (AudioSystem, mpsc::Sender<Effects>) {
+  pub fn new() -> (AudioSystem, channel::Sender<Effects>) {
     #[allow(deprecated)]
-    let (tx, rx) = mpsc::channel();
+    let (tx, rx) = channel::unbounded();
 
     (AudioSystem {
       effects: Effects::None,
@@ -62,7 +63,7 @@ impl<'a> specs::prelude::System<'a> for AudioSystem {
   fn run(&mut self, (mut audio_data, character_input): Self::SystemData) {
     use specs::join::Join;
 
-    while let Ok(effect) = self.queue.try_recv() {
+    while let Some(effect) = self.queue.try_recv() {
       match effect {
         Effects::PistolFire => self.effects = Effects::PistolFire,
         _ => self.effects = Effects::None,

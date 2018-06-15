@@ -9,6 +9,7 @@ path = "src/main.rs"
 
 [dependencies]
 cgmath = "0.16.1"
+crossbeam-channel = "0.2.1"
 gfx_core = "0.8.2"
 gfx_device_gl = "0.15.2"
 gfx_window_glutin = "0.23.0"

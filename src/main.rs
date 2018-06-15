@@ -1,4 +1,5 @@
 extern crate cgmath;
+extern crate crossbeam_channel;
 extern crate genmesh;
 #[macro_use]
 extern crate gfx;

@@ -1,22 +1,22 @@
 use audio::Effects;
 use character::controls::CharacterControl;
+use crossbeam_channel as channel;
 use gfx_app::mouse_controls::MouseControl;
 use graphics::camera::CameraControl;
-use std::sync::mpsc;
 
 #[derive(Debug, Clone)]
 pub struct TilemapControls {
-  audio_control: mpsc::Sender<Effects>,
-  terrain_control: mpsc::Sender<CameraControl>,
-  character_control: mpsc::Sender<CharacterControl>,
-  mouse_control: mpsc::Sender<(MouseControl, Option<(f64, f64)>)>,
+  audio_control: channel::Sender<Effects>,
+  terrain_control: channel::Sender<CameraControl>,
+  character_control: channel::Sender<CharacterControl>,
+  mouse_control: channel::Sender<(MouseControl, Option<(f64, f64)>)>,
 }
 
 impl TilemapControls {
-  pub fn new(atc: mpsc::Sender<Effects>,
-             ttc: mpsc::Sender<CameraControl>,
-             ctc: mpsc::Sender<CharacterControl>,
-             mtc: mpsc::Sender<(MouseControl, Option<(f64, f64)>)>) -> TilemapControls {
+  pub fn new(atc: channel::Sender<Effects>,
+             ttc: channel::Sender<CameraControl>,
+             ctc: channel::Sender<CharacterControl>,
+             mtc: channel::Sender<(MouseControl, Option<(f64, f64)>)>) -> TilemapControls {
     TilemapControls {
       audio_control: atc,
       terrain_control: ttc,
@@ -26,25 +26,17 @@ impl TilemapControls {
   }
 
   fn ac(&mut self, value: Effects) {
-    if self.audio_control.send(value).is_err() {
-      panic!("Audio controls disconnected");
-    }
+    self.audio_control.send(value);
   }
 
   fn tc(&mut self, value: CameraControl) {
-    if self.terrain_control.send(value).is_err() {
-      panic!("Terrain controls disconnected");
-    }
+    self.terrain_control.send(value);
   }
   fn cc(&mut self, value: CharacterControl) {
-    if self.character_control.send(value).is_err() {
-      panic!("Character controls disconnected");
-    }
+    self.character_control.send(value);
   }
   fn mc(&mut self, contol_value: MouseControl, value: Option<(f64, f64)>) {
-    if self.mouse_control.send((contol_value, value)).is_err() {
-      panic!("Mouse controls disconnected")
-    }
+    self.mouse_control.send((contol_value, value));
   }
 
   pub fn zoom_in(&mut self) {

@@ -1,12 +1,12 @@
 use bullet::bullets::Bullets;
 use cgmath::Point2;
 use character::controls::CharacterInputState;
+use crossbeam_channel as channel;
 use graphics::{camera::CameraInputState, Dimensions, direction, direction_movement};
 use specs;
 use specs::prelude::{ReadStorage, Read, WriteStorage};
-use std::sync::mpsc;
 
-type MouseEvent = mpsc::Sender<(MouseControl, Option<(f64, f64)>)>;
+type MouseEvent = channel::Sender<(MouseControl, Option<(f64, f64)>)>;
 
 #[derive(Clone, Debug)]
 pub struct MouseInputState {
@@ -40,14 +40,14 @@ pub enum MouseControl {
 
 #[derive(Debug)]
 pub struct MouseControlSystem {
-  queue: mpsc::Receiver<(MouseControl, Option<(f64, f64)>)>,
+  queue: channel::Receiver<(MouseControl, Option<(f64, f64)>)>,
   left_click_pos: Option<(f64, f64)>,
   right_click_pos: Option<(f64, f64)>,
 }
 
 impl MouseControlSystem {
   pub fn new() -> (MouseControlSystem, MouseEvent) {
-    let (tx, rx) = mpsc::channel();
+    let (tx, rx) = channel::unbounded();
     (MouseControlSystem {
       queue: rx,
       left_click_pos: None,
@@ -67,7 +67,7 @@ impl<'a> specs::prelude::System<'a> for MouseControlSystem {
   fn run(&mut self, (mut mouse_input, camera, character_input, mut bullets, dim): Self::SystemData) {
     use specs::join::Join;
 
-    while let Ok((control_value, value)) = self.queue.try_recv() {
+    while let Some((control_value, value)) = self.queue.try_recv() {
       match control_value {
         MouseControl::LeftClick => {
           for (mi, bs, ca, ci) in (&mut mouse_input, &mut bullets, &camera, &character_input).join() {

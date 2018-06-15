@@ -1,11 +1,11 @@
 use character::CharacterDrawable;
+use crossbeam_channel as channel;
 use game::constants::{CHARACTER_X_SPEED, CHARACTER_Y_SPEED};
 use gfx_app::mouse_controls::MouseInputState;
 use graphics::{camera::CameraInputState, can_move_to_tile, DeltaTime, orientation::Orientation};
 use shaders::Position;
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
-use std::sync::mpsc;
 
 #[derive(Clone, Debug)]
 pub struct CharacterInputState {
@@ -98,7 +98,7 @@ pub enum CharacterControl {
 
 #[derive(Debug)]
 pub struct CharacterControlSystem {
-  queue: mpsc::Receiver<CharacterControl>,
+  queue: channel::Receiver<CharacterControl>,
   x_move: Option<f32>,
   y_move: Option<f32>,
   cool_down: f64,
@@ -106,8 +106,8 @@ pub struct CharacterControlSystem {
 }
 
 impl CharacterControlSystem {
-  pub fn new() -> (CharacterControlSystem, mpsc::Sender<CharacterControl>) {
-    let (tx, rx) = mpsc::channel();
+  pub fn new() -> (CharacterControlSystem, channel::Sender<CharacterControl>) {
+    let (tx, rx) = channel::unbounded();
     (CharacterControlSystem {
       queue: rx,
       x_move: None,
@@ -135,7 +135,7 @@ impl<'a> specs::prelude::System<'a> for CharacterControlSystem {
       self.cool_down += 0.1;
     } else {
       self.cool_down = (self.cool_down - delta).max(0.0);
-      while let Ok(control) = self.queue.try_recv() {
+      while let Some(control) = self.queue.try_recv() {
         match control {
           CharacterControl::Up => self.y_move = Some(-CHARACTER_Y_SPEED),
           CharacterControl::Down => self.y_move = Some(CHARACTER_Y_SPEED),
