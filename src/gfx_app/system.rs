@@ -80,7 +80,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
     let delta = d.0;
 
     if self.cool_down == 0.0 {
-      self.cool_down += 0.1;
+      self.cool_down += 0.05;
     }
     if self.fire_cool_down == 0.0 {
       self.fire_cool_down += 0.2;
