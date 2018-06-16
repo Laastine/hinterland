@@ -15,8 +15,8 @@ Project started as SDL2, but was later converted to use gfx-rs.
 ## Build
 
 ```bash
-cargo install
-cargo run
+cargo build
+cargo run --release
 ```
 
 ## Controls
