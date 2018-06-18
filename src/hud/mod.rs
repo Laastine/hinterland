@@ -59,7 +59,7 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
     let font = FontCollection::from_bytes(font_bytes as &[u8])
       .unwrap_or_else(|e| panic!("Font loading error: {}", e))
       .into_font().unwrap_or_else(|e| panic!("into_font error: {}", e));
-    let (size, texture_data) = font::draw_text(&font, 100.0, "v0.3.2");
+    let (size, texture_data) = font::draw_text(&font, 100.0, "v0.3.3");
 
     let text_texture = load_raw_texture(factory, &texture_data[..], size);
 
