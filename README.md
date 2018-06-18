@@ -9,7 +9,7 @@ Project started as SDL2, but was later converted to use gfx-rs.
 <img src="assets/hinterland-gl-2018-04-11.gif" alt="preview1">
 
 ## Project overview
-- [Blog post](https://laastine.kapsi.fi/code/2018/01/07/zombie-shooter.html)
+- [Blog](https://laastine.kapsi.fi/code/2018/06/18/hinterland-status-update.html)
 - [Project's task board](https://github.com/Laastine/hinterland/projects/1)
 
 ## Build
