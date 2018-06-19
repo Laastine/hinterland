@@ -6,7 +6,7 @@
 Isometric zombie survival game written in Rust.
 Project started as SDL2, but was later converted to use gfx-rs.
 
-<img src="assets/hinterland-gl-2018-04-11.gif" alt="preview1">
+<img src="assets/hinterland-gl-2018-06-17.gif" alt="preview1">
 
 ## Project overview
 - [Blog](https://laastine.kapsi.fi/code/2018/06/18/hinterland-status-update.html)
