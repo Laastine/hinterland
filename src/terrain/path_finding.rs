@@ -21,9 +21,9 @@ fn neighbours<'c>(curr_pos: &'c Point2<i32>, impassable_tiles: &[[usize; 2]], ne
             .collect()
 }
 
-fn tiles(p: &Point2<i32>, impassable_tiles: &[[usize; 2]]) -> Vec<(Point2<i32>, i32)> {
-  neighbours(&Point2::new(p.x as i32, p.y as i32), &impassable_tiles, &mut vec![]).iter()
-                                                                                  .map(|p| (Point2::new(p.x, p.y), 1))
+fn tiles<'c>(p: &'c Point2<i32>, impassable_tiles: &[[usize; 2]]) -> Vec<(Point2<i32>, i32)> {
+  neighbours(&p, &impassable_tiles, &mut vec![]).iter()
+                                                                                  .map(|p| (**p, 1))
                                                                                   .collect()
 }
 
@@ -37,10 +37,10 @@ fn find_next_best_endpoint<'c>(end_point: &'c Point2<i32>, impassable_tiles: &[[
 
 pub fn calc_route(start_point: Position, end_point: Position, impassable_tiles: &[[usize; 2]]) -> Option<(Vec<Point2<i32>>, i32)> {
   let mut neighbour_tiles = vec![];
-  let end_point_with_offset = &coords_to_tile_offset(end_point);
+  let end_point_with_offset = coords_to_tile_offset(end_point);
 
   let start = coords_to_tile_offset(start_point);
-  let end = find_next_best_endpoint(end_point_with_offset, &impassable_tiles, &mut neighbour_tiles);
+  let end = find_next_best_endpoint(&end_point_with_offset, &impassable_tiles, &mut neighbour_tiles);
 
   astar(&start,
         |p: &Point2<i32>| tiles(p, &impassable_tiles),
@@ -50,12 +50,12 @@ pub fn calc_route(start_point: Position, end_point: Position, impassable_tiles: 
 
 pub fn calc_next_movement(start_point: Position, end_point: Position) -> i32 {
   let next_step: Point2<i32> = calc_route(start_point, end_point, &TERRAIN_OBJECTS)
-    .map_or_else(|| Point2::new(0 as i32, 0 as i32),
+    .map_or_else(|| Point2::new(0, 0),
                  |(route, _)| {
                    if route.len() > 1 {
-                     Point2::new(route[1].x as i32, route[1].y as i32)
+                     Point2::new(route[1].x, route[1].y)
                    } else {
-                     Point2::new(route[0].x as i32, route[0].y as i32)
+                     Point2::new(route[0].x, route[0].y)
                    }
                  });
 
