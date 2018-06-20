@@ -1,4 +1,4 @@
-use audio::{AudioData, AudioSystem};
+use audio::AudioSystem;
 use bullet;
 use bullet::bullets::Bullets;
 use bullet::collision::CollisionSystem;
@@ -43,7 +43,6 @@ fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) 
   world.register::<terrain_object::terrain_objects::TerrainObjects>();
   world.register::<Zombies>();
   world.register::<Bullets>();
-  world.register::<AudioData>();
   world.register::<CharacterSprite>();
   world.register::<character::controls::CharacterInputState>();
   world.register::<MouseInputState>();
@@ -61,7 +60,6 @@ fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) 
        .with(Zombies::new())
        .with(Bullets::new())
        .with(CharacterSprite::new())
-       .with(AudioData::new())
        .with(graphics::camera::CameraInputState::new())
        .with(character::controls::CharacterInputState::new())
        .with(MouseInputState::new()).build();

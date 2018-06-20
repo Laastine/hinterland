@@ -1,7 +1,6 @@
 use character::CharacterDrawable;
 use crossbeam_channel as channel;
 use game::constants::{CHARACTER_X_SPEED, CHARACTER_Y_SPEED};
-use gfx_app::mouse_controls::MouseInputState;
 use graphics::{camera::CameraInputState, can_move_to_tile, DeltaTime, orientation::Orientation};
 use shaders::Position;
 use specs;

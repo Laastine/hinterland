@@ -4,7 +4,7 @@ use game::constants::PISTOL_AUDIO_PATH;
 use rodio;
 use rodio::Sink;
 use specs;
-use specs::prelude::{ReadStorage, WriteStorage};
+use specs::prelude::ReadStorage;
 use std::{fs::File, io::BufReader};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -13,20 +13,26 @@ pub enum Effects {
   None
 }
 
-pub struct AudioData {
+pub struct AudioSystem {
+  effects: Effects,
   sink: Sink,
+  queue: channel::Receiver<Effects>
 }
 
-impl AudioData {
-  pub fn new() -> AudioData {
+impl AudioSystem {
+  pub fn new() -> (AudioSystem, channel::Sender<Effects>) {
+    #[allow(deprecated)]
+    let (tx, rx) = channel::unbounded();
     let endpoint = rodio::default_output_device().unwrap();
 
-    AudioData {
+    (AudioSystem {
+      effects: Effects::None,
       sink: Sink::new(&endpoint),
-    }
+      queue: rx,
+    }, tx)
   }
 
-  pub fn play_effect(&mut self) {
+  fn play_effect(&mut self) {
     let file = File::open(PISTOL_AUDIO_PATH).unwrap();
     let pistol_data = rodio::Decoder::new(BufReader::new(file)).unwrap();
     if self.sink.empty() {
@@ -35,32 +41,10 @@ impl AudioData {
   }
 }
 
-impl specs::prelude::Component for AudioData {
-  type Storage = specs::storage::VecStorage<AudioData>;
-}
-
-pub struct AudioSystem {
-  effects: Effects,
-  queue: channel::Receiver<Effects>
-}
-
-impl AudioSystem {
-  pub fn new() -> (AudioSystem, channel::Sender<Effects>) {
-    #[allow(deprecated)]
-    let (tx, rx) = channel::unbounded();
-
-    (AudioSystem {
-      effects: Effects::None,
-      queue: rx,
-    }, tx)
-  }
-}
-
 impl<'a> specs::prelude::System<'a> for AudioSystem {
-  type SystemData = (WriteStorage<'a, AudioData>,
-                     ReadStorage<'a, CharacterInputState>);
+  type SystemData = (ReadStorage<'a, CharacterInputState>);
 
-  fn run(&mut self, (mut audio_data, character_input): Self::SystemData) {
+  fn run(&mut self, character_input: Self::SystemData) {
     use specs::join::Join;
 
     while let Some(effect) = self.queue.try_recv() {
@@ -70,8 +54,8 @@ impl<'a> specs::prelude::System<'a> for AudioSystem {
       }
     }
 
-    for (audio, ci) in (&mut audio_data, &character_input).join() {
-      if let Effects::PistolFire = self.effects { if ci.is_shooting { audio.play_effect() } }
+    for ci in (&character_input).join() {
+      if let Effects::PistolFire = self.effects { if ci.is_shooting { self.play_effect() } }
     }
   }
 }
