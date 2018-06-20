@@ -27,14 +27,13 @@ impl CharacterInputState {
     }
   }
 
-  pub fn update(&mut self, mi: &MouseInputState, camera: &mut CameraInputState, css: &CharacterControlSystem) {
+  pub fn update(&mut self, camera: &mut CameraInputState, css: &CharacterControlSystem) {
     if css.y_move.is_none() && css.x_move.is_none() {
-      if mi.left_click_point.is_none() {
         self.orientation = Orientation::Still;
-      }
     } else if css.x_move.is_none() {
       if let Some(y) = css.y_move {
-        if mi.left_click_point.is_none() && !self.is_colliding || can_move_to_tile(Position::new([self.x_movement, self.y_movement + y])) {
+        let vert_move = Position::new([self.x_movement, self.y_movement + y]);
+        if !self.is_colliding || can_move_to_tile(vert_move) {
           self.y_movement += y;
           camera.y_pos -= y;
           self.orientation = match y {
@@ -45,8 +44,10 @@ impl CharacterInputState {
         }
       }
     } else if let Some(x) = css.x_move {
+      let horizontal_move  = Position::new([self.x_movement + x, self.y_movement]);
       if let Some(y) = css.y_move {
-        if mi.left_click_point.is_none() && !self.is_colliding || can_move_to_tile(Position::new([self.x_movement + x, self.y_movement + y])) {
+        let diag_move = Position::new([self.x_movement + x, self.y_movement + y]);
+        if !self.is_colliding || can_move_to_tile(diag_move) {
           self.x_movement += x / 1.5;
           self.y_movement += y / 1.5;
           camera.x_pos += x / 1.5;
@@ -60,7 +61,7 @@ impl CharacterInputState {
             _ => Orientation::Still,
           };
         }
-      } else if css.y_move.is_none() && mi.left_click_point.is_none() && !self.is_colliding || can_move_to_tile(Position::new([self.x_movement + x, self.y_movement])) {
+      } else if css.y_move.is_none() && !self.is_colliding || can_move_to_tile(horizontal_move) {
         self.x_movement += x;
         camera.x_pos += x;
         self.orientation = match x {
@@ -122,11 +123,10 @@ impl<'a> specs::prelude::System<'a> for CharacterControlSystem {
   #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
   type SystemData = (WriteStorage<'a, CharacterInputState>,
                      ReadStorage<'a, CharacterDrawable>,
-                     ReadStorage<'a, MouseInputState>,
                      WriteStorage<'a, CameraInputState>,
                      Read<'a, DeltaTime>);
 
-  fn run(&mut self, (mut character_input, character, mouse_input, mut camera_input, d): Self::SystemData) {
+  fn run(&mut self, (mut character_input, character, mut camera_input, d): Self::SystemData) {
     use specs::join::Join;
     use graphics::orientation::Stance;
     let delta = d.0;
@@ -148,9 +148,9 @@ impl<'a> specs::prelude::System<'a> for CharacterControlSystem {
         }
       }
 
-      for (ci, c, mi, camera) in (&mut character_input, &character, &mouse_input, &mut camera_input).join() {
+      for (ci, c, camera) in (&mut character_input, &character, &mut camera_input).join() {
         if c.stance != Stance::NormalDeath {
-          ci.update(mi, camera, self);
+          ci.update(camera, self);
         }
       }
     }
