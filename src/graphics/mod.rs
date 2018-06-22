@@ -62,21 +62,19 @@ pub fn flip_y_axel(point: Point2<f32>) -> Point2<f32> {
   Point2::new(point.x, RESOLUTION_Y as f32 - point.y)
 }
 
-pub fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> u32 {
+pub fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> f32 {
   let theta = cgmath::Angle::atan2(end_point.y - start_point.y, end_point.x - start_point.x);
   let Deg(angle) = theta;
-  let a = angle.floor() as i32;
-  if a < 0 { (360 + a) as u32 } else { a as u32 }
+  if angle < 0.0 { (360.0 + angle) } else { angle }
 }
 
-pub fn direction_movement(direction: u32) -> Point2<f32> {
-  let f_direction = direction as f32;
-  Point2::new((Angle::cos(Deg(f_direction)) * 100.0).round() / 100.0,
-              (Angle::sin(Deg(f_direction)) * 100.0).round() / 100.0)
+pub fn direction_movement(direction: f32) -> Point2<f32> {
+  let angle = Deg(direction);
+  Point2::new(Angle::cos(angle), Angle::sin(angle))
 }
 
-pub fn get_orientation(angle_in_degrees: u32) -> Orientation {
-  match angle_in_degrees {
+pub fn get_orientation(angle_in_degrees: f32) -> Orientation {
+  match angle_in_degrees as u32 {
     345 ... 360 | 0 ... 22 => Orientation::Right,
     23 ... 68 => Orientation::UpRight,
     69 ... 114 => Orientation::Up,
@@ -140,7 +138,7 @@ pub fn coords_to_tile(position: Position) -> Point2<usize> {
     y: position.position[1] + 1500.0,
   };
   Point2::new((pos.x / tile_width + (pos.y / tile_width)) as usize,
-    (pos.y / tile_width - (pos.x / tile_width)) as usize)
+              (pos.y / tile_width - (pos.x / tile_width)) as usize)
 }
 
 pub fn coords_to_tile_offset(position: Position) -> Point2<i32> {
@@ -169,7 +167,7 @@ pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> ShaderResourceView<R,
 }
 
 pub fn load_raw_texture<R, F>(factory: &mut F, data: &[u8], size: Point2<i32>) -> ShaderResourceView<R, [f32; 4]>
-                      where R: Resources, F: Factory<R> {
+                              where R: Resources, F: Factory<R> {
   let kind = texture::Kind::D2(size.x as texture::Size, size.y as texture::Size, texture::AaMode::Single);
   let mipmap = texture::Mipmap::Provided;
   match factory
@@ -179,7 +177,7 @@ pub fn load_raw_texture<R, F>(factory: &mut F, data: &[u8], size: Point2<i32>) -
   }
 }
 
-pub enum Drawables <'b> {
+pub enum Drawables<'b> {
   Bullet(&'b BulletDrawable),
   Character(&'b mut CharacterDrawable),
   TerrainHouse(&'b TerrainObjectDrawable),
