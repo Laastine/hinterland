@@ -7,11 +7,11 @@ use game::constants::{ASPECT_RATIO, BULLET_SPEED};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{camera::CameraInputState, can_move, Dimensions};
+use graphics::can_move_to_tile;
 use shaders::{bullet_pipeline, Position, Projection, VertexData};
 use specs;
-use specs::prelude::{ReadStorage, Read, WriteStorage};
+use specs::prelude::{Read, ReadStorage, WriteStorage};
 use std::f32;
-use graphics::can_move_to_tile;
 
 pub mod bullets;
 pub mod collision;
@@ -58,12 +58,12 @@ impl BulletDrawable {
       };
 
     self.previous_position = Position::new([
-      ci.x_movement - (self.movement_direction.x * BULLET_SPEED),
+      ci.x_movement - (self.movement_direction.x * BULLET_SPEED / (5.0/3.0)),
       ci.y_movement + (self.movement_direction.y * BULLET_SPEED)]);
 
     self.position =
       Position::new([
-        self.position.position[0] + self.offset_delta.position[0] + (self.movement_direction.x * BULLET_SPEED),
+        self.position.position[0] + self.offset_delta.position[0] + (self.movement_direction.x * BULLET_SPEED / (5.0/3.0)),
         self.position.position[1] + self.offset_delta.position[1] - (self.movement_direction.y * BULLET_SPEED)
       ]);
 

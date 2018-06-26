@@ -75,7 +75,7 @@ impl ZombieDrawable {
     if is_alive {
       let zombie_pos = Position::new([ci.x_movement - self.position.position[0], ci.y_movement - self.position.position[1]]);
 
-      let dir = calc_next_movement(zombie_pos, self.previous_position) as u32;
+      let dir = calc_next_movement(zombie_pos, self.previous_position) as f32;
 
       self.direction = get_orientation(dir);
 
