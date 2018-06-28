@@ -16,7 +16,7 @@ use graphics::{DeltaTime, Dimensions};
 use graphics::camera::CameraControlSystem;
 use hud;
 use shaders::Position;
-use specs::{prelude::DispatcherBuilder, world::World};
+use specs::{Builder, prelude::DispatcherBuilder, world::World};
 use std::time;
 use terrain;
 use terrain_object;
@@ -55,7 +55,7 @@ fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) 
   world.create_entity()
        .with(terrain::TerrainDrawable::new())
        .with(character::CharacterDrawable::new())
-       .with(hud::TextDrawable::new("hello world", Position::new([0.0, 0.0])))
+       .with(hud::TextDrawable::new("", Position::new([0.0, 0.0])))
        .with(terrain_object::terrain_objects::TerrainObjects::new())
        .with(Zombies::new())
        .with(Bullets::new())
