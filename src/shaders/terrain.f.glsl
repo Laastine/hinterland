@@ -30,8 +30,6 @@ void main() {
   vec2 uvCoords = (entry.xy + rawUvOffsets) / u_TilesheetSize.xy;
 
   vec4 t0 = texture(t_TileSheet, uvCoords);
-  t0.r *= SHADING_MULTIPLIER;
-  t0.g *= SHADING_MULTIPLIER;
-  t0.b *= SHADING_MULTIPLIER;
+  t0 *= SHADING_MULTIPLIER;
   Target0 = t0;
 }
