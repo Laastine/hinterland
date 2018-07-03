@@ -577,7 +577,7 @@ dependencies = [
 
 [[package]]
 name = "hinterland"
-version = "0.3.3"
+version = "0.3.4"
 dependencies = [
  "cgmath 0.16.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "crossbeam-channel 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
