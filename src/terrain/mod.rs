@@ -1,10 +1,10 @@
 use cgmath;
 use character::controls::CharacterInputState;
-use game::constants::{ASPECT_RATIO, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W};
+use game::constants::{ASPECT_RATIO, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
 use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Vertices};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, can_move_to_tile, Dimensions, load_texture};
+use graphics::{camera::CameraInputState, can_move_to_tile, Dimensions, get_view_matrix, load_texture};
 use shaders::{Position, Projection, tilemap_pipeline, TileMapData, TilemapSettings, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
@@ -25,7 +25,7 @@ pub struct TerrainDrawable {
 
 impl TerrainDrawable {
   pub fn new() -> TerrainDrawable {
-    let view = Dimensions::get_view_matrix();
+    let view = get_view_matrix(VIEW_DISTANCE);
     TerrainDrawable {
       projection: Projection {
         model: view.into(),

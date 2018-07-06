@@ -2,7 +2,7 @@ use bullet::BulletDrawable;
 use cgmath;
 use cgmath::{Angle, Deg, Matrix4, Point2, Point3, Vector3};
 use character::CharacterDrawable;
-use game::constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
+use game::constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W};
 use gfx::{Factory, format::Rgba8, handle::ShaderResourceView, Resources, texture};
 use gfx_app::{ColorFormat, mouse_controls::MouseInputState};
 use graphics::orientation::Orientation;
@@ -35,20 +35,8 @@ impl Dimensions {
     }
   }
 
-  pub fn get_view_matrix() -> Matrix4<f32> {
-    Matrix4::look_at(
-      Point3::new(0.0, 0.0, VIEW_DISTANCE),
-      Point3::new(0.0, 0.0, 0.0),
-      Vector3::unit_y(),
-    )
-  }
-
   pub fn world_to_projection(&self, input: &camera::CameraInputState) -> Projection {
-    let view: Matrix4<f32> = Matrix4::look_at(
-      Point3::new(0.0, 0.0, input.distance),
-      Point3::new(0.0, 0.0, 0.0),
-      Vector3::unit_y(),
-    );
+    let view: Matrix4<f32> = get_view_matrix(input.distance);
     let aspect_ratio = self.window_width / self.window_height;
     Projection {
       model: view.into(),
@@ -56,6 +44,14 @@ impl Dimensions {
       proj: cgmath::perspective(cgmath::Deg(75.0f32), aspect_ratio, 0.1, 4000.0).into(),
     }
   }
+}
+
+pub fn get_view_matrix(view: f32) -> Matrix4<f32> {
+  Matrix4::look_at(
+    Point3::new(0.0, 0.0, view),
+    Point3::new(0.0, 0.0, 0.0),
+    Vector3::unit_y(),
+  )
 }
 
 pub fn flip_y_axel(point: Point2<f32>) -> Point2<f32> {

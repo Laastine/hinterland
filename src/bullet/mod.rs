@@ -3,10 +3,10 @@ use bullet::collision::Collision;
 use cgmath;
 use cgmath::Point2;
 use character::controls::CharacterInputState;
-use game::constants::{ASPECT_RATIO, BULLET_SPEED};
+use game::constants::{ASPECT_RATIO, BULLET_SPEED, VIEW_DISTANCE};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, can_move, Dimensions};
+use graphics::{camera::CameraInputState, can_move, Dimensions, get_view_matrix};
 use graphics::can_move_to_tile;
 use shaders::{bullet_pipeline, Position, Projection, VertexData};
 use specs;
@@ -31,7 +31,7 @@ pub struct BulletDrawable {
 
 impl BulletDrawable {
   pub fn new(position: cgmath::Point2<f32>, movement_direction: Point2<f32>) -> BulletDrawable {
-    let view = Dimensions::get_view_matrix();
+    let view = get_view_matrix(VIEW_DISTANCE);
     BulletDrawable {
       projection: Projection {
         model: view.into(),

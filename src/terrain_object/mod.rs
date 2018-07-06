@@ -1,9 +1,9 @@
 use cgmath;
 use character::controls::CharacterInputState;
-use game::constants::ASPECT_RATIO;
+use game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, Dimensions, load_texture};
+use graphics::{camera::CameraInputState, Dimensions, get_view_matrix, load_texture};
 use shaders::{Position, Projection, static_element_pipeline, VertexData};
 use specs;
 use specs::prelude::{ReadStorage, Read, WriteStorage};
@@ -24,7 +24,7 @@ pub struct TerrainObjectDrawable {
 
 impl TerrainObjectDrawable {
   pub fn new(position: Position) -> TerrainObjectDrawable {
-    let view = Dimensions::get_view_matrix();
+    let view = get_view_matrix(VIEW_DISTANCE);
     TerrainObjectDrawable {
       projection: Projection {
         model: view.into(),

@@ -2,11 +2,11 @@ use cgmath;
 use character::controls::CharacterInputState;
 use critter::{CharacterSprite, CritterData};
 use data;
-use game::constants::{ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET};
+use game::constants::{ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::mouse_controls::MouseInputState;
-use graphics::{camera::CameraInputState, Dimensions, get_orientation_from_center, load_texture, orientation::{Orientation, Stance}, overlaps};
+use graphics::{camera::CameraInputState, Dimensions, get_orientation_from_center, get_view_matrix, load_texture, orientation::{Orientation, Stance}, overlaps};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
@@ -29,7 +29,7 @@ pub struct CharacterDrawable {
 
 impl CharacterDrawable {
   pub fn new() -> CharacterDrawable {
-    let view = Dimensions::get_view_matrix();
+    let view = get_view_matrix(VIEW_DISTANCE);
     CharacterDrawable {
       projection: Projection {
         model: view.into(),
