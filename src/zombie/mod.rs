@@ -1,14 +1,13 @@
 use bullet::{BulletDrawable, bullets::Bullets};
-use cgmath;
-use cgmath::{Deg, Point2};
+use cgmath::Point2;
 use character::controls::CharacterInputState;
 use critter::CritterData;
 use data;
-use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, ZOMBIE_SHEET_TOTAL_WIDTH, ZOMBIE_STILL_SPRITE_OFFSET, VIEW_DISTANCE};
+use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE, ZOMBIE_SHEET_TOTAL_WIDTH, ZOMBIE_STILL_SPRITE_OFFSET};
 use game::get_random_bool;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, Dimensions, direction_movement, get_orientation, get_view_matrix, load_texture, orientation::{Orientation, Stance}, overlaps};
+use graphics::{camera::CameraInputState, Dimensions, direction_movement, get_orientation, get_projection, get_view_matrix, load_texture, orientation::{Orientation, Stance}, overlaps};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
@@ -37,12 +36,9 @@ pub struct ZombieDrawable {
 impl ZombieDrawable {
   pub fn new(position: Position) -> ZombieDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
+    let projection = get_projection(view, ASPECT_RATIO);
     ZombieDrawable {
-      projection: Projection {
-        model: view.into(),
-        view: view.into(),
-        proj: cgmath::perspective(Deg(60.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
-      },
+      projection,
       position,
       previous_position: Position::new([0.0, 0.0]),
       orientation: Orientation::Left,

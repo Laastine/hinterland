@@ -1,4 +1,3 @@
-use cgmath;
 use character::controls::CharacterInputState;
 use critter::{CharacterSprite, CritterData};
 use data;
@@ -6,7 +5,7 @@ use game::constants::{ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFS
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::mouse_controls::MouseInputState;
-use graphics::{camera::CameraInputState, Dimensions, get_orientation_from_center, get_view_matrix, load_texture, orientation::{Orientation, Stance}, overlaps};
+use graphics::{camera::CameraInputState, Dimensions, get_orientation_from_center, get_projection, get_view_matrix, load_texture, orientation::{Orientation, Stance}, overlaps};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
@@ -30,12 +29,9 @@ pub struct CharacterDrawable {
 impl CharacterDrawable {
   pub fn new() -> CharacterDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
+    let projection = get_projection(view, ASPECT_RATIO);
     CharacterDrawable {
-      projection: Projection {
-        model: view.into(),
-        view: view.into(),
-        proj: cgmath::perspective(cgmath::Deg(75.0f32), ASPECT_RATIO, 0.1, 4000.0).into(),
-      },
+      projection,
       position: Position::new([0.0, 0.0]),
       orientation: Orientation::Right,
       stance: Stance::Walking,
