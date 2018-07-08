@@ -7,7 +7,7 @@ use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, V
 use game::get_random_bool;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, Dimensions, direction_movement, get_orientation, get_projection, get_view_matrix, load_texture, orientation::{Orientation, Stance}, overlaps};
+use graphics::{calc_hypotenuse, camera::CameraInputState, Dimensions, direction_movement, get_orientation, get_projection, get_view_matrix, load_texture, orientation::{Orientation, Stance}, overlaps};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
@@ -60,32 +60,39 @@ impl ZombieDrawable {
         ci.y_movement - self.previous_position.position[1]
       ]);
 
-    self.previous_position = Position::new([
-      ci.x_movement,
-      ci.y_movement
-    ]);
+    self.previous_position = Position::new([ci.x_movement, ci.y_movement]);
+
+    let x_y_distance_to_player = Point2::new(
+      self.position.position[0] - offset_delta.position[0],
+      self.position.position[1] - offset_delta.position[1]);
+
+    let distance_to_player = calc_hypotenuse(x_y_distance_to_player.x.abs(), x_y_distance_to_player.y.abs());
+
     let movement_speed = 1.4;
 
     let is_alive = self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
+
     if is_alive {
       let zombie_pos = Position::new([ci.x_movement - self.position.position[0], ci.y_movement - self.position.position[1]]);
 
       let dir = calc_next_movement(zombie_pos, self.previous_position) as f32;
-
       self.direction = get_orientation(dir);
 
-      self.movement_direction = direction_movement(dir);
-      self.stance = Stance::Walking;
+      if distance_to_player < 600.0 {
+        self.movement_direction = direction_movement(dir);
+        self.stance = Stance::Walking;
+      } else {
+        self.movement_direction = Point2::new(0.0, 0.0);
+        self.stance = Stance::Still;
+      }
     } else {
       self.movement_direction = Point2::new(0.0, 0.0);
     }
 
-    let new_pos = Position::new([
+    self.position = Position::new([
       self.position.position[0] + offset_delta.position[0] + (self.movement_direction.x * movement_speed),
       self.position.position[1] + offset_delta.position[1] + (self.movement_direction.y * movement_speed)
     ]);
-
-    self.position = new_pos;
   }
 
   pub fn check_bullet_hits(&mut self, bullets: &[BulletDrawable]) {

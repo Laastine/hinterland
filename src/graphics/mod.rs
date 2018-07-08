@@ -156,6 +156,10 @@ pub fn tile_to_coords(tile: Point2<usize>) -> Position {
   Position::new([-point.x, point.y - 1500.0])
 }
 
+pub fn calc_hypotenuse(a: f32, b: f32) -> f32 {
+  (a.powf(2.0) + b.powf(2.0)).sqrt()
+}
+
 pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> ShaderResourceView<R, [f32; 4]> where R: Resources, F: Factory<R> {
   let img = image::load(Cursor::new(data), image::PNG).unwrap().to_rgba();
   let (width, height) = img.dimensions();
