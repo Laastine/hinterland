@@ -15,16 +15,17 @@ fn neighbours<'c>(curr_pos: &'c Point2<i32>, impassable_tiles: &[[usize; 2]], ne
   neighbour_tiles.push(Point2::new(curr_pos.x - 1, curr_pos.y + 1));
   neighbour_tiles.push(Point2::new(curr_pos.x + 1, curr_pos.y - 1));
 
-  neighbour_tiles.iter()
-            .filter(|ref e| e.x >= 0 && e.x < TILES_PCS_W as i32 && e.y >= 0 && e.y < TILES_PCS_H as i32)
-            .filter(|ref e| !impassable_tiles.contains(&[e.x as usize, e.y as usize]))
-            .collect()
+  neighbour_tiles
+    .iter()
+    .filter(|ref e| e.x >= 0 && e.x < TILES_PCS_W as i32 && e.y >= 0 && e.y < TILES_PCS_H as i32)
+    .filter(|ref e| !impassable_tiles.contains(&[e.x as usize, e.y as usize]))
+    .collect()
 }
 
 fn tiles<'c>(p: &'c Point2<i32>, impassable_tiles: &[[usize; 2]]) -> Vec<(Point2<i32>, i32)> {
   neighbours(&p, &impassable_tiles, &mut vec![]).iter()
-                                                                                  .map(|p| (**p, 1))
-                                                                                  .collect()
+    .map(|p| (**p, 1))
+    .collect()
 }
 
 fn find_next_best_endpoint<'c>(end_point: &'c Point2<i32>, impassable_tiles: &[[usize; 2]], neighbour_tiles: &'c mut Vec<Point2<i32>>) -> &'c Point2<i32> {
