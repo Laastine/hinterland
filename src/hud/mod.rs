@@ -1,7 +1,7 @@
 use gfx;
 use gfx_app::ColorFormat;
 use gfx_app::DepthFormat;
-use graphics::load_raw_texture;
+use graphics::texture::load_raw_texture;
 use rusttype::FontCollection;
 use shaders::{Position, text_pipeline, VertexData};
 use specs;

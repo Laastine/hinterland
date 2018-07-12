@@ -2,7 +2,7 @@ use character::controls::CharacterInputState;
 use game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, Dimensions, get_projection, get_view_matrix, load_texture};
+use graphics::{camera::CameraInputState, Dimensions, get_projection, get_view_matrix, texture::load_texture};
 use shaders::{Position, Projection, static_element_pipeline, VertexData};
 use specs;
 use specs::prelude::{ReadStorage, Read, WriteStorage};

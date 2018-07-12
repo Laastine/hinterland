@@ -5,7 +5,7 @@ use game::constants::{ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFS
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::mouse_controls::MouseInputState;
-use graphics::{camera::CameraInputState, Dimensions, get_orientation_from_center, get_projection, get_view_matrix, load_texture, orientation::{Orientation, Stance}, overlaps};
+use graphics::{camera::CameraInputState, Dimensions, get_orientation_from_center, get_projection, get_view_matrix, texture::load_texture, orientation::{Orientation, Stance}, overlaps};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};

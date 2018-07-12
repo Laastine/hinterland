@@ -3,18 +3,16 @@ use cgmath;
 use cgmath::{Angle, Deg, Matrix4, Point2, Point3, Vector3};
 use character::CharacterDrawable;
 use game::constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W};
-use gfx::{Factory, format::Rgba8, handle::ShaderResourceView, Resources, texture};
-use gfx_app::{ColorFormat, mouse_controls::MouseInputState};
+use gfx_app::{mouse_controls::MouseInputState};
 use graphics::orientation::Orientation;
-use image;
 use shaders::{Position, Projection};
-use std::io::Cursor;
 use terrain_object::TerrainObjectDrawable;
 use zombie::ZombieDrawable;
 
 pub mod camera;
 mod graphics_test;
 pub mod orientation;
+pub mod texture;
 
 #[derive(Debug, Default)]
 pub struct DeltaTime(pub f64);
@@ -158,27 +156,6 @@ pub fn tile_to_coords(tile: Point2<usize>) -> Position {
 
 pub fn calc_hypotenuse(a: f32, b: f32) -> f32 {
   (a.powf(2.0) + b.powf(2.0)).sqrt()
-}
-
-pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> ShaderResourceView<R, [f32; 4]> where R: Resources, F: Factory<R> {
-  let img = image::load(Cursor::new(data), image::PNG).unwrap().to_rgba();
-  let (width, height) = img.dimensions();
-  let kind = texture::Kind::D2(width as texture::Size, height as texture::Size, texture::AaMode::Single);
-  match factory.create_texture_immutable_u8::<Rgba8>(kind, texture::Mipmap::Provided, &[&img]) {
-    Ok(val) => val.1,
-    Err(e) => panic!("Couldn't load texture {:?}", e)
-  }
-}
-
-pub fn load_raw_texture<R, F>(factory: &mut F, data: &[u8], size: Point2<i32>) -> ShaderResourceView<R, [f32; 4]>
-                              where R: Resources, F: Factory<R> {
-  let kind = texture::Kind::D2(size.x as texture::Size, size.y as texture::Size, texture::AaMode::Single);
-  let mipmap = texture::Mipmap::Provided;
-  match factory
-    .create_texture_immutable_u8::<ColorFormat>(kind, mipmap, &[data]) {
-    Ok(val) => val.1,
-    Err(e) => panic!("Couldn't load texture {:?}", e)
-  }
 }
 
 pub enum Drawables<'b> {
