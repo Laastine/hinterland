@@ -6,7 +6,7 @@ use character::controls::CharacterInputState;
 use game::constants::{ASPECT_RATIO, BULLET_SPEED, VIEW_DISTANCE};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, can_move, Dimensions, get_projection, get_view_matrix};
+use graphics::{camera::CameraInputState, can_move, dimensions::{Dimensions, get_projection, get_view_matrix}};
 use graphics::can_move_to_tile;
 use shaders::{bullet_pipeline, Position, Projection, VertexData};
 use specs;

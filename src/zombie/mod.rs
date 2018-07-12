@@ -7,7 +7,7 @@ use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, V
 use game::get_random_bool;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{calc_hypotenuse, camera::CameraInputState, Dimensions, direction_movement, get_orientation, get_projection, get_view_matrix, texture::load_texture, orientation::{Orientation, Stance}, overlaps};
+use graphics::{calc_hypotenuse, camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, direction_movement, get_orientation, orientation::{Orientation, Stance}, overlaps, texture::load_texture};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};

@@ -2,7 +2,7 @@ use bullet::bullets::Bullets;
 use cgmath::Point2;
 use character::controls::CharacterInputState;
 use crossbeam_channel as channel;
-use graphics::{camera::CameraInputState, Dimensions, direction, direction_movement};
+use graphics::{camera::CameraInputState, dimensions::Dimensions, direction, direction_movement};
 use specs;
 use specs::prelude::{ReadStorage, Read, WriteStorage};
 

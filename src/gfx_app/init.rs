@@ -12,7 +12,7 @@ use gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
 use gfx_app::renderer::{DeviceRenderer, EncoderQueue};
 use gfx_app::system::DrawSystem;
 use graphics;
-use graphics::{DeltaTime, Dimensions};
+use graphics::{DeltaTime, dimensions::Dimensions};
 use graphics::camera::CameraControlSystem;
 use hud;
 use shaders::Position;

@@ -1,60 +1,22 @@
 use bullet::BulletDrawable;
 use cgmath;
-use cgmath::{Angle, Deg, Matrix4, Point2, Point3, Vector3};
+use cgmath::{Angle, Deg, Point2};
 use character::CharacterDrawable;
 use game::constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W};
 use gfx_app::{mouse_controls::MouseInputState};
-use graphics::orientation::Orientation;
-use shaders::{Position, Projection};
+use graphics::{dimensions::Dimensions, orientation::Orientation};
+use shaders::Position;
 use terrain_object::TerrainObjectDrawable;
 use zombie::ZombieDrawable;
 
 pub mod camera;
+pub mod dimensions;
 mod graphics_test;
 pub mod orientation;
 pub mod texture;
 
 #[derive(Debug, Default)]
 pub struct DeltaTime(pub f64);
-
-#[derive(Clone, Debug, Default)]
-pub struct Dimensions {
-  pub window_width: f32,
-  pub window_height: f32,
-  pub hidpi_factor: f32,
-}
-
-impl Dimensions {
-  pub fn new(window_width: f32, window_height: f32, hidpi_factor: f32) -> Dimensions {
-    Dimensions {
-      window_width,
-      window_height,
-      hidpi_factor,
-    }
-  }
-
-  pub fn world_to_projection(&self, input: &camera::CameraInputState) -> Projection {
-    let view: Matrix4<f32> = get_view_matrix(input.distance);
-    let aspect_ratio = self.window_width / self.window_height;
-    get_projection(view, aspect_ratio)
-  }
-}
-
-pub fn get_projection(view: Matrix4<f32>, aspect_ratio: f32) -> Projection {
-  Projection {
-    model: view.into(),
-    view: view.into(),
-    proj: cgmath::perspective(cgmath::Deg(75.0f32), aspect_ratio, 0.1, 4000.0).into(),
-  }
-}
-
-pub fn get_view_matrix(view: f32) -> Matrix4<f32> {
-  Matrix4::look_at(
-    Point3::new(0.0, 0.0, view),
-    Point3::new(0.0, 0.0, 0.0),
-    Vector3::unit_y(),
-  )
-}
 
 pub fn flip_y_axel(point: Point2<f32>) -> Point2<f32> {
   Point2::new(point.x, RESOLUTION_Y as f32 - point.y)
