@@ -73,11 +73,11 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
                      WriteStorage<'a, terrain_object::terrain_objects::TerrainObjects>,
                      Read<'a, DeltaTime>);
 
-  fn run(&mut self, (mut terrain, mut character, mut character_sprite, text, mut zombies, mut bullets, mut terrain_objects, d): Self::SystemData) {
+  fn run(&mut self, (mut terrain, mut character, mut character_sprite, text, mut zombies, mut bullets, mut terrain_objects, dt): Self::SystemData) {
     use specs::join::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
 
-    let delta = d.0;
+    let delta = dt.0;
 
     if self.cool_down == 0.0 {
       self.cool_down += 0.05;
