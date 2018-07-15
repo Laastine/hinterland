@@ -106,10 +106,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
   }
 
   fn get_viewport_size(&mut self) -> (f32, f32) {
-    let viewport = self.window
-        .get_inner_size()
-        .unwrap_or((RESOLUTION_X, RESOLUTION_Y));
-    ((viewport.0 as f32), (viewport.1 as f32))
+    (RESOLUTION_X as f32, RESOLUTION_Y as f32)
   }
 
   fn get_device(&mut self) -> &mut gfx_device_gl::Device {
