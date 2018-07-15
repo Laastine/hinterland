@@ -33,7 +33,10 @@ impl GlutinWindow {
       .with_title("Hinterland");
 
     let builder = if cfg!(feature = "windowed") {
-      window_title.with_dimensions(RESOLUTION_X, RESOLUTION_Y)
+      window_title
+        .with_dimensions(RESOLUTION_X, RESOLUTION_Y)
+        .with_min_dimensions(RESOLUTION_X, RESOLUTION_Y)
+        .with_max_dimensions(RESOLUTION_X, RESOLUTION_Y)
     } else {
       let monitor = {
         events_loop.get_available_monitors().nth(0).expect("Please enter a valid ID")
@@ -131,7 +134,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
   fn poll_events(&mut self) -> WindowStatus {
     use glutin::KeyboardInput;
     use glutin::MouseButton;
-    use glutin::WindowEvent::{Resized, CloseRequested, CursorMoved, MouseInput};
+    use glutin::WindowEvent::{CloseRequested, CursorMoved, MouseInput};
     use glutin::ElementState::{Pressed, Released};
     use glutin::VirtualKeyCode::{Escape, Z, X, W, A, S, D};
 
@@ -139,10 +142,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
       Some(ref mut c) => c,
       None => panic!("Terrain controls have not been initialized"),
     };
-    let window = &self.window;
 
-    let m_rtv = &mut self.render_target_view;
-    let m_dsv = &mut self.depth_stencil_view;
     let m_pos = &mut self.mouse_pos;
 
     let mut game_status = WindowStatus::Open;
@@ -225,11 +225,6 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
             WindowStatus::Open
           }
           CloseRequested => WindowStatus::Close,
-          Resized(w, h) => {
-            window.resize(w, h);
-            gfx_window_glutin::update_views(&window, m_rtv, m_dsv);
-            WindowStatus::Open
-          }
           _ => WindowStatus::Open,
         }
       } else {
