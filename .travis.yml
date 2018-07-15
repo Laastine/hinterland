@@ -35,7 +35,6 @@ script:
   - cargo test
 
 before_deploy:
-  - mkdir -p hinterland
   - mkdir -p hinterland/assets
   - cp assets/*.png hinterland/assets
   - cp assets/*.json hinterland/assets
@@ -43,7 +42,7 @@ before_deploy:
   - cp -r assets/audio hinterland/assets
   - cp target/release/hinterland_bin hinterland
   - tar zcfv $PACKAGE_NAME hinterland
-  - rm -r hinterland
+  - rm -rf hinterland
 
 deploy:
   provider: releases
