@@ -42,7 +42,9 @@ impl GlutinWindow {
         events_loop.get_available_monitors().nth(0).expect("Please enter a valid ID")
       };
       window_title.with_fullscreen(Some(monitor))
-                  .with_dimensions(RESOLUTION_X, RESOLUTION_Y)
+        .with_dimensions(RESOLUTION_X, RESOLUTION_Y)
+        .with_min_dimensions(RESOLUTION_X, RESOLUTION_Y)
+        .with_max_dimensions(RESOLUTION_X, RESOLUTION_Y)
     };
 
     let context = glutin::ContextBuilder::new()
