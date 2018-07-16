@@ -55,7 +55,8 @@ impl GlutinWindow {
         opengl_version: (4, 1),
       });
 
-    let (window, device, factory, rtv, dsv) = gfx_window_glutin::init::<ColorFormat, DepthFormat>(builder, context, &events_loop);
+    let (window, device, factory, rtv, dsv) =
+      gfx_window_glutin::init::<ColorFormat, DepthFormat>(builder, context, &events_loop);
 
     GlutinWindow {
       window,
@@ -133,6 +134,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
   fn get_depth_stencil_view(&mut self) -> gfx::handle::DepthStencilView<gfx_device_gl::Resources, DepthFormat> {
     self.depth_stencil_view.clone()
   }
+
   fn poll_events(&mut self) -> WindowStatus {
     use glutin::KeyboardInput;
     use glutin::MouseButton;
