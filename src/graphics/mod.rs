@@ -18,6 +18,9 @@ pub mod texture;
 #[derive(Debug, Default)]
 pub struct DeltaTime(pub f64);
 
+#[derive(Debug, Default)]
+pub struct GameTime(pub u64);
+
 pub fn flip_y_axel(point: Point2<f32>) -> Point2<f32> {
   Point2::new(point.x, RESOLUTION_Y as f32 - point.y)
 }

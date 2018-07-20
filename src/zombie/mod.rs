@@ -7,7 +7,7 @@ use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, V
 use game::get_random_bool;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{calc_hypotenuse, camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, direction_movement, get_orientation, orientation::{Orientation, Stance}, overlaps, texture::load_texture};
+use graphics::{calc_hypotenuse, camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, direction_movement, GameTime, get_orientation, orientation::{Orientation, Stance}, overlaps, texture::load_texture};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
@@ -51,7 +51,8 @@ impl ZombieDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, dt: u64) {
+    println!("gametime {}", dt);
     self.projection = *world_to_clip;
 
     let offset_delta =
@@ -241,16 +242,17 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
                      ReadStorage<'a, Bullets>,
-                     Read<'a, Dimensions>);
+                     Read<'a, Dimensions>,
+                     Read<'a, GameTime>);
 
-  fn run(&mut self, (mut zombies, camera_input, character_input, bullets, dim): Self::SystemData) {
+  fn run(&mut self, (mut zombies, camera_input, character_input, bullets, dim, gt): Self::SystemData) {
     use specs::join::Join;
 
     for (zs, camera, ci, bs) in (&mut zombies, &camera_input, &character_input, &bullets).join() {
       let world_to_clip = dim.world_to_projection(camera);
 
       for z in &mut zs.zombies {
-        z.update(&world_to_clip, ci);
+        z.update(&world_to_clip, ci, gt.0);
         z.check_bullet_hits(&bs.bullets);
       }
     }

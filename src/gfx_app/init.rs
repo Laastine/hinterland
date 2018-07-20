@@ -6,13 +6,13 @@ use character;
 use character::controls::CharacterControlSystem;
 use critter::CharacterSprite;
 use gfx;
-use gfx_app::{WindowStatus, Window};
+use gfx_app::{Window, WindowStatus};
 use gfx_app::controls::TilemapControls;
 use gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
 use gfx_app::renderer::{DeviceRenderer, EncoderQueue};
 use gfx_app::system::DrawSystem;
 use graphics;
-use graphics::{DeltaTime, dimensions::Dimensions};
+use graphics::{DeltaTime, dimensions::Dimensions, GameTime};
 use graphics::camera::CameraControlSystem;
 use hud;
 use shaders::Position;
@@ -51,6 +51,7 @@ fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) 
   world.add_resource(character::controls::CharacterInputState::new());
   world.add_resource(MouseInputState::new());
   world.add_resource(DeltaTime(0.0));
+  world.add_resource(GameTime(0));
 
   world.create_entity()
        .with(terrain::TerrainDrawable::new())
@@ -101,6 +102,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
 
   window.set_controls(controls);
 
+  let start_time = time::Instant::now();
   let mut last_time = time::Instant::now();
   loop {
     let elapsed = last_time.elapsed();
@@ -111,6 +113,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     w.maintain();
 
     *w.write_resource::<DeltaTime>() = DeltaTime(delta);
+    *w.write_resource::<GameTime>() = GameTime(start_time.elapsed().as_secs());
 
     device_renderer.draw(window.get_device());
     window.swap_window();
