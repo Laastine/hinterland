@@ -1,5 +1,5 @@
 use bullet::{BulletDrawable, bullets::Bullets};
-use cgmath::Point2;
+use cgmath::{Angle, Deg, Point2};
 use character::controls::CharacterInputState;
 use critter::CritterData;
 use data;
@@ -51,8 +51,7 @@ impl ZombieDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, dt: u64) {
-    println!("gametime {}", dt);
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, game_time: u64) {
     self.projection = *world_to_clip;
 
     let offset_delta =
@@ -69,7 +68,7 @@ impl ZombieDrawable {
 
     let distance_to_player = calc_hypotenuse(x_y_distance_to_player.x.abs(), x_y_distance_to_player.y.abs());
 
-    let movement_speed = 1.4;
+    let mut movement_speed = 1.4;
 
     let is_alive = self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
 
@@ -79,12 +78,13 @@ impl ZombieDrawable {
       let dir = calc_next_movement(zombie_pos, self.previous_position) as f32;
       self.direction = get_orientation(dir);
 
-      if distance_to_player < 600.0 {
+      if distance_to_player < 400.0 {
         self.movement_direction = direction_movement(dir);
         self.stance = Stance::Walking;
+        movement_speed = 1.4;
       } else {
-        self.movement_direction = Point2::new(0.0, 0.0);
-        self.stance = Stance::Still;
+        self.movement_direction = self.idle_direction_movement(game_time);
+        movement_speed = 1.0;
       }
     } else {
       self.movement_direction = Point2::new(0.0, 0.0);
@@ -96,7 +96,24 @@ impl ZombieDrawable {
     ]);
   }
 
-  pub fn check_bullet_hits(&mut self, bullets: &[BulletDrawable]) {
+  fn idle_direction_movement(&mut self, game_time: u64) -> Point2<f32> {
+    if game_time % 5 == 0 {
+      self.stance = Stance::Still;
+      Point2::new(0.0, 0.0)
+    } else if game_time % 2 == 0 {
+      let angle = Deg(180.0);
+      self.stance = Stance::Walking;
+      self.direction = Orientation::Left;
+      Point2::new(Angle::cos(angle), Angle::sin(angle))
+    } else {
+      let angle = Deg(0.0);
+      self.stance = Stance::Walking;
+      self.direction = Orientation::Right;
+      Point2::new(Angle::cos(angle), Angle::sin(angle))
+    }
+  }
+
+  fn check_bullet_hits(&mut self, bullets: &[BulletDrawable]) {
     bullets.iter().for_each(|bullet| {
       if overlaps(self.position, bullet.position, 15.0, 15.0) && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
         self.stance =
