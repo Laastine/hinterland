@@ -3,8 +3,8 @@ use cgmath::{Angle, Deg, Point2};
 use character::controls::CharacterInputState;
 use critter::CritterData;
 use data;
+use game::{get_rand_from_range, get_random_bool};
 use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE, ZOMBIE_SHEET_TOTAL_WIDTH, ZOMBIE_STILL_SPRITE_OFFSET};
-use game::get_random_bool;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{calc_hypotenuse, camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, direction_movement, GameTime, get_orientation, orientation::{Orientation, Stance}, overlaps, texture::load_texture};
@@ -27,6 +27,7 @@ pub struct ZombieDrawable {
   orientation: Orientation,
   pub stance: Stance,
   direction: Orientation,
+  last_decision: u64,
   pub movement_direction: Point2<f32>,
   zombie_idx: usize,
   zombie_death_idx: usize,
@@ -44,6 +45,7 @@ impl ZombieDrawable {
       orientation: Orientation::Left,
       stance: Stance::Still,
       direction: Orientation::Left,
+      last_decision: 0,
       movement_direction: Point2::new(0.0, 0.0),
       zombie_idx: 0,
       zombie_death_idx: 0,
@@ -75,10 +77,9 @@ impl ZombieDrawable {
     if is_alive {
       let zombie_pos = Position::new([ci.x_movement - self.position.position[0], ci.y_movement - self.position.position[1]]);
 
-      let dir = calc_next_movement(zombie_pos, self.previous_position) as f32;
-      self.direction = get_orientation(dir);
-
-      if distance_to_player < 400.0 {
+      if distance_to_player < 300.0 {
+        let dir = calc_next_movement(zombie_pos, self.previous_position) as f32;
+        self.direction = get_orientation(dir);
         self.movement_direction = direction_movement(dir);
         self.stance = Stance::Walking;
         movement_speed = 1.4;
@@ -100,16 +101,16 @@ impl ZombieDrawable {
     if game_time % 5 == 0 {
       self.stance = Stance::Still;
       Point2::new(0.0, 0.0)
-    } else if game_time % 2 == 0 {
-      let angle = Deg(180.0);
+    } else if self.last_decision + 2 < game_time && game_time % 2 == 0 {
       self.stance = Stance::Walking;
-      self.direction = Orientation::Left;
-      Point2::new(Angle::cos(angle), Angle::sin(angle))
+      self.last_decision = game_time;
+      let directions: [f32; 8] = [0.0, 45.0, 90.0, 135.0, 180.0, 225.0, 270.0, 315.0];
+      let idx = get_rand_from_range(0, 7) as usize;
+      let angle = directions[idx];
+      self.direction = get_orientation(angle);
+      Point2::new(Angle::cos(Deg(angle)), Angle::sin(Deg(angle)))
     } else {
-      let angle = Deg(0.0);
-      self.stance = Stance::Walking;
-      self.direction = Orientation::Right;
-      Point2::new(Angle::cos(angle), Angle::sin(angle))
+      self.movement_direction
     }
   }
 
