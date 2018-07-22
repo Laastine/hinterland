@@ -78,13 +78,13 @@ impl ZombieDrawable {
       let zombie_pos = Position::new([ci.x_movement - self.position.position[0], ci.y_movement - self.position.position[1]]);
 
       if distance_to_player < 300.0 {
-        let dir = calc_next_movement(zombie_pos, self.previous_position) as f32;
+        let dir = calc_next_movement(zombie_pos, self.previous_position, (0, 0)) as f32;
         self.direction = get_orientation(dir);
         self.movement_direction = direction_movement(dir);
         self.stance = Stance::Walking;
         movement_speed = 1.4;
       } else {
-        self.movement_direction = self.idle_direction_movement(game_time);
+        self.idle_direction_movement(zombie_pos, game_time);
         movement_speed = 1.0;
       }
     } else {
@@ -97,20 +97,18 @@ impl ZombieDrawable {
     ]);
   }
 
-  fn idle_direction_movement(&mut self, game_time: u64) -> Point2<f32> {
+  fn idle_direction_movement(&mut self, zombie_pos: Position, game_time: u64) {
     if game_time % 5 == 0 {
       self.stance = Stance::Still;
-      Point2::new(0.0, 0.0)
+      self.movement_direction = Point2::new(0.0, 0.0)
     } else if self.last_decision + 2 < game_time && game_time % 2 == 0 {
       self.stance = Stance::Walking;
       self.last_decision = game_time;
-      let directions: [f32; 8] = [0.0, 45.0, 90.0, 135.0, 180.0, 225.0, 270.0, 315.0];
-      let idx = get_rand_from_range(0, 7) as usize;
-      let angle = directions[idx];
-      self.direction = get_orientation(angle);
-      Point2::new(Angle::cos(Deg(angle)), Angle::sin(Deg(angle)))
-    } else {
-      self.movement_direction
+      let offset = (get_rand_from_range(-4, 4), get_rand_from_range(-4, 4));
+      let dir = calc_next_movement(zombie_pos, self.previous_position, offset) as f32;
+      self.movement_direction = direction_movement(dir);
+      self.direction = get_orientation(dir);
+      self.movement_direction = Point2::new(Angle::cos(Deg(dir)), Angle::sin(Deg(dir)))
     }
   }
 
