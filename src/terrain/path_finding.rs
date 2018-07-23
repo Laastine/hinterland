@@ -53,11 +53,11 @@ pub fn calc_route(start_point: Position, end_point: Position, offset: (i32, i32)
 pub fn calc_next_movement(start_point: Position, end_point: Position, offset: (i32, i32)) -> i32 {
   let next_step: Point2<i32> = calc_route(start_point, end_point, offset, &TERRAIN_OBJECTS)
     .map_or_else(|| Point2::new(0, 0),
-                 |(route, _)| {
+                 |(route, ..)| {
                    if route.len() > 1 {
-                     Point2::new(route[1].x, route[1].y)
+                     route[1]
                    } else {
-                     Point2::new(route[0].x, route[0].y)
+                     route[0]
                    }
                  });
 

@@ -1,5 +1,5 @@
 use bullet::{BulletDrawable, bullets::Bullets};
-use cgmath::{Angle, Deg, Point2};
+use cgmath::Point2;
 use character::controls::CharacterInputState;
 use critter::CritterData;
 use data;
@@ -100,15 +100,15 @@ impl ZombieDrawable {
   fn idle_direction_movement(&mut self, zombie_pos: Position, game_time: u64) {
     if game_time % 5 == 0 {
       self.stance = Stance::Still;
+      self.last_decision = game_time;
       self.movement_direction = Point2::new(0.0, 0.0)
-    } else if self.last_decision + 2 < game_time && game_time % 2 == 0 {
+    } else if self.last_decision + 2 < game_time {
       self.stance = Stance::Walking;
       self.last_decision = game_time;
       let offset = (get_rand_from_range(-4, 4), get_rand_from_range(-4, 4));
       let dir = calc_next_movement(zombie_pos, self.previous_position, offset) as f32;
       self.movement_direction = direction_movement(dir);
       self.direction = get_orientation(dir);
-      self.movement_direction = Point2::new(Angle::cos(Deg(dir)), Angle::sin(Deg(dir)))
     }
   }
 

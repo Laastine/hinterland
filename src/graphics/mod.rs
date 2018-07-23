@@ -130,7 +130,3 @@ pub enum Drawables<'b> {
   TerrainTree(&'b TerrainObjectDrawable),
   Zombie(&'b mut ZombieDrawable),
 }
-
-pub trait DrawOrder {
-  fn get_zindex(&self) -> (f32, Drawables, &Self);
-}
