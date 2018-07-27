@@ -7,8 +7,8 @@ pub const TILES_PCS_H: usize = 64;
 pub const TILE_MAP_BUF_LENGTH: usize = 4096;
 pub const CHARACTER_BUF_LENGTH: usize = 224;
 
-pub const RESOLUTION_X: u32 = 1920;
-pub const RESOLUTION_Y: u32 = 1080;
+pub const RESOLUTION_X: u32 = 1600;
+pub const RESOLUTION_Y: u32 = 900;
 
 pub const ASPECT_RATIO: f32 = (RESOLUTION_X / RESOLUTION_Y) as f32;
 
