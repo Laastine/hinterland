@@ -1,4 +1,5 @@
 use gfx;
+use std::ops::Add;
 
 gfx_defines! {
   constant TileMapData {
@@ -100,4 +101,12 @@ impl TileMapData {
 
 impl Position {
   pub fn new(position: [f32; 2]) -> Position { Position { position } }
+}
+
+impl Add for Position {
+  type Output = Position;
+
+  fn add(self, other: Position) -> Position {
+    Position::new([self.position[0] + other.position[0], self.position[1] + other.position[1]])
+  }
 }
