@@ -53,7 +53,7 @@ impl ZombieDrawable {
     ZombieDrawable {
       projection,
       position,
-      previous_position: Position::new([0.0, 0.0]),
+      previous_position: Position::new(0.0, 0.0),
       orientation: Orientation::Left,
       stance: Stance::Still,
       direction: Orientation::Left,
@@ -70,12 +70,11 @@ impl ZombieDrawable {
     self.projection = *world_to_clip;
 
     let offset_delta =
-      Position::new([
+      Position::new(
         ci.x_movement - self.previous_position.position[0],
-        ci.y_movement - self.previous_position.position[1]
-      ]);
+        ci.y_movement - self.previous_position.position[1]);
 
-    self.previous_position = Position::new([ci.x_movement, ci.y_movement]);
+    self.previous_position = Position::new(ci.x_movement, ci.y_movement);
 
     let x_y_distance_to_player = Point2::new(
       self.position.position[0] - offset_delta.position[0],
@@ -86,7 +85,7 @@ impl ZombieDrawable {
     let is_alive = self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
 
     if is_alive {
-      let zombie_pos = Position::new([ci.x_movement - self.position.position[0], ci.y_movement - self.position.position[1]]);
+      let zombie_pos = Position::new(ci.x_movement - self.position.position[0], ci.y_movement - self.position.position[1]);
 
       if distance_to_player < 3.0 {
         let dir = calc_next_movement(zombie_pos, self.previous_position) as f32;
@@ -102,10 +101,9 @@ impl ZombieDrawable {
       self.movement_direction = Point2::new(0.0, 0.0);
     }
 
-    self.position = Position::new([
+    self.position = Position::new(
       self.movement_direction.x * self.movement_speed,
-      self.movement_direction.y * self.movement_speed
-    ]) + self.position + offset_delta;
+      self.movement_direction.y * self.movement_speed) + self.position + offset_delta;
   }
 
   fn idle_direction_movement(&mut self, zombie_pos: Position, game_time: u64) {

@@ -130,7 +130,7 @@ pub fn tile_to_coords(tile: Point2<u32>) -> Position {
   let new_tile = Point2::new(tile.x as f32, tile.y as f32);
   let x = round(new_tile.x * TILE_WIDTH - new_tile.y / TILE_WIDTH, 3);
   let y = round(new_tile.y * TILE_WIDTH - new_tile.x / TILE_WIDTH, 3);
-  Position::new([-x, y - 1500.0])
+  Position::new(-x, y - 1500.0)
 }
 
 fn round(number: f32, precision: usize) -> f32 {
@@ -141,11 +141,11 @@ fn round(number: f32, precision: usize) -> f32 {
 
 pub fn add_random_offset_to_screen_pos(pos: Position) -> Position {
   fn iter(pos: Position) -> Position {
-    let offset = Position::new([get_rand_from_range(-2, 2) as f32, get_rand_from_range(-2, 2) as f32]);
+    let offset = Position::new(get_rand_from_range(-2, 2) as f32, get_rand_from_range(-2, 2) as f32);
     let tile_width = TILE_WIDTH;
     let x = round(offset.position[0] * tile_width - offset.position[1] / tile_width, 3);
     let y = round(offset.position[1] * tile_width - offset.position[1] / tile_width, 3);
-    let offset_point = Position::new([x, y]);
+    let offset_point = Position::new(x, y);
     pos + offset_point
   }
   let mut path_find_error = 0;

@@ -28,8 +28,8 @@ impl TerrainObjectDrawable {
     TerrainObjectDrawable {
       projection,
       position,
-      previous_position: Position::new([0.0, 0.0]),
-      offset_delta: Position::new([0.0, 0.0]),
+      previous_position: Position::new(0.0, 0.0),
+      offset_delta: Position::new(0.0, 0.0),
     }
   }
 
@@ -37,17 +37,11 @@ impl TerrainObjectDrawable {
     self.projection = *world_to_clip;
 
     let offset_delta =
-      Position::new([ci.x_movement - self.previous_position.position[0], ci.y_movement - self.previous_position.position[1]]);
+      Position::new(ci.x_movement - self.previous_position.position[0], ci.y_movement - self.previous_position.position[1]);
 
-    self.previous_position = Position::new([
-      ci.x_movement,
-      ci.y_movement
-    ]);
+    self.previous_position = Position::new(ci.x_movement, ci.y_movement);
 
-    self.position = Position::new([
-      self.position.position[0] + offset_delta.position[0],
-      self.position.position[1] + offset_delta.position[1],
-    ]);
+    self.position = Position::new(self.position.position[0] + offset_delta.position[0], self.position.position[1] + offset_delta.position[1]);
   }
 }
 

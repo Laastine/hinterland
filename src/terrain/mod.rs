@@ -28,13 +28,13 @@ impl TerrainDrawable {
     let projection = get_projection(view, ASPECT_RATIO);
     TerrainDrawable {
       projection,
-      position: Position::new([0.0, 0.0]),
+      position: Position::new(0.0, 0.0),
     }
   }
 
   pub fn update(&mut self, world_to_clip: &Projection, ci: &mut CharacterInputState) {
     self.projection = *world_to_clip;
-    let new_position = Position::new([ci.x_movement, ci.y_movement]);
+    let new_position = Position::new(ci.x_movement, ci.y_movement);
     if can_move_to_tile(new_position) {
       ci.is_colliding = false;
       self.position = new_position;

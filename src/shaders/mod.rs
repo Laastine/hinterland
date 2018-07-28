@@ -1,4 +1,6 @@
+use cgmath::BaseFloat;
 use gfx;
+use std;
 use std::{fmt::{Display, Formatter, Result}, ops::Add};
 
 gfx_defines! {
@@ -100,14 +102,16 @@ impl TileMapData {
 }
 
 impl Position {
-  pub fn new(position: [f32; 2]) -> Position { Position { position } }
+  pub fn new<T: BaseFloat>(x: T, y: T) -> Position where f32: std::convert::From<T> {
+    Position { position: [f32::from(x), f32::from(y)] }
+  }
 }
 
 impl Add for Position {
   type Output = Position;
 
   fn add(self, other: Position) -> Position {
-    Position::new([self.position[0] + other.position[0], self.position[1] + other.position[1]])
+    Position::new(self.position[0] + other.position[0], self.position[1] + other.position[1])
   }
 }
 

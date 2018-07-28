@@ -32,7 +32,7 @@ impl CharacterDrawable {
     let projection = get_projection(view, ASPECT_RATIO);
     CharacterDrawable {
       projection,
-      position: Position::new([0.0, 0.0]),
+      position: Position::new(0.0, 0.0),
       orientation: Orientation::Right,
       stance: Stance::Walking,
       direction: Orientation::Right,
@@ -50,8 +50,8 @@ impl CharacterDrawable {
     if !cfg!(feature = "godmode") && zombies.iter()
               .any(|z|
                 zombie_not_dead(z) &&
-                  overlaps(Position::new([ci.x_movement, ci.y_movement]),
-                           Position::new([ci.x_movement - z.position.position[0], ci.y_movement - z.position.position[1]]),
+                  overlaps(Position::new(ci.x_movement, ci.y_movement),
+                           Position::new(ci.x_movement - z.position.position[0], ci.y_movement - z.position.position[1]),
                            10.0,
                            20.0)) {
       self.stance = Stance::NormalDeath;

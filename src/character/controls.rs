@@ -31,7 +31,7 @@ impl CharacterInputState {
         self.orientation = Orientation::Still;
     } else if css.x_move.is_none() {
       if let Some(y) = css.y_move {
-        let vert_move = Position::new([self.x_movement, self.y_movement + y]);
+        let vert_move = Position::new(self.x_movement, self.y_movement + y);
         if !self.is_colliding || can_move_to_tile(vert_move) {
           self.y_movement += y;
           camera.y_pos -= y;
@@ -43,9 +43,9 @@ impl CharacterInputState {
         }
       }
     } else if let Some(x) = css.x_move {
-      let horizontal_move  = Position::new([self.x_movement + x, self.y_movement]);
+      let horizontal_move  = Position::new(self.x_movement + x, self.y_movement);
       if let Some(y) = css.y_move {
-        let diag_move = Position::new([self.x_movement + x, self.y_movement + y]);
+        let diag_move = Position::new(self.x_movement + x, self.y_movement + y);
         if !self.is_colliding || can_move_to_tile(diag_move) {
           self.x_movement += x / 1.5;
           self.y_movement += y / 1.5;

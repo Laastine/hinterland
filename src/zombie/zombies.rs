@@ -11,25 +11,25 @@ impl Zombies {
   pub fn new() -> Zombies {
     Zombies {
       zombies: vec![
-        ZombieDrawable::new(Position::new([200.0, 10.0])),
-        ZombieDrawable::new(Position::new([-200.0, 10.0])),
-        ZombieDrawable::new(Position::new([10.0, 200.0])),
-        ZombieDrawable::new(Position::new([10.0, -200.0])),
+        ZombieDrawable::new(Position::new(200.0, 10.0)),
+        ZombieDrawable::new(Position::new(-200.0, 10.0)),
+        ZombieDrawable::new(Position::new(10.0, 200.0)),
+        ZombieDrawable::new(Position::new(10.0, -200.0)),
 
-        ZombieDrawable::new(Position::new([500.0, 40.0])),
-        ZombieDrawable::new(Position::new([-500.0, 40.0])),
-        ZombieDrawable::new(Position::new([40.0, 500.0])),
-        ZombieDrawable::new(Position::new([40.0, -500.0])),
+        ZombieDrawable::new(Position::new(500.0, 40.0)),
+        ZombieDrawable::new(Position::new(-500.0, 40.0)),
+        ZombieDrawable::new(Position::new(40.0, 500.0)),
+        ZombieDrawable::new(Position::new(40.0, -500.0)),
 
-        ZombieDrawable::new(Position::new([700.0, 60.0])),
-        ZombieDrawable::new(Position::new([-900.0, 60.0])),
-        ZombieDrawable::new(Position::new([60.0, 700.0])),
-        ZombieDrawable::new(Position::new([60.0, -700.0])),
+        ZombieDrawable::new(Position::new(700.0, 60.0)),
+        ZombieDrawable::new(Position::new(-900.0, 60.0)),
+        ZombieDrawable::new(Position::new(60.0, 700.0)),
+        ZombieDrawable::new(Position::new(60.0, -700.0)),
 
-        ZombieDrawable::new(Position::new([800.0, 160.0])),
-        ZombieDrawable::new(Position::new([-1000.0, 160.0])),
-        ZombieDrawable::new(Position::new([160.0, 800.0])),
-        ZombieDrawable::new(Position::new([160.0, -800.0]))
+        ZombieDrawable::new(Position::new(800.0, 160.0)),
+        ZombieDrawable::new(Position::new(-1000.0, 160.0)),
+        ZombieDrawable::new(Position::new(160.0, 800.0)),
+        ZombieDrawable::new(Position::new(160.0, -800.0)),
       ]
     }
   }

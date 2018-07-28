@@ -12,13 +12,13 @@ impl TerrainObjects {
   pub fn new() -> TerrainObjects {
     TerrainObjects {
       objects: vec![
-        TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[0])),
-        TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[1])),
-        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[0])),
-        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[1])),
-        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[2])),
-        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[3])),
-        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[4])),
+        TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[0][0], HOUSE_POSITIONS[0][1])),
+        TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[1][0], HOUSE_POSITIONS[1][1])),
+        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[0][0], TREE_POSITIONS[0][1])),
+        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[1][0], TREE_POSITIONS[1][1])),
+        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[2][0], TREE_POSITIONS[2][1])),
+        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[3][0], TREE_POSITIONS[3][1])),
+        TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[4][0], TREE_POSITIONS[4][1])),
       ]
     }
   }
