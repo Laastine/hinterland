@@ -1,5 +1,5 @@
 use gfx;
-use std::ops::Add;
+use std::{fmt::{Display, Formatter, Result}, ops::Add};
 
 gfx_defines! {
   constant TileMapData {
@@ -108,5 +108,11 @@ impl Add for Position {
 
   fn add(self, other: Position) -> Position {
     Position::new([self.position[0] + other.position[0], self.position[1] + other.position[1]])
+  }
+}
+
+impl Display for Position {
+  fn fmt(&self, f: &mut Formatter) -> Result {
+    write!(f, "{}, {}", self.position[0], self.position[1])
   }
 }
