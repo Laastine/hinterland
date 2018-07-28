@@ -47,7 +47,7 @@ impl CharacterDrawable {
       z.stance != Stance::CriticalDeath
     }
 
-    if zombies.iter()
+    if !cfg!(feature = "godmode") && zombies.iter()
               .any(|z|
                 zombie_not_dead(z) &&
                   overlaps(Position::new([ci.x_movement, ci.y_movement]),

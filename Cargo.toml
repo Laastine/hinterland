@@ -26,5 +26,6 @@ specs = "0.12.0"
 tiled = "0.8.0"
 
 [features]
-windowed = []
+godmode = []
 framerate = []
+windowed = []
