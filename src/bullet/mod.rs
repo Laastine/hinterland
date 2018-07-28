@@ -58,10 +58,10 @@ impl BulletDrawable {
       ci.x_movement - (self.movement_direction.x * BULLET_SPEED / (5.0/3.0)),
       ci.y_movement + (self.movement_direction.y * BULLET_SPEED)]);
 
-    self.position =
+    self.position = self.position + self.offset_delta +
       Position::new([
-        self.position.position[0] + self.offset_delta.position[0] + (self.movement_direction.x * BULLET_SPEED / (5.0/3.0)),
-        self.position.position[1] + self.offset_delta.position[1] - (self.movement_direction.y * BULLET_SPEED)
+        (self.movement_direction.x * BULLET_SPEED / (5.0/3.0)),
+        (-self.movement_direction.y * BULLET_SPEED)
       ]);
 
     let tile_pos = Position::new([ci.x_movement - self.position.position[0], ci.y_movement - self.position.position[1]]);

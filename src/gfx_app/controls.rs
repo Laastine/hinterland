@@ -77,5 +77,7 @@ impl TilemapControls {
       _ => self.ac(Effects::None),
     }
   }
-  pub fn mouse_right_click(&mut self, mouse_pos: Option<(f64, f64)>) { self.mc(MouseControl::RightClick, mouse_pos) }
+  pub fn mouse_right_click(&mut self, mouse_pos: Option<(f64, f64)>) {
+    self.mc(MouseControl::RightClick, mouse_pos)
+  }
 }
