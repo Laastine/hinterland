@@ -57,7 +57,7 @@ impl ZombieDrawable {
       orientation: Orientation::Left,
       stance: Stance::Still,
       direction: Orientation::Left,
-      last_decision: 2,
+      last_decision: 0,
       movement_direction: Point2::new(0.0, 0.0),
       zombie_idx: 0,
       zombie_death_idx: 0,
@@ -113,7 +113,7 @@ impl ZombieDrawable {
       self.orientation = orientation_to_direction(dir);
     }
 
-    if self.last_decision + 2 < game_time {
+    if self.last_decision + 2 < game_time || game_time == 0 {
       self.stance = Stance::Walking;
       self.last_decision = game_time;
       let end_point = add_random_offset_to_screen_pos(zombie_pos);
