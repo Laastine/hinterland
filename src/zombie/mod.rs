@@ -3,11 +3,22 @@ use cgmath::Point2;
 use character::controls::CharacterInputState;
 use critter::CritterData;
 use data;
-use game::{get_rand_from_range, get_random_bool};
 use game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE, ZOMBIE_SHEET_TOTAL_WIDTH, ZOMBIE_STILL_SPRITE_OFFSET};
+use game::get_random_bool;
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{calc_hypotenuse, camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, direction_movement, GameTime, get_orientation, orientation::{Orientation, Stance}, overlaps, texture::load_texture};
+use graphics::{add_random_offset_to_screen_pos,
+               calc_hypotenuse,
+               can_move_to_tile,
+               camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix},
+               direction,
+               direction_movement,
+               direction_movement_180,
+               GameTime,
+               orientation::{Orientation, Stance},
+               orientation_to_direction,
+               overlaps,
+               texture::load_texture};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
@@ -32,6 +43,7 @@ pub struct ZombieDrawable {
   zombie_idx: usize,
   zombie_death_idx: usize,
   is_colliding: bool,
+  movement_speed: f32,
 }
 
 impl ZombieDrawable {
@@ -45,11 +57,12 @@ impl ZombieDrawable {
       orientation: Orientation::Left,
       stance: Stance::Still,
       direction: Orientation::Left,
-      last_decision: 0,
+      last_decision: 2,
       movement_direction: Point2::new(0.0, 0.0),
       zombie_idx: 0,
       zombie_death_idx: 0,
       is_colliding: false,
+      movement_speed: 0.0,
     }
   }
 
@@ -70,45 +83,45 @@ impl ZombieDrawable {
 
     let distance_to_player = calc_hypotenuse(x_y_distance_to_player.x.abs(), x_y_distance_to_player.y.abs());
 
-    let mut movement_speed = 1.4;
-
     let is_alive = self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
 
     if is_alive {
       let zombie_pos = Position::new([ci.x_movement - self.position.position[0], ci.y_movement - self.position.position[1]]);
 
-      if distance_to_player < 300.0 {
-        let dir = calc_next_movement(zombie_pos, self.previous_position, (0, 0)) as f32;
-        self.direction = get_orientation(dir);
+      if distance_to_player < 3.0 {
+        let dir = calc_next_movement(zombie_pos, self.previous_position) as f32;
+        self.direction = orientation_to_direction(dir);
         self.movement_direction = direction_movement(dir);
         self.stance = Stance::Walking;
-        movement_speed = 1.4;
+        self.movement_speed = 1.4;
       } else {
         self.idle_direction_movement(zombie_pos, game_time);
-        movement_speed = 1.0;
+        self.movement_speed = 1.0;
       }
     } else {
       self.movement_direction = Point2::new(0.0, 0.0);
     }
 
     self.position = Position::new([
-      self.position.position[0] + offset_delta.position[0] + (self.movement_direction.x * movement_speed),
-      self.position.position[1] + offset_delta.position[1] + (self.movement_direction.y * movement_speed)
-    ]);
+      self.movement_direction.x * self.movement_speed,
+      self.movement_direction.y * self.movement_speed
+    ]) + self.position + offset_delta;
   }
 
   fn idle_direction_movement(&mut self, zombie_pos: Position, game_time: u64) {
-    if game_time % 5 == 0 {
-      self.stance = Stance::Still;
-      self.last_decision = game_time;
-      self.movement_direction = Point2::new(0.0, 0.0)
-    } else if self.last_decision + 2 < game_time {
+    if !can_move_to_tile(zombie_pos) {
+      let dir = direction(Point2::new(0.0, 0.0), self.movement_direction);
+      self.movement_direction = direction_movement_180(self.movement_direction);
+      self.orientation = orientation_to_direction(dir);
+    }
+
+    if self.last_decision + 2 < game_time {
       self.stance = Stance::Walking;
       self.last_decision = game_time;
-      let offset = (get_rand_from_range(-4, 4), get_rand_from_range(-4, 4));
-      let dir = calc_next_movement(zombie_pos, self.previous_position, offset) as f32;
+      let end_point = add_random_offset_to_screen_pos(zombie_pos);
+      let dir = calc_next_movement(zombie_pos, end_point) as f32;
       self.movement_direction = direction_movement(dir);
-      self.direction = get_orientation(dir);
+      self.direction = orientation_to_direction(dir);
     }
   }
 

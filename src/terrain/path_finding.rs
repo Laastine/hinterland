@@ -36,12 +36,11 @@ fn find_next_best_endpoint<'c>(end_point: &'c Point2<i32>, impassable_tiles: &[[
   }
 }
 
-pub fn calc_route(start_point: Position, end_point: Position, offset: (i32, i32), impassable_tiles: &[[usize; 2]]) -> Option<(Vec<Point2<i32>>, i32)> {
+pub fn calc_route(start_point: Position, end_point: Position, impassable_tiles: &[[usize; 2]]) -> Option<(Vec<Point2<i32>>, i32)> {
   let mut neighbour_tiles = vec![];
   let end_point_with_offset = coords_to_tile_offset(end_point);
 
-  let start_tile = coords_to_tile_offset(start_point);
-  let start = Point2::new(start_tile.x + offset.0, start_tile.y + offset.1);
+  let start = coords_to_tile_offset(start_point);
   let end = find_next_best_endpoint(&end_point_with_offset, &impassable_tiles, &mut neighbour_tiles);
 
   astar(&start,
@@ -50,8 +49,8 @@ pub fn calc_route(start_point: Position, end_point: Position, offset: (i32, i32)
         |p: &Point2<i32>| p.x == end.x && p.y == end.y)
 }
 
-pub fn calc_next_movement(start_point: Position, end_point: Position, offset: (i32, i32)) -> i32 {
-  let next_step: Point2<i32> = calc_route(start_point, end_point, offset, &TERRAIN_OBJECTS)
+pub fn calc_next_movement(start_point: Position, end_point: Position) -> i32 {
+  let next_step: Point2<i32> = calc_route(start_point, end_point, &TERRAIN_OBJECTS)
     .map_or_else(|| Point2::new(0, 0),
                  |(route, ..)| {
                    if route.len() > 1 {

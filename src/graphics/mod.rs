@@ -2,7 +2,7 @@ use bullet::BulletDrawable;
 use cgmath;
 use cgmath::{Angle, Deg, Point2};
 use character::CharacterDrawable;
-use game::constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W};
+use game::{constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W}, get_rand_from_range};
 use gfx_app::{mouse_controls::MouseInputState};
 use graphics::{dimensions::Dimensions, orientation::Orientation};
 use shaders::Position;
@@ -36,7 +36,12 @@ pub fn direction_movement(direction: f32) -> Point2<f32> {
   Point2::new(Angle::cos(angle), Angle::sin(angle))
 }
 
-pub fn get_orientation(angle_in_degrees: f32) -> Orientation {
+pub fn direction_movement_180(movement_direction: Point2<f32>) -> Point2<f32> {
+  let angle = Deg(direction(Point2::new(0.0, 0.0), movement_direction) + 180.0);
+  Point2::new(Angle::cos(angle), Angle::sin(angle))
+}
+
+pub fn orientation_to_direction(angle_in_degrees: f32) -> Orientation {
   match angle_in_degrees as u32 {
     345 ... 360 | 0 ... 22 => Orientation::Right,
     23 ... 68 => Orientation::UpRight,
@@ -54,7 +59,7 @@ pub fn get_orientation_from_center(mouse_input: &MouseInputState, dim: &Dimensio
   if let Some(end_point_gl) = mouse_input.left_click_point {
     let start_point = Point2::new(dim.window_width / 2.0 * dim.hidpi_factor, dim.window_height / 2.0 * dim.hidpi_factor);
     let dir = direction(start_point, flip_y_axel(end_point_gl));
-    get_orientation(dir)
+    orientation_to_direction(dir)
   } else {
     Orientation::Right
   }
@@ -81,42 +86,80 @@ pub fn can_move(screen_pos: Position) -> bool {
   is_within_map_borders(point)
 }
 
-pub fn is_not_terrain_object(pos: Point2<usize>) -> bool {
-  !TERRAIN_OBJECTS.iter().any(|e| (e[0] == pos.x) && (e[1] == pos.y))
+pub fn is_not_terrain_object(pos: Point2<u32>) -> bool {
+  !TERRAIN_OBJECTS.iter().any(|e| (e[0] as u32 == pos.x) && (e[1] as u32 == pos.y))
 }
 
-fn is_map_tile(pos: Point2<usize>) -> bool {
-  pos.x >= 1usize && pos.y >= 1usize && pos.x < TILES_PCS_W && pos.y < TILES_PCS_H
+fn is_map_tile(pos: Point2<u32>) -> bool {
+  pos.x >= 1 && pos.y >= 1 && pos.x < TILES_PCS_W as u32 && pos.y < TILES_PCS_H as u32
 }
 
 pub fn can_move_to_tile(screen_pos: Position) -> bool {
-  let pos = coords_to_tile(screen_pos);
-  is_not_terrain_object(pos) && is_map_tile(pos)
+  let tile_pos = coords_to_tile(screen_pos);
+  is_not_terrain_object(tile_pos) && is_map_tile(tile_pos)
 }
 
-pub fn coords_to_tile(position: Position) -> Point2<usize> {
-  let tile_width = TILE_WIDTH;
+pub fn coords_to_tile(position: Position) -> Point2<u32> {
+  fn normalize(point: i32) -> i32 {
+    let tiles_amount = TILES_PCS_W as i32;
+    if point < 0 {
+      0
+    } else if point > tiles_amount {
+      tiles_amount
+    } else {
+      point
+    }
+  }
+
   let pos = Point2 {
     x: -position.position[0],
     y: position.position[1] + 1500.0,
   };
-  Point2::new((pos.x / tile_width + (pos.y / tile_width)) as usize,
-              (pos.y / tile_width - (pos.x / tile_width)) as usize)
+  let point = Point2::new((pos.x / TILE_WIDTH + (pos.y / TILE_WIDTH)) as i32,
+              (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32);
+  Point2::new(normalize(point.x) as u32, normalize(point.y) as u32)
 }
 
 pub fn coords_to_tile_offset(position: Position) -> Point2<i32> {
-  let tile_width = TILE_WIDTH;
   let pos = Point2::new(-position.position[0], position.position[1] + 1500.0);
-  Point2::new((pos.x / tile_width + (pos.y / tile_width)) as i32,
-              (pos.y / tile_width - (pos.x / tile_width)) as i32)
+  Point2::new((pos.x / TILE_WIDTH + (pos.y / TILE_WIDTH)) as i32,
+              (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32)
 }
 
-pub fn tile_to_coords(tile: Point2<usize>) -> Position {
-  let tile_width = TILE_WIDTH;
+pub fn tile_to_coords(tile: Point2<u32>) -> Position {
   let new_tile = Point2::new(tile.x as f32, tile.y as f32);
-  let point = Point2::new(new_tile.x * tile_width - new_tile.y / tile_width,
-                          new_tile.y * tile_width - new_tile.x / tile_width);
-  Position::new([-point.x, point.y - 1500.0])
+  let x = round(new_tile.x * TILE_WIDTH - new_tile.y / TILE_WIDTH, 3);
+  let y = round(new_tile.y * TILE_WIDTH - new_tile.x / TILE_WIDTH, 3);
+  Position::new([-x, y - 1500.0])
+}
+
+fn round(number: f32, precision: usize) -> f32 {
+  let ten = 10.0f64;
+  let divider = ten.powf(precision as f64) as f32;
+  (number * divider).round() / divider
+}
+
+pub fn add_random_offset_to_screen_pos(pos: Position) -> Position {
+  fn iter(pos: Position) -> Position {
+    let offset = Position::new([get_rand_from_range(-2, 2) as f32, get_rand_from_range(-2, 2) as f32]);
+    let tile_width = TILE_WIDTH;
+    let x = round(offset.position[0] * tile_width - offset.position[1] / tile_width, 3);
+    let y = round(offset.position[1] * tile_width - offset.position[1] / tile_width, 3);
+    let offset_point = Position::new([x, y]);
+    pos + offset_point
+  }
+  let mut path_find_error = 0;
+  loop {
+    let res = iter(pos);
+    if can_move_to_tile(res) {
+      return res
+    } else if path_find_error > 999 {
+      panic!("To many path finding errors");
+    } else {
+      path_find_error = path_find_error + 1;
+    }
+  }
+
 }
 
 pub fn calc_hypotenuse(a: f32, b: f32) -> f32 {

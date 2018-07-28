@@ -106,8 +106,23 @@ fn direction_movement_test() {
 #[test]
 fn tile_to_coords_test() {
   use cgmath::Point2;
-  use graphics;
+  use graphics::{coords_to_tile, tile_to_coords};
   use shaders::Position;
 
-  assert_eq!(Position::new([0.0, -1500.0]), graphics::tile_to_coords(Point2::new(0, 0)), "tile_to_coords_test");
+  let map_center = Position::new([0.0, -1500.0]);
+
+  assert_eq!(map_center, tile_to_coords(Point2::new(0, 0)), "tile_to_coords_test");
+
+  assert_eq!(map_center, tile_to_coords(coords_to_tile(map_center)), "tile_to_coords <-> coords_to_tile")
+}
+
+#[test]
+fn illegal_coords_test() {
+  use graphics::{coords_to_tile, tile_to_coords};
+  use shaders::Position;
+
+  let outside_of_map = Position::new([1407.3009, -229.70844]);
+  let inside_of_map = Position::new([1.261, 1168.0]);
+
+  assert_eq!(inside_of_map, tile_to_coords(coords_to_tile(outside_of_map)), "tile_to_coords_test");
 }
