@@ -28,7 +28,7 @@ cargo run --release
 
 ## Development
 
-Run windowed mode with `cargo run --features windowed`
+Run windowed mode with `cargo run --features "windowed godmode"`
 
 Tested with Rust 1.27 with macOS, Linux and Windows.<br/>
 
