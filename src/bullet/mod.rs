@@ -82,10 +82,10 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
     use gfx::traits::FactoryExt;
 
     let vertex_data: [VertexData; 4] = [
-        VertexData::new([-1.5, -1.5], [0.0, 1.0]),
-        VertexData::new([1.5, -1.5], [1.0, 1.0]),
-        VertexData::new([1.5, 1.5], [1.0, 0.0]),
-        VertexData::new([-1.5, 1.5], [0.0, 0.0]),
+        VertexData::new([-2.0, -2.0], [0.0, 1.0]),
+        VertexData::new([2.0, -2.0], [1.0, 1.0]),
+        VertexData::new([2.0, 2.0], [1.0, 0.0]),
+        VertexData::new([-2.0, 2.0], [0.0, 0.0]),
       ];
 
     let index_data: [u16; 6] = [0, 1, 2, 2, 3, 0];
