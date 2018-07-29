@@ -1,5 +1,6 @@
 use bullet::{BulletDrawable, collision::Collision};
 use cgmath;
+use shaders::Position;
 use specs;
 
 #[derive(Debug, Clone)]
@@ -14,7 +15,7 @@ impl Bullets {
     }
   }
 
-  pub fn add_bullet(&mut self, position: cgmath::Point2<f32>, movement_direction: cgmath::Point2<f32>) {
+  pub fn add_bullet(&mut self, position: Position, movement_direction: cgmath::Point2<f32>) {
     self.bullets.push(BulletDrawable::new(position, movement_direction));
   }
 

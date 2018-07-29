@@ -1,13 +1,13 @@
 use crossbeam_channel as channel;
 use game::constants::VIEW_DISTANCE;
+use shaders::Position;
 use specs;
 use specs::prelude::WriteStorage;
 
 #[derive(Clone, Debug)]
 pub struct CameraInputState {
   pub distance: f32,
-  pub x_pos: f32,
-  pub y_pos: f32,
+  pub movement: Position,
 }
 
 #[cfg_attr(feature = "cargo-clippy", allow(new_without_default_derive))]
@@ -15,8 +15,7 @@ impl CameraInputState {
   pub fn new() -> CameraInputState {
     CameraInputState {
       distance: VIEW_DISTANCE,
-      x_pos: 0.0,
-      y_pos: 0.0,
+      movement: Position::new(0.0, 0.0),
     }
   }
 }

@@ -1,6 +1,5 @@
 use bullet::bullets::Bullets;
 use bullet::collision::Collision;
-use cgmath;
 use cgmath::Point2;
 use character::controls::CharacterInputState;
 use game::constants::{ASPECT_RATIO, BULLET_SPEED, VIEW_DISTANCE};
@@ -30,12 +29,12 @@ pub struct BulletDrawable {
 }
 
 impl BulletDrawable {
-  pub fn new(position: cgmath::Point2<f32>, movement_direction: Point2<f32>) -> BulletDrawable {
+  pub fn new(position: Position, movement_direction: Point2<f32>) -> BulletDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
     let projection = get_projection(view, ASPECT_RATIO);
     BulletDrawable {
       projection,
-      position: Position::new(position.x, position.y),
+      position,
       previous_position: Position::new(0.0, 0.0),
       offset_delta: Position::new(0.0, 0.0),
       movement_direction,

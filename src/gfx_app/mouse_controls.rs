@@ -3,6 +3,7 @@ use cgmath::Point2;
 use character::controls::CharacterInputState;
 use crossbeam_channel as channel;
 use graphics::{camera::CameraInputState, dimensions::Dimensions, direction, direction_movement};
+use shaders::Position;
 use specs;
 use specs::prelude::{ReadStorage, Read, WriteStorage};
 
@@ -77,7 +78,7 @@ impl<'a> specs::prelude::System<'a> for MouseControlSystem {
                 let end_point = Point2::new(val.0 as f32, val.1 as f32);
                 mi.left_click_point = Some(end_point);
                 let movement_direction = direction_movement(direction(start_point, end_point));
-                Bullets::add_bullet(bs, Point2::new(-ca.x_pos, ca.y_pos), movement_direction);
+                Bullets::add_bullet(bs, Position::new(-ca.movement.x(), ca.movement.y()), movement_direction);
               }
             } else {
               mi.left_click_point = None;
