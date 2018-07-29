@@ -105,13 +105,21 @@ impl Position {
   pub fn new<T: BaseFloat>(x: T, y: T) -> Position where f32: std::convert::From<T> {
     Position { position: [f32::from(x), f32::from(y)] }
   }
+
+  pub fn x(self) -> f32 {
+    self.position[0]
+  }
+
+  pub fn y(self) -> f32 {
+    self.position[1]
+  }
 }
 
 impl Add for Position {
   type Output = Position;
 
   fn add(self, other: Position) -> Position {
-    Position::new(self.position[0] + other.position[0], self.position[1] + other.position[1])
+    Position::new(self.x() + other.x(), self.y() + other.y())
   }
 }
 
@@ -119,12 +127,12 @@ impl Sub for Position {
   type Output = Position;
 
   fn sub(self, other: Position) -> Position {
-    Position::new(self.position[0] - other.position[0], self.position[1] - other.position[1])
+    Position::new(self.x() - other.x(), self.y() - other.y())
   }
 }
 
 impl Display for Position {
   fn fmt(&self, f: &mut Formatter) -> Result {
-    write!(f, "{}, {}", self.position[0], self.position[1])
+    write!(f, "{}, {}", self.x(), self.y())
   }
 }

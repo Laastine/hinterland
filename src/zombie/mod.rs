@@ -75,7 +75,7 @@ impl ZombieDrawable {
 
     let x_y_distance_to_player = self.position - offset_delta;
 
-    let distance_to_player = calc_hypotenuse(x_y_distance_to_player.position[0].abs(), x_y_distance_to_player.position[1].abs());
+    let distance_to_player = calc_hypotenuse(x_y_distance_to_player.x().abs(), x_y_distance_to_player.y().abs());
 
     let is_alive = self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
 

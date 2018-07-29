@@ -66,10 +66,10 @@ pub fn get_orientation_from_center(mouse_input: &MouseInputState, dim: &Dimensio
 }
 
 pub fn overlaps(area: Position, el: Position, width: f32, height: f32) -> bool {
-  area.position[0] - width < el.position[0] &&
-    area.position[0] + width > el.position[0] &&
-    area.position[1] - height < el.position[1] &&
-    area.position[1] + height > el.position[1]
+  area.x() - width < el.x() &&
+    area.x() + width > el.x() &&
+    area.y() - height < el.y() &&
+    area.y() + height > el.y()
 }
 
 fn is_within_map_borders(point: Point2<f32>) -> bool {
@@ -78,8 +78,8 @@ fn is_within_map_borders(point: Point2<f32>) -> bool {
 
 pub fn can_move(screen_pos: Position) -> bool {
   let tile_width = TILE_WIDTH;
-  let x_coord = screen_pos.position[0];
-  let y_coord = screen_pos.position[1];
+  let x_coord = screen_pos.x();
+  let y_coord = screen_pos.y();
   let point = Point2::new(
     (x_coord / tile_width + y_coord / tile_width).round() + 31.0,
     (y_coord / tile_width - x_coord / tile_width).round() + 32.0);
@@ -112,8 +112,8 @@ pub fn coords_to_tile(position: Position) -> Point2<u32> {
   }
 
   let pos = Point2 {
-    x: -position.position[0],
-    y: position.position[1] + 1500.0,
+    x: -position.x(),
+    y: position.y() + 1500.0,
   };
   let point = Point2::new((pos.x / TILE_WIDTH + (pos.y / TILE_WIDTH)) as i32,
               (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32);
@@ -121,7 +121,7 @@ pub fn coords_to_tile(position: Position) -> Point2<u32> {
 }
 
 pub fn coords_to_tile_offset(position: Position) -> Point2<i32> {
-  let pos = Point2::new(-position.position[0], position.position[1] + 1500.0);
+  let pos = Point2::new(-position.x(), position.y() + 1500.0);
   Point2::new((pos.x / TILE_WIDTH + (pos.y / TILE_WIDTH)) as i32,
               (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32)
 }
@@ -143,8 +143,8 @@ pub fn add_random_offset_to_screen_pos(pos: Position) -> Position {
   fn iter(pos: Position) -> Position {
     let offset = Position::new(get_rand_from_range(-2, 2) as f32, get_rand_from_range(-2, 2) as f32);
     let tile_width = TILE_WIDTH;
-    let x = round(offset.position[0] * tile_width - offset.position[1] / tile_width, 3);
-    let y = round(offset.position[1] * tile_width - offset.position[1] / tile_width, 3);
+    let x = round(offset.x() * tile_width - offset.y() / tile_width, 3);
+    let y = round(offset.y() * tile_width - offset.y() / tile_width, 3);
     let offset_point = Position::new(x, y);
     pos + offset_point
   }

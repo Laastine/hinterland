@@ -47,16 +47,16 @@ impl BulletDrawable {
     self.projection = *world_to_clip;
 
     self.offset_delta =
-      if (ci.movement.position[0] - self.previous_position.position[0]).abs() > f32::EPSILON ||
-        (ci.movement.position[1] - self.previous_position.position[1]).abs() > f32::EPSILON {
+      if (ci.movement.x() - self.previous_position.x()).abs() > f32::EPSILON ||
+        (ci.movement.y() - self.previous_position.y()).abs() > f32::EPSILON {
         ci.movement - self.previous_position
       } else {
         self.offset_delta
       };
 
     self.previous_position = Position::new(
-      ci.movement.position[0] - (self.movement_direction.x * BULLET_SPEED / (5.0/3.0)),
-      ci.movement.position[1] + (self.movement_direction.y * BULLET_SPEED));
+      ci.movement.x() - (self.movement_direction.x * BULLET_SPEED / (5.0/3.0)),
+      ci.movement.y() + (self.movement_direction.y * BULLET_SPEED));
 
     self.position = self.position + self.offset_delta +
       Position::new(self.movement_direction.x * BULLET_SPEED / (5.0 / 3.0), -self.movement_direction.y * BULLET_SPEED);

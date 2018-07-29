@@ -136,19 +136,19 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
 
       drawables.sort_by(|a, b| {
         let a_val = match a {
-          Drawables::Bullet(e) => e.position.position[1],
-          Drawables::Zombie(e) => e.position.position[1],
-          Drawables::TerrainHouse(e) => e.position.position[1],
-          Drawables::TerrainTree(e) => e.position.position[1],
-          Drawables::Character(e) => e.position.position[1],
+          Drawables::Bullet(e) => e.position.y(),
+          Drawables::Zombie(e) => e.position.y(),
+          Drawables::TerrainHouse(e) => e.position.y(),
+          Drawables::TerrainTree(e) => e.position.y(),
+          Drawables::Character(e) => e.position.y(),
         };
 
         let b_val = match b {
-          Drawables::Bullet(e) => e.position.position[1],
-          Drawables::Zombie(e) => e.position.position[1],
-          Drawables::TerrainHouse(e) => e.position.position[1],
-          Drawables::TerrainTree(e) => e.position.position[1],
-          Drawables::Character(e) => e.position.position[1],
+          Drawables::Bullet(e) => e.position.y(),
+          Drawables::Zombie(e) => e.position.y(),
+          Drawables::TerrainHouse(e) => e.position.y(),
+          Drawables::TerrainTree(e) => e.position.y(),
+          Drawables::Character(e) => e.position.y(),
         };
 
         b_val.partial_cmp(&a_val).unwrap()

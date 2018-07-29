@@ -51,7 +51,7 @@ impl CharacterDrawable {
               .any(|z|
                 zombie_not_dead(z) &&
                   overlaps(ci.movement,
-                           Position::new(ci.movement.position[0] - z.position.position[0], ci.movement.position[0] - z.position.position[1]),
+                           Position::new(ci.movement.x() - z.position.x(), ci.movement.x() - z.position.y()),
                            10.0,
                            20.0)) {
       self.stance = Stance::NormalDeath;
