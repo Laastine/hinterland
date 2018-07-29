@@ -9,8 +9,8 @@ use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{add_random_offset_to_screen_pos,
                calc_hypotenuse,
-               can_move_to_tile,
-               camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix},
+               camera::CameraInputState,
+               can_move_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix},
                direction,
                direction_movement,
                direction_movement_180,
@@ -69,23 +69,18 @@ impl ZombieDrawable {
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, game_time: u64) {
     self.projection = *world_to_clip;
 
-    let offset_delta =
-      Position::new(
-        ci.x_movement - self.previous_position.position[0],
-        ci.y_movement - self.previous_position.position[1]);
+    let offset_delta = ci.movement - self.previous_position;
 
-    self.previous_position = Position::new(ci.x_movement, ci.y_movement);
+    self.previous_position = ci.movement;
 
-    let x_y_distance_to_player = Point2::new(
-      self.position.position[0] - offset_delta.position[0],
-      self.position.position[1] - offset_delta.position[1]);
+    let x_y_distance_to_player = self.position - offset_delta;
 
-    let distance_to_player = calc_hypotenuse(x_y_distance_to_player.x.abs(), x_y_distance_to_player.y.abs());
+    let distance_to_player = calc_hypotenuse(x_y_distance_to_player.position[0].abs(), x_y_distance_to_player.position[1].abs());
 
     let is_alive = self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
 
     if is_alive {
-      let zombie_pos = Position::new(ci.x_movement - self.position.position[0], ci.y_movement - self.position.position[1]);
+      let zombie_pos = ci.movement - self.position;
 
       if distance_to_player < 300.0 {
         let dir = calc_next_movement(zombie_pos, self.previous_position) as f32;

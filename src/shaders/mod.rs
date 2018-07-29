@@ -1,7 +1,7 @@
 use cgmath::BaseFloat;
 use gfx;
 use std;
-use std::{fmt::{Display, Formatter, Result}, ops::Add};
+use std::{fmt::{Display, Formatter, Result}, ops::{Add, Sub}};
 
 gfx_defines! {
   constant TileMapData {
@@ -112,6 +112,14 @@ impl Add for Position {
 
   fn add(self, other: Position) -> Position {
     Position::new(self.position[0] + other.position[0], self.position[1] + other.position[1])
+  }
+}
+
+impl Sub for Position {
+  type Output = Position;
+
+  fn sub(self, other: Position) -> Position {
+    Position::new(self.position[0] - other.position[0], self.position[1] - other.position[1])
   }
 }
 

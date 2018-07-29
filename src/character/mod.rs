@@ -50,8 +50,8 @@ impl CharacterDrawable {
     if !cfg!(feature = "godmode") && zombies.iter()
               .any(|z|
                 zombie_not_dead(z) &&
-                  overlaps(Position::new(ci.x_movement, ci.y_movement),
-                           Position::new(ci.x_movement - z.position.position[0], ci.y_movement - z.position.position[1]),
+                  overlaps(ci.movement,
+                           Position::new(ci.movement.position[0] - z.position.position[0], ci.movement.position[0] - z.position.position[1]),
                            10.0,
                            20.0)) {
       self.stance = Stance::NormalDeath;

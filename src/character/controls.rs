@@ -8,8 +8,7 @@ use specs::prelude::{Read, ReadStorage, WriteStorage};
 
 #[derive(Clone, Debug)]
 pub struct CharacterInputState {
-  pub x_movement: f32,
-  pub y_movement: f32,
+  pub movement: Position,
   pub orientation: Orientation,
   pub is_colliding: bool,
   pub is_shooting: bool,
@@ -18,8 +17,7 @@ pub struct CharacterInputState {
 impl CharacterInputState {
   pub fn new() -> CharacterInputState {
     CharacterInputState {
-      x_movement: 0.0,
-      y_movement: 0.0,
+      movement: Position::new(0.0, 0.0),
       orientation: Orientation::Still,
       is_colliding: false,
       is_shooting: false,
@@ -31,9 +29,9 @@ impl CharacterInputState {
         self.orientation = Orientation::Still;
     } else if css.x_move.is_none() {
       if let Some(y) = css.y_move {
-        let vert_move = Position::new(self.x_movement, self.y_movement + y);
+        let vert_move = self.movement + Position::new(0.0, y);
         if !self.is_colliding || can_move_to_tile(vert_move) {
-          self.y_movement += y;
+          self.movement = vert_move;
           camera.y_pos -= y;
           self.orientation = match y {
             y if y < 0.0 => Orientation::Up,
@@ -43,12 +41,11 @@ impl CharacterInputState {
         }
       }
     } else if let Some(x) = css.x_move {
-      let horizontal_move  = Position::new(self.x_movement + x, self.y_movement);
+      let horizontal_move  = self.movement + Position::new(x, 0.0);
       if let Some(y) = css.y_move {
-        let diag_move = Position::new(self.x_movement + x, self.y_movement + y);
+        let diag_move = self.movement + Position::new(x, y);
         if !self.is_colliding || can_move_to_tile(diag_move) {
-          self.x_movement += x / 1.5;
-          self.y_movement += y / 1.5;
+          self.movement = self.movement + Position::new(x / 1.5, y / 1.5);
           camera.x_pos += x / 1.5;
           camera.y_pos -= y / 1.5;
 
@@ -61,7 +58,7 @@ impl CharacterInputState {
           };
         }
       } else if css.y_move.is_none() && !self.is_colliding || can_move_to_tile(horizontal_move) {
-        self.x_movement += x;
+        self.movement = self.movement + Position::new(x, 0.0);
         camera.x_pos += x;
         self.orientation = match x {
           x if x < 0.0 => Orientation::Right,

@@ -47,21 +47,21 @@ impl BulletDrawable {
     self.projection = *world_to_clip;
 
     self.offset_delta =
-      if (ci.x_movement - self.previous_position.position[0]).abs() > f32::EPSILON ||
-        (ci.y_movement - self.previous_position.position[1]).abs() > f32::EPSILON {
-        Position::new(ci.x_movement - self.previous_position.position[0], ci.y_movement - self.previous_position.position[1])
+      if (ci.movement.position[0] - self.previous_position.position[0]).abs() > f32::EPSILON ||
+        (ci.movement.position[1] - self.previous_position.position[1]).abs() > f32::EPSILON {
+        ci.movement - self.previous_position
       } else {
-        Position::new(self.offset_delta.position[0], self.offset_delta.position[1])
+        self.offset_delta
       };
 
     self.previous_position = Position::new(
-      ci.x_movement - (self.movement_direction.x * BULLET_SPEED / (5.0/3.0)),
-      ci.y_movement + (self.movement_direction.y * BULLET_SPEED));
+      ci.movement.position[0] - (self.movement_direction.x * BULLET_SPEED / (5.0/3.0)),
+      ci.movement.position[1] + (self.movement_direction.y * BULLET_SPEED));
 
     self.position = self.position + self.offset_delta +
-      Position::new(self.movement_direction.x * BULLET_SPEED / (5.0/3.0), -self.movement_direction.y * BULLET_SPEED);
+      Position::new(self.movement_direction.x * BULLET_SPEED / (5.0 / 3.0), -self.movement_direction.y * BULLET_SPEED);
 
-    let tile_pos = Position::new(ci.x_movement - self.position.position[0], ci.y_movement - self.position.position[1]);
+    let tile_pos = ci.movement - self.position;
 
     if !can_move(self.position) {
       self.status = Collision::OutOfBounds;
