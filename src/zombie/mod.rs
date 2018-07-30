@@ -103,9 +103,10 @@ impl ZombieDrawable {
 
   fn idle_direction_movement(&mut self, zombie_pos: Position, game_time: u64) {
     if !can_move_to_tile(zombie_pos) {
-      let dir = direction(Point2::new(0.0, 0.0), self.movement_direction);
+      let dir = direction(self.movement_direction, Point2::new(0.0, 0.0));
       self.movement_direction = direction_movement_180(self.movement_direction);
       self.orientation = orientation_to_direction(dir);
+      self.direction = orientation_to_direction(dir);
     }
 
     if self.last_decision + 2 < game_time {
