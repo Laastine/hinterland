@@ -148,15 +148,10 @@ pub fn add_random_offset_to_screen_pos(pos: Position) -> Position {
     let offset_point = Position::new(x, y);
     pos + offset_point
   }
-  let mut path_find_error = 0;
   loop {
     let res = iter(pos);
     if can_move_to_tile(res) {
       return res
-    } else if path_find_error > 999 {
-      panic!("To many path finding errors");
-    } else {
-      path_find_error = path_find_error + 1;
     }
   }
 

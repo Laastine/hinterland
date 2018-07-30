@@ -10,7 +10,7 @@ pub struct CameraInputState {
   pub movement: Position,
 }
 
-#[cfg_attr(feature = "cargo-clippy", allow(new_without_default_derive))]
+#[cfg_attr(feature = "cargo-clippy", allow(new_without_default))]
 impl CameraInputState {
   pub fn new() -> CameraInputState {
     CameraInputState {
