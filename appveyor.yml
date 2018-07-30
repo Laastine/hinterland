@@ -41,7 +41,7 @@ before_deploy:
   - xcopy assets\*.json hinterland\assets /y /m
   - xcopy assets\maps hinterland\assets\maps /e /i /y /s
   - xcopy assets\audio hinterland\assets\audio /e /i /y /s
-  - xcopy target\release\hinterland_bin.exe hinterland\hinterland.exe*
+  - xcopy target\release\hinterland.exe hinterland\hinterland.exe*
   - 7z a ./%PROJECT_NAME%-%TARGET%.zip hinterland
   - appveyor PushArtifact ./%PROJECT_NAME%-%TARGET%.zip
 

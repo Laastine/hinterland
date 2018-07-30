@@ -4,7 +4,7 @@ version = "0.3.6"
 authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 
 [[bin]]
-name = "hinterland_bin"
+name = "hinterland"
 path = "src/main.rs"
 
 [dependencies]

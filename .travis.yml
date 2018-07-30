@@ -40,7 +40,7 @@ before_deploy:
   - cp assets/*.json hinterland/assets
   - cp -r assets/maps hinterland/assets
   - cp -r assets/audio hinterland/assets
-  - cp target/release/hinterland_bin hinterland
+  - cp target/release/hinterland hinterland
   - tar zcfv $PACKAGE_NAME hinterland
   - rm -rf hinterland
 
