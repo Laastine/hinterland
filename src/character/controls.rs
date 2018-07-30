@@ -29,9 +29,9 @@ impl CharacterInputState {
         self.orientation = Orientation::Still;
     } else if css.x_move.is_none() {
       if let Some(y) = css.y_move {
-        let vert_move = self.movement + Position::new(0.0, y);
-        if !self.is_colliding || can_move_to_tile(vert_move) {
-          self.movement = vert_move;
+        let vertical_movement = self.movement + Position::new(0.0, y);
+        if !self.is_colliding || can_move_to_tile(vertical_movement) {
+          self.movement = vertical_movement;
           camera.movement = camera.movement - Position::new(0.0, y);
           self.orientation = match y {
             y if y < 0.0 => Orientation::Up,
@@ -43,10 +43,11 @@ impl CharacterInputState {
     } else if let Some(x) = css.x_move {
       let horizontal_move  = self.movement + Position::new(x, 0.0);
       if let Some(y) = css.y_move {
-        let diag_move = self.movement + Position::new(x, y);
-        if !self.is_colliding || can_move_to_tile(diag_move) {
-          self.movement = self.movement + Position::new(x / 1.5, y / 1.5);
-          camera.movement = camera.movement + Position::new(x / 1.5, 0.0) - Position::new(0.0, y / 1.5);
+        let horizontal_movement = Position::new(x / 1.5, 0.0);
+        let vertical_movement = Position::new(0.0, y / 1.5);
+        if !self.is_colliding || can_move_to_tile(self.movement + horizontal_movement + vertical_movement) {
+          self.movement = self.movement + horizontal_movement + vertical_movement;
+          camera.movement = camera.movement + horizontal_movement - vertical_movement;
 
           self.orientation = match (x, y) {
             (x, y) if x > 0.0 && y > 0.0 => Orientation::DownLeft,
@@ -57,8 +58,9 @@ impl CharacterInputState {
           };
         }
       } else if css.y_move.is_none() && !self.is_colliding || can_move_to_tile(horizontal_move) {
-        self.movement = self.movement + Position::new(x, 0.0);
-        camera.movement = camera.movement + Position::new(x, 0.0);
+        let horizontal_movement = Position::new(x, 0.0);
+        self.movement = self.movement + horizontal_movement;
+        camera.movement = camera.movement + horizontal_movement;
         self.orientation = match x {
           x if x < 0.0 => Orientation::Right,
           x if x > 0.0 => Orientation::Left,
