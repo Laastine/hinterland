@@ -62,10 +62,12 @@ impl BulletDrawable {
 
     let tile_pos = ci.movement - self.position;
 
-    if !can_move(self.position) {
-      self.status = Collision::OutOfBounds;
+    self.status = if !can_move(self.position) {
+      Collision::OutOfBounds
     } else if !can_move_to_tile(tile_pos) {
-      self.status = Collision::Hit;
+      Collision::Hit
+    } else {
+      Collision::Flying
     }
   }
 }

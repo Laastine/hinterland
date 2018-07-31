@@ -35,12 +35,8 @@ impl TerrainObjectDrawable {
 
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState) {
     self.projection = *world_to_clip;
-
-    let offset_delta = ci.movement - self.previous_position;
-
+    self.position = self.position + ci.movement - self.previous_position;
     self.previous_position = ci.movement;
-
-    self.position = self.position + offset_delta;
   }
 }
 

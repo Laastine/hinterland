@@ -70,7 +70,6 @@ impl ZombieDrawable {
     self.projection = *world_to_clip;
 
     let offset_delta = ci.movement - self.previous_position;
-
     self.previous_position = ci.movement;
 
     let x_y_distance_to_player = self.position - offset_delta;
@@ -96,9 +95,8 @@ impl ZombieDrawable {
       self.movement_direction = Point2::new(0.0, 0.0);
     }
 
-    self.position = Position::new(
-      self.movement_direction.x * self.movement_speed,
-      self.movement_direction.y * self.movement_speed) + self.position + offset_delta;
+    self.position = Position::new(self.movement_direction.x * self.movement_speed,
+                                  self.movement_direction.y * self.movement_speed) + self.position + offset_delta;
   }
 
   fn idle_direction_movement(&mut self, zombie_pos: Position, game_time: u64) {
@@ -198,29 +196,26 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
   }
 
   fn get_next_sprite(&self, drawable: &mut ZombieDrawable) -> CharacterSheet {
-    let zombie_sprite = match drawable.stance {
+    let sprite_idx = match drawable.stance {
       Stance::Still => {
-        let sprite_idx = (drawable.direction as usize * 4 + drawable.zombie_idx) as usize;
-        (&self.data[sprite_idx], sprite_idx)
+        (drawable.direction as usize * 4 + drawable.zombie_idx) as usize
       },
       Stance::Walking if drawable.orientation != Orientation::Still => {
-        let sprite_idx = (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize;
-        (&self.data[sprite_idx], sprite_idx)
+        (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize
       },
       Stance::NormalDeath if drawable.orientation != Orientation::Still => {
-        let sprite_idx = (drawable.direction as usize * 6 + drawable.zombie_death_idx + NORMAL_DEATH_SPRITE_OFFSET) as usize;
-        (&self.data[sprite_idx], sprite_idx)
+        (drawable.direction as usize * 6 + drawable.zombie_death_idx + NORMAL_DEATH_SPRITE_OFFSET) as usize
       },
       Stance::CriticalDeath if drawable.orientation != Orientation::Still => {
-        let sprite_idx = (drawable.direction as usize * 8 + drawable.zombie_death_idx) as usize;
-        (&self.data[sprite_idx], sprite_idx)
+        (drawable.direction as usize * 8 + drawable.zombie_death_idx) as usize
       },
       _ => {
         drawable.direction = drawable.orientation;
-        let sprite_idx = (drawable.orientation as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize;
-        (&self.data[sprite_idx], sprite_idx)
+        (drawable.orientation as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize
       },
     };
+
+    let zombie_sprite = (&self.data[sprite_idx], sprite_idx);
 
     let (y_div, row_idx) =
       if drawable.stance == Stance::NormalDeath || drawable.stance == Stance::CriticalDeath {
