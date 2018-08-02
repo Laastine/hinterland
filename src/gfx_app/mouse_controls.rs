@@ -1,6 +1,6 @@
 use bullet::bullets::Bullets;
 use cgmath::Point2;
-use character::controls::CharacterInputState;
+use character::{CharacterDrawable, controls::CharacterInputState};
 use crossbeam_channel as channel;
 use graphics::{camera::CameraInputState, dimensions::Dimensions, direction, direction_movement};
 use shaders::Position;
@@ -60,20 +60,22 @@ impl MouseControlSystem {
 impl<'a> specs::prelude::System<'a> for MouseControlSystem {
   #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
   type SystemData = (WriteStorage<'a, MouseInputState>,
+                     WriteStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
                      WriteStorage<'a, Bullets>,
                      Read<'a, Dimensions>);
 
-  fn run(&mut self, (mut mouse_input, camera, character_input, mut bullets, dim): Self::SystemData) {
+  fn run(&mut self, (mut mouse_input, mut character_drawable, camera, character_input, mut bullets, dim): Self::SystemData) {
     use specs::join::Join;
 
     while let Some((control_value, value)) = self.queue.try_recv() {
       match control_value {
         MouseControl::LeftClick => {
-          for (mi, bs, ca, ci) in (&mut mouse_input, &mut bullets, &camera, &character_input).join() {
+          for (mi, cd, bs, ca, ci) in (&mut mouse_input, &mut character_drawable, &mut bullets, &camera, &character_input).join() {
             if let Some(val) = value {
-              if ci.is_shooting {
+              if ci.is_shooting && cd.stats.ammunition > 0 {
+                cd.stats.ammunition -= 1;
                 let start_point = Point2::new(dim.window_width / 2.0 * dim.hidpi_factor, dim.window_height / 2.0 * dim.hidpi_factor);
                 let end_point = Point2::new(val.0 as f32, val.1 as f32);
                 mi.left_click_point = Some(end_point);

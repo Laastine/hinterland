@@ -1,4 +1,4 @@
-use character::controls::CharacterInputState;
+use character::{character_stats::CharacterStats, controls::CharacterInputState};
 use critter::{CharacterSprite, CritterData};
 use data;
 use game::constants::{ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE};
@@ -13,12 +13,14 @@ use std;
 use zombie::{ZombieDrawable, zombies::Zombies};
 
 pub mod controls;
+mod character_stats;
 
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/character.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/character.f.glsl");
 
 #[derive(Clone)]
 pub struct CharacterDrawable {
+  pub stats: CharacterStats,
   projection: Projection,
   pub position: Position,
   orientation: Orientation,
@@ -30,7 +32,9 @@ impl CharacterDrawable {
   pub fn new() -> CharacterDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
     let projection = get_projection(view, ASPECT_RATIO);
+    let stats = CharacterStats::new();
     CharacterDrawable {
+      stats,
       projection,
       position: Position::new(0.0, 0.0),
       orientation: Orientation::Right,

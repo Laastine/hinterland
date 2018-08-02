@@ -1,4 +1,4 @@
-use character::controls::CharacterInputState;
+use character::{CharacterDrawable, controls::CharacterInputState};
 use crossbeam_channel as channel;
 use game::constants::PISTOL_AUDIO_PATH;
 use rodio;
@@ -42,9 +42,10 @@ impl AudioSystem {
 }
 
 impl<'a> specs::prelude::System<'a> for AudioSystem {
-  type SystemData = (ReadStorage<'a, CharacterInputState>);
+  type SystemData = (ReadStorage<'a, CharacterInputState>,
+                     ReadStorage<'a, CharacterDrawable>);
 
-  fn run(&mut self, character_input: Self::SystemData) {
+  fn run(&mut self, (character_input, character_drawable): Self::SystemData) {
     use specs::join::Join;
 
     while let Some(effect) = self.queue.try_recv() {
@@ -54,8 +55,10 @@ impl<'a> specs::prelude::System<'a> for AudioSystem {
       }
     }
 
-    for ci in (&character_input).join() {
-      if let Effects::PistolFire = self.effects { if ci.is_shooting { self.play_effect() } }
+    for (ci, cd) in (&character_input, &character_drawable).join() {
+      if let Effects::PistolFire = self.effects {
+        if ci.is_shooting && cd.stats.ammunition > 0 { self.play_effect() }
+      }
     }
   }
 }
