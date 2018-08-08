@@ -11,12 +11,9 @@ Isometric shooter game written in Rust.
 - [Blog](https://laastine.kapsi.fi/code/2018/06/18/hinterland-status-update.html)
 - [Project's task board](https://github.com/Laastine/hinterland/projects/1)
 
-## Build
+## Build & Run
 
-```bash
-cargo build
-cargo run --release
-```
+`cargo run --release`
 
 ## Controls
 
@@ -30,7 +27,7 @@ cargo run --release
 
 Run windowed mode with `cargo run --features "windowed godmode"`
 
-Tested with Rust 1.27 with macOS, Linux and Windows.<br/>
+Tested with Rust 1.28 with macOS, Linux and Windows.<br/>
 
 ## External asset licence list
 
