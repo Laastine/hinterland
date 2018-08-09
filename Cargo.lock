@@ -590,7 +590,7 @@ dependencies = [
  "rand 0.5.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "rodio 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rusttype 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "specs 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "specs 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "tiled 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -1220,7 +1220,7 @@ dependencies = [
 
 [[package]]
 name = "specs"
-version = "0.12.0"
+version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "crossbeam 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1699,7 +1699,7 @@ dependencies = [
 "checksum shrev 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "800971605703aae3a54b739c6bb9ed1939dca3425b9402ff6e88815dfea526e6"
 "checksum slice-deque 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)" = "38646b3b9537259de5cd971265321b7ece1debac68af1443760f3d40d0af80fe"
 "checksum smallvec 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)" = "26df3bb03ca5eac2e64192b723d51f56c1b1e0860e7c766281f4598f181acdc8"
-"checksum specs 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)" = "69255377f9dee96d006121a0ea257db941260fcf04eb5bde9de38a340bb066bb"
+"checksum specs 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)" = "cff35427f0fc0015ba8be54b02b3358924bd4b2ad2dab048b1c2b25cdb397bc9"
 "checksum stable_deref_trait 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "15132e0e364248108c5e2c02e3ab539be8d6f5d52a01ca9bbf27ed657316f02b"
 "checksum stb_truetype 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)" = "52ce2b38abdd11cffbc68928810248e0dd003fea489a88a404dc1ba7ae2d5538"
 "checksum stdweb 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)" = "ef5430c8e36b713e13b48a9f709cc21e046723fe44ce34587b73a830203b533e"
