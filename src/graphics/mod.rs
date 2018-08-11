@@ -12,6 +12,7 @@ use zombie::ZombieDrawable;
 pub mod camera;
 pub mod dimensions;
 mod graphics_test;
+pub mod mesh;
 pub mod orientation;
 pub mod texture;
 

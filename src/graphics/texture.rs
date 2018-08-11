@@ -4,6 +4,21 @@ use gfx_app::ColorFormat;
 use image;
 use std::io::Cursor;
 
+#[derive(Debug, Clone)]
+pub struct Texture<R> where R: Resources {
+  pub raw: ShaderResourceView<R, [f32; 4]>,
+  pub size: Point2<i32>,
+}
+
+impl<R> Texture<R> where R: Resources {
+  pub fn new(raw: ShaderResourceView<R, [f32; 4]>, size: Option<Point2<i32>>,) -> Texture<R> {
+    Texture {
+      raw,
+      size: size.map_or(Point2::new(1, 1), |e| e),
+    }
+  }
+}
+
 pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> ShaderResourceView<R, [f32; 4]> where R: Resources, F: Factory<R> {
   let img = image::load(Cursor::new(data), image::PNG).unwrap().to_rgba();
   let (width, height) = img.dimensions();

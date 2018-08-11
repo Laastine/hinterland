@@ -1,10 +1,12 @@
+use cgmath::Point2;
 use gfx;
 use gfx_app::ColorFormat;
 use gfx_app::DepthFormat;
-use graphics::texture::load_raw_texture;
+use graphics::{mesh::RectangularMesh, texture::load_raw_texture};
 use rusttype::FontCollection;
-use shaders::{Position, text_pipeline, VertexData};
+use shaders::{Position, text_pipeline};
 use specs;
+use graphics::texture::Texture;
 
 mod font;
 
@@ -41,20 +43,6 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
                 where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
-    let vertex_data: [VertexData; 4] = [
-      VertexData::new([-1.0, -1.0], [0.0, 1.0]),
-      VertexData::new([1.0, -1.0], [1.0, 1.0]),
-      VertexData::new([1.0, 1.0], [1.0, 0.0]),
-      VertexData::new([-1.0, 1.0], [0.0, 0.0]),
-    ];
-
-    let index_data: [u16; 6] = [0, 1, 2, 2, 3, 0];
-
-    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
-    let pso = factory
-      .create_pipeline_simple(SHADER_VERT, SHADER_FRAG, text_pipeline::new())
-      .unwrap();
-
     let font_bytes = &include_bytes!("../../assets/DejaVuSans.ttf")[..];
     let font = FontCollection::from_bytes(font_bytes as &[u8])
       .unwrap_or_else(|e| panic!("Font loading error: {}", e))
@@ -63,16 +51,23 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
 
     let text_texture = load_raw_texture(factory, &texture_data[..], size);
 
+    let rect_mesh =
+      RectangularMesh::new(factory, Texture::new(text_texture, None), Point2::new(1.0, 1.0));
+
+    let pso = factory
+      .create_pipeline_simple(SHADER_VERT, SHADER_FRAG, text_pipeline::new())
+      .unwrap();
+
     let pipeline_data = text_pipeline::Data {
-      vbuf: vertex_buf,
+      vbuf: rect_mesh.mesh.vertex_buffer,
       position_cb: factory.create_constant_buffer(1),
-      text_sheet: (text_texture, factory.create_sampler_linear()),
+      text_sheet: (rect_mesh.mesh.texture.raw, factory.create_sampler_linear()),
       out_color: rtv,
       out_depth: dsv,
     };
 
     TextDrawSystem {
-      bundle: gfx::Bundle::new(slice, pso, pipeline_data),
+      bundle: gfx::Bundle::new(rect_mesh.mesh.slice, pso, pipeline_data),
     }
   }
 
