@@ -85,7 +85,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
 
              VertexData {
                pos: [vertex_x, vertex_y],
-               buf_pos: [tile_map_x as f32, tile_map_y as f32],
+               uv: [tile_map_x as f32, tile_map_y as f32],
              }
            })
            .collect();

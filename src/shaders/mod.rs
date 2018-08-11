@@ -15,7 +15,7 @@ gfx_defines! {
 
   vertex VertexData {
     pos: [f32; 2] = "a_Pos",
-    buf_pos: [f32; 2] = "a_BufPos",
+    uv: [f32; 2] = "a_BufPos",
   }
 
   constant CharacterSheet {
@@ -83,10 +83,10 @@ gfx_defines! {
 }
 
 impl VertexData {
-  pub fn new(pos: [f32; 2], buf_pos: [f32; 2]) -> VertexData {
+  pub fn new(pos: [f32; 2], uv: [f32; 2]) -> VertexData {
     VertexData {
       pos,
-      buf_pos,
+      uv,
     }
   }
 }
