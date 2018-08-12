@@ -1,3 +1,4 @@
+use cgmath::Point2;
 use character::{character_stats::CharacterStats, controls::CharacterInputState};
 use critter::{CharacterSprite, CritterData};
 use data;
@@ -6,11 +7,13 @@ use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::mouse_controls::MouseInputState;
 use graphics::{camera::CameraInputState, get_orientation_from_center, dimensions::{Dimensions, get_projection, get_view_matrix}, texture::load_texture, orientation::{Orientation, Stance}, overlaps};
-use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
+use shaders::{CharacterSheet, critter_pipeline, Position, Projection};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 use std;
 use zombie::{ZombieDrawable, zombies::Zombies};
+use graphics::texture::Texture;
+use graphics::mesh::RectangularMesh;
 
 pub mod controls;
 mod character_stats;
@@ -100,19 +103,11 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
     use gfx::traits::FactoryExt;
 
     let charter_bytes = &include_bytes!("../../assets/character.png")[..];
-
-    let vertex_data: [VertexData; 4] = [
-      VertexData::new([-20.0, -28.0], [0.0, 1.0]),
-      VertexData::new([20.0, -28.0], [1.0, 1.0]),
-      VertexData::new([20.0, 28.0], [1.0, 0.0]),
-      VertexData::new([-20.0, 28.0], [0.0, 0.0]),
-    ];
-
-    let index_data: [u16; 6] = [0, 1, 2, 2, 3, 0];
-
-    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
-
     let char_texture = load_texture(factory, charter_bytes);
+
+    let rect_mesh =
+      RectangularMesh::new(factory, Texture::new(char_texture, None), Point2::new(20.0, 28.0));
+
     let pso = factory
       .create_pipeline_simple(SHADER_VERT,
                               SHADER_FRAG,
@@ -120,11 +115,11 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
       .unwrap();
 
     let pipeline_data = critter_pipeline::Data {
-      vbuf: vertex_buf,
+      vbuf: rect_mesh.mesh.vertex_buffer,
       projection_cb: factory.create_constant_buffer(1),
       position_cb: factory.create_constant_buffer(1),
       character_sprite_cb: factory.create_constant_buffer(1),
-      charactersheet: (char_texture, factory.create_sampler_linear()),
+      charactersheet: (rect_mesh.mesh.texture.raw, factory.create_sampler_linear()),
       out_color: rtv,
       out_depth: dsv,
     };
@@ -132,7 +127,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
     let data = data::load_character();
 
     CharacterDrawSystem {
-      bundle: gfx::Bundle::new(slice, pso, pipeline_data),
+      bundle: gfx::Bundle::new(rect_mesh.mesh.slice, pso, pipeline_data),
       data,
     }
   }

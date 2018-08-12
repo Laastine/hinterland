@@ -7,10 +7,11 @@ use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{camera::CameraInputState, can_move, dimensions::{Dimensions, get_projection, get_view_matrix}};
 use graphics::can_move_to_tile;
-use shaders::{bullet_pipeline, Position, Projection, VertexData};
+use shaders::{bullet_pipeline, Position, Projection};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 use std::f32;
+use graphics::mesh::PlainMesh;
 
 pub mod bullets;
 pub mod collision;
@@ -83,24 +84,10 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
                 where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
-    let vertex_data: [VertexData; 4] = [
-        VertexData::new([-2.0, -2.0], [0.0, 1.0]),
-        VertexData::new([2.0, -2.0], [1.0, 1.0]),
-        VertexData::new([2.0, 2.0], [1.0, 0.0]),
-        VertexData::new([-2.0, 2.0], [0.0, 0.0]),
-      ];
-
-    let index_data: [u16; 6] = [0, 1, 2, 2, 3, 0];
-
-    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
-    let pso = factory
-      .create_pipeline_simple(SHADER_VERT,
-                              SHADER_FRAG,
-                              bullet_pipeline::new())
-      .unwrap();
+    let mesh = PlainMesh::new_with_data(factory, Point2::new(2.0, 2.0));
 
     let pipeline_data = bullet_pipeline::Data {
-      vbuf: vertex_buf,
+      vbuf: mesh.vertex_buffer,
       projection_cb: factory.create_constant_buffer(1),
       position_cb: factory.create_constant_buffer(1),
       out_color: rtv,
@@ -108,7 +95,7 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
     };
 
     BulletDrawSystem {
-      bundle: gfx::Bundle::new(slice, pso, pipeline_data),
+      bundle: gfx::Bundle::new(mesh.slice, pso, pipeline_data),
     }
   }
 

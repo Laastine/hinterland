@@ -1,12 +1,15 @@
+use cgmath::Point2;
 use character::controls::CharacterInputState;
 use game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, texture::load_texture};
-use shaders::{Position, Projection, static_element_pipeline, VertexData};
+use shaders::{Position, Projection, static_element_pipeline};
 use specs;
 use specs::prelude::{ReadStorage, Read, WriteStorage};
 use terrain_object::terrain_objects::TerrainObjects;
+use graphics::mesh::RectangularMesh;
+use graphics::texture::Texture;
 
 pub mod terrain_objects;
 
@@ -62,23 +65,14 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
                 where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
-    let vertex_data: [VertexData; 4] = [
-      VertexData::new([-120.0, -120.0], [0.0, 1.0]),
-      VertexData::new([120.0, -120.0], [1.0, 1.0]),
-      VertexData::new([120.0, 120.0], [1.0, 0.0]),
-      VertexData::new([-120.0, 120.0], [0.0, 0.0]),
-    ];
-
-    let index_data: [u16; 6] = [0, 1, 2, 2, 3, 0];
-
     let texture_bytes = match texture {
       TerrainTexture::House => &include_bytes!("../../assets/maps/house.png")[..],
       TerrainTexture::Tree => &include_bytes!("../../assets/maps/tree.png")[..],
     };
 
-    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
-
     let terrain_object_texture = load_texture(factory, texture_bytes);
+
+    let mesh = RectangularMesh::new(factory, Texture::new(terrain_object_texture, None), Point2::new(120.0, 120.0));
 
     let pso = factory
       .create_pipeline_simple(SHADER_VERT,
@@ -87,16 +81,16 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
       .unwrap();
 
     let pipeline_data = static_element_pipeline::Data {
-      vbuf: vertex_buf,
+      vbuf: mesh.mesh.vertex_buffer,
       position_cb: factory.create_constant_buffer(1),
       projection_cb: factory.create_constant_buffer(1),
-      static_element_sheet: (terrain_object_texture, factory.create_sampler_linear()),
+      static_element_sheet: (mesh.mesh.texture.raw, factory.create_sampler_linear()),
       out_color: rtv,
       out_depth: dsv,
     };
 
     TerrainObjectDrawSystem {
-      bundle: gfx::Bundle::new(slice, pso, pipeline_data),
+      bundle: gfx::Bundle::new(mesh.mesh.slice, pso, pipeline_data),
     }
   }
 

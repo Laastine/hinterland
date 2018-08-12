@@ -19,11 +19,13 @@ use graphics::{add_random_offset_to_screen_pos,
                orientation_to_direction,
                overlaps,
                texture::load_texture};
-use shaders::{CharacterSheet, critter_pipeline, Position, Projection, VertexData};
+use shaders::{CharacterSheet, critter_pipeline, Position, Projection};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 use terrain::path_finding::calc_next_movement;
 use zombie::zombies::Zombies;
+use graphics::mesh::RectangularMesh;
+use graphics::texture::Texture;
 
 pub mod zombies;
 
@@ -158,19 +160,11 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
     use gfx::traits::FactoryExt;
 
     let zombie_bytes = include_bytes!("../../assets/zombie.png");
-
-    let vertex_data: [VertexData; 4] = [
-      VertexData::new([-25.0, -35.0], [0.0, 1.0]),
-      VertexData::new([25.0, -35.0], [1.0, 1.0]),
-      VertexData::new([25.0, 35.0], [1.0, 0.0]),
-      VertexData::new([-25.0, 35.0], [0.0, 0.0]),
-    ];
-
-    let index_data: [u16; 6] = [0, 1, 2, 2, 3, 0];
-
-    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data[..], &index_data[..]);
-
     let char_texture = load_texture(factory, zombie_bytes);
+
+    let rect_mesh =
+      RectangularMesh::new(factory, Texture::new(char_texture, None), Point2::new(25.0, 35.0));
+
     let pso = factory
       .create_pipeline_simple(SHADER_VERT,
                               SHADER_FRAG,
@@ -178,11 +172,11 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
       .unwrap();
 
     let pipeline_data = critter_pipeline::Data {
-      vbuf: vertex_buf,
+      vbuf: rect_mesh.mesh.vertex_buffer,
       projection_cb: factory.create_constant_buffer(1),
       position_cb: factory.create_constant_buffer(1),
       character_sprite_cb: factory.create_constant_buffer(1),
-      charactersheet: (char_texture, factory.create_sampler_linear()),
+      charactersheet: (rect_mesh.mesh.texture.raw, factory.create_sampler_linear()),
       out_color: rtv,
       out_depth: dsv,
     };
@@ -190,7 +184,7 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
     let data = data::load_zombie();
 
     ZombieDrawSystem {
-      bundle: gfx::Bundle::new(slice, pso, pipeline_data),
+      bundle: gfx::Bundle::new(rect_mesh.mesh.slice, pso, pipeline_data),
       data,
     }
   }

@@ -7,6 +7,8 @@ use graphics::{camera::CameraInputState, can_move_to_tile, dimensions::{Dimensio
 use shaders::{Position, Projection, tilemap_pipeline, TileMapData, TilemapSettings, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
+use graphics::mesh::Mesh;
+use graphics::texture::Texture;
 
 pub mod path_finding;
 mod path_finding_test;
@@ -70,7 +72,6 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     let half_width = (tile_size * width) / 2;
     let half_height = (tile_size * height) / 2;
 
-    let tile_sheet_bytes = &include_bytes!("../../assets/maps/terrain.png")[..];
     let plane = Plane::subdivide(width, width);
     let vertex_data: Vec<VertexData> =
       plane.shared_vertex_iter()
@@ -90,28 +91,29 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
            })
            .collect();
 
-    let index_data: Vec<u32> =
+    let index_data =
       plane.indexed_polygon_iter()
            .triangulate()
            .vertices()
-           .map(|i| i as u32)
-           .collect();
+           .map(|i| i as u16)
+           .collect::<Vec<u16>>();
 
-    let (vertex_buf, slice) = factory.create_vertex_buffer_with_slice(&vertex_data, &index_data[..]);
-
+    let tile_sheet_bytes = &include_bytes!("../../assets/maps/terrain.png")[..];
     let tile_texture = load_texture(factory, tile_sheet_bytes);
+
+    let mesh = Mesh::new(factory, &vertex_data.as_slice(), index_data.as_slice(), Texture::new(tile_texture, None));
 
     let pso = factory
       .create_pipeline_simple(SHADER_VERT, SHADER_FRAG, tilemap_pipeline::new())
       .unwrap();
 
     let pipeline_data = tilemap_pipeline::Data {
-      vbuf: vertex_buf,
+      vbuf: mesh.vertex_buffer,
       position_cb: factory.create_constant_buffer(1),
       projection_cb: factory.create_constant_buffer(1),
       tilemap: factory.create_constant_buffer(TILE_MAP_BUF_LENGTH),
       tilemap_cb: factory.create_constant_buffer(1),
-      tilesheet: (tile_texture, factory.create_sampler_linear()),
+      tilesheet: (mesh.texture.raw, factory.create_sampler_linear()),
       out_color: rtv,
       out_depth: dsv,
     };
@@ -119,7 +121,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     let terrain = tile_map::Terrain::new();
 
     TerrainDrawSystem {
-      bundle: gfx::Bundle::new(slice, pso, pipeline_data),
+      bundle: gfx::Bundle::new(mesh.slice, pso, pipeline_data),
       data: terrain.tiles,
       is_tile_map_dirty: true,
     }
