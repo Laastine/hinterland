@@ -6,14 +6,14 @@ use game::constants::{ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFS
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::mouse_controls::MouseInputState;
-use graphics::{camera::CameraInputState, get_orientation_from_center, dimensions::{Dimensions, get_projection, get_view_matrix}, texture::load_texture, orientation::{Orientation, Stance}, overlaps};
+use graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, get_orientation_from_center, orientation::{Orientation, Stance}, overlaps, texture::load_texture};
+use graphics::mesh::RectangularMesh;
+use graphics::texture::Texture;
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 use std;
 use zombie::{ZombieDrawable, zombies::Zombies};
-use graphics::texture::Texture;
-use graphics::mesh::RectangularMesh;
 
 pub mod controls;
 mod character_stats;
@@ -51,16 +51,18 @@ impl CharacterDrawable {
 
     fn zombie_not_dead(z: &ZombieDrawable) -> bool {
       z.stance != Stance::NormalDeath &&
-      z.stance != Stance::CriticalDeath
+        z.stance != Stance::CriticalDeath
     }
 
-    if !cfg!(feature = "godmode") && zombies.iter()
-              .any(|z|
-                zombie_not_dead(z) &&
-                  overlaps(ci.movement,
-                           Position::new(ci.movement.x() - z.position.x(), ci.movement.x() - z.position.y()),
-                           10.0,
-                           20.0)) {
+    if !cfg!(feature = "godmode") &&
+      zombies.iter()
+             .any(|z|
+               zombie_not_dead(z) &&
+                 overlaps(ci.movement,
+//                          Position::new(ci.movement.x() - z.position.x(), ci.movement.x() - z.position.y()),
+                          ci.movement - z.position,
+                          10.0,
+                          20.0)) {
       self.stance = Stance::NormalDeath;
       println!("Player died");
       std::process::exit(0);

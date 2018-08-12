@@ -3,10 +3,10 @@ use gfx;
 use gfx_app::ColorFormat;
 use gfx_app::DepthFormat;
 use graphics::{mesh::RectangularMesh, texture::load_raw_texture};
+use graphics::texture::Texture;
 use rusttype::FontCollection;
 use shaders::{Position, text_pipeline};
 use specs;
-use graphics::texture::Texture;
 
 mod font;
 

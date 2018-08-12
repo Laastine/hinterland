@@ -3,12 +3,12 @@ use game::constants::{ASPECT_RATIO, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_
 use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Vertices};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, can_move_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix}, texture::load_texture};
+use graphics::{camera::CameraInputState, can_move_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix}};
+use graphics::mesh::Mesh;
+use graphics::texture::{load_texture, Texture};
 use shaders::{Position, Projection, tilemap_pipeline, TileMapData, TilemapSettings, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
-use graphics::mesh::Mesh;
-use graphics::texture::Texture;
 
 pub mod path_finding;
 mod path_finding_test;

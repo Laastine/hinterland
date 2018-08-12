@@ -11,7 +11,7 @@ pub struct Texture<R> where R: Resources {
 }
 
 impl<R> Texture<R> where R: Resources {
-  pub fn new(raw: ShaderResourceView<R, [f32; 4]>, size: Option<Point2<i32>>,) -> Texture<R> {
+  pub fn new(raw: ShaderResourceView<R, [f32; 4]>, size: Option<Point2<i32>>) -> Texture<R> {
     Texture {
       raw,
       size: size.map_or(Point2::new(1, 1), |e| e),

@@ -26,7 +26,7 @@ impl CharacterInputState {
 
   pub fn update(&mut self, camera: &mut CameraInputState, css: &CharacterControlSystem) {
     if css.y_move.is_none() && css.x_move.is_none() {
-        self.orientation = Orientation::Still;
+      self.orientation = Orientation::Still;
     } else if css.x_move.is_none() {
       if let Some(y) = css.y_move {
         let vertical_movement = self.movement + Position::new(0.0, y);
@@ -41,7 +41,7 @@ impl CharacterInputState {
         }
       }
     } else if let Some(x) = css.x_move {
-      let horizontal_move  = self.movement + Position::new(x, 0.0);
+      let horizontal_move = self.movement + Position::new(x, 0.0);
       if let Some(y) = css.y_move {
         let horizontal_movement = Position::new(x / 1.5, 0.0);
         let vertical_movement = Position::new(0.0, y / 1.5);

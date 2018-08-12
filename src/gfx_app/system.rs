@@ -9,7 +9,7 @@ use graphics::Drawables;
 use hud;
 use hud::TextDrawable;
 use specs;
-use specs::prelude::{ReadStorage, Read, WriteStorage};
+use specs::prelude::{Read, ReadStorage, WriteStorage};
 use std::time::Instant;
 use terrain;
 use terrain_object;

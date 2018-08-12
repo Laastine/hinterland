@@ -10,22 +10,22 @@ use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{add_random_offset_to_screen_pos,
                calc_hypotenuse,
                camera::CameraInputState,
-               can_move_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix},
+               can_move_to_tile,
                direction,
                direction_movement,
                direction_movement_180,
                GameTime,
                orientation::{Orientation, Stance},
                orientation_to_direction,
-               overlaps,
-               texture::load_texture};
+               overlaps};
+use graphics::dimensions::{Dimensions, get_projection, get_view_matrix};
+use graphics::mesh::RectangularMesh;
+use graphics::texture::{load_texture, Texture};
 use shaders::{CharacterSheet, critter_pipeline, Position, Projection};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 use terrain::path_finding::calc_next_movement;
 use zombie::zombies::Zombies;
-use graphics::mesh::RectangularMesh;
-use graphics::texture::Texture;
 
 pub mod zombies;
 

@@ -44,14 +44,14 @@ pub fn direction_movement_180(movement_direction: Point2<f32>) -> Point2<f32> {
 
 pub fn orientation_to_direction(angle_in_degrees: f32) -> Orientation {
   match angle_in_degrees as u32 {
-    345 ... 360 | 0 ... 22 => Orientation::Right,
-    23 ... 68 => Orientation::UpRight,
-    69 ... 114 => Orientation::Up,
-    115 ... 160 => Orientation::UpLeft,
-    161 ... 206 => Orientation::Left,
-    207 ... 252 => Orientation::DownLeft,
-    253 ... 298 => Orientation::Down,
-    299 ... 344 => Orientation::DownRight,
+    345...360 | 0...22 => Orientation::Right,
+    23...68 => Orientation::UpRight,
+    69...114 => Orientation::Up,
+    115...160 => Orientation::UpLeft,
+    161...206 => Orientation::Left,
+    207...252 => Orientation::DownLeft,
+    253...298 => Orientation::Down,
+    299...344 => Orientation::DownRight,
     _ => unreachable!("Invalid orientation")
   }
 }
@@ -117,7 +117,7 @@ pub fn coords_to_tile(position: Position) -> Point2<u32> {
     y: position.y() + 1500.0,
   };
   let point = Point2::new((pos.x / TILE_WIDTH + (pos.y / TILE_WIDTH)) as i32,
-              (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32);
+                          (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32);
   Point2::new(normalize(point.x) as u32, normalize(point.y) as u32)
 }
 
@@ -155,7 +155,6 @@ pub fn add_random_offset_to_screen_pos(pos: Position) -> Position {
       return res
     }
   }
-
 }
 
 pub fn calc_hypotenuse(a: f32, b: f32) -> f32 {

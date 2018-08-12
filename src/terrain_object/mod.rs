@@ -4,12 +4,12 @@ use game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, texture::load_texture};
-use shaders::{Position, Projection, static_element_pipeline};
-use specs;
-use specs::prelude::{ReadStorage, Read, WriteStorage};
-use terrain_object::terrain_objects::TerrainObjects;
 use graphics::mesh::RectangularMesh;
 use graphics::texture::Texture;
+use shaders::{Position, Projection, static_element_pipeline};
+use specs;
+use specs::prelude::{Read, ReadStorage, WriteStorage};
+use terrain_object::terrain_objects::TerrainObjects;
 
 pub mod terrain_objects;
 

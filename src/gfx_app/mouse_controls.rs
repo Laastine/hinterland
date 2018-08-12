@@ -5,7 +5,7 @@ use crossbeam_channel as channel;
 use graphics::{camera::CameraInputState, dimensions::Dimensions, direction, direction_movement};
 use shaders::Position;
 use specs;
-use specs::prelude::{ReadStorage, Read, WriteStorage};
+use specs::prelude::{Read, ReadStorage, WriteStorage};
 
 type MouseEvent = channel::Sender<(MouseControl, Option<(f64, f64)>)>;
 

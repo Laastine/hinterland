@@ -7,11 +7,11 @@ use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{camera::CameraInputState, can_move, dimensions::{Dimensions, get_projection, get_view_matrix}};
 use graphics::can_move_to_tile;
+use graphics::mesh::PlainMesh;
 use shaders::{bullet_pipeline, Position, Projection};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 use std::f32;
-use graphics::mesh::PlainMesh;
 
 pub mod bullets;
 pub mod collision;
@@ -55,7 +55,7 @@ impl BulletDrawable {
       };
 
     self.previous_position = Position::new(
-      ci.movement.x() - (self.movement_direction.x * BULLET_SPEED / (5.0/3.0)),
+      ci.movement.x() - (self.movement_direction.x * BULLET_SPEED / (5.0 / 3.0)),
       ci.movement.y() + (self.movement_direction.y * BULLET_SPEED));
 
     self.position = self.position + self.offset_delta +
