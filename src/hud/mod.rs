@@ -54,9 +54,11 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
     let rect_mesh =
       RectangularMesh::new(factory, Texture::new(text_texture, None), Point2::new(1.0, 1.0));
 
-    let pso = factory
-      .create_pipeline_simple(SHADER_VERT, SHADER_FRAG, text_pipeline::new())
-      .unwrap();
+    let pso =
+      match factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, text_pipeline::new()) {
+        Ok(val) => val,
+        Err(err) => panic!("HUD shader loading error {:?}", err)
+      };
 
     let pipeline_data = text_pipeline::Data {
       vbuf: rect_mesh.mesh.vertex_buffer,
