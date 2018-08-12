@@ -14,7 +14,7 @@ pub mod mouse_controls;
 pub type ColorFormat = gfx::format::Rgba8;
 pub type DepthFormat = gfx::format::DepthStencil;
 
-pub struct GlutinWindow {
+pub struct WindowContext {
   window: glutin::GlWindow,
   controls: Option<controls::TilemapControls>,
   events_loop: glutin::EventsLoop,
@@ -25,8 +25,8 @@ pub struct GlutinWindow {
   mouse_pos: (f64, f64),
 }
 
-impl GlutinWindow {
-  pub fn new() -> GlutinWindow {
+impl WindowContext {
+  pub fn new() -> WindowContext {
     let events_loop = glutin::EventsLoop::new();
 
     let window_title = glutin::WindowBuilder::new()
@@ -58,7 +58,7 @@ impl GlutinWindow {
     let (window, device, factory, rtv, dsv) =
       gfx_window_glutin::init::<ColorFormat, DepthFormat>(builder, context, &events_loop);
 
-    GlutinWindow {
+    WindowContext {
       window,
       controls: None,
       events_loop,
@@ -90,7 +90,7 @@ pub trait Window<D: gfx::Device, F: gfx::Factory<D::Resources>> {
   fn poll_events(&mut self) -> WindowStatus;
 }
 
-impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for GlutinWindow {
+impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
   fn swap_window(&mut self) {
     use gfx::Device;
     self.window

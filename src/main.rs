@@ -30,6 +30,6 @@ mod shaders;
 mod zombie;
 
 pub fn main() {
-  let mut window = gfx_app::GlutinWindow::new();
+  let mut window = gfx_app::WindowContext::new();
   gfx_app::init::run(&mut window);
 }
