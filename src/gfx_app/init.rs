@@ -15,7 +15,6 @@ use graphics;
 use graphics::{DeltaTime, dimensions::Dimensions, GameTime};
 use graphics::camera::CameraControlSystem;
 use hud;
-use shaders::Position;
 use specs::{Builder, prelude::DispatcherBuilder, world::World};
 use std::time;
 use terrain;
@@ -56,7 +55,7 @@ fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) 
   world.create_entity()
        .with(terrain::TerrainDrawable::new())
        .with(character::CharacterDrawable::new())
-       .with(hud::TextDrawable::new("", Position::new(0.0, 0.0)))
+       .with(hud::TextDrawable::new("10"))
        .with(terrain_object::terrain_objects::TerrainObjects::new())
        .with(Zombies::new())
        .with(Bullets::new())
@@ -92,6 +91,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     .with(character::PreDrawSystem::new(), "draw-prep-character", &["drawing"])
     .with(zombie::PreDrawSystem::new(), "draw-prep-zombie", &["drawing"])
     .with(bullet::PreDrawSystem::new(), "draw-prep-bullet", &["drawing"])
+    .with(hud::PreDrawSystem::new(), "draw-prep-hud", &[])
     .with(terrain_system, "terrain-system", &[])
     .with(terrain_object::PreDrawSystem::new(), "draw-prep-terrain_object", &["terrain-system"])
     .with(character_system, "character-system", &[])

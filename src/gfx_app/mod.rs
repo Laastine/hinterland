@@ -34,7 +34,7 @@ impl WindowContext {
     let window_title = glutin::WindowBuilder::new()
       .with_title("Hinterland");
 
-    let builder = if cfg!(feature = "windowed") {
+    let builder = if true {
       window_title
         .with_dimensions(window_size)
         .with_min_dimensions(window_size)

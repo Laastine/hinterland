@@ -71,6 +71,7 @@ gfx_defines! {
     vbuf: gfx::VertexBuffer<VertexData> = (),
     position_cb: gfx::ConstantBuffer<Position> = "b_TextPosition",
     text_sheet: gfx::TextureSampler<[f32; 4]> = "t_TextSheet",
+//    text_sheet_cb: gfx::ConstantBuffer<CharacterSheet> = "b_CharacterSprite",
     out_color: gfx::RenderTarget<gfx::format::Rgba8> = "Target0",
     out_depth: gfx::DepthTarget<gfx::format::DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
   }

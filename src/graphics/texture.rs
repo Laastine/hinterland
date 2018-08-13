@@ -1,7 +1,11 @@
 use cgmath::Point2;
 use gfx::{Factory, format::Rgba8, handle::ShaderResourceView, Resources, texture::{AaMode, Kind, Mipmap, Size}};
 use gfx_app::ColorFormat;
+use graphics::mesh::RectangularMesh;
+use hud::font::draw_text;
 use image;
+use rusttype::Font;
+use std::collections::HashMap;
 use std::io::Cursor;
 
 #[derive(Debug, Clone)]
@@ -38,4 +42,19 @@ pub fn load_raw_texture<R, F>(factory: &mut F, data: &[u8], size: Point2<i32>) -
     Ok(val) => val.1,
     Err(e) => panic!("Couldn't load texture {:?}", e)
   }
+}
+
+pub fn text_texture<'a, R, F>(factory: &mut F,
+                              font: Font,
+                              texts: Vec<&str>,
+                              texture_cache: &'a mut HashMap<String, RectangularMesh<R>>) -> &'a mut HashMap<String, RectangularMesh<R>>
+                              where R: Resources, F: Factory<R> {
+  let text_texture_height = 100.0;
+  texts.iter().for_each(|text| {
+    let (texture_size, texture_data) = draw_text(&font, text_texture_height, text);
+    let texture = load_raw_texture(factory, &texture_data.as_slice(), texture_size);
+    let rect_mesh = RectangularMesh::new(factory, Texture::new(texture, None), Point2::new(1.0, 1.0));
+    texture_cache.insert(text.to_string(), rect_mesh.clone());
+  });
+  texture_cache
 }
