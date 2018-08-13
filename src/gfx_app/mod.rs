@@ -6,7 +6,6 @@ use glutin;
 use glutin::dpi::LogicalSize;
 use glutin::GlContext;
 
-pub mod game_events;
 pub mod init;
 pub mod renderer;
 pub mod system;
@@ -30,7 +29,7 @@ pub struct WindowContext {
 impl WindowContext {
   pub fn new() -> WindowContext {
     let events_loop = glutin::EventsLoop::new();
-    let window_size = LogicalSize::new(RESOLUTION_X as f64, RESOLUTION_Y as f64);
+    let window_size = LogicalSize::new(f64::from(RESOLUTION_X), f64::from(RESOLUTION_Y));
 
     let window_title = glutin::WindowBuilder::new()
       .with_title("Hinterland");

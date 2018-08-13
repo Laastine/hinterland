@@ -1,4 +1,4 @@
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct CharacterStats {
   pub ammunition: usize,
   pub shots_fired: usize,

@@ -22,7 +22,7 @@ fn neighbours<'c>(curr_pos: &'c Point2<i32>, impassable_tiles: &[[usize; 2]], ne
     .collect()
 }
 
-fn tiles(p: &Point2<i32>, impassable_tiles: &[[usize; 2]]) -> Vec<(Point2<i32>, i32)> {
+fn tiles(p: Point2<i32>, impassable_tiles: &[[usize; 2]]) -> Vec<(Point2<i32>, i32)> {
   neighbours(&p, &impassable_tiles, &mut vec![]).iter()
                                                 .map(|p| (**p, 1))
                                                 .collect()
@@ -44,7 +44,7 @@ pub fn calc_route(start_point: Position, end_point: Position, impassable_tiles: 
   let end = find_next_best_endpoint(&end_point_with_offset, &impassable_tiles, &mut neighbour_tiles);
 
   astar(&start,
-        |p: &Point2<i32>| tiles(p, &impassable_tiles),
+        |p: &Point2<i32>| tiles(*p, &impassable_tiles),
         |p: &Point2<i32>| absdiff(p.x, end.x) + absdiff(p.y, end.y),
         |p: &Point2<i32>| p.x == end.x && p.y == end.y)
 }
