@@ -19,6 +19,7 @@ Isometric shooter game written in Rust.
 
 `W,A,S,D` - Character move<br/>
 `Ctrl + Mouse left` - Fire<br/>
+`R` - Reload weapon (10 bullets per mag)<br/>
 `Z` - zoom in<br/>
 `X` - zoom out<br/>
 `Esc` - exit
