@@ -3,15 +3,16 @@ use character::CharacterDrawable;
 use gfx;
 use gfx_app::ColorFormat;
 use gfx_app::DepthFormat;
-use graphics::{mesh::RectangularMesh, texture::{load_raw_texture, text_texture}};
-use graphics::texture::Texture;
+use graphics::{mesh::RectangularMesh};
+use graphics::texture::{Texture, text_texture};
 use rusttype::FontCollection;
-use shaders::text_pipeline;
+use shaders::{Position, text_pipeline};
 use specs;
 use std::collections::HashMap;
 use specs::{ReadStorage, WriteStorage};
 
 pub mod font;
+pub mod hud_objects;
 
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/text.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/text.f.glsl");
@@ -19,12 +20,14 @@ const SHADER_FRAG: &[u8] = include_bytes!("../shaders/text.f.glsl");
 #[derive(Debug, Clone)]
 pub struct TextDrawable {
   text: String,
+  position: Position,
 }
 
 impl<'a> TextDrawable {
-  pub fn new(text: &str) -> TextDrawable {
+  pub fn new(text: &str, position: Position) -> TextDrawable {
     TextDrawable {
       text: text.to_string(),
+      position,
     }
   }
 
@@ -45,6 +48,8 @@ pub struct TextDrawSystem<R: gfx::Resources> {
 
 impl<R: gfx::Resources> TextDrawSystem<R> {
   pub fn new<F>(factory: &mut F,
+                texts: Vec<&str>,
+                current_text: &str,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> TextDrawSystem<R>
                 where F: gfx::Factory<R> {
@@ -57,10 +62,6 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
 
     let mut texture_cache: HashMap<String, Texture<R>> = HashMap::new();
 
-    let texts = vec!["Ammo 0", "Ammo 1", "Ammo 2", "Ammo 3",
-                                "Ammo 4", "Ammo 5", "Ammo 6",
-                                "Ammo 7", "Ammo 8", "Ammo 9", "Ammo 10"];
-
     text_texture(factory, &font, texts.as_slice(), &mut texture_cache);
 
     let pso =
@@ -69,7 +70,6 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
         Err(err) => panic!("HUD shader loading error {:?}", err)
       };
 
-    let current_text = "Ammo 10";
     let texture = texture_cache[current_text].clone();
 
     let rect_mesh = RectangularMesh::new(factory, texture, Point2::new(1.0, 1.0));
@@ -93,6 +93,7 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
                  drawable: &TextDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
                  where C: gfx::CommandBuffer<R> {
+    encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     if self.current_text.trim() != drawable.text.trim() {
       self.current_text = drawable.text.to_owned();
       self.bundle.data.text_sheet.0 = self.texture_cache[&drawable.text].raw.clone();
@@ -112,14 +113,15 @@ impl PreDrawSystem {
 
 impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   type SystemData = (ReadStorage<'a, CharacterDrawable>,
-                     WriteStorage<'a, TextDrawable>);
+                     WriteStorage<'a, hud_objects::HudObjects>);
 
-  fn run(&mut self, (character_drawable, mut text_drawable): Self::SystemData) {
+  fn run(&mut self, (character_drawable, mut hud_objects): Self::SystemData) {
     use specs::join::Join;
 
-    for (cd, td) in (&character_drawable, &mut text_drawable).join() {
+    for (cd, huds) in (&character_drawable, &mut hud_objects).join() {
       let new_text = format!("Ammo {}", cd.stats.ammunition);
-      td.update(new_text);
+      huds.objects[0].update("v0.3.6".to_string());
+      huds.objects[1].update(new_text);
     }
   }
 }

@@ -7,9 +7,8 @@ use gfx_app::renderer::EncoderQueue;
 use graphics::{DeltaTime, orientation::Stance};
 use graphics::Drawables;
 use hud;
-use hud::TextDrawable;
 use specs;
-use specs::prelude::{Read, ReadStorage, WriteStorage};
+use specs::prelude::{Read, WriteStorage};
 use std::time::Instant;
 use terrain;
 use terrain_object;
@@ -24,7 +23,7 @@ pub struct DrawSystem<D: gfx::Device> {
   zombie_system: zombie::ZombieDrawSystem<D::Resources>,
   bullet_system: bullet::BulletDrawSystem<D::Resources>,
   terrain_object_system: [terrain_object::TerrainObjectDrawSystem<D::Resources>; 2],
-  text_system: hud::TextDrawSystem<D::Resources>,
+  text_system: [hud::TextDrawSystem<D::Resources>; 2],
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
   frames: u32,
@@ -39,6 +38,17 @@ impl<D: gfx::Device> DrawSystem<D> {
                 encoder_queue: EncoderQueue<D>)
                 -> DrawSystem<D>
                 where F: gfx::Factory<D::Resources> {
+
+
+    let current_text = "Ammo 10";
+    let texts = vec!["Ammo 0", "Ammo 1", "Ammo 2", "Ammo 3",
+                     "Ammo 4", "Ammo 5", "Ammo 6",
+                     "Ammo 7", "Ammo 8", "Ammo 9", "Ammo 10", "v0.3.6"];
+
+    let version_number = "v0.3.6";
+
+    let other_texts = texts.clone();
+
     DrawSystem {
       render_target_view: rtv.clone(),
       depth_stencil_view: dsv.clone(),
@@ -50,7 +60,10 @@ impl<D: gfx::Device> DrawSystem<D> {
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::House),
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::Tree)
       ],
-      text_system: hud::TextDrawSystem::new(factory, rtv.clone(), dsv.clone()),
+      text_system: [
+        hud::TextDrawSystem::new(factory, texts, version_number, rtv.clone(), dsv.clone()),
+        hud::TextDrawSystem::new(factory, other_texts, current_text, rtv.clone(), dsv.clone())
+      ],
       encoder_queue,
       game_time: Instant::now(),
       frames: 0,
@@ -67,13 +80,13 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
   type SystemData = (WriteStorage<'a, terrain::TerrainDrawable>,
                      WriteStorage<'a, character::CharacterDrawable>,
                      WriteStorage<'a, CharacterSprite>,
-                     ReadStorage<'a, TextDrawable>,
+                     WriteStorage<'a, hud::hud_objects::HudObjects>,
                      WriteStorage<'a, zombie::zombies::Zombies>,
                      WriteStorage<'a, bullet::bullets::Bullets>,
                      WriteStorage<'a, terrain_object::terrain_objects::TerrainObjects>,
                      Read<'a, DeltaTime>);
 
-  fn run(&mut self, (mut terrain, mut character, mut character_sprite, text, mut zombies, mut bullets, mut terrain_objects, dt): Self::SystemData) {
+  fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut hud_objects, mut zombies, mut bullets, mut terrain_objects, dt): Self::SystemData) {
     use specs::join::Join;
     let mut encoder = self.encoder_queue.receiver.recv().unwrap();
 
@@ -99,10 +112,14 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 16.0 / 256.0, 20.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
-    for (t, c, cs, tx, zs, bs, obj) in (&mut terrain, &mut character, &mut character_sprite, &text, &mut zombies, &mut bullets, &mut terrain_objects).join() {
+    for (t, c, cs, hds, zs, bs, obj) in (&mut terrain, &mut character, &mut character_sprite, &mut hud_objects,
+                                             &mut zombies, &mut bullets, &mut terrain_objects).join() {
       self.terrain_system.draw(t, &mut encoder);
 
-      self.text_system.draw(tx, &mut encoder);
+      for hud in &mut hds.objects {
+        self.text_system[0].draw(hud, &mut encoder);
+        self.text_system[1].draw(hud, &mut encoder);
+      }
 
       if self.cool_down == 0.0 {
         if c.stance == Stance::Walking {

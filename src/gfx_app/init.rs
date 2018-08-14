@@ -38,7 +38,7 @@ fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) 
   world.register::<terrain::TerrainDrawable>();
   world.register::<graphics::camera::CameraInputState>();
   world.register::<character::CharacterDrawable>();
-  world.register::<hud::TextDrawable>();
+  world.register::<hud::hud_objects::HudObjects>();
   world.register::<terrain_object::terrain_objects::TerrainObjects>();
   world.register::<Zombies>();
   world.register::<Bullets>();
@@ -55,7 +55,7 @@ fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) 
   world.create_entity()
        .with(terrain::TerrainDrawable::new())
        .with(character::CharacterDrawable::new())
-       .with(hud::TextDrawable::new("Ammo 10"))
+       .with(hud::hud_objects::HudObjects::new())
        .with(terrain_object::terrain_objects::TerrainObjects::new())
        .with(Zombies::new())
        .with(Bullets::new())
