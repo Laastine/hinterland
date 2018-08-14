@@ -4,7 +4,7 @@ use game::constants::{CHARACTER_X_SPEED, CHARACTER_Y_SPEED};
 use graphics::{camera::CameraInputState, can_move_to_tile, DeltaTime, orientation::Orientation};
 use shaders::Position;
 use specs;
-use specs::prelude::{Read, ReadStorage, WriteStorage};
+use specs::prelude::{Read, WriteStorage};
 
 #[derive(Clone, Debug)]
 pub struct CharacterInputState {
@@ -92,6 +92,8 @@ pub enum CharacterControl {
   YMoveStop,
   CtrlPressed,
   CtrlReleased,
+  ReloadPressed,
+  ReloadReleased,
 }
 
 #[derive(Debug)]
@@ -101,6 +103,7 @@ pub struct CharacterControlSystem {
   y_move: Option<f32>,
   cool_down: f64,
   is_ctrl_pressed: bool,
+  is_reloading: bool,
 }
 
 impl CharacterControlSystem {
@@ -112,17 +115,18 @@ impl CharacterControlSystem {
       y_move: None,
       cool_down: 1.0,
       is_ctrl_pressed: false,
+      is_reloading: false,
     }, tx)
   }
 }
 
 impl<'a> specs::prelude::System<'a> for CharacterControlSystem {
   type SystemData = (WriteStorage<'a, CharacterInputState>,
-                     ReadStorage<'a, CharacterDrawable>,
+                     WriteStorage<'a, CharacterDrawable>,
                      WriteStorage<'a, CameraInputState>,
                      Read<'a, DeltaTime>);
 
-  fn run(&mut self, (mut character_input, character, mut camera_input, d): Self::SystemData) {
+  fn run(&mut self, (mut character_input, mut character, mut camera_input, d): Self::SystemData) {
     use specs::join::Join;
     use graphics::orientation::Stance;
     let delta = d.0;
@@ -141,12 +145,17 @@ impl<'a> specs::prelude::System<'a> for CharacterControlSystem {
           CharacterControl::XMoveStop => self.x_move = None,
           CharacterControl::CtrlPressed => self.is_ctrl_pressed = true,
           CharacterControl::CtrlReleased => self.is_ctrl_pressed = false,
+          CharacterControl::ReloadPressed => self.is_reloading = true,
+          CharacterControl::ReloadReleased => self.is_reloading = false,
         }
       }
 
-      for (ci, c, camera) in (&mut character_input, &character, &mut camera_input).join() {
+      for (ci, c, camera) in (&mut character_input, &mut character, &mut camera_input).join() {
         if c.stance != Stance::NormalDeath {
           ci.update(camera, self);
+        }
+        if self.is_reloading {
+          c.stats.ammunition = 10;
         }
       }
     }

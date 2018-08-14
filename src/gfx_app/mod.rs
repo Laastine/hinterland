@@ -140,7 +140,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
     use glutin::MouseButton;
     use glutin::WindowEvent::{CloseRequested, CursorMoved, MouseInput};
     use glutin::ElementState::{Pressed, Released};
-    use glutin::VirtualKeyCode::{Escape, Z, X, W, A, S, D};
+    use glutin::VirtualKeyCode::{Escape, Z, X, W, A, S, D, R};
 
     let controls = match self.controls {
       Some(ref mut c) => c,
@@ -195,6 +195,14 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
               controls.stop_character_x();
               WindowStatus::Open
             }
+            KeyboardInput { state: Pressed, virtual_keycode: Some(R), .. } => {
+              controls.reload_weapon(true);
+              WindowStatus::Open
+            },
+            KeyboardInput { state: Released, virtual_keycode: Some(R), .. } => {
+              controls.reload_weapon(false);
+              WindowStatus::Open
+            },
             KeyboardInput { state: Pressed, modifiers, .. } => {
               if modifiers.ctrl {
                 controls.ctrl_pressed();

@@ -62,13 +62,24 @@ impl TilemapControls {
     self.character(CharacterControl::Right)
   }
   pub fn stop_character_x(&mut self) { self.character(CharacterControl::XMoveStop) }
+
   pub fn move_character_up(&mut self) {
     self.character(CharacterControl::Up)
   }
+
   pub fn move_character_down(&mut self) {
     self.character(CharacterControl::Down)
   }
+
   pub fn stop_character_y(&mut self) { self.character(CharacterControl::YMoveStop) }
+
+  pub fn reload_weapon(&mut self, is_relodading: bool) {
+    if is_relodading {
+      self.character(CharacterControl::ReloadPressed)
+    } else {
+      self.character(CharacterControl::ReloadReleased)
+    }
+  }
 
   pub fn mouse_left_click(&mut self, mouse_pos: Option<(f64, f64)>) {
     self.mouse(MouseControl::LeftClick, mouse_pos);

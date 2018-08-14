@@ -59,7 +59,6 @@ impl CharacterDrawable {
              .any(|z|
                zombie_not_dead(z) &&
                  overlaps(ci.movement,
-//                          Position::new(ci.movement.x() - z.position.x(), ci.movement.x() - z.position.y()),
                           ci.movement - z.position,
                           10.0,
                           20.0)) {
