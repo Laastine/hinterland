@@ -25,59 +25,59 @@ impl TilemapControls {
     }
   }
 
-  fn ac(&mut self, value: Effects) {
+  fn audio(&mut self, value: Effects) {
     self.audio_control.send(value);
   }
 
-  fn tc(&mut self, value: CameraControl) {
+  fn terrain(&mut self, value: CameraControl) {
     self.terrain_control.send(value);
   }
-  fn cc(&mut self, value: CharacterControl) {
+  fn character(&mut self, value: CharacterControl) {
     self.character_control.send(value);
   }
-  fn mc(&mut self, contol_value: MouseControl, value: Option<(f64, f64)>) {
+  fn mouse(&mut self, contol_value: MouseControl, value: Option<(f64, f64)>) {
     self.mouse_control.send((contol_value, value));
   }
 
   pub fn zoom_in(&mut self) {
-    self.tc(CameraControl::ZoomIn)
+    self.terrain(CameraControl::ZoomIn)
   }
   pub fn zoom_out(&mut self) {
-    self.tc(CameraControl::ZoomOut)
+    self.terrain(CameraControl::ZoomOut)
   }
   pub fn zoom_stop(&mut self) {
-    self.tc(CameraControl::ZoomStop)
+    self.terrain(CameraControl::ZoomStop)
   }
   pub fn ctrl_pressed(&mut self) {
-    self.cc(CharacterControl::CtrlPressed)
+    self.character(CharacterControl::CtrlPressed)
   }
   pub fn ctrl_released(&mut self) {
-    self.cc(CharacterControl::CtrlReleased)
+    self.character(CharacterControl::CtrlReleased)
   }
 
   pub fn move_character_left(&mut self) {
-    self.cc(CharacterControl::Left)
+    self.character(CharacterControl::Left)
   }
   pub fn move_character_right(&mut self) {
-    self.cc(CharacterControl::Right)
+    self.character(CharacterControl::Right)
   }
-  pub fn stop_character_x(&mut self) { self.cc(CharacterControl::XMoveStop) }
+  pub fn stop_character_x(&mut self) { self.character(CharacterControl::XMoveStop) }
   pub fn move_character_up(&mut self) {
-    self.cc(CharacterControl::Up)
+    self.character(CharacterControl::Up)
   }
   pub fn move_character_down(&mut self) {
-    self.cc(CharacterControl::Down)
+    self.character(CharacterControl::Down)
   }
-  pub fn stop_character_y(&mut self) { self.cc(CharacterControl::YMoveStop) }
+  pub fn stop_character_y(&mut self) { self.character(CharacterControl::YMoveStop) }
 
   pub fn mouse_left_click(&mut self, mouse_pos: Option<(f64, f64)>) {
-    self.mc(MouseControl::LeftClick, mouse_pos);
+    self.mouse(MouseControl::LeftClick, mouse_pos);
     match mouse_pos {
-      Some(_) => self.ac(Effects::PistolFire),
-      _ => self.ac(Effects::None),
+      Some(_) => self.audio(Effects::PistolFire),
+      _ => self.audio(Effects::None),
     }
   }
   pub fn mouse_right_click(&mut self, mouse_pos: Option<(f64, f64)>) {
-    self.mc(MouseControl::RightClick, mouse_pos)
+    self.mouse(MouseControl::RightClick, mouse_pos)
   }
 }
