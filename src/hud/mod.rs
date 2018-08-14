@@ -1,3 +1,4 @@
+use cgmath::Point2;
 use character::CharacterDrawable;
 use gfx;
 use gfx_app::ColorFormat;
@@ -38,7 +39,8 @@ impl specs::prelude::Component for TextDrawable {
 
 pub struct TextDrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, text_pipeline::Data<R>>,
-  texture_cache: HashMap<String, RectangularMesh<R>>
+  texture_cache: HashMap<String, Texture<R>>,
+  pub current_text: String,
 }
 
 impl<R: gfx::Resources> TextDrawSystem<R> {
@@ -53,9 +55,13 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
       .unwrap_or_else(|e| panic!("Font loading error: {}", e))
       .into_font().unwrap_or_else(|e| panic!("into_font error: {}", e));
 
-    let mut texture_cache: HashMap<String, RectangularMesh<R>> = HashMap::new();
+    let mut texture_cache: HashMap<String, Texture<R>> = HashMap::new();
 
-    text_texture(factory, font, vec!["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"], &mut texture_cache);
+    let texts = vec!["Ammo 0", "Ammo 1", "Ammo 2", "Ammo 3",
+                                "Ammo 4", "Ammo 5", "Ammo 6",
+                                "Ammo 7", "Ammo 8", "Ammo 9", "Ammo 10"];
+
+    text_texture(factory, &font, texts.as_slice(), &mut texture_cache);
 
     let pso =
       match factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, text_pipeline::new()) {
@@ -63,7 +69,10 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
         Err(err) => panic!("HUD shader loading error {:?}", err)
       };
 
-    let rect_mesh = texture_cache.get("10").unwrap().clone();
+    let current_text = "Ammo 10";
+    let texture = texture_cache[current_text].clone();
+
+    let rect_mesh = RectangularMesh::new(factory, texture, Point2::new(1.0, 1.0));
 
     let pipeline_data = text_pipeline::Data {
       vbuf: rect_mesh.mesh.vertex_buffer,
@@ -76,6 +85,7 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
     TextDrawSystem {
       bundle: gfx::Bundle::new(rect_mesh.mesh.slice, pso, pipeline_data),
       texture_cache,
+      current_text: current_text.to_string(),
     }
   }
 
@@ -83,11 +93,10 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
                  drawable: &TextDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
                  where C: gfx::CommandBuffer<R> {
-    let mesh = match self.texture_cache.get(&drawable.text) {
-      Some(val) => val,
-      None => panic!("Didn't find any with {:?}", &drawable.text),
-    };
-    self.bundle.data.text_sheet.0 = mesh.mesh.texture.raw.clone();
+    if self.current_text.trim() != drawable.text.trim() {
+      self.current_text = drawable.text.to_owned();
+      self.bundle.data.text_sheet.0 = self.texture_cache[&drawable.text].raw.clone();
+    }
     self.bundle.encode(encoder);
   }
 }
@@ -109,7 +118,7 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
     use specs::join::Join;
 
     for (cd, td) in (&character_drawable, &mut text_drawable).join() {
-      let new_text = format!("{}", cd.stats.ammunition);
+      let new_text = format!("Ammo {}", cd.stats.ammunition);
       td.update(new_text);
     }
   }

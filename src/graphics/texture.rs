@@ -1,7 +1,6 @@
 use cgmath::Point2;
 use gfx::{Factory, format::Rgba8, handle::ShaderResourceView, Resources, texture::{AaMode, Kind, Mipmap, Size}};
 use gfx_app::ColorFormat;
-use graphics::mesh::RectangularMesh;
 use hud::font::draw_text;
 use image;
 use rusttype::Font;
@@ -45,16 +44,16 @@ pub fn load_raw_texture<R, F>(factory: &mut F, data: &[u8], size: Point2<i32>) -
 }
 
 pub fn text_texture<'a, R, F>(factory: &mut F,
-                              font: Font,
-                              texts: Vec<&str>,
-                              texture_cache: &'a mut HashMap<String, RectangularMesh<R>>) -> &'a mut HashMap<String, RectangularMesh<R>>
+                              font: &Font,
+                              texts: &[&str],
+                              texture_cache: &'a mut HashMap<String, Texture<R>>) -> &'a mut HashMap<String, Texture<R>>
                               where R: Resources, F: Factory<R> {
   let text_texture_height = 100.0;
   texts.iter().for_each(|text| {
     let (texture_size, texture_data) = draw_text(&font, text_texture_height, text);
     let texture = load_raw_texture(factory, &texture_data.as_slice(), texture_size);
-    let rect_mesh = RectangularMesh::new(factory, Texture::new(texture, None), Point2::new(1.0, 1.0));
-    texture_cache.insert(text.to_string(), rect_mesh.clone());
+    let texture_element = Texture::new(texture, None);
+    texture_cache.insert(text.to_string(), texture_element.clone());
   });
   texture_cache
 }
