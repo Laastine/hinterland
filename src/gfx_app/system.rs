@@ -1,6 +1,7 @@
 use bullet;
 use character;
 use critter::CharacterSprite;
+use game::constants::{CURRENT_AMMO_TEXT, VERSION_NUMBER_TEXT, HUD_TEXTS};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::renderer::EncoderQueue;
@@ -38,17 +39,6 @@ impl<D: gfx::Device> DrawSystem<D> {
                 encoder_queue: EncoderQueue<D>)
                 -> DrawSystem<D>
                 where F: gfx::Factory<D::Resources> {
-
-
-    let current_text = "Ammo 10";
-    let texts = vec!["Ammo 0", "Ammo 1", "Ammo 2", "Ammo 3",
-                     "Ammo 4", "Ammo 5", "Ammo 6",
-                     "Ammo 7", "Ammo 8", "Ammo 9", "Ammo 10", "v0.3.6"];
-
-    let version_number = "v0.3.6";
-
-    let other_texts = texts.clone();
-
     DrawSystem {
       render_target_view: rtv.clone(),
       depth_stencil_view: dsv.clone(),
@@ -61,8 +51,8 @@ impl<D: gfx::Device> DrawSystem<D> {
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::Tree)
       ],
       text_system: [
-        hud::TextDrawSystem::new(factory, texts, version_number, rtv.clone(), dsv.clone()),
-        hud::TextDrawSystem::new(factory, other_texts, current_text, rtv.clone(), dsv.clone())
+        hud::TextDrawSystem::new(factory, HUD_TEXTS.to_vec(), VERSION_NUMBER_TEXT, rtv.clone(), dsv.clone()),
+        hud::TextDrawSystem::new(factory, HUD_TEXTS.to_vec(), CURRENT_AMMO_TEXT, rtv.clone(), dsv.clone())
       ],
       encoder_queue,
       game_time: Instant::now(),

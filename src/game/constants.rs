@@ -50,3 +50,10 @@ pub const TERRAIN_OBJECTS: [[usize; 2]; 34] = [
   [29, 59], [30, 60],
   [16, 54], [17, 55],
   [15, 45], [16, 46]];
+
+pub const HUD_TEXTS: [&str; 12] = ["Ammo 0", "Ammo 1", "Ammo 2", "Ammo 3",
+  "Ammo 4", "Ammo 5", "Ammo 6",
+  "Ammo 7", "Ammo 8", "Ammo 9", "Ammo 10", "v0.3.6"];
+
+pub const CURRENT_AMMO_TEXT: &str = "Ammo 10";
+pub const VERSION_NUMBER_TEXT: &str = "v0.3.6";
