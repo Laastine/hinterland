@@ -48,7 +48,7 @@ pub struct TextDrawSystem<R: gfx::Resources> {
 
 impl<R: gfx::Resources> TextDrawSystem<R> {
   pub fn new<F>(factory: &mut F,
-                texts: Vec<&str>,
+                texts: &[&str],
                 current_text: &str,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> TextDrawSystem<R>
@@ -62,7 +62,7 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
 
     let mut texture_cache: HashMap<String, Texture<R>> = HashMap::new();
 
-    text_texture(factory, &font, texts.as_slice(), &mut texture_cache);
+    text_texture(factory, &font, texts, &mut texture_cache);
 
     let pso =
       match factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, text_pipeline::new()) {

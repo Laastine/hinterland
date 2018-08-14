@@ -51,8 +51,8 @@ impl<D: gfx::Device> DrawSystem<D> {
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::Tree)
       ],
       text_system: [
-        hud::TextDrawSystem::new(factory, HUD_TEXTS.to_vec(), VERSION_NUMBER_TEXT, rtv.clone(), dsv.clone()),
-        hud::TextDrawSystem::new(factory, HUD_TEXTS.to_vec(), CURRENT_AMMO_TEXT, rtv.clone(), dsv.clone())
+        hud::TextDrawSystem::new(factory, &HUD_TEXTS, VERSION_NUMBER_TEXT, rtv.clone(), dsv.clone()),
+        hud::TextDrawSystem::new(factory, &HUD_TEXTS, CURRENT_AMMO_TEXT, rtv.clone(), dsv.clone())
       ],
       encoder_queue,
       game_time: Instant::now(),
