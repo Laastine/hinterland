@@ -3,7 +3,6 @@ use gfx;
 use gfx_device_gl;
 use gfx_window_glutin;
 use glutin;
-use glutin::dpi::LogicalSize;
 use glutin::GlContext;
 
 pub mod init;
@@ -29,24 +28,23 @@ pub struct WindowContext {
 impl WindowContext {
   pub fn new() -> WindowContext {
     let events_loop = glutin::EventsLoop::new();
-    let window_size = LogicalSize::new(f64::from(RESOLUTION_X), f64::from(RESOLUTION_Y));
 
     let window_title = glutin::WindowBuilder::new()
       .with_title("Hinterland");
 
-    let builder = if true {
+    let builder = if cfg!(feature = "windowed") {
       window_title
-        .with_dimensions(window_size)
-        .with_min_dimensions(window_size)
-        .with_max_dimensions(window_size)
+        .with_dimensions(RESOLUTION_X, RESOLUTION_Y)
+        .with_min_dimensions(RESOLUTION_X, RESOLUTION_Y)
+        .with_max_dimensions(RESOLUTION_X, RESOLUTION_Y)
     } else {
       let monitor = {
         events_loop.get_available_monitors().nth(0).expect("Please enter a valid ID")
       };
       window_title.with_fullscreen(Some(monitor))
-                  .with_dimensions(window_size)
-                  .with_min_dimensions(window_size)
-                  .with_max_dimensions(window_size)
+                  .with_dimensions(RESOLUTION_X, RESOLUTION_Y)
+                  .with_min_dimensions(RESOLUTION_X, RESOLUTION_Y)
+                  .with_max_dimensions(RESOLUTION_X, RESOLUTION_Y)
     };
 
     let context = glutin::ContextBuilder::new()
@@ -126,7 +124,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
   }
 
   fn get_hidpi_factor(&mut self) -> f32 {
-    self.window.get_hidpi_factor() as f32
+    self.window.hidpi_factor() as f32
   }
 
   fn get_render_target_view(&mut self) -> gfx::handle::RenderTargetView<gfx_device_gl::Resources, ColorFormat> {
@@ -227,7 +225,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
             WindowStatus::Open
           }
           CursorMoved { position, .. } => {
-            *m_pos = ((position.x as f32).into(), (position.y as f32).into());
+            *m_pos = position;
             WindowStatus::Open
           }
           CloseRequested => WindowStatus::Close,
