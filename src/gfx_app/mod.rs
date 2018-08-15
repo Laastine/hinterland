@@ -239,7 +239,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
             WindowStatus::Open
           }
           CloseRequested => WindowStatus::Close,
-          _ => WindowStatus::Close,
+          _ => WindowStatus::Open,
         }
       } else {
         WindowStatus::Open
