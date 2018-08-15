@@ -4,6 +4,12 @@ use crossbeam_channel as channel;
 use gfx_app::mouse_controls::MouseControl;
 use graphics::camera::CameraControl;
 
+pub enum Control {
+  Plus,
+  Negative,
+  Released,
+}
+
 #[derive(Debug, Clone)]
 pub struct TilemapControls {
   audio_control: channel::Sender<Effects>,
@@ -39,45 +45,29 @@ impl TilemapControls {
     self.mouse_control.send((contol_value, value));
   }
 
-  pub fn zoom_in(&mut self) {
-    self.terrain(CameraControl::ZoomIn)
-  }
-  pub fn zoom_out(&mut self) {
-    self.terrain(CameraControl::ZoomOut)
-  }
-  pub fn zoom_stop(&mut self) {
-    self.terrain(CameraControl::ZoomStop)
-  }
-  pub fn ctrl_pressed(&mut self) {
-    self.character(CharacterControl::CtrlPressed)
-  }
-  pub fn ctrl_released(&mut self) {
-    self.character(CharacterControl::CtrlReleased)
+  pub fn zoom(&mut self, control: Control) {
+    match control {
+      Control::Plus => self.terrain(CameraControl::ZoomIn),
+      Control::Negative => self.terrain(CameraControl::ZoomOut),
+      Control::Released => self.terrain(CameraControl::ZoomStop),
+    }
   }
 
-  pub fn move_character_left(&mut self) {
-    self.character(CharacterControl::Left)
-  }
-  pub fn move_character_right(&mut self) {
-    self.character(CharacterControl::Right)
-  }
-  pub fn stop_character_x(&mut self) { self.character(CharacterControl::XMoveStop) }
-
-  pub fn move_character_up(&mut self) {
-    self.character(CharacterControl::Up)
+  pub fn ctrl_pressed(&mut self, is_ctrl: bool) {
+    match is_ctrl {
+      true => self.character(CharacterControl::CtrlPressed),
+      false => self.character(CharacterControl::CtrlReleased),
+    }
   }
 
-  pub fn move_character_down(&mut self) {
-    self.character(CharacterControl::Down)
+  pub fn move_character(&mut self, character_control: CharacterControl) {
+    self.character(character_control)
   }
-
-  pub fn stop_character_y(&mut self) { self.character(CharacterControl::YMoveStop) }
 
   pub fn reload_weapon(&mut self, is_relodading: bool) {
-    if is_relodading {
-      self.character(CharacterControl::ReloadPressed)
-    } else {
-      self.character(CharacterControl::ReloadReleased)
+    match is_relodading {
+      true => self.character(CharacterControl::ReloadPressed),
+      false => self.character(CharacterControl::ReloadReleased),
     }
   }
 

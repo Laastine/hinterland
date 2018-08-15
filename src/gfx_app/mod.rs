@@ -141,6 +141,8 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
     use glutin::WindowEvent::{CloseRequested, CursorMoved, MouseInput};
     use glutin::ElementState::{Pressed, Released};
     use glutin::VirtualKeyCode::{Escape, Z, X, W, A, S, D, R};
+    use gfx_app::controls::Control;
+    use character::controls::CharacterControl;
 
     let controls = match self.controls {
       Some(ref mut c) => c,
@@ -157,42 +159,42 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
           glutin::WindowEvent::KeyboardInput { input, .. } => match input {
             KeyboardInput { virtual_keycode: Some(Escape), .. } => WindowStatus::Close,
             KeyboardInput { state: Pressed, virtual_keycode: Some(Z), .. } => {
-              controls.zoom_out();
+              controls.zoom(Control::Negative);
               WindowStatus::Open
             }
             KeyboardInput { state: Pressed, virtual_keycode: Some(X), .. } => {
-              controls.zoom_in();
+              controls.zoom(Control::Plus);
               WindowStatus::Open
             }
             KeyboardInput { state: Released, virtual_keycode: Some(Z), .. } |
             KeyboardInput { state: Released, virtual_keycode: Some(X), .. } => {
-              controls.zoom_stop();
+              controls.zoom(Control::Released);
               WindowStatus::Open
             }
             KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {
-              controls.move_character_up();
+              controls.move_character(CharacterControl::Up);
               WindowStatus::Open
             }
             KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {
-              controls.move_character_down();
+              controls.move_character(CharacterControl::Down);
               WindowStatus::Open
             }
             KeyboardInput { state: Released, virtual_keycode: Some(W), .. } |
             KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {
-              controls.stop_character_y();
+              controls.move_character(CharacterControl::YMoveStop);
               WindowStatus::Open
             }
             KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {
-              controls.move_character_left();
+              controls.move_character(CharacterControl::Left);
               WindowStatus::Open
             }
             KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {
-              controls.move_character_right();
+              controls.move_character(CharacterControl::Right);
               WindowStatus::Open
             }
             KeyboardInput { state: Released, virtual_keycode: Some(A), .. } |
             KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {
-              controls.stop_character_x();
+              controls.move_character(CharacterControl::XMoveStop);
               WindowStatus::Open
             }
             KeyboardInput { state: Pressed, virtual_keycode: Some(R), .. } => {
@@ -205,13 +207,13 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
             },
             KeyboardInput { state: Pressed, modifiers, .. } => {
               if modifiers.ctrl {
-                controls.ctrl_pressed();
+                controls.ctrl_pressed(true);
               }
               WindowStatus::Open
             }
             KeyboardInput { state: Released, modifiers, .. } => {
               if !modifiers.ctrl {
-                controls.ctrl_released();
+                controls.ctrl_pressed(false);
               }
               WindowStatus::Open
             }
@@ -237,7 +239,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
             WindowStatus::Open
           }
           CloseRequested => WindowStatus::Close,
-          _ => WindowStatus::Open,
+          _ => WindowStatus::Close,
         }
       } else {
         WindowStatus::Open
