@@ -190,16 +190,16 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
     match input {
       KeyboardInput { virtual_keycode: Some(Escape), .. } => WindowStatus::Close,
       KeyboardInput { state: Pressed, virtual_keycode: Some(Z), .. } => {
-        controls.zoom(Control::Negative);
+        controls.zoom(&Control::Negative);
         WindowStatus::Open
       }
       KeyboardInput { state: Pressed, virtual_keycode: Some(X), .. } => {
-        controls.zoom(Control::Plus);
+        controls.zoom(&Control::Plus);
         WindowStatus::Open
       }
       KeyboardInput { state: Released, virtual_keycode: Some(Z), .. } |
       KeyboardInput { state: Released, virtual_keycode: Some(X), .. } => {
-        controls.zoom(Control::Released);
+        controls.zoom(&Control::Released);
         WindowStatus::Open
       }
       KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {

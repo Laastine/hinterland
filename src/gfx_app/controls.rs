@@ -31,7 +31,7 @@ impl TilemapControls {
     }
   }
 
-  pub fn zoom(&mut self, control: Control) {
+  pub fn zoom(&mut self, control: &Control) {
     match control {
       Control::Plus => self.terrain_control.send(CameraControl::ZoomIn),
       Control::Negative => self.terrain_control.send(CameraControl::ZoomOut),
