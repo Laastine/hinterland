@@ -1,3 +1,4 @@
+use game::constants::{CURRENT_AMMO_TEXT, CURRENT_MAGAZINE_TEXT, VERSION_NUMBER_TEXT};
 use hud::TextDrawable;
 use shaders::Position;
 use specs;
@@ -11,8 +12,9 @@ impl HudObjects {
   pub fn new() -> HudObjects {
     HudObjects {
       objects: vec![
-        TextDrawable::new("v0.3.6", Position::new(0.0, 0.0)),
-        TextDrawable::new("Ammo 10", Position::new(1.9, -1.94)),
+        TextDrawable::new(VERSION_NUMBER_TEXT, Position::new(0.0, 0.0)),
+        TextDrawable::new(CURRENT_AMMO_TEXT, Position::new(1.9, -1.9)),
+        TextDrawable::new(CURRENT_MAGAZINE_TEXT, Position::new(1.9, -1.94)),
       ]
     }
   }

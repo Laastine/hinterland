@@ -24,7 +24,7 @@ pub struct DrawSystem<D: gfx::Device> {
   zombie_system: zombie::ZombieDrawSystem<D::Resources>,
   bullet_system: bullet::BulletDrawSystem<D::Resources>,
   terrain_object_system: [terrain_object::TerrainObjectDrawSystem<D::Resources>; 2],
-  text_system: [hud::TextDrawSystem<D::Resources>; 2],
+  text_system: [hud::TextDrawSystem<D::Resources>; 3],
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
   frames: u32,
@@ -52,6 +52,7 @@ impl<D: gfx::Device> DrawSystem<D> {
       ],
       text_system: [
         hud::TextDrawSystem::new(factory, &HUD_TEXTS, VERSION_NUMBER_TEXT, rtv.clone(), dsv.clone()),
+        hud::TextDrawSystem::new(factory, &HUD_TEXTS, CURRENT_AMMO_TEXT, rtv.clone(), dsv.clone()),
         hud::TextDrawSystem::new(factory, &HUD_TEXTS, CURRENT_AMMO_TEXT, rtv.clone(), dsv.clone())
       ],
       encoder_queue,
