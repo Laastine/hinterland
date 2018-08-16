@@ -92,7 +92,6 @@ pub trait Window<D: gfx::Device, F: gfx::Factory<D::Resources>> {
   fn get_render_target_view(&mut self) -> gfx::handle::RenderTargetView<D::Resources, ColorFormat>;
   fn get_depth_stencil_view(&mut self) -> gfx::handle::DepthStencilView<D::Resources, DepthFormat>;
   fn poll_events(&mut self) -> WindowStatus;
-  fn process_keyboard_input(input: glutin::KeyboardInput, controls: &mut TilemapControls) -> WindowStatus;
 }
 
 impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
@@ -155,7 +154,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
     self.events_loop.poll_events(|event| {
       game_status = if let glutin::Event::WindowEvent { event, .. } = event {
         match event {
-          glutin::WindowEvent::KeyboardInput { input, .. } => {Self::process_keyboard_input(input, controls)},
+          glutin::WindowEvent::KeyboardInput { input, .. } => {process_keyboard_input(input, controls)},
           MouseInput { state: Pressed, button: MouseButton::Left, .. } => {
             controls.mouse_left_click(Some(*m_pos));
             WindowStatus::Open
@@ -185,71 +184,70 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
     });
     game_status
   }
+}
 
-  fn process_keyboard_input(input: glutin::KeyboardInput, controls: &mut TilemapControls) -> WindowStatus {
-    match input {
-      KeyboardInput { virtual_keycode: Some(Escape), .. } => WindowStatus::Close,
-      KeyboardInput { state: Pressed, virtual_keycode: Some(Z), .. } => {
-        controls.zoom(&Control::Negative);
-        WindowStatus::Open
+fn process_keyboard_input(input: glutin::KeyboardInput, controls: &mut TilemapControls) -> WindowStatus {
+  match input {
+    KeyboardInput { virtual_keycode: Some(Escape), .. } => WindowStatus::Close,
+    KeyboardInput { state: Pressed, virtual_keycode: Some(Z), .. } => {
+      controls.zoom(&Control::Negative);
+      WindowStatus::Open
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(X), .. } => {
+      controls.zoom(&Control::Plus);
+      WindowStatus::Open
+    }
+    KeyboardInput { state: Released, virtual_keycode: Some(Z), .. } |
+    KeyboardInput { state: Released, virtual_keycode: Some(X), .. } => {
+      controls.zoom(&Control::Released);
+      WindowStatus::Open
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {
+      controls.move_character(CharacterControl::Up);
+      WindowStatus::Open
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {
+      controls.move_character(CharacterControl::Down);
+      WindowStatus::Open
+    }
+    KeyboardInput { state: Released, virtual_keycode: Some(W), .. } |
+    KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {
+      controls.move_character(CharacterControl::YMoveStop);
+      WindowStatus::Open
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {
+      controls.move_character(CharacterControl::Left);
+      WindowStatus::Open
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {
+      controls.move_character(CharacterControl::Right);
+      WindowStatus::Open
+    }
+    KeyboardInput { state: Released, virtual_keycode: Some(A), .. } |
+    KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {
+      controls.move_character(CharacterControl::XMoveStop);
+      WindowStatus::Open
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(R), .. } => {
+      controls.reload_weapon(true);
+      WindowStatus::Open
+    },
+    KeyboardInput { state: Released, virtual_keycode: Some(R), .. } => {
+      controls.reload_weapon(false);
+      WindowStatus::Open
+    },
+    KeyboardInput { state: Pressed, modifiers, .. } => {
+      if modifiers.ctrl {
+        controls.ctrl_pressed(true);
       }
-      KeyboardInput { state: Pressed, virtual_keycode: Some(X), .. } => {
-        controls.zoom(&Control::Plus);
-        WindowStatus::Open
+      WindowStatus::Open
+    }
+    KeyboardInput { state: Released, modifiers, .. } => {
+      if !modifiers.ctrl {
+        controls.ctrl_pressed(false);
       }
-      KeyboardInput { state: Released, virtual_keycode: Some(Z), .. } |
-      KeyboardInput { state: Released, virtual_keycode: Some(X), .. } => {
-        controls.zoom(&Control::Released);
-        WindowStatus::Open
-      }
-      KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {
-        controls.move_character(CharacterControl::Up);
-        WindowStatus::Open
-      }
-      KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {
-        controls.move_character(CharacterControl::Down);
-        WindowStatus::Open
-      }
-      KeyboardInput { state: Released, virtual_keycode: Some(W), .. } |
-      KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {
-        controls.move_character(CharacterControl::YMoveStop);
-        WindowStatus::Open
-      }
-      KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {
-        controls.move_character(CharacterControl::Left);
-        WindowStatus::Open
-      }
-      KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {
-        controls.move_character(CharacterControl::Right);
-        WindowStatus::Open
-      }
-      KeyboardInput { state: Released, virtual_keycode: Some(A), .. } |
-      KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {
-        controls.move_character(CharacterControl::XMoveStop);
-        WindowStatus::Open
-      }
-      KeyboardInput { state: Pressed, virtual_keycode: Some(R), .. } => {
-        controls.reload_weapon(true);
-        WindowStatus::Open
-      },
-      KeyboardInput { state: Released, virtual_keycode: Some(R), .. } => {
-        controls.reload_weapon(false);
-        WindowStatus::Open
-      },
-      KeyboardInput { state: Pressed, modifiers, .. } => {
-        if modifiers.ctrl {
-          controls.ctrl_pressed(true);
-        }
-        WindowStatus::Open
-      }
-      KeyboardInput { state: Released, modifiers, .. } => {
-        if !modifiers.ctrl {
-          controls.ctrl_pressed(false);
-        }
-        WindowStatus::Open
-      }
+      WindowStatus::Open
     }
   }
 }
-
 
