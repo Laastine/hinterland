@@ -87,8 +87,8 @@ impl ZombieDrawable {
         let dir = calc_next_movement(zombie_pos, self.previous_position) as f32;
         self.direction = orientation_to_direction(dir);
         self.movement_direction = direction_movement(dir);
-        self.stance = Stance::Walking;
-        self.movement_speed = 1.4;
+        self.stance = Stance::Running;
+        self.movement_speed = 2.5;
       } else {
         self.idle_direction_movement(zombie_pos, game_time);
         self.movement_speed = 1.0;
@@ -195,6 +195,9 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
         (drawable.direction as usize * 4 + drawable.zombie_idx) as usize
       },
       Stance::Walking if drawable.orientation != Orientation::Still => {
+        (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize
+      },
+      Stance::Running if drawable.orientation != Orientation::Still => {
         (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize
       },
       Stance::NormalDeath if drawable.orientation != Orientation::Still => {

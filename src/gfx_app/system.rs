@@ -29,6 +29,7 @@ pub struct DrawSystem<D: gfx::Device> {
   game_time: Instant,
   frames: u32,
   cool_down: f64,
+  run_cool_down: f64,
   fire_cool_down: f64,
 }
 
@@ -59,6 +60,7 @@ impl<D: gfx::Device> DrawSystem<D> {
       game_time: Instant::now(),
       frames: 0,
       cool_down: 1.0,
+      run_cool_down: 1.0,
       fire_cool_down: 1.0,
     }
   }
@@ -89,7 +91,11 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
     if self.fire_cool_down == 0.0 {
       self.fire_cool_down += 0.2;
     }
+    if self.run_cool_down == 0.0 {
+      self.run_cool_down += 0.02;
+    }
     self.cool_down = (self.cool_down - delta).max(0.0);
+    self.run_cool_down = (self.run_cool_down - delta).max(0.0);
     self.fire_cool_down = (self.fire_cool_down - delta).max(0.0);
 
     let current_time = Instant::now();
@@ -128,6 +134,16 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
       } else if self.fire_cool_down == 0.0 && c.stance == Stance::Firing {
         cs.update_fire();
       }
+
+      if self.run_cool_down == 0.0 {
+        for mut z in &mut zs.zombies {
+          match z.stance {
+            Stance::Running => z.update_alive_idx(7),
+            _ => ()
+          };
+        }
+      }
+
       let mut drawables: Vec<Drawables> = vec![];
       drawables.append(&mut bs.bullets.iter().map(|b| Drawables::Bullet(b)).collect());
       drawables.append(&mut zs.zombies.iter_mut().map(|z| Drawables::Zombie(z)).collect());

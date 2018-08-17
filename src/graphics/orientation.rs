@@ -32,6 +32,7 @@ impl Display for Orientation {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Stance {
   Walking,
+  Running,
   Firing,
   Still,
   NormalDeath,
@@ -42,6 +43,7 @@ impl Display for Stance {
   fn fmt(&self, f: &mut Formatter) -> Result {
     match *self {
       Stance::Walking => write!(f, "Walking"),
+      Stance::Running => write!(f, "Running"),
       Stance::Firing => write!(f, "Firing"),
       Stance::Still => write!(f, "Still"),
       Stance::NormalDeath => write!(f, "NormalDeath"),
