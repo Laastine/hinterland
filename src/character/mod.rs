@@ -60,8 +60,8 @@ impl CharacterDrawable {
                zombie_not_dead(z) &&
                  overlaps(ci.movement,
                           ci.movement - z.position,
-                          10.0,
-                          20.0)) {
+                          15.0,
+                          30.0)) {
       self.stance = Stance::NormalDeath;
       println!("Player died");
       std::process::exit(0);
