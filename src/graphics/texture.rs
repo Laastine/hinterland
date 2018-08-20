@@ -39,7 +39,7 @@ pub fn load_raw_texture<R, F>(factory: &mut F, data: &[u8], size: Point2<i32>) -
   match factory
     .create_texture_immutable_u8::<ColorFormat>(kind, mipmap, &[data]) {
     Ok(val) => val.1,
-    Err(e) => panic!("Couldn't load texture {:?}", e)
+    Err(e) => panic!("Couldn't load raw texture {:?}", e)
   }
 }
 
