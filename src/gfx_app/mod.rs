@@ -59,7 +59,7 @@ impl WindowContext {
       .with_pixel_format(24, 8)
       .with_gl(glutin::GlRequest::GlThenGles {
         opengles_version: (3, 0),
-        opengl_version: (4, 1),
+        opengl_version: (3, 3),
       });
 
     let (window, device, factory, rtv, dsv) =
