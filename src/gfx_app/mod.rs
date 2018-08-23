@@ -43,12 +43,15 @@ impl WindowContext {
         .with_max_dimensions(RESOLUTION_X, RESOLUTION_Y)
     } else {
       let monitor = {
-        events_loop.get_available_monitors().nth(0).expect("Please enter a valid ID")
+        events_loop.get_available_monitors().nth(0).expect("No monitor found")
       };
+      let monitor_resolution = monitor.get_dimensions();
+
+      let resolution = ((monitor_resolution.1 as f32 * 16.0 / 9.0) as u32, monitor_resolution.1);
       window_title.with_fullscreen(Some(monitor))
-                  .with_dimensions(RESOLUTION_X, RESOLUTION_Y)
-                  .with_min_dimensions(RESOLUTION_X, RESOLUTION_Y)
-                  .with_max_dimensions(RESOLUTION_X, RESOLUTION_Y)
+                  .with_dimensions(resolution.0, resolution.1)
+                  .with_min_dimensions(resolution.0, resolution.1)
+                  .with_max_dimensions(resolution.0, resolution.1)
     };
 
     let context = glutin::ContextBuilder::new()
@@ -116,7 +119,13 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
   }
 
   fn get_viewport_size(&mut self) -> (f32, f32) {
-    (RESOLUTION_X as f32, RESOLUTION_Y as f32)
+    if cfg!(feature = "windowed") {
+      (RESOLUTION_X as f32, RESOLUTION_Y as f32)
+    } else {
+      let monitor = self.events_loop.get_available_monitors().nth(0).expect("No monitor found");
+      let monitor_resolution = monitor.get_dimensions();
+      ((monitor_resolution.1 as f32 * 16.0 / 9.0) as f32, monitor_resolution.1 as f32)
+    }
   }
 
   fn get_device(&mut self) -> &mut gfx_device_gl::Device {
