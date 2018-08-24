@@ -21,7 +21,7 @@ json = "0.11.13"
 pathfinding = "0.8.1"
 rand = "0.5.5"
 rodio = "0.8.0"
-rusttype = "0.6.4"
+rusttype = "0.7.0"
 specs = "0.12.1"
 tiled = "0.8.0"
 
