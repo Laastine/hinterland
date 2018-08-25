@@ -40,9 +40,10 @@ impl TilemapControls {
   }
 
   pub fn ctrl_pressed(&mut self, is_ctrl: bool) {
-    match is_ctrl {
-      true => self.character_control.send(CharacterControl::CtrlPressed),
-      false => self.character_control.send(CharacterControl::CtrlReleased),
+    if is_ctrl {
+      self.character_control.send(CharacterControl::CtrlPressed);
+    } else {
+      self.character_control.send(CharacterControl::CtrlReleased)
     }
   }
 
@@ -51,9 +52,10 @@ impl TilemapControls {
   }
 
   pub fn reload_weapon(&mut self, is_reloading: bool) {
-    match is_reloading {
-      true => self.character_control.send(CharacterControl::ReloadPressed),
-      false => self.character_control.send(CharacterControl::ReloadReleased),
+    if is_reloading {
+      self.character_control.send(CharacterControl::ReloadPressed);
+    } else {
+      self.character_control.send(CharacterControl::ReloadReleased);
     }
   }
 

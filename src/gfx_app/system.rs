@@ -137,10 +137,9 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
 
       if self.run_cool_down == 0.0 {
         for mut z in &mut zs.zombies {
-          match z.stance {
-            Stance::Running => z.update_alive_idx(7),
-            _ => ()
-          };
+          if let Stance::Running = z.stance {
+             z.update_alive_idx(7)
+          }
         }
       }
 

@@ -7,7 +7,7 @@ use gfx_window_glutin;
 use glutin;
 use glutin::{GlContext, KeyboardInput, MouseButton};
 use glutin::ElementState::{Pressed, Released};
-use glutin::VirtualKeyCode::{Escape, Z, X, W, A, S, D, R};
+use glutin::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
 
 pub mod init;
 pub mod renderer;
@@ -163,7 +163,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
     self.events_loop.poll_events(|event| {
       game_status = if let glutin::Event::WindowEvent { event, .. } = event {
         match event {
-          glutin::WindowEvent::KeyboardInput { input, .. } => {process_keyboard_input(input, controls)},
+          glutin::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input, controls) },
           MouseInput { state: Pressed, button: MouseButton::Left, .. } => {
             controls.mouse_left_click(Some(*m_pos));
             WindowStatus::Open
