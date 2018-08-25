@@ -40,7 +40,7 @@ pub struct ZombieDrawable {
   orientation: Orientation,
   pub stance: Stance,
   direction: Orientation,
-  last_decision: u64,
+  last_decision: i64,
   pub movement_direction: Point2<f32>,
   zombie_idx: usize,
   zombie_death_idx: usize,
@@ -59,7 +59,7 @@ impl ZombieDrawable {
       orientation: Orientation::Left,
       stance: Stance::Still,
       direction: Orientation::Left,
-      last_decision: 0,
+      last_decision: -2,
       movement_direction: Point2::new(0.0, 0.0),
       zombie_idx: 0,
       zombie_death_idx: 0,
@@ -83,14 +83,14 @@ impl ZombieDrawable {
     if is_alive {
       let zombie_pos = ci.movement - self.position;
 
-      if distance_to_player < 300.0 {
+      if distance_to_player < 350.0 {
         let dir = calc_next_movement(zombie_pos, self.previous_position) as f32;
         self.direction = orientation_to_direction(dir);
         self.movement_direction = direction_movement(dir);
         self.stance = Stance::Running;
         self.movement_speed = 2.5;
       } else {
-        self.idle_direction_movement(zombie_pos, game_time);
+        self.idle_direction_movement(zombie_pos, game_time as i64);
         self.movement_speed = 1.0;
       }
     } else {
@@ -101,7 +101,7 @@ impl ZombieDrawable {
                                   self.movement_direction.y * self.movement_speed) + self.position + offset_delta;
   }
 
-  fn idle_direction_movement(&mut self, zombie_pos: Position, game_time: u64) {
+  fn idle_direction_movement(&mut self, zombie_pos: Position, game_time: i64) {
     if !can_move_to_tile(zombie_pos) {
       let dir = direction(self.movement_direction, Point2::new(0.0, 0.0));
       self.movement_direction = direction_movement_180(self.movement_direction);
