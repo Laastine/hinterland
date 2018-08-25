@@ -197,66 +197,57 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
 
 fn process_keyboard_input(input: glutin::KeyboardInput, controls: &mut TilemapControls) -> WindowStatus {
   match input {
-    KeyboardInput { virtual_keycode: Some(Escape), .. } => WindowStatus::Close,
     KeyboardInput { state: Pressed, virtual_keycode: Some(Z), .. } => {
       controls.zoom(&Control::Negative);
-      WindowStatus::Open
     }
     KeyboardInput { state: Pressed, virtual_keycode: Some(X), .. } => {
       controls.zoom(&Control::Plus);
-      WindowStatus::Open
     }
     KeyboardInput { state: Released, virtual_keycode: Some(Z), .. } |
     KeyboardInput { state: Released, virtual_keycode: Some(X), .. } => {
       controls.zoom(&Control::Released);
-      WindowStatus::Open
     }
     KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {
       controls.move_character(CharacterControl::Up);
-      WindowStatus::Open
     }
     KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {
       controls.move_character(CharacterControl::Down);
-      WindowStatus::Open
     }
     KeyboardInput { state: Released, virtual_keycode: Some(W), .. } |
     KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {
       controls.move_character(CharacterControl::YMoveStop);
-      WindowStatus::Open
     }
     KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {
       controls.move_character(CharacterControl::Left);
-      WindowStatus::Open
     }
     KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {
       controls.move_character(CharacterControl::Right);
-      WindowStatus::Open
     }
     KeyboardInput { state: Released, virtual_keycode: Some(A), .. } |
     KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {
       controls.move_character(CharacterControl::XMoveStop);
-      WindowStatus::Open
     }
     KeyboardInput { state: Pressed, virtual_keycode: Some(R), .. } => {
       controls.reload_weapon(true);
-      WindowStatus::Open
     },
     KeyboardInput { state: Released, virtual_keycode: Some(R), .. } => {
       controls.reload_weapon(false);
-      WindowStatus::Open
     },
     KeyboardInput { state: Pressed, modifiers, .. } => {
       if modifiers.ctrl {
         controls.ctrl_pressed(true);
       }
-      WindowStatus::Open
     }
     KeyboardInput { state: Released, modifiers, .. } => {
       if !modifiers.ctrl {
         controls.ctrl_pressed(false);
       }
-      WindowStatus::Open
     }
+  }
+  if let Some(Escape) = input.virtual_keycode {
+    WindowStatus::Close
+  } else {
+    WindowStatus::Open
   }
 }
 
