@@ -51,6 +51,7 @@ impl specs::prelude::Component for TerrainObjectDrawable {
 pub enum TerrainTexture {
   House,
   Tree,
+  Ammo,
 }
 
 pub struct TerrainObjectDrawSystem<R: gfx::Resources> {
@@ -66,13 +67,20 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
     use gfx::traits::FactoryExt;
 
     let texture_bytes = match texture {
+      TerrainTexture::Ammo => &include_bytes!("../../assets/maps/ammo.png")[..],
       TerrainTexture::House => &include_bytes!("../../assets/maps/house.png")[..],
       TerrainTexture::Tree => &include_bytes!("../../assets/maps/tree.png")[..],
     };
 
     let terrain_object_texture = load_texture(factory, texture_bytes);
 
-    let mesh = RectangularMesh::new(factory, Texture::new(terrain_object_texture, None), Point2::new(120.0, 120.0));
+    let texture_size = match texture {
+      TerrainTexture::Ammo => Point2::new(5.0, 7.0),
+      TerrainTexture::House => Point2::new(120.0, 120.0),
+      TerrainTexture::Tree => Point2::new(120.0, 120.0),
+    };
+
+    let mesh = RectangularMesh::new(factory, Texture::new(terrain_object_texture, None), texture_size);
 
     let pso =
       match factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, static_element_pipeline::new()) {

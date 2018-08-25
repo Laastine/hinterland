@@ -1,4 +1,4 @@
-use game::constants::{HOUSE_POSITIONS, TREE_POSITIONS};
+use game::constants::{AMMO_POSITIONS, HOUSE_POSITIONS, TREE_POSITIONS};
 use shaders::Position;
 use specs;
 use terrain_object::TerrainObjectDrawable;
@@ -12,6 +12,7 @@ impl TerrainObjects {
   pub fn new() -> TerrainObjects {
     TerrainObjects {
       objects: vec![
+        TerrainObjectDrawable::new(Position::new(AMMO_POSITIONS[0][0], AMMO_POSITIONS[0][1])),
         TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[0][0], HOUSE_POSITIONS[0][1])),
         TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[1][0], HOUSE_POSITIONS[1][1])),
         TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[0][0], TREE_POSITIONS[0][1])),

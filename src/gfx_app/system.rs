@@ -1,7 +1,7 @@
 use bullet;
 use character;
 use critter::CharacterSprite;
-use game::constants::{CURRENT_AMMO_TEXT, VERSION_NUMBER_TEXT, HUD_TEXTS};
+use game::constants::{CURRENT_AMMO_TEXT, HUD_TEXTS, VERSION_NUMBER_TEXT};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::renderer::EncoderQueue;
@@ -23,7 +23,7 @@ pub struct DrawSystem<D: gfx::Device> {
   character_system: character::CharacterDrawSystem<D::Resources>,
   zombie_system: zombie::ZombieDrawSystem<D::Resources>,
   bullet_system: bullet::BulletDrawSystem<D::Resources>,
-  terrain_object_system: [terrain_object::TerrainObjectDrawSystem<D::Resources>; 2],
+  terrain_object_system: [terrain_object::TerrainObjectDrawSystem<D::Resources>; 3],
   text_system: [hud::TextDrawSystem<D::Resources>; 3],
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
@@ -48,6 +48,7 @@ impl<D: gfx::Device> DrawSystem<D> {
       zombie_system: zombie::ZombieDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       bullet_system: bullet::BulletDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       terrain_object_system: [
+        terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::Ammo),
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::House),
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::Tree)
       ],
@@ -148,11 +149,17 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
       drawables.append(&mut zs.zombies.iter_mut().map(|z| Drawables::Zombie(z)).collect());
 
       for (idx, o) in obj.objects.iter().enumerate() {
-        if idx < 2 {
-          drawables.push(Drawables::TerrainHouse(o));
-        } else {
-          drawables.push(Drawables::TerrainTree(o));
-        }
+//        if idx > 2 {
+//          drawables.push(Drawables::TerrainTree(o));
+//        } else {
+//          drawables.push(Drawables::TerrainHouse(o));
+//        }
+
+        match idx {
+          0 => drawables.push(Drawables::TerrainAmmo(o)),
+          1 | 2 => drawables.push(Drawables::TerrainHouse(o)),
+          _ => drawables.push(Drawables::TerrainTree(o)),
+        };
       }
 
       drawables.push(Drawables::Character(c));
@@ -161,6 +168,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
         let a_val = match a {
           Drawables::Bullet(e) => e.position.y(),
           Drawables::Zombie(e) => e.position.y(),
+          Drawables::TerrainAmmo(e) => e.position.y(),
           Drawables::TerrainHouse(e) => e.position.y(),
           Drawables::TerrainTree(e) => e.position.y(),
           Drawables::Character(e) => e.position.y(),
@@ -169,6 +177,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
         let b_val = match b {
           Drawables::Bullet(e) => e.position.y(),
           Drawables::Zombie(e) => e.position.y(),
+          Drawables::TerrainAmmo(e) => e.position.y(),
           Drawables::TerrainHouse(e) => e.position.y(),
           Drawables::TerrainTree(e) => e.position.y(),
           Drawables::Character(e) => e.position.y(),
@@ -181,8 +190,9 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
         match *e {
           Drawables::Bullet(ref e) => { self.bullet_system.draw(e, &mut encoder) },
           Drawables::Zombie(ref mut e) => { self.zombie_system.draw(e, &mut encoder) },
-          Drawables::TerrainHouse(ref mut e) => { self.terrain_object_system[0].draw(e, &mut encoder) },
-          Drawables::TerrainTree(ref mut e) => { self.terrain_object_system[1].draw(e, &mut encoder) },
+          Drawables::TerrainAmmo(ref mut e) => { self.terrain_object_system[0].draw(e, &mut encoder) },
+          Drawables::TerrainHouse(ref mut e) => { self.terrain_object_system[1].draw(e, &mut encoder) },
+          Drawables::TerrainTree(ref mut e) => { self.terrain_object_system[2].draw(e, &mut encoder) },
           Drawables::Character(ref mut e) => { self.character_system.draw(e, cs, &mut encoder) },
         }
       }

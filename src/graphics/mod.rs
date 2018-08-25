@@ -164,6 +164,7 @@ pub fn calc_hypotenuse(a: f32, b: f32) -> f32 {
 pub enum Drawables<'b> {
   Bullet(&'b BulletDrawable),
   Character(&'b mut CharacterDrawable),
+  TerrainAmmo(&'b TerrainObjectDrawable),
   TerrainHouse(&'b TerrainObjectDrawable),
   TerrainTree(&'b TerrainObjectDrawable),
   Zombie(&'b mut ZombieDrawable),
