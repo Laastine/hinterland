@@ -25,5 +25,5 @@ impl Bullets {
 }
 
 impl specs::prelude::Component for Bullets {
-  type Storage = specs::storage::DenseVecStorage<Bullets>;
+  type Storage = specs::storage::VecStorage<Bullets>;
 }

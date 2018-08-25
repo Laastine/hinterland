@@ -30,7 +30,7 @@ impl MouseInputState {
 }
 
 impl specs::prelude::Component for MouseInputState {
-  type Storage = specs::storage::HashMapStorage<MouseInputState>;
+  type Storage = specs::storage::VecStorage<MouseInputState>;
 }
 
 #[derive(Debug)]

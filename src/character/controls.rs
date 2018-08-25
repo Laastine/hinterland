@@ -79,7 +79,7 @@ impl Default for CharacterInputState {
 }
 
 impl specs::prelude::Component for CharacterInputState {
-  type Storage = specs::storage::DenseVecStorage<CharacterInputState>;
+  type Storage = specs::storage::VecStorage<CharacterInputState>;
 }
 
 #[derive(Debug)]
