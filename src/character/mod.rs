@@ -13,6 +13,7 @@ use shaders::{CharacterSheet, critter_pipeline, Position, Projection};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 use std;
+use terrain_object::{terrain_objects::TerrainObjects, TerrainObjectDrawable};
 use zombie::{ZombieDrawable, zombies::Zombies};
 
 pub mod controls;
@@ -46,12 +47,17 @@ impl CharacterDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &MouseInputState, dimensions: &Dimensions, zombies: &[ZombieDrawable]) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &MouseInputState,
+                dimensions: &Dimensions, objs: &[TerrainObjectDrawable], zombies: &[ZombieDrawable]) {
     self.projection = *world_to_clip;
 
     fn zombie_not_dead(z: &ZombieDrawable) -> bool {
       z.stance != Stance::NormalDeath &&
         z.stance != Stance::CriticalDeath
+    }
+
+    if overlaps(ci.movement, ci.movement - objs[0].position, 20.0, 20.0) {
+      self.stats.magazines = 2;
     }
 
     if !cfg!(feature = "godmode") &&
@@ -186,15 +192,16 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
                      ReadStorage<'a, MouseInputState>,
+                     ReadStorage<'a, TerrainObjects>,
                      ReadStorage<'a, Zombies>,
                      Read<'a, Dimensions>);
 
-  fn run(&mut self, (mut character, camera_input, character_input, mouse_input, zombies, dim): Self::SystemData) {
+  fn run(&mut self, (mut character, camera_input, character_input, mouse_input, terrain_objects, zombies, dim): Self::SystemData) {
     use specs::join::Join;
 
-    for (c, camera, ci, mi, zs) in (&mut character, &camera_input, &character_input, &mouse_input, &zombies).join() {
+    for (c, camera, ci, mi, to, zs) in (&mut character, &camera_input, &character_input, &mouse_input, &terrain_objects, &zombies).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      c.update(&world_to_clip, ci, mi, &dim, &zs.zombies);
+      c.update(&world_to_clip, ci, mi, &dim, &to.objects, &zs.zombies);
     }
   }
 }
