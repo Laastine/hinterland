@@ -149,12 +149,6 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
       drawables.append(&mut zs.zombies.iter_mut().map(|z| Drawables::Zombie(z)).collect());
 
       for (idx, o) in obj.objects.iter().enumerate() {
-//        if idx > 2 {
-//          drawables.push(Drawables::TerrainTree(o));
-//        } else {
-//          drawables.push(Drawables::TerrainHouse(o));
-//        }
-
         match idx {
           0 => drawables.push(Drawables::TerrainAmmo(o)),
           1 | 2 => drawables.push(Drawables::TerrainHouse(o)),
