@@ -169,3 +169,16 @@ pub enum Drawables<'b> {
   TerrainTree(&'b TerrainObjectDrawable),
   Zombie(&'b mut ZombieDrawable),
 }
+
+impl<'b> Drawables<'b> {
+  pub fn get_y(drawable: &Drawables) -> f32 {
+    match drawable {
+      Drawables::Bullet(e) => e.position.y(),
+      Drawables::Zombie(e) => e.position.y(),
+      Drawables::TerrainAmmo(e) => e.position.y(),
+      Drawables::TerrainHouse(e) => e.position.y(),
+      Drawables::TerrainTree(e) => e.position.y(),
+      Drawables::Character(e) => e.position.y(),
+    }
+  }
+}

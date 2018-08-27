@@ -159,25 +159,8 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
       drawables.push(Drawables::Character(c));
 
       drawables.sort_by(|a, b| {
-        let a_val = match a {
-          Drawables::Bullet(e) => e.position.y(),
-          Drawables::Zombie(e) => e.position.y(),
-          Drawables::TerrainAmmo(e) => e.position.y(),
-          Drawables::TerrainHouse(e) => e.position.y(),
-          Drawables::TerrainTree(e) => e.position.y(),
-          Drawables::Character(e) => e.position.y(),
-        };
-
-        let b_val = match b {
-          Drawables::Bullet(e) => e.position.y(),
-          Drawables::Zombie(e) => e.position.y(),
-          Drawables::TerrainAmmo(e) => e.position.y(),
-          Drawables::TerrainHouse(e) => e.position.y(),
-          Drawables::TerrainTree(e) => e.position.y(),
-          Drawables::Character(e) => e.position.y(),
-        };
-
-        b_val.partial_cmp(&a_val).unwrap()
+        Drawables::get_y(b)
+          .partial_cmp(&Drawables::get_y(a)).unwrap()
       });
 
       for mut e in &mut drawables {
