@@ -83,7 +83,7 @@ impl ZombieDrawable {
     if is_alive {
       let zombie_pos = ci.movement - self.position;
 
-      if distance_to_player < 350.0 {
+      if distance_to_player < 400.0 {
         let dir = calc_next_movement(zombie_pos, self.previous_position) as f32;
         self.direction = orientation_to_direction(dir);
         self.movement_direction = direction_movement(dir);
