@@ -52,11 +52,11 @@ pub const TERRAIN_OBJECTS: [[usize; 2]; 34] = [
   [16, 54], [17, 55],
   [15, 45], [16, 46]];
 
-pub const HUD_TEXTS: [&str; 15] = ["v0.3.7", "Ammo 0", "Ammo 1", "Ammo 2", "Ammo 3",
+pub const HUD_TEXTS: [&str; 15] = ["v0.3.8", "Ammo 0", "Ammo 1", "Ammo 2", "Ammo 3",
   "Ammo 4", "Ammo 5", "Ammo 6",
   "Ammo 7", "Ammo 8", "Ammo 9", "Ammo 10",
   "Magazines 0", "Magazines 1", "Magazines 2"];
 
 pub const CURRENT_AMMO_TEXT: &str = "Ammo 10";
 pub const CURRENT_MAGAZINE_TEXT: &str = "Magazines 2";
-pub const VERSION_NUMBER_TEXT: &str = "v0.3.7";
+pub const VERSION_NUMBER_TEXT: &str = "v0.3.8";

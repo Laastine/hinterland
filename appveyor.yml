@@ -1,4 +1,4 @@
-version: 0.3.7-{build}
+version: 0.3.8-{build}
 
 environment:
   RUST_BACKTRACE: full
