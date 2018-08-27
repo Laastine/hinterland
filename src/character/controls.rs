@@ -154,9 +154,9 @@ impl<'a> specs::prelude::System<'a> for CharacterControlSystem {
         if c.stance != Stance::NormalDeath {
           ci.update(camera, self);
         }
-        if self.is_reloading && c.stats.magazines > 0 {
+        if self.is_reloading && c.stats.magazines > 0 && c.stats.ammunition < 10 {
           c.stats.ammunition = 10;
-          c.stats.magazines = 0;
+          c.stats.magazines -= 1;
         }
       }
     }
