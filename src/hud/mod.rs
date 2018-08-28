@@ -1,6 +1,5 @@
 use cgmath::Point2;
 use character::CharacterDrawable;
-use game::constants::VERSION_NUMBER_TEXT;
 use gfx;
 use gfx_app::ColorFormat;
 use gfx_app::DepthFormat;
@@ -122,7 +121,6 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
     for (cd, huds) in (&character_drawable, &mut hud_objects).join() {
       let new_ammo_text = format!("Ammo {}", cd.stats.ammunition);
       let new_mag_text = format!("Magazines {}", cd.stats.magazines);
-      huds.objects[0].update(VERSION_NUMBER_TEXT.to_string());
       huds.objects[1].update(new_ammo_text);
       huds.objects[2].update(new_mag_text);
     }
