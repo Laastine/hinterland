@@ -111,7 +111,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
     for (t, c, cs, hds, zs, bs, obj) in (&mut terrain, &mut character, &mut character_sprite, &mut hud_objects,
-                                             &mut zombies, &mut bullets, &mut terrain_objects).join() {
+                                         &mut zombies, &mut bullets, &mut terrain_objects).join() {
       self.terrain_system.draw(t, &mut encoder);
 
       for hud in &mut hds.objects {
@@ -139,7 +139,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
       if self.run_cool_down == 0.0 {
         for mut z in &mut zs.zombies {
           if let Stance::Running = z.stance {
-             z.update_alive_idx(7)
+            z.update_alive_idx(7)
           }
         }
       }
@@ -160,7 +160,8 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
 
       drawables.sort_by(|a, b| {
         Drawables::get_y(b)
-          .partial_cmp(&Drawables::get_y(a)).unwrap()
+          .partial_cmp(&Drawables::get_y(a))
+          .unwrap()
       });
 
       for mut e in &mut drawables {

@@ -23,9 +23,10 @@ fn neighbours<'c>(curr_pos: Point2<i32>, impassable_tiles: &[[usize; 2]], neighb
 }
 
 fn tiles(p: Point2<i32>, impassable_tiles: &[[usize; 2]]) -> Vec<(Point2<i32>, i32)> {
-  neighbours(p, &impassable_tiles, &mut vec![]).iter()
-                                                .map(|p| (**p, 1))
-                                                .collect()
+  neighbours(p, &impassable_tiles, &mut vec![])
+    .iter()
+    .map(|p| (**p, 1))
+    .collect()
 }
 
 fn find_next_best_endpoint<'c>(end_point: &'c Point2<i32>, impassable_tiles: &[[usize; 2]], neighbour_tiles: &'c mut Vec<Point2<i32>>) -> &'c Point2<i32> {

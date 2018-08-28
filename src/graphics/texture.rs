@@ -5,6 +5,7 @@ use hud::font::draw_text;
 use image;
 use rusttype::Font;
 use std::collections::HashMap;
+use std::hash::BuildHasher;
 use std::io::Cursor;
 
 #[derive(Debug, Clone)]
@@ -43,11 +44,12 @@ pub fn load_raw_texture<R, F>(factory: &mut F, data: &[u8], size: Point2<i32>) -
   }
 }
 
-pub fn text_texture<'a, R, F, S: ::std::hash::BuildHasher>(factory: &mut F,
-                              font: &Font,
-                              texts: &[&str],
-                              texture_cache: &'a mut HashMap<String, Texture<R>, S>) -> &'a mut HashMap<String, Texture<R>, S>
-                              where R: Resources, F: Factory<R> {
+pub fn text_texture<'a, R, F, S: BuildHasher>(factory: &mut F,
+                                              font: &Font,
+                                              texts: &[&str],
+                                              texture_cache: &'a mut HashMap<String, Texture<R>, S>)
+                                              -> &'a mut HashMap<String, Texture<R>, S>
+                                              where R: Resources, F: Factory<R> {
   let text_texture_height = 100.0;
   texts.iter().for_each(|text| {
     let (texture_size, texture_data) = draw_text(&font, text_texture_height, text);

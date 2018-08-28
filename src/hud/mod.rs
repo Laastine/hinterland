@@ -4,12 +4,12 @@ use gfx;
 use gfx_app::ColorFormat;
 use gfx_app::DepthFormat;
 use graphics::{mesh::RectangularMesh};
-use graphics::texture::{Texture, text_texture};
+use graphics::texture::{text_texture, Texture};
 use rusttype::FontCollection;
 use shaders::{Position, text_pipeline};
 use specs;
-use std::collections::HashMap;
 use specs::{ReadStorage, WriteStorage};
+use std::collections::HashMap;
 
 pub mod font;
 pub mod hud_objects;
