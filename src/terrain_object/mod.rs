@@ -66,27 +66,19 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
                 where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
-    let texture_bytes = match texture {
-      TerrainTexture::Ammo => &include_bytes!("../../assets/maps/ammo.png")[..],
-      TerrainTexture::House => &include_bytes!("../../assets/maps/house.png")[..],
-      TerrainTexture::Tree => &include_bytes!("../../assets/maps/tree.png")[..],
+    let (texture_size, texture_bytes) = match texture {
+      TerrainTexture::Ammo => (Point2::new(5.0, 7.0), &include_bytes!("../../assets/maps/ammo.png")[..]),
+      TerrainTexture::House => (Point2::new(120.0, 120.0), &include_bytes!("../../assets/maps/house.png")[..]),
+      TerrainTexture::Tree => (Point2::new(120.0, 120.0), &include_bytes!("../../assets/maps/tree.png")[..]),
     };
 
     let terrain_object_texture = load_texture(factory, texture_bytes);
 
-    let texture_size = match texture {
-      TerrainTexture::Ammo => Point2::new(5.0, 7.0),
-      TerrainTexture::House => Point2::new(120.0, 120.0),
-      TerrainTexture::Tree => Point2::new(120.0, 120.0),
-    };
-
     let mesh = RectangularMesh::new(factory, Texture::new(terrain_object_texture, None), texture_size);
 
-    let pso =
-      match factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, static_element_pipeline::new()) {
-        Ok(val) => val,
-        Err(err) => panic!("Terrain object shader loading error {:?}", err)
-      };
+    let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, static_element_pipeline::new())
+                     .map_err(|err| panic!("Terrain object shader loading error {:?}", err))
+                     .unwrap();
 
     let pipeline_data = static_element_pipeline::Data {
       vbuf: mesh.mesh.vertex_buffer,

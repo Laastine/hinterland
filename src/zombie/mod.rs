@@ -166,10 +166,9 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
       RectangularMesh::new(factory, Texture::new(char_texture, None), Point2::new(25.0, 35.0));
 
     let pso =
-      match factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, critter_pipeline::new()) {
-        Ok(val) => val,
-        Err(err) => panic!("Zombie shader loading error {:?}", err)
-      };
+      factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, critter_pipeline::new())
+             .map_err(|err| panic!("Zombie shader loading error {:?}", err))
+             .unwrap();
 
     let pipeline_data = critter_pipeline::Data {
       vbuf: rect_mesh.mesh.vertex_buffer,
