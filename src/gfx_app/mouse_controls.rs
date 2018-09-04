@@ -17,7 +17,6 @@ pub struct MouseInputState {
   pub right_click_point: Option<Point2<f32>>,
 }
 
-#[cfg_attr(feature = "cargo-clippy", allow(new_without_default_derive))]
 impl MouseInputState {
   pub fn new() -> MouseInputState {
     MouseInputState {
@@ -26,6 +25,12 @@ impl MouseInputState {
       left_click_point: None,
       right_click_point: None,
     }
+  }
+}
+
+impl Default for MouseInputState {
+  fn default() -> MouseInputState {
+    MouseInputState::new()
   }
 }
 
@@ -58,7 +63,7 @@ impl MouseControlSystem {
 }
 
 impl<'a> specs::prelude::System<'a> for MouseControlSystem {
-  #[cfg_attr(feature = "cargo-clippy", allow(type_complexity))]
+
   type SystemData = (WriteStorage<'a, MouseInputState>,
                      WriteStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, CameraInputState>,
