@@ -1,6 +1,11 @@
 language: rust
 
-cache: cargo
+before_cache:
+- rm -rf /home/travis/.cargo/registry
+
+cache:
+  directories:
+  - /home/travis/.cargo
 
 env:
   - PACKAGE_NAME="hinterland-$TRAVIS_OS_NAME.tgz"
