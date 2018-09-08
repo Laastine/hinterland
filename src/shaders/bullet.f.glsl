@@ -1,4 +1,4 @@
-#version 330 core
+#version 150 core
 
 out vec4 Target0;
 

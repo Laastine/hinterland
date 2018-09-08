@@ -56,11 +56,7 @@ impl WindowContext {
 
     let context = glutin::ContextBuilder::new()
       .with_vsync(true)
-      .with_pixel_format(24, 8)
-      .with_gl(glutin::GlRequest::GlThenGles {
-        opengles_version: (3, 0),
-        opengl_version: (3, 3),
-      });
+      .with_pixel_format(24, 8);
 
     let (window, device, factory, rtv, dsv) =
       gfx_window_glutin::init::<ColorFormat, DepthFormat>(builder, context, &events_loop);
