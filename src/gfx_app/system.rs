@@ -148,11 +148,11 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
       drawables.append(&mut bs.bullets.iter().map(|b| Drawables::Bullet(b)).collect());
       drawables.append(&mut zs.zombies.iter_mut().map(|z| Drawables::Zombie(z)).collect());
 
-      for (idx, o) in obj.objects.iter().enumerate() {
-        match idx {
-          0 => drawables.push(Drawables::TerrainAmmo(o)),
-          1 | 2 => drawables.push(Drawables::TerrainHouse(o)),
-          _ => drawables.push(Drawables::TerrainTree(o)),
+      for o in &obj.objects {
+        match o.object_type {
+          TerrainTexture::Ammo => drawables.push(Drawables::TerrainAmmo(o)),
+          TerrainTexture::House => drawables.push(Drawables::TerrainHouse(o)),
+          TerrainTexture::Tree => drawables.push(Drawables::TerrainTree(o)),
         };
       }
 

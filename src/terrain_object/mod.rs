@@ -22,10 +22,11 @@ pub struct TerrainObjectDrawable {
   pub position: Position,
   previous_position: Position,
   offset_delta: Position,
+  pub object_type: TerrainTexture
 }
 
 impl TerrainObjectDrawable {
-  pub fn new(position: Position) -> TerrainObjectDrawable {
+  pub fn new(position: Position, object_type: TerrainTexture) -> TerrainObjectDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
     let projection = get_projection(view, ASPECT_RATIO);
     TerrainObjectDrawable {
@@ -33,6 +34,7 @@ impl TerrainObjectDrawable {
       position,
       previous_position: Position::new(0.0, 0.0),
       offset_delta: Position::new(0.0, 0.0),
+      object_type,
     }
   }
 

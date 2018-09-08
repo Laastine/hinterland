@@ -14,6 +14,7 @@ use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 use std;
 use terrain_object::{terrain_objects::TerrainObjects, TerrainObjectDrawable};
+use terrain_object::TerrainTexture;
 use zombie::{ZombieDrawable, zombies::Zombies};
 
 pub mod controls;
@@ -48,7 +49,7 @@ impl CharacterDrawable {
   }
 
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &MouseInputState,
-                dimensions: &Dimensions, objs: &[TerrainObjectDrawable], zombies: &[ZombieDrawable]) {
+                dimensions: &Dimensions, objs: &mut Vec<TerrainObjectDrawable>, zombies: &[ZombieDrawable]) {
     self.projection = *world_to_clip;
 
     fn zombie_not_dead(z: &ZombieDrawable) -> bool {
@@ -56,8 +57,9 @@ impl CharacterDrawable {
         z.stance != Stance::CriticalDeath
     }
 
-    if overlaps(ci.movement, ci.movement - objs[0].position, 20.0, 20.0) {
+    if objs[0].object_type == TerrainTexture::Ammo && overlaps(ci.movement, ci.movement - objs[0].position, 20.0, 20.0) {
       self.stats.magazines = 2;
+      objs.remove(0);
     }
 
     if !cfg!(feature = "godmode") &&
@@ -185,21 +187,20 @@ impl PreDrawSystem {
 }
 
 impl<'a> specs::prelude::System<'a> for PreDrawSystem {
-
   type SystemData = (WriteStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
                      ReadStorage<'a, MouseInputState>,
-                     ReadStorage<'a, TerrainObjects>,
+                     WriteStorage<'a, TerrainObjects>,
                      ReadStorage<'a, Zombies>,
                      Read<'a, Dimensions>);
 
-  fn run(&mut self, (mut character, camera_input, character_input, mouse_input, terrain_objects, zombies, dim): Self::SystemData) {
+  fn run(&mut self, (mut character, camera_input, character_input, mouse_input, mut terrain_objects, zombies, dim): Self::SystemData) {
     use specs::join::Join;
 
-    for (c, camera, ci, mi, to, zs) in (&mut character, &camera_input, &character_input, &mouse_input, &terrain_objects, &zombies).join() {
+    for (c, camera, ci, mi, to, zs) in (&mut character, &camera_input, &character_input, &mouse_input, &mut terrain_objects, &zombies).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      c.update(&world_to_clip, ci, mi, &dim, &to.objects, &zs.zombies);
+      c.update(&world_to_clip, ci, mi, &dim, &mut to.objects, &zs.zombies);
     }
   }
 }
