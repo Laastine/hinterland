@@ -2,7 +2,7 @@ use cgmath::Point2;
 use character::{character_stats::CharacterStats, controls::CharacterInputState};
 use critter::{CharacterSprite, CritterData};
 use data;
-use game::constants::{ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE};
+use game::constants::{AMMO_POSITIONS, ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
 use gfx_app::mouse_controls::MouseInputState;
@@ -13,8 +13,7 @@ use shaders::{CharacterSheet, critter_pipeline, Position, Projection};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 use std;
-use terrain_object::{terrain_objects::TerrainObjects, TerrainObjectDrawable};
-use terrain_object::TerrainTexture;
+use terrain_object::{terrain_objects::TerrainObjects, TerrainObjectDrawable, TerrainTexture};
 use zombie::{ZombieDrawable, zombies::Zombies};
 
 pub mod controls;
@@ -57,8 +56,9 @@ impl CharacterDrawable {
         z.stance != Stance::CriticalDeath
     }
 
-    self.ammo_pick_up(ci.movement, objs, 0);
-    self.ammo_pick_up(ci.movement, objs, 1);
+    for idx in 0..AMMO_POSITIONS.len() {
+      self.ammo_pick_up(ci.movement, objs, idx);
+    }
 
     if !cfg!(feature = "godmode") &&
       zombies.iter()
