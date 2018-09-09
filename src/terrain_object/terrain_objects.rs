@@ -13,6 +13,7 @@ impl TerrainObjects {
     TerrainObjects {
       objects: vec![
         TerrainObjectDrawable::new(Position::new(AMMO_POSITIONS[0][0], AMMO_POSITIONS[0][1]), TerrainTexture::Ammo),
+        TerrainObjectDrawable::new(Position::new(AMMO_POSITIONS[1][0], AMMO_POSITIONS[1][1]), TerrainTexture::Ammo),
         TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[0][0], HOUSE_POSITIONS[0][1]), TerrainTexture::House),
         TerrainObjectDrawable::new(Position::new(HOUSE_POSITIONS[1][0], HOUSE_POSITIONS[1][1]), TerrainTexture::House),
         TerrainObjectDrawable::new(Position::new(TREE_POSITIONS[0][0], TREE_POSITIONS[0][1]), TerrainTexture::Tree),

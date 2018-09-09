@@ -57,10 +57,8 @@ impl CharacterDrawable {
         z.stance != Stance::CriticalDeath
     }
 
-    if objs[0].object_type == TerrainTexture::Ammo && overlaps(ci.movement, ci.movement - objs[0].position, 20.0, 20.0) {
-      self.stats.magazines = 2;
-      objs.remove(0);
-    }
+    self.ammo_pick_up(ci.movement, objs, 0);
+    self.ammo_pick_up(ci.movement, objs, 1);
 
     if !cfg!(feature = "godmode") &&
       zombies.iter()
@@ -85,6 +83,13 @@ impl CharacterDrawable {
         self.stance = Stance::Walking;
         self.orientation = ci.orientation;
       }
+    }
+  }
+
+  fn ammo_pick_up(&mut self, movement: Position,  objs: &mut Vec<TerrainObjectDrawable>, idx: usize) {
+    if objs[idx].object_type == TerrainTexture::Ammo && overlaps(movement, movement - objs[idx].position, 20.0, 20.0) {
+      self.stats.magazines = 2;
+      objs.remove(idx);
     }
   }
 }

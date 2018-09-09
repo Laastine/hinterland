@@ -32,7 +32,7 @@ pub const RUN_SPRITE_OFFSET: usize = 64;
 pub const ZOMBIE_STILL_SPRITE_OFFSET: usize = 32;
 pub const NORMAL_DEATH_SPRITE_OFFSET: usize = 64;
 
-pub const AMMO_POSITIONS: [[f32; 2]; 1] = [[-640.0, -560.0]];
+pub const AMMO_POSITIONS: [[f32; 2]; 2] = [[-640.0, -560.0], [-700.0, 400.0]];
 pub const HOUSE_POSITIONS: [[f32; 2]; 2] = [[-36.0, 644.0], [506.0, 230.0]];
 pub const TREE_POSITIONS: [[f32; 2]; 5] = [[-506.0, -230.0], [368.0, -368.0], [-690.0, -506.0], [-874.0, -92.0], [-690.0, 138.0]];
 
