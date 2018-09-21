@@ -5,7 +5,7 @@
 
 Isometric shooter game written in Rust.
 
-<img src="assets/hinterland-gl-2018-07-30.gif">
+<img src="assets/hinterland-gl-2018-09-21.gif">
 
 ## Project overview
 - [Blog](https://laastine.kapsi.fi/code/2018/06/18/hinterland-status-update.html)
