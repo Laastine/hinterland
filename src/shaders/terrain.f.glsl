@@ -8,7 +8,7 @@ struct TileMapData {
 };
 
 const int TILEMAP_BUF_LENGTH = 2304;
-const float SHADING_MULTIPLIER = 0.5;
+const float SHADING_MULTIPLIER = 0.2;
 
 uniform b_TileMap {
   TileMapData u_Data[TILEMAP_BUF_LENGTH];
