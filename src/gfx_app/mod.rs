@@ -52,7 +52,7 @@ impl WindowContext {
 
       let resolution = ((monitor_resolution.width as f32 * 16.0 / 9.0) as u32, monitor_resolution.height);
 
-      let logical_size = LogicalSize::new(resolution.0.into(), resolution.1.into());
+      let logical_size = LogicalSize::new(resolution.0.into(), resolution.1);
       window_title.with_fullscreen(Some(monitor))
                   .with_decorations(false)
                   .with_dimensions(logical_size)
