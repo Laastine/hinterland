@@ -124,7 +124,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
     } else {
       let monitor = self.events_loop.get_available_monitors().nth(0).expect("No monitor found");
       let monitor_resolution = monitor.get_dimensions();
-      ((monitor_resolution.width as f32 * 16.0 / 9.0) as f32, monitor_resolution.height as f32)
+      (monitor_resolution.width as f32, monitor_resolution.height as f32)
     }
   }
 
