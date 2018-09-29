@@ -8,7 +8,7 @@ use glutin;
 use glutin::{GlContext, KeyboardInput, MouseButton};
 use glutin::ElementState::{Pressed, Released};
 use glutin::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
-use glutin::dpi::LogicalSize;
+use glutin::dpi::{LogicalSize, PhysicalSize};
 
 pub mod init;
 pub mod renderer;
@@ -54,9 +54,8 @@ impl WindowContext {
 
       let logical_size = LogicalSize::new(resolution.0.into(), resolution.1.into());
       window_title.with_fullscreen(Some(monitor))
+                  .with_decorations(false)
                   .with_dimensions(logical_size)
-                  .with_min_dimensions(logical_size)
-                  .with_max_dimensions(logical_size)
     };
 
     let context = glutin::ContextBuilder::new()
@@ -152,13 +151,16 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
   fn poll_events(&mut self) -> WindowStatus {
     use glutin::WindowEvent::{CursorMoved, CloseRequested, MouseInput};
 
+    // Hack for MacOS 10.14
+    let resolution = self.get_viewport_size();
+    self.window.resize(PhysicalSize::new(resolution.0.into(), resolution.1.into()));
+
     let controls = match self.controls {
       Some(ref mut c) => c,
       None => panic!("Terrain controls have not been initialized"),
     };
 
     let m_pos = &mut self.mouse_pos;
-
     let mut game_status = WindowStatus::Open;
 
     self.events_loop.poll_events(|event| {
