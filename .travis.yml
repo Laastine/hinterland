@@ -32,6 +32,7 @@ addons:
 script:
   - cargo build
   - cargo build --release
+  - cargo clippy -- -D clippy
   - cargo test
 
 before_deploy:
