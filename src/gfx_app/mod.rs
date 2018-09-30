@@ -42,6 +42,7 @@ impl WindowContext {
       let logical_size = LogicalSize::new(RESOLUTION_X.into(), RESOLUTION_Y.into());
       window_title
         .with_dimensions(logical_size)
+        .with_decorations(false)
         .with_min_dimensions(logical_size)
         .with_max_dimensions(logical_size)
     } else {
@@ -60,6 +61,7 @@ impl WindowContext {
 
     let context = glutin::ContextBuilder::new()
       .with_vsync(true)
+      .with_double_buffer(Some(true))
       .with_pixel_format(24, 8);
 
     let (window, device, factory, rtv, dsv) =
