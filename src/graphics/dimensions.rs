@@ -12,7 +12,8 @@ pub struct Dimensions {
 }
 
 impl Dimensions {
-  pub fn new(window_width: f32, window_height: f32, hidpi_factor: f32) -> Dimensions {
+  pub fn new(window_width: f32, window_height: f32, hidpi_val: f32) -> Dimensions {
+    let hidpi_factor = if cfg!(feature = "windowed") { 1.0 } else { hidpi_val };
     Dimensions {
       window_width,
       window_height,
