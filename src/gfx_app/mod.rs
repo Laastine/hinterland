@@ -43,8 +43,6 @@ impl WindowContext {
       window_title
         .with_dimensions(logical_size)
         .with_decorations(false)
-        .with_min_dimensions(logical_size)
-        .with_max_dimensions(logical_size)
     } else {
       let monitor = {
         events_loop.get_available_monitors().nth(0).expect("No monitor found")
