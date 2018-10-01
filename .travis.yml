@@ -29,9 +29,12 @@ addons:
     packages:
     - libasound2-dev
 
+before_script:
+  - rustup component add clippy-preview
+
 script:
   - cargo build
-  - cargo build --release
+  - cargo clippy -- -D clippy
   - cargo test
 
 before_deploy:

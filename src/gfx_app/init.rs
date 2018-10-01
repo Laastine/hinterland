@@ -107,16 +107,19 @@ fn dispatch_loop<W, D, F>(window: &mut W,
   loop {
     let elapsed = last_time.elapsed();
     let delta = f64::from(elapsed.subsec_nanos()) / 1e9 + elapsed.as_secs() as f64;
-    last_time = time::Instant::now();
+    // Hack for MacOS 10.14
+    if delta >= 0.016 {
+      last_time = time::Instant::now();
+      dispatcher.dispatch(&w.res);
+      w.maintain();
 
-    dispatcher.dispatch(&w.res);
-    w.maintain();
+      *w.write_resource::<DeltaTime>() = DeltaTime(delta);
+      *w.write_resource::<GameTime>() = GameTime(start_time.elapsed().as_secs());
 
-    *w.write_resource::<DeltaTime>() = DeltaTime(delta);
-    *w.write_resource::<GameTime>() = GameTime(start_time.elapsed().as_secs());
+      device_renderer.draw(window.get_device());
 
-    device_renderer.draw(window.get_device());
-    window.swap_window();
+      window.swap_window();
+    }
 
     if let WindowStatus::Close = window.poll_events() {
       break

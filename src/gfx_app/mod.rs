@@ -8,6 +8,7 @@ use glutin;
 use glutin::{GlContext, KeyboardInput, MouseButton};
 use glutin::ElementState::{Pressed, Released};
 use glutin::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
+use glutin::dpi::{LogicalSize, PhysicalSize};
 
 pub mod init;
 pub mod renderer;
@@ -36,26 +37,29 @@ impl WindowContext {
     let window_title = glutin::WindowBuilder::new()
       .with_title("Hinterland");
 
+
     let builder = if cfg!(feature = "windowed") {
+      let logical_size = LogicalSize::new(RESOLUTION_X.into(), RESOLUTION_Y.into());
       window_title
-        .with_dimensions(RESOLUTION_X, RESOLUTION_Y)
-        .with_min_dimensions(RESOLUTION_X, RESOLUTION_Y)
-        .with_max_dimensions(RESOLUTION_X, RESOLUTION_Y)
+        .with_dimensions(logical_size)
+        .with_decorations(false)
     } else {
       let monitor = {
         events_loop.get_available_monitors().nth(0).expect("No monitor found")
       };
       let monitor_resolution = monitor.get_dimensions();
 
-      let resolution = ((monitor_resolution.1 as f32 * 16.0 / 9.0) as u32, monitor_resolution.1);
+      let resolution = ((monitor_resolution.width as f32 * 16.0 / 9.0) as u32, monitor_resolution.height);
+
+      let logical_size = LogicalSize::new(resolution.0.into(), resolution.1);
       window_title.with_fullscreen(Some(monitor))
-                  .with_dimensions(resolution.0, resolution.1)
-                  .with_min_dimensions(resolution.0, resolution.1)
-                  .with_max_dimensions(resolution.0, resolution.1)
+                  .with_decorations(false)
+                  .with_dimensions(logical_size)
     };
 
     let context = glutin::ContextBuilder::new()
       .with_vsync(true)
+      .with_double_buffer(Some(true))
       .with_pixel_format(24, 8);
 
     let (window, device, factory, rtv, dsv) =
@@ -120,7 +124,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
     } else {
       let monitor = self.events_loop.get_available_monitors().nth(0).expect("No monitor found");
       let monitor_resolution = monitor.get_dimensions();
-      ((monitor_resolution.1 as f32 * 16.0 / 9.0) as f32, monitor_resolution.1 as f32)
+      (monitor_resolution.width as f32, monitor_resolution.height as f32)
     }
   }
 
@@ -133,7 +137,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
   }
 
   fn get_hidpi_factor(&mut self) -> f32 {
-    self.window.hidpi_factor() as f32
+    self.window.get_hidpi_factor() as f32
   }
 
   fn get_render_target_view(&mut self) -> gfx::handle::RenderTargetView<gfx_device_gl::Resources, ColorFormat> {
@@ -147,13 +151,16 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
   fn poll_events(&mut self) -> WindowStatus {
     use glutin::WindowEvent::{CursorMoved, CloseRequested, MouseInput};
 
+    // Hack for MacOS 10.14
+    let resolution = self.get_viewport_size();
+    self.window.resize(PhysicalSize::new(resolution.0.into(), resolution.1.into()));
+
     let controls = match self.controls {
       Some(ref mut c) => c,
       None => panic!("Terrain controls have not been initialized"),
     };
 
     let m_pos = &mut self.mouse_pos;
-
     let mut game_status = WindowStatus::Open;
 
     self.events_loop.poll_events(|event| {
@@ -177,7 +184,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
             WindowStatus::Open
           }
           CursorMoved { position, .. } => {
-            *m_pos = position;
+            *m_pos = ((position.x as f32).into(), (position.y as f32).into());
             WindowStatus::Open
           }
           CloseRequested => WindowStatus::Close,
