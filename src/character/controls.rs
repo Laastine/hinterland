@@ -17,7 +17,7 @@ pub struct CharacterInputState {
 impl CharacterInputState {
   pub fn new() -> CharacterInputState {
     CharacterInputState {
-      movement: Position::new(0.0, 0.0),
+      movement: Position::origin(),
       orientation: Orientation::Still,
       is_colliding: false,
       is_shooting: false,

@@ -36,8 +36,8 @@ impl BulletDrawable {
     BulletDrawable {
       projection,
       position,
-      previous_position: Position::new(0.0, 0.0),
-      offset_delta: Position::new(0.0, 0.0),
+      previous_position: Position::origin(),
+      offset_delta: Position::origin(),
       movement_direction,
       status: Collision::Flying,
     }

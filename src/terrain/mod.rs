@@ -30,7 +30,7 @@ impl TerrainDrawable {
     let projection = get_projection(view, ASPECT_RATIO);
     TerrainDrawable {
       projection,
-      position: Position::new(0.0, 0.0),
+      position: Position::origin(),
     }
   }
 

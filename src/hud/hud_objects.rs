@@ -12,7 +12,7 @@ impl HudObjects {
   pub fn new() -> HudObjects {
     HudObjects {
       objects: vec![
-        TextDrawable::new(VERSION_NUMBER_TEXT, Position::new(0.0, 0.0)),
+        TextDrawable::new(VERSION_NUMBER_TEXT, Position::origin()),
         TextDrawable::new(CURRENT_AMMO_TEXT, Position::new(1.9, -1.9)),
         TextDrawable::new(CURRENT_MAGAZINE_TEXT, Position::new(1.9, -1.94)),
       ]

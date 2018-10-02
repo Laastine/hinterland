@@ -40,7 +40,7 @@ impl CharacterDrawable {
     CharacterDrawable {
       stats,
       projection,
-      position: Position::new(0.0, 0.0),
+      position: Position::origin(),
       orientation: Orientation::Right,
       stance: Stance::Walking,
       direction: Orientation::Right,

@@ -55,7 +55,7 @@ impl ZombieDrawable {
     ZombieDrawable {
       projection,
       position,
-      previous_position: Position::new(0.0, 0.0),
+      previous_position: Position::origin(),
       orientation: Orientation::Left,
       stance: Stance::Still,
       direction: Orientation::Left,

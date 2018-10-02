@@ -14,7 +14,7 @@ impl CameraInputState {
   pub fn new() -> CameraInputState {
     CameraInputState {
       distance: VIEW_DISTANCE,
-      movement: Position::new(0.0, 0.0),
+      movement: Position::origin(),
     }
   }
 }

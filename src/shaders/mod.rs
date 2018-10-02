@@ -106,6 +106,10 @@ impl Position {
     Position { position: [f32::from(x), f32::from(y)] }
   }
 
+  pub fn origin() -> Position {
+    Position { position: [0.0, 0.0] }
+  }
+
   pub fn x(self) -> f32 {
     self.position[0]
   }
