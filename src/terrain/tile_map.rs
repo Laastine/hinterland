@@ -1,13 +1,13 @@
 use data::{get_map_tile, load_map_file};
-use game::constants::{MAP_FILE_PATH, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W};
+use game::constants::{MAP_A_FILE_PATH, MAP_B_FILE_PATH, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W};
 use shaders::TileMapData;
-use tiled::{Map, Tileset};
+use tiled::Map;
 
 fn calc_index(x_pos: usize, y_pos: usize) -> usize {
   (y_pos * TILES_PCS_W) + x_pos
 }
 
-fn populate_tile_map(mut tiles: Vec<TileMapData>, map: &Map) -> Vec<TileMapData> {
+fn populate_tile_map<'a>(tiles: &'a mut Vec<TileMapData>, map: &Map) -> &'a mut Vec<TileMapData> {
   for y_pos in 0..TILES_PCS_H {
     for x_pos in 0..TILES_PCS_W {
       let map_val = get_map_tile(map, 0, x_pos, y_pos);
@@ -24,7 +24,7 @@ fn populate_tile_map(mut tiles: Vec<TileMapData>, map: &Map) -> Vec<TileMapData>
 #[derive(Debug)]
 pub struct Terrain {
   pub tiles: Vec<TileMapData>,
-  pub tile_sets: Vec<Tileset>,
+  pub tile_sets: [Map; 2],
 }
 
 impl Terrain {
@@ -35,11 +35,16 @@ impl Terrain {
       map_data.push(TileMapData::new_empty());
     }
 
-    let map = load_map_file(MAP_FILE_PATH);
+    let map_a = load_map_file(MAP_A_FILE_PATH);
+    let map_b = load_map_file(MAP_B_FILE_PATH);
 
     Terrain {
-      tiles: populate_tile_map(map_data, &map),
-      tile_sets: map.tilesets,
+      tiles: populate_tile_map(&mut map_data, &map_a).to_vec(),
+      tile_sets: [map_a, map_b],
     }
+  }
+
+  pub fn change_map(&mut self, idx: usize) {
+    self.tiles = populate_tile_map(&mut self.tiles, &self.tile_sets[idx]).to_vec()
   }
 }

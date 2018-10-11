@@ -6,7 +6,7 @@ use gfx_app::{ColorFormat, DepthFormat};
 use graphics::{camera::CameraInputState, can_move_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix}};
 use graphics::mesh::Mesh;
 use graphics::texture::{load_texture, Texture};
-use shaders::{Position, Projection, tilemap_pipeline, TileMapData, TilemapSettings, VertexData};
+use shaders::{Position, Projection, tilemap_pipeline, TilemapSettings, VertexData};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 
@@ -54,7 +54,7 @@ const SHADER_FRAG: &[u8] = include_bytes!("../shaders/terrain.f.glsl");
 
 pub struct TerrainDrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, tilemap_pipeline::Data<R>>,
-  data: Vec<TileMapData>,
+  terrain: tile_map::Terrain,
   is_tile_map_dirty: bool,
 }
 
@@ -122,19 +122,29 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
 
     TerrainDrawSystem {
       bundle: gfx::Bundle::new(mesh.slice, pso, pipeline_data),
-      data: terrain.tiles,
+      terrain,
       is_tile_map_dirty: true,
     }
   }
 
   pub fn draw<C>(&mut self,
+                 map_idx: usize,
                  drawable: &TerrainDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
                  where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
+
+    if map_idx != 0 {
+      self.terrain.change_map(1);
+      self.is_tile_map_dirty = true
+    } else {
+      self.terrain.change_map(0);
+      self.is_tile_map_dirty = true
+    }
+
     if self.is_tile_map_dirty {
-      encoder.update_buffer(&self.bundle.data.tilemap, self.data.as_slice(), 0).unwrap();
+      encoder.update_buffer(&self.bundle.data.tilemap, self.terrain.tiles.as_slice(), 0).unwrap();
       encoder.update_constant_buffer(&self.bundle.data.tilemap_cb, &TilemapSettings {
         world_size: [64.0, 64.0],
         tilesheet_size: [32.0, 32.0],
