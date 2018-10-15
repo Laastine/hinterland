@@ -28,9 +28,9 @@ Isometric shooter game written in Rust.<br> Works on Linux, MacOS and Window [re
 
 ## Development
 
-Run windowed mode with `cargo run --features "windowed godmode"`
+Run windowed mode with `cargo run --features "windowed godmode framerate"`
 
-Tested with Rust 1.29 with macOS, Linux and Windows.<br/>
+Tested with Rust 1.29.2 with macOS, Linux and Windows.<br/>
 
 ## External asset licence list
 
