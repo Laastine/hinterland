@@ -112,11 +112,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
 
     for (t, c, cs, hds, zs, bs, obj) in (&mut terrain, &mut character, &mut character_sprite, &mut hud_objects,
                                          &mut zombies, &mut bullets, &mut terrain_objects).join() {
-      if c.stance == Stance::Firing {
-        self.terrain_system.draw(1, t, &mut encoder);
-      } else {
-        self.terrain_system.draw(0, t, &mut encoder);
-      }
+      self.terrain_system.draw(t, &mut encoder);
 
       for hud in &mut hds.objects {
         self.text_system[0].draw(hud, &mut encoder);
