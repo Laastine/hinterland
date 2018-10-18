@@ -25,6 +25,7 @@ fn populate_tile_map<'a>(tiles: &'a mut Vec<TileMapData>, map: &Map) -> &'a mut 
 pub struct Terrain {
   pub tiles: Vec<TileMapData>,
   pub tile_sets: [Map; 2],
+  pub curr_tile_set_idx: usize,
 }
 
 impl Terrain {
@@ -41,10 +42,12 @@ impl Terrain {
     Terrain {
       tiles: populate_tile_map(&mut map_data, &map_a).to_vec(),
       tile_sets: [map_a, map_b],
+      curr_tile_set_idx: 0,
     }
   }
 
   pub fn change_map(&mut self, idx: usize) {
-    self.tiles = populate_tile_map(&mut self.tiles, &self.tile_sets[idx]).to_vec()
+    self.tiles = populate_tile_map(&mut self.tiles, &self.tile_sets[idx]).to_vec();
+    self.curr_tile_set_idx = idx;
   }
 }
