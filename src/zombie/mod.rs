@@ -191,27 +191,25 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
   fn get_next_sprite(&self, drawable: &mut ZombieDrawable) -> CharacterSheet {
     let sprite_idx = match drawable.stance {
       Stance::Still => {
-        (drawable.direction as usize * 4 + drawable.zombie_idx) as usize
+        (drawable.direction as usize * 4 + drawable.zombie_idx)
       },
       Stance::Walking if drawable.orientation != Orientation::Still => {
-        (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize
+        (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
       },
       Stance::Running if drawable.orientation != Orientation::Still => {
-        (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize
+        (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
       },
       Stance::NormalDeath if drawable.orientation != Orientation::Still => {
-        (drawable.direction as usize * 6 + drawable.zombie_death_idx + NORMAL_DEATH_SPRITE_OFFSET) as usize
+        (drawable.direction as usize * 6 + drawable.zombie_death_idx + NORMAL_DEATH_SPRITE_OFFSET)
       },
       Stance::CriticalDeath if drawable.orientation != Orientation::Still => {
-        (drawable.direction as usize * 8 + drawable.zombie_death_idx) as usize
+        (drawable.direction as usize * 8 + drawable.zombie_death_idx)
       },
       _ => {
         drawable.direction = drawable.orientation;
-        (drawable.orientation as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET) as usize
+        (drawable.orientation as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
       },
-    };
-
-    let zombie_sprite = (&self.data[sprite_idx], sprite_idx);
+    } as usize;
 
     let (y_div, row_idx) =
       if drawable.stance == Stance::NormalDeath || drawable.stance == Stance::CriticalDeath {
@@ -220,12 +218,12 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
         (1.0, 2)
       };
 
-    let elements_x = ZOMBIE_SHEET_TOTAL_WIDTH / (zombie_sprite.0.data[2] + SPRITE_OFFSET);
+    let elements_x = ZOMBIE_SHEET_TOTAL_WIDTH / (self.data[sprite_idx].data[2] + SPRITE_OFFSET);
     CharacterSheet {
       x_div: elements_x,
       y_div,
       row_idx,
-      index: zombie_sprite.1 as f32,
+      index: sprite_idx as f32,
     }
   }
 

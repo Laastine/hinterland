@@ -145,25 +145,22 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
   }
 
   fn get_next_sprite(&self, character_idx: usize, character_fire_idx: usize, drawable: &mut CharacterDrawable) -> CharacterSheet {
-    let char_sprite =
+    let sprite_idx =
       if drawable.orientation == Orientation::Still && drawable.stance == Stance::Walking {
-        let sprite_idx = (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET) as usize;
-        (&self.data[sprite_idx], sprite_idx)
+        (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET)
       } else if drawable.stance == Stance::Walking {
         drawable.direction = drawable.orientation;
-        let sprite_idx = (drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET) as usize;
-        (&self.data[sprite_idx], sprite_idx)
+        (drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET)
       } else {
-        let sprite_idx = (drawable.orientation as usize * 8 + character_fire_idx) as usize;
-        (&self.data[sprite_idx], sprite_idx)
-      };
+        (drawable.orientation as usize * 8 + character_fire_idx)
+      } as usize;
 
-    let elements_x = CHARACTER_SHEET_TOTAL_WIDTH / (char_sprite.0.data[2] + SPRITE_OFFSET);
+    let elements_x = CHARACTER_SHEET_TOTAL_WIDTH / (self.data[sprite_idx].data[2] + SPRITE_OFFSET);
     CharacterSheet {
       x_div: elements_x,
       y_div: 0.0,
       row_idx: 0,
-      index: char_sprite.1 as f32,
+      index: sprite_idx as f32,
     }
   }
 
