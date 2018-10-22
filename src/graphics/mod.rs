@@ -73,8 +73,8 @@ pub fn overlaps(area: Position, el: Position, width: f32, height: f32) -> bool {
     area.y() + height > el.y()
 }
 
-fn is_within_map_borders(point: Point2<f32>) -> bool {
-  point.x > 0.0 && point.x < 63.0 && point.y > 0.0 && point.y < 63.0
+pub fn is_within_map_borders(point: Point2<f32>) -> bool {
+  point.x >= 0.0 && point.x < 63.0 && point.y >= 0.0 && point.y < 63.0
 }
 
 pub fn can_move(screen_pos: Position) -> bool {
@@ -87,12 +87,27 @@ pub fn can_move(screen_pos: Position) -> bool {
   is_within_map_borders(point)
 }
 
-pub fn is_not_terrain_object(pos: Point2<u32>) -> bool {
-  !TERRAIN_OBJECTS.iter().any(|e| (e[0] as u32 == pos.x) && (e[1] as u32 == pos.y))
+pub fn is_not_terrain_object(pos: Point2<i32>) -> bool {
+  !TERRAIN_OBJECTS.iter().any(|e| (e[0] as i32 == pos.x) && (e[1] as i32 == pos.y))
 }
 
-fn is_map_tile(pos: Point2<u32>) -> bool {
-  pos.x >= 1 && pos.y >= 1 && pos.x < TILES_PCS_W as u32 && pos.y < TILES_PCS_H as u32
+//fn normalize(point: i32) -> i32 {
+//  let tiles_amount = TILES_PCS_W as i32;
+//  if point < 0 {
+//    0
+//  } else if point > tiles_amount {
+//    tiles_amount
+//  } else {
+//    point
+//  }
+//}
+
+pub fn is_map_edge(point: Point2<i32>) -> bool {
+  point.x == 0 || point.x == 63 || point.y == 0 || point.y == 63
+}
+
+fn is_map_tile(pos: Point2<i32>) -> bool {
+  pos.x >= 0 && pos.y >= 0 && pos.x < TILES_PCS_W as i32 && pos.y < TILES_PCS_H as i32
 }
 
 pub fn can_move_to_tile(screen_pos: Position) -> bool {
@@ -100,25 +115,14 @@ pub fn can_move_to_tile(screen_pos: Position) -> bool {
   is_not_terrain_object(tile_pos) && is_map_tile(tile_pos)
 }
 
-pub fn coords_to_tile(position: Position) -> Point2<u32> {
-  fn normalize(point: i32) -> i32 {
-    let tiles_amount = TILES_PCS_W as i32;
-    if point < 0 {
-      0
-    } else if point > tiles_amount {
-      tiles_amount
-    } else {
-      point
-    }
-  }
+pub fn coords_to_tile(position: Position) -> Point2<i32> {
 
   let pos = Point2 {
     x: -position.x(),
     y: position.y() + 1500.0,
   };
-  let point = Point2::new((pos.x / TILE_WIDTH + (pos.y / TILE_WIDTH)) as i32,
-                          (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32);
-  Point2::new(normalize(point.x) as u32, normalize(point.y) as u32)
+  Point2::new((pos.x / TILE_WIDTH + (pos.y / TILE_WIDTH)) as i32,
+                          (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32)
 }
 
 pub fn coords_to_tile_offset(position: Position) -> Point2<i32> {

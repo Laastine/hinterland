@@ -1,9 +1,10 @@
+use cgmath::Point2;
 use character::controls::CharacterInputState;
 use game::constants::{ASPECT_RATIO, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
 use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Vertices};
 use gfx;
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, can_move_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix}};
+use graphics::{camera::CameraInputState, can_move_to_tile, coords_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix}, is_map_edge};
 use graphics::mesh::Mesh;
 use graphics::texture::{load_texture, Texture};
 use shaders::{Position, Projection, tilemap_pipeline, TilemapSettings, VertexData};
@@ -22,6 +23,7 @@ fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
 pub struct TerrainDrawable {
   projection: Projection,
   pub position: Position,
+  pub tile_position: Point2<i32>,
 }
 
 impl TerrainDrawable {
@@ -31,6 +33,7 @@ impl TerrainDrawable {
     TerrainDrawable {
       projection,
       position: Position::origin(),
+      tile_position: coords_to_tile(Position::origin())
     }
   }
 
@@ -39,9 +42,11 @@ impl TerrainDrawable {
     if can_move_to_tile(ci.movement) {
       ci.is_colliding = false;
       self.position = ci.movement;
+      self.tile_position = coords_to_tile(self.position);
     } else {
       ci.is_colliding = true;
     }
+    println!("Pos {:?}", self.tile_position);
   }
 }
 
@@ -128,20 +133,13 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
   }
 
   pub fn draw<C>(&mut self,
-                 map_idx: usize,
                  drawable: &TerrainDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
                  where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
 
-    if map_idx != 0 {
-      self.terrain.change_map(1);
-      self.is_tile_map_dirty = true
-    } else {
-      self.terrain.change_map(0);
-      self.is_tile_map_dirty = true
-    }
+    self.handle_map_update(drawable);
 
     if self.is_tile_map_dirty {
       encoder.update_buffer(&self.bundle.data.tilemap, self.terrain.tiles.as_slice(), 0).unwrap();
@@ -153,6 +151,18 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     }
 
     self.bundle.encode(encoder);
+  }
+
+  fn handle_map_update(&mut self, drawable: &TerrainDrawable) {
+    if is_map_edge(drawable.tile_position) {
+      let map_idx = self.terrain.curr_tile_set_idx;
+      if map_idx == 0 {
+        self.terrain.change_map(1);
+      } else if map_idx == 1 {
+        self.terrain.change_map(0);
+      }
+      self.is_tile_map_dirty = true
+    }
   }
 }
 
