@@ -131,7 +131,7 @@ pub fn coords_to_tile_offset(position: Position) -> Point2<i32> {
               (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32)
 }
 
-pub fn tile_to_coords(tile: Point2<u32>) -> Position {
+pub fn tile_to_coords(tile: Point2<i32>) -> Position {
   let new_tile = Point2::new(tile.x as f32, tile.y as f32);
   let x = round(new_tile.x * TILE_WIDTH - new_tile.y / TILE_WIDTH, 3);
   let y = round(new_tile.y * TILE_WIDTH - new_tile.x / TILE_WIDTH, 3);

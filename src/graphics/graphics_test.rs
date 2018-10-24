@@ -122,7 +122,7 @@ fn illegal_coords_test() {
   use shaders::Position;
 
   let outside_of_map = Position::new(1407.3009, -229.70844);
-  let inside_of_map = Position::new(1.261, 1168.0);
+  let inside_of_map = Position::new(93.261, 1168.044);
 
   assert_eq!(inside_of_map, tile_to_coords(coords_to_tile(outside_of_map)), "tile_to_coords_test");
 }
