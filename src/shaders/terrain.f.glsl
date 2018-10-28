@@ -7,7 +7,7 @@ struct TileMapData {
   vec4 data;
 };
 
-const int TILEMAP_BUF_LENGTH = 2304;
+const int TILEMAP_BUF_LENGTH = 1024;
 const float SHADING_MULTIPLIER = 0.2;
 
 uniform b_TileMap {

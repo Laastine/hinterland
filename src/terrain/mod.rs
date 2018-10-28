@@ -144,7 +144,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     if self.is_tile_map_dirty {
       encoder.update_buffer(&self.bundle.data.tilemap, self.terrain.tiles.as_slice(), 0).unwrap();
       encoder.update_constant_buffer(&self.bundle.data.tilemap_cb, &TilemapSettings {
-        world_size: [64.0, 64.0],
+        world_size: [TILES_PCS_W as f32, TILES_PCS_H as f32],
         tilesheet_size: [32.0, 32.0],
       });
       self.is_tile_map_dirty = false

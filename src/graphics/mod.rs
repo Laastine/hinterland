@@ -82,8 +82,8 @@ pub fn can_move(screen_pos: Position) -> bool {
   let x_coord = screen_pos.x();
   let y_coord = screen_pos.y();
   let point = Point2::new(
-    (x_coord / tile_width + y_coord / tile_width).round() + 31.0,
-    (y_coord / tile_width - x_coord / tile_width).round() + 32.0);
+    (x_coord / tile_width + y_coord / tile_width).round() + 255.0,
+    (y_coord / tile_width - x_coord / tile_width).round() + 256.0);
   is_within_map_borders(point)
 }
 
@@ -116,17 +116,16 @@ pub fn can_move_to_tile(screen_pos: Position) -> bool {
 }
 
 pub fn coords_to_tile(position: Position) -> Point2<i32> {
-
   let pos = Point2 {
     x: -position.x(),
-    y: position.y() + 1500.0,
+    y: position.y() + 5888.0,
   };
   Point2::new((pos.x / TILE_WIDTH + (pos.y / TILE_WIDTH)) as i32,
                           (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32)
 }
 
 pub fn coords_to_tile_offset(position: Position) -> Point2<i32> {
-  let pos = Point2::new(-position.x(), position.y() + 1500.0);
+  let pos = Point2::new(-position.x(), position.y() + 5888.0);
   Point2::new((pos.x / TILE_WIDTH + (pos.y / TILE_WIDTH)) as i32,
               (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32)
 }
@@ -135,7 +134,7 @@ pub fn tile_to_coords(tile: Point2<i32>) -> Position {
   let new_tile = Point2::new(tile.x as f32, tile.y as f32);
   let x = round(new_tile.x * TILE_WIDTH - new_tile.y / TILE_WIDTH, 3);
   let y = round(new_tile.y * TILE_WIDTH - new_tile.x / TILE_WIDTH, 3);
-  Position::new(-x, y - 1500.0)
+  Position::new(-x, y - 5888.0)
 }
 
 fn round(number: f32, precision: usize) -> f32 {
