@@ -77,7 +77,7 @@ impl<'a> specs::prelude::System<'a> for CameraControlSystem {
     }
     if let Some(zoom) = self.zoom_level {
       for m in (&mut map_input).join() {
-        if m.distance > 200.0 && zoom < 0.0 || m.distance < 1000.0 && zoom > 0.0 {
+        if m.distance > 200.0 && zoom < 0.0 || m.distance < 600.0 && zoom > 0.0 {
           m.distance += zoom;
         }
       }
