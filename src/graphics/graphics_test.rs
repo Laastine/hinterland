@@ -1,5 +1,3 @@
-use game::constants::Y_OFFSET_256;
-
 #[test]
 fn direction_test() {
   use cgmath::Point2;
@@ -108,6 +106,7 @@ fn direction_movement_test() {
 #[test]
 fn tile_to_coords_test() {
   use cgmath::Point2;
+  use game::constants::Y_OFFSET_256;
   use graphics::{coords_to_tile, tile_to_coords};
   use shaders::Position;
 

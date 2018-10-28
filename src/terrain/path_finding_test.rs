@@ -1,4 +1,3 @@
-use game::constants::Y_OFFSET_256;
 
 #[allow(dead_code)]
 const IMPASSABLE_TILES: [[usize; 2]; 12] = [[1, 1], [2, 2], [2, 3], [2, 4], [2, 5], [3, 0], [3, 5], [4, 0], [4, 2], [4, 3], [4, 4], [4, 5]];
@@ -6,6 +5,7 @@ const IMPASSABLE_TILES: [[usize; 2]; 12] = [[1, 1], [2, 2], [2, 3], [2, 4], [2, 
 #[test]
 fn path_finding_test_1() {
   use cgmath::Point2;
+  use game::constants::Y_OFFSET_256;
   use shaders::Position;
   use terrain::path_finding::calc_route;
 
@@ -24,6 +24,7 @@ fn path_finding_test_1() {
 #[test]
 fn path_finding_test_2() {
   use cgmath::Point2;
+  use game::constants::Y_OFFSET_256;
   use shaders::Position;
   use terrain::path_finding::calc_route;
 
