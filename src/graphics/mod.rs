@@ -86,17 +86,6 @@ pub fn is_not_terrain_object(pos: Point2<i32>) -> bool {
   !TERRAIN_OBJECTS.iter().any(|e| (e[0] as i32 == pos.x) && (e[1] as i32 == pos.y))
 }
 
-//fn normalize(point: i32) -> i32 {
-//  let tiles_amount = TILES_PCS_W as i32;
-//  if point < 0 {
-//    0
-//  } else if point > tiles_amount {
-//    tiles_amount
-//  } else {
-//    point
-//  }
-//}
-
 pub fn is_map_edge(point: Point2<i32>) -> bool {
   point.x == 0 || point.x == (TILES_PCS_W - 1usize) as i32 || point.y == 0 || point.y == (TILES_PCS_H - 1usize) as i32
 }

@@ -117,14 +117,3 @@ fn tile_to_coords_test() {
 
   assert_eq!(map_center, tile_to_coords(coords_to_tile(map_center)), "tile_to_coords <-> coords_to_tile")
 }
-
-#[test]
-fn illegal_coords_test() {
-  use graphics::{coords_to_tile, tile_to_coords};
-  use shaders::Position;
-
-  let outside_of_map = Position::new(1407.3009, -229.70844);
-  let inside_of_map = Position::new(93.261, 1168.044);
-
-  assert_eq!(inside_of_map, tile_to_coords(coords_to_tile(outside_of_map)), "tile_to_coords_test");
-}
