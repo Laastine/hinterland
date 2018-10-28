@@ -1,4 +1,5 @@
 pub const TILE_WIDTH: f32 = 46.0;
+pub const Y_OFFSET_256: f32 = 5888.0;
 
 pub const TILES_PCS_W: usize = 256;
 pub const TILES_PCS_H: usize = 256;

@@ -2,7 +2,7 @@ use bullet::BulletDrawable;
 use cgmath;
 use cgmath::{Angle, Deg, Point2};
 use character::CharacterDrawable;
-use game::{constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W}, get_rand_from_range};
+use game::{constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, Y_OFFSET_256}, get_rand_from_range};
 use gfx_app::{mouse_controls::MouseInputState};
 use graphics::{dimensions::Dimensions, orientation::Orientation};
 use shaders::Position;
@@ -113,14 +113,14 @@ pub fn can_move_to_tile(screen_pos: Position) -> bool {
 pub fn coords_to_tile(position: Position) -> Point2<i32> {
   let pos = Point2 {
     x: -position.x(),
-    y: position.y() + 5888.0,
+    y: position.y() + Y_OFFSET_256,
   };
   Point2::new((pos.x / TILE_WIDTH + (pos.y / TILE_WIDTH)) as i32,
                           (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32)
 }
 
 pub fn coords_to_tile_offset(position: Position) -> Point2<i32> {
-  let pos = Point2::new(-position.x(), position.y() + 5888.0);
+  let pos = Point2::new(-position.x(), position.y() + Y_OFFSET_256);
   Point2::new((pos.x / TILE_WIDTH + (pos.y / TILE_WIDTH)) as i32,
               (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32)
 }
@@ -129,7 +129,7 @@ pub fn tile_to_coords(tile: Point2<i32>) -> Position {
   let new_tile = Point2::new(tile.x as f32, tile.y as f32);
   let x = round(new_tile.x * TILE_WIDTH - new_tile.y / TILE_WIDTH, 3);
   let y = round(new_tile.y * TILE_WIDTH - new_tile.x / TILE_WIDTH, 3);
-  Position::new(-x, y - 5888.0)
+  Position::new(-x, y - Y_OFFSET_256)
 }
 
 fn round(number: f32, precision: usize) -> f32 {
