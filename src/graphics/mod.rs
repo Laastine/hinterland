@@ -74,17 +74,12 @@ pub fn overlaps(area: Position, el: Position, width: f32, height: f32) -> bool {
 }
 
 pub fn is_within_map_borders(point: Point2<f32>) -> bool {
-  point.x >= 0.0 && point.x < 63.0 && point.y >= 0.0 && point.y < 63.0
+  point.x >= 0.0 && point.x < (TILES_PCS_W as f32 - 1f32)  && point.y >= 0.0 && point.y < (TILES_PCS_H as f32 - 1f32)
 }
 
 pub fn can_move(screen_pos: Position) -> bool {
-  let tile_width = TILE_WIDTH;
-  let x_coord = screen_pos.x();
-  let y_coord = screen_pos.y();
-  let point = Point2::new(
-    (x_coord / tile_width + y_coord / tile_width).round() + 255.0,
-    (y_coord / tile_width - x_coord / tile_width).round() + 256.0);
-  is_within_map_borders(point)
+  let point = coords_to_tile(screen_pos);
+  is_within_map_borders(Point2::new(point.x as f32, point.y as f32))
 }
 
 pub fn is_not_terrain_object(pos: Point2<i32>) -> bool {
@@ -103,7 +98,7 @@ pub fn is_not_terrain_object(pos: Point2<i32>) -> bool {
 //}
 
 pub fn is_map_edge(point: Point2<i32>) -> bool {
-  point.x == 0 || point.x == 63 || point.y == 0 || point.y == 63
+  point.x == 0 || point.x == (TILES_PCS_W - 1usize) as i32 || point.y == 0 || point.y == (TILES_PCS_H - 1usize) as i32
 }
 
 fn is_map_tile(pos: Point2<i32>) -> bool {
