@@ -46,7 +46,6 @@ impl TerrainDrawable {
     } else {
       ci.is_colliding = true;
     }
-    println!("Pos {:?}", self.tile_position);
   }
 }
 
