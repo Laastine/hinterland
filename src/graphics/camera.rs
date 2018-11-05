@@ -67,7 +67,7 @@ impl<'a> specs::prelude::System<'a> for CameraControlSystem {
   fn run(&mut self, mut map_input: Self::SystemData) {
     use specs::join::Join;
 
-    while let Some(control) = self.queue.try_recv() {
+    while let Ok(control) = self.queue.try_recv() {
       match control {
         CameraControl::ZoomIn => self.zoom_level = Some(2.0),
         CameraControl::ZoomOut => self.zoom_level = Some(-2.0),

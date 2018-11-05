@@ -32,42 +32,42 @@ impl TilemapControls {
   }
 
   pub fn zoom(&mut self, control: &Control) {
-    match control {
+    let _ =match control {
       Control::Plus => self.terrain_control.send(CameraControl::ZoomIn),
       Control::Negative => self.terrain_control.send(CameraControl::ZoomOut),
       Control::Released => self.terrain_control.send(CameraControl::ZoomStop),
-    }
+    };
   }
 
   pub fn ctrl_pressed(&mut self, is_ctrl: bool) {
-    if is_ctrl {
-      self.character_control.send(CharacterControl::CtrlPressed);
+    let _ = if is_ctrl {
+      self.character_control.send(CharacterControl::CtrlPressed)
     } else {
       self.character_control.send(CharacterControl::CtrlReleased)
-    }
+    };
   }
 
   pub fn move_character(&mut self, character_control: CharacterControl) {
-    self.character_control.send(character_control)
+    let _ = self.character_control.send(character_control);
   }
 
   pub fn reload_weapon(&mut self, is_reloading: bool) {
-    if is_reloading {
-      self.character_control.send(CharacterControl::ReloadPressed);
+    let _ = if is_reloading {
+      self.character_control.send(CharacterControl::ReloadPressed)
     } else {
-      self.character_control.send(CharacterControl::ReloadReleased);
-    }
+      self.character_control.send(CharacterControl::ReloadReleased)
+    };
   }
 
   pub fn mouse_left_click(&mut self, mouse_pos: Option<(f64, f64)>) {
-    self.mouse_control.send((MouseControl::LeftClick, mouse_pos));
-    match mouse_pos {
+    let _ = self.mouse_control.send((MouseControl::LeftClick, mouse_pos));
+    let _ = match mouse_pos {
       Some(_) => self.audio_control.send(Effects::PistolFire),
       _ => self.audio_control.send(Effects::None),
-    }
+    };
   }
 
   pub fn mouse_right_click(&mut self, mouse_pos: Option<(f64, f64)>) {
-    self.mouse_control.send((MouseControl::RightClick, mouse_pos))
+    let _ = self.mouse_control.send((MouseControl::RightClick, mouse_pos));
   }
 }

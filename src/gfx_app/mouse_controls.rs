@@ -74,7 +74,7 @@ impl<'a> specs::prelude::System<'a> for MouseControlSystem {
   fn run(&mut self, (mut mouse_input, mut character_drawable, camera, character_input, mut bullets, dim): Self::SystemData) {
     use specs::join::Join;
 
-    while let Some((control_value, value)) = self.queue.try_recv() {
+    while let Ok((control_value, value)) = self.queue.try_recv() {
       match control_value {
         MouseControl::LeftClick => {
           for (mi, cd, bs, ca, ci) in (&mut mouse_input, &mut character_drawable, &mut bullets, &camera, &character_input).join() {

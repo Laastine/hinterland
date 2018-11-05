@@ -18,8 +18,9 @@ impl<D: gfx::Device> DeviceRenderer<D> {
 
     for cb in buffers {
       let encoder = gfx::Encoder::from(cb);
-      a_send
-        .send(encoder);
+      let _ = a_send
+        .send(encoder)
+        .map_err(|e| panic!("Boom {:?}", e));
     }
 
     (DeviceRenderer {
@@ -38,7 +39,7 @@ impl<D: gfx::Device> DeviceRenderer<D> {
     let _ = self.queue.receiver.recv()
                 .map(|mut encoder| {
                   encoder.flush(device);
-                  self.queue.sender.send(encoder);
+                  let _ = self.queue.sender.send(encoder);
                 });
   }
 }

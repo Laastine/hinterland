@@ -176,6 +176,6 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
       }
     }
 
-    self.encoder_queue.sender.send(encoder);
+    let _ = self.encoder_queue.sender.send(encoder);
   }
 }

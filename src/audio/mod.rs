@@ -48,7 +48,7 @@ impl<'a> specs::prelude::System<'a> for AudioSystem {
   fn run(&mut self, (character_input, character_drawable): Self::SystemData) {
     use specs::join::Join;
 
-    while let Some(effect) = self.queue.try_recv() {
+    while let Ok(effect) = self.queue.try_recv() {
       match effect {
         Effects::PistolFire => self.effects = Effects::PistolFire,
         _ => self.effects = Effects::None,

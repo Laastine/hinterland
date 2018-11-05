@@ -135,7 +135,7 @@ impl<'a> specs::prelude::System<'a> for CharacterControlSystem {
       self.cool_down += 0.1;
     } else {
       self.cool_down = (self.cool_down - delta).max(0.0);
-      while let Some(control) = self.queue.try_recv() {
+      while let Ok(control) = self.queue.try_recv() {
         match control {
           CharacterControl::Up => self.y_move = Some(-CHARACTER_Y_SPEED),
           CharacterControl::Down => self.y_move = Some(CHARACTER_Y_SPEED),
