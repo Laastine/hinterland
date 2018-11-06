@@ -10,7 +10,7 @@ pub enum Control {
   Released,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct TilemapControls {
   audio_control: channel::Sender<Effects>,
   terrain_control: channel::Sender<CameraControl>,

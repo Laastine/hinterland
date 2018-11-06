@@ -2,7 +2,7 @@ use shaders::Position;
 use specs;
 use zombie::ZombieDrawable;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Zombies {
   pub zombies: Vec<ZombieDrawable>,
 }

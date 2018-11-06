@@ -3,7 +3,7 @@ use shaders::Position;
 use specs;
 use terrain_object::{TerrainObjectDrawable, TerrainTexture};
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct TerrainObjects {
   pub objects: Vec<TerrainObjectDrawable>,
 }

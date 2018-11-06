@@ -32,7 +32,7 @@ pub mod zombies;
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/character.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/character.f.glsl");
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct ZombieDrawable {
   projection: Projection,
   pub position: Position,

@@ -6,7 +6,7 @@ use shaders::Position;
 use specs;
 use specs::prelude::{Read, WriteStorage};
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct CharacterInputState {
   pub movement: Position,
   pub orientation: Orientation,

@@ -16,7 +16,7 @@ pub mod terrain_objects;
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/static_element.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/static_element.f.glsl");
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct TerrainObjectDrawable {
   projection: Projection,
   pub position: Position,
