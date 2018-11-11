@@ -9,7 +9,7 @@ use glutin;
 use glutin::{GlContext, KeyboardInput, MouseButton};
 use glutin::ElementState::{Pressed, Released};
 use glutin::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
-use glutin::dpi::{LogicalSize, PhysicalSize};
+use glutin::dpi::LogicalSize;
 
 pub mod init;
 pub mod renderer;
@@ -174,10 +174,6 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
 
   fn poll_events(&mut self) -> WindowStatus {
     use glutin::WindowEvent::{CursorMoved, CloseRequested, MouseInput};
-
-    // Hack for MacOS 10.14
-    let resolution = self.get_viewport_size();
-    self.window.resize(PhysicalSize::new(resolution.0.into(), resolution.1.into()));
 
     let controls = match self.controls {
       Some(ref mut c) => c,
