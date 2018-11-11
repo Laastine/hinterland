@@ -2,8 +2,9 @@ use character::controls::CharacterControl;
 use game::constants::{RESOLUTION_X, RESOLUTION_Y};
 use gfx;
 use gfx_app::controls::{Control, TilemapControls};
+use gfx::memory::Typed;
 use gfx_device_gl;
-use gfx_window_glutin;
+use gfx_core::format::SurfaceType;
 use glutin;
 use glutin::{GlContext, KeyboardInput, MouseButton};
 use glutin::ElementState::{Pressed, Released};
@@ -18,6 +19,9 @@ pub mod mouse_controls;
 
 pub type ColorFormat = gfx::format::Rgba8;
 pub type DepthFormat = gfx::format::DepthStencil;
+
+pub const COLOR_FORMAT_VALUE: SurfaceType = SurfaceType::R8_G8_B8_A8;
+pub const DEPTH_FORMAT_VALUE: SurfaceType = SurfaceType::D24_S8;
 
 pub struct WindowContext {
   window: glutin::GlWindow,
@@ -60,10 +64,30 @@ impl WindowContext {
     let context = glutin::ContextBuilder::new()
       .with_vsync(true)
       .with_double_buffer(Some(true))
-      .with_pixel_format(24, 8);
+      .with_pixel_format(24, 8)
+      .with_srgb(true);
 
-    let (window, device, factory, rtv, dsv) =
-      gfx_window_glutin::init::<ColorFormat, DepthFormat>(builder, context, &events_loop);
+    let window = glutin::GlWindow::new(builder, context, &events_loop).unwrap();
+
+    let (width, height) = {
+      let size = window.get_inner_size().unwrap().to_physical(window.get_hidpi_factor());
+      (size.width as _, size.height as _)
+    };
+
+    let aa = window
+      .get_pixel_format().multisampling
+      .unwrap_or(0) as u8;
+
+    let window_dimensions = (width, height, 1, aa.into());
+
+    unsafe { window.make_current().unwrap() };
+    let (device, factory) = gfx_device_gl::create(|s|
+      window.get_proc_address(s) as *const std::os::raw::c_void);
+
+    let (rtv, dsv) =
+      gfx_device_gl::create_main_targets_raw(window_dimensions,
+                                             COLOR_FORMAT_VALUE,
+                                             DEPTH_FORMAT_VALUE);
 
     WindowContext {
       window,
@@ -71,8 +95,8 @@ impl WindowContext {
       events_loop,
       device,
       factory,
-      render_target_view: rtv,
-      depth_stencil_view: dsv,
+      render_target_view: gfx::handle::RenderTargetView::new(rtv),
+      depth_stencil_view: gfx::handle::DepthStencilView::new(dsv),
       mouse_pos: (0.0, 0.0),
     }
   }
