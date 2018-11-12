@@ -161,7 +161,11 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
   }
 
   fn get_hidpi_factor(&mut self) -> f32 {
-    self.window.get_hidpi_factor() as f32
+    if cfg!(feature = "windowed") {
+      1.0
+    } else {
+      self.window.get_hidpi_factor() as f32
+    }
   }
 
   fn get_render_target_view(&mut self) -> gfx::handle::RenderTargetView<gfx_device_gl::Resources, ColorFormat> {
