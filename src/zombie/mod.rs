@@ -46,6 +46,7 @@ pub struct ZombieDrawable {
   zombie_death_idx: usize,
   is_colliding: bool,
   movement_speed: f32,
+  health: f32,
 }
 
 impl ZombieDrawable {
@@ -65,6 +66,7 @@ impl ZombieDrawable {
       zombie_death_idx: 0,
       is_colliding: false,
       movement_speed: 0.0,
+      health: 1.0,
     }
   }
 
@@ -78,7 +80,7 @@ impl ZombieDrawable {
 
     let distance_to_player = calc_hypotenuse(x_y_distance_to_player.x().abs(), x_y_distance_to_player.y().abs());
 
-    let is_alive = self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
+    let is_alive = self.health > 0.0 && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
 
     if is_alive {
       let zombie_pos = ci.movement - self.position;
@@ -88,10 +90,10 @@ impl ZombieDrawable {
         self.direction = orientation_to_direction(dir);
         self.movement_direction = direction_movement(dir);
         self.stance = Stance::Running;
-        self.movement_speed = 2.5;
+        self.movement_speed = 2.4 * self.health;
       } else {
         self.idle_direction_movement(zombie_pos, game_time as i64);
-        self.movement_speed = 1.0;
+        self.movement_speed = 1.2 * self.health;
       }
     } else {
       self.movement_direction = Point2::new(0.0, 0.0);
@@ -119,15 +121,22 @@ impl ZombieDrawable {
     }
   }
 
+  fn handle_bullet_hit(&mut self) {
+    self.health -= 0.5;
+    if self.health <= 0.0 {
+      self.stance =
+        if get_random_bool() {
+          Stance::NormalDeath
+        } else {
+          Stance::CriticalDeath
+        };
+    }
+  }
+
   fn check_bullet_hits(&mut self, bullets: &[BulletDrawable]) {
     bullets.iter().for_each(|bullet| {
       if overlaps(self.position, bullet.position, 15.0, 15.0) && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath {
-        self.stance =
-          if get_random_bool() {
-            Stance::NormalDeath
-          } else {
-            Stance::CriticalDeath
-          };
+        self.handle_bullet_hit()
       }
     });
   }
@@ -156,7 +165,7 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> ZombieDrawSystem<R>
-                where F: gfx::Factory<R> {
+    where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
     let zombie_bytes = include_bytes!("../../assets/zombie.png");
@@ -167,8 +176,8 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
 
     let pso =
       factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, critter_pipeline::new())
-             .map_err(|err| panic!("Zombie shader loading error {:?}", err))
-             .unwrap();
+        .map_err(|err| panic!("Zombie shader loading error {:?}", err))
+        .unwrap();
 
     let pipeline_data = critter_pipeline::Data {
       vbuf: rect_mesh.mesh.vertex_buffer,
@@ -192,23 +201,23 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
     let sprite_idx = match drawable.stance {
       Stance::Still => {
         (drawable.direction as usize * 4 + drawable.zombie_idx)
-      },
+      }
       Stance::Walking if drawable.orientation != Orientation::Still => {
         (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
-      },
+      }
       Stance::Running if drawable.orientation != Orientation::Still => {
         (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
-      },
+      }
       Stance::NormalDeath if drawable.orientation != Orientation::Still => {
         (drawable.direction as usize * 6 + drawable.zombie_death_idx + NORMAL_DEATH_SPRITE_OFFSET)
-      },
+      }
       Stance::CriticalDeath if drawable.orientation != Orientation::Still => {
         (drawable.direction as usize * 8 + drawable.zombie_death_idx)
-      },
+      }
       _ => {
         drawable.direction = drawable.orientation;
         (drawable.orientation as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
-      },
+      }
     } as usize;
 
     let (y_div, row_idx) =
@@ -230,7 +239,7 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
   pub fn draw<C>(&mut self,
                  mut drawable: &mut ZombieDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
-                 where C: gfx::CommandBuffer<R> {
+    where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb,
@@ -249,7 +258,6 @@ impl PreDrawSystem {
 }
 
 impl<'a> specs::prelude::System<'a> for PreDrawSystem {
-
   type SystemData = (WriteStorage<'a, Zombies>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
