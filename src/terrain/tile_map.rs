@@ -1,5 +1,5 @@
 use data::{get_map_tile, load_map_file};
-use game::constants::{MAP_A_FILE_PATH, MAP_B_FILE_PATH, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W};
+use game::constants::{MAP_FILE_PATH, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W};
 use shaders::TileMapData;
 use tiled::Map;
 
@@ -24,7 +24,7 @@ fn populate_tile_map<'a>(tiles: &'a mut Vec<TileMapData>, map: &Map) -> &'a mut 
 #[derive(Debug)]
 pub struct Terrain {
   pub tiles: Vec<TileMapData>,
-  pub tile_sets: [Map; 2],
+  pub tile_sets: [Map; 1],
   pub curr_tile_set_idx: usize,
 }
 
@@ -36,12 +36,11 @@ impl Terrain {
       map_data.push(TileMapData::new_empty());
     }
 
-    let map_a = load_map_file(MAP_A_FILE_PATH);
-    let map_b = load_map_file(MAP_B_FILE_PATH);
+    let map_a = load_map_file(MAP_FILE_PATH);
 
     Terrain {
       tiles: populate_tile_map(&mut map_data, &map_a).to_vec(),
-      tile_sets: [map_a, map_b],
+      tile_sets: [map_a],
       curr_tile_set_idx: 0,
     }
   }

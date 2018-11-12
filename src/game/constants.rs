@@ -27,8 +27,7 @@ pub const CHARACTER_Y_SPEED: f32 = 3.0;
 pub const ZOMBIE_JSON_PATH: &str = "assets/zombie.json";
 pub const CHARACTER_JSON_PATH: &str = "assets/character.json";
 pub const PISTOL_AUDIO_PATH: &str = "assets/audio/pistol.ogg";
-pub const MAP_A_FILE_PATH: &str = "assets/maps/tilemapa.tmx";
-pub const MAP_B_FILE_PATH: &str = "assets/maps/tilemapb.tmx";
+pub const MAP_FILE_PATH: &str = "assets/maps/tilemap.tmx";
 
 pub const RUN_SPRITE_OFFSET: usize = 64;
 pub const ZOMBIE_STILL_SPRITE_OFFSET: usize = 32;
