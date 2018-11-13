@@ -1,15 +1,16 @@
 use cgmath::Point2;
-use character::controls::CharacterInputState;
-use game::constants::{ASPECT_RATIO, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
 use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Vertices};
 use gfx;
+use specs;
+use specs::prelude::{Read, ReadStorage, WriteStorage};
+
+use character::controls::CharacterInputState;
+use game::constants::{ASPECT_RATIO, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
 use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, can_move_to_tile, coords_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix}, is_map_edge};
+use graphics::{camera::CameraInputState, can_move_to_tile, coords_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix}};
 use graphics::mesh::Mesh;
 use graphics::texture::{load_texture, Texture};
 use shaders::{Position, Projection, tilemap_pipeline, TilemapSettings, VertexData};
-use specs;
-use specs::prelude::{Read, ReadStorage, WriteStorage};
 
 pub mod path_finding;
 mod path_finding_test;
@@ -58,7 +59,6 @@ const SHADER_FRAG: &[u8] = include_bytes!("../shaders/terrain.f.glsl");
 
 pub struct TerrainDrawSystem<R: gfx::Resources> {
   bundle: gfx::pso::bundle::Bundle<R, tilemap_pipeline::Data<R>>,
-  terrain: tile_map::Terrain,
   is_tile_map_dirty: bool,
 }
 
@@ -111,22 +111,24 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
                      .map_err(|err| panic!("Terrain shader loading error {:?}", err))
                      .unwrap();
 
+    let terrain = tile_map::Terrain::new();
+
     let pipeline_data = tilemap_pipeline::Data {
       vbuf: mesh.vertex_buffer,
       position_cb: factory.create_constant_buffer(1),
       projection_cb: factory.create_constant_buffer(1),
-      tilemap: factory.create_constant_buffer(TILE_MAP_BUF_LENGTH),
+      tilemap: factory
+        .create_buffer_immutable(&terrain.tiles.as_slice(),
+                                 gfx::buffer::Role::Constant,
+                                 gfx::memory::Bind::empty()).unwrap(),
       tilemap_cb: factory.create_constant_buffer(1),
       tilesheet: (mesh.texture.raw, factory.create_sampler_linear()),
       out_color: rtv,
       out_depth: dsv,
     };
 
-    let terrain = tile_map::Terrain::new();
-
     TerrainDrawSystem {
       bundle: gfx::Bundle::new(mesh.slice, pso, pipeline_data),
-      terrain,
       is_tile_map_dirty: true,
     }
   }
@@ -138,10 +140,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
 
-    self.handle_map_update(drawable);
-
     if self.is_tile_map_dirty {
-      encoder.update_buffer(&self.bundle.data.tilemap, self.terrain.tiles.as_slice(), 0).unwrap();
       encoder.update_constant_buffer(&self.bundle.data.tilemap_cb, &TilemapSettings {
         world_size: [TILES_PCS_W as f32, TILES_PCS_H as f32],
         tilesheet_size: [32.0, 32.0],
@@ -150,18 +149,6 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     }
 
     self.bundle.encode(encoder);
-  }
-
-  fn handle_map_update(&mut self, drawable: &TerrainDrawable) {
-    if is_map_edge(drawable.tile_position) {
-      let map_idx = self.terrain.curr_tile_set_idx;
-      if map_idx == 0 {
-        self.terrain.change_map(1);
-      } else if map_idx == 1 {
-        self.terrain.change_map(0);
-      }
-      self.is_tile_map_dirty = true
-    }
   }
 }
 

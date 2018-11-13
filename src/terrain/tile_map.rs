@@ -7,15 +7,28 @@ fn calc_index(x_pos: usize, y_pos: usize) -> usize {
   (y_pos * TILES_PCS_W) + x_pos
 }
 
+const QUARTER_TILE_PCS: usize = TILES_PCS_H * TILES_PCS_W / 4;
+
 fn populate_tile_map<'a>(tiles: &'a mut Vec<TileMapData>, map: &Map) -> &'a mut Vec<TileMapData> {
   for y_pos in 0..TILES_PCS_H {
     for x_pos in 0..TILES_PCS_W {
-      let map_val = get_map_tile(map, 0, x_pos, y_pos);
-      let tex_x = map_val % 32;
-      let y = (map_val - tex_x) / 32;
-      let x = if tex_x < 1 { 1 } else { tex_x - 1 };
+      let map_val = get_map_tile(map, 0, x_pos, y_pos) - 1;
       let idx = calc_index(x_pos, y_pos);
-      tiles[idx] = TileMapData::new([x as f32, y as f32, 0.0, 0.0]);
+
+      if idx < QUARTER_TILE_PCS {
+        tiles[idx] =
+          TileMapData::new([map_val as f32, 0.0, 0.0, 0.0]);
+      } else if idx < QUARTER_TILE_PCS * 2 {
+        tiles[idx - QUARTER_TILE_PCS] =
+          TileMapData::new([tiles[idx - QUARTER_TILE_PCS].data[0], map_val as f32, 0.0, 0.0]);
+      } else if idx < QUARTER_TILE_PCS * 3 {
+        tiles[idx - QUARTER_TILE_PCS * 2] =
+          TileMapData::new([tiles[idx - QUARTER_TILE_PCS * 2].data[0], tiles[idx - QUARTER_TILE_PCS * 2].data[1], map_val as f32, 0.0]);
+      } else {
+        tiles[idx - QUARTER_TILE_PCS * 3] =
+          TileMapData::new([tiles[idx - QUARTER_TILE_PCS * 3].data[0], tiles[idx - QUARTER_TILE_PCS * 3].data[1], tiles[idx - QUARTER_TILE_PCS * 3].data[2], map_val as f32]);
+      }
+
     }
   }
   tiles
@@ -30,9 +43,9 @@ pub struct Terrain {
 
 impl Terrain {
   pub fn new() -> Terrain {
-    let mut map_data = Vec::with_capacity(TILE_MAP_BUF_LENGTH);
+    let mut map_data = Vec::with_capacity(QUARTER_TILE_PCS);
 
-    for _ in 0..TILE_MAP_BUF_LENGTH {
+    for _ in 0..QUARTER_TILE_PCS {
       map_data.push(TileMapData::new_empty());
     }
 
@@ -43,10 +56,5 @@ impl Terrain {
       tile_sets: [map_a],
       curr_tile_set_idx: 0,
     }
-  }
-
-  pub fn change_map(&mut self, idx: usize) {
-    self.tiles = populate_tile_map(&mut self.tiles, &self.tile_sets[idx]).to_vec();
-    self.curr_tile_set_idx = idx;
   }
 }

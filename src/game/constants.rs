@@ -1,10 +1,10 @@
 pub const TILE_WIDTH: f32 = 46.0;
-pub const Y_OFFSET_256: f32 = 5888.0;
+pub const Y_OFFSET_256: f32 = 5888.0 / 4.0;
 
-pub const TILES_PCS_W: usize = 256;
-pub const TILES_PCS_H: usize = 256;
+pub const TILES_PCS_W: usize = 64;
+pub const TILES_PCS_H: usize = 64;
 
-pub const TILE_MAP_BUF_LENGTH: usize = 65536;
+pub const TILE_MAP_BUF_LENGTH: usize = 4096;
 pub const CHARACTER_BUF_LENGTH: usize = 224;
 
 pub const RESOLUTION_X: u32 = 1600;
