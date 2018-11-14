@@ -7,7 +7,7 @@ struct TileMapData {
   vec4 data;
 };
 
-const int TILEMAP_BUF_LENGTH = 1024;
+const int TILEMAP_BUF_LENGTH = 4096;
 const float SHADING_MULTIPLIER = 0.2;
 
 layout (std140) uniform b_TileMap {
@@ -24,22 +24,21 @@ uniform sampler2D t_TileSheet;
 void main() {
   vec2 bufTileCoords = floor(v_BufPos);
   vec2 rawUvOffsets = vec2(v_BufPos.x - bufTileCoords.x, 1.0 - (v_BufPos.y - bufTileCoords.y));
-  int QUARTER_TILE_PCS = 1024;
 
   int bufIdx = int((bufTileCoords.y * u_WorldSize.x) + bufTileCoords.x);
   vec4 entry = u_Data[bufIdx].data;
   vec2 coords = vec2(0.0, 0.0);
 
-  if (bufIdx < QUARTER_TILE_PCS) {
+  if (bufIdx < TILEMAP_BUF_LENGTH) {
     coords = vec2(mod(entry.x, u_TilesheetSize.y), floor(entry.x / u_TilesheetSize.x));
-  } else if (bufIdx < (QUARTER_TILE_PCS * 2)) {
-    entry = u_Data[bufIdx - QUARTER_TILE_PCS].data;
+  } else if (bufIdx < (TILEMAP_BUF_LENGTH * 2)) {
+    entry = u_Data[bufIdx - TILEMAP_BUF_LENGTH].data;
     coords = vec2(mod(entry.y, u_TilesheetSize.y), floor(entry.y / u_TilesheetSize.x));
-  } else if (bufIdx < (QUARTER_TILE_PCS * 3)) {
-    entry = u_Data[bufIdx - QUARTER_TILE_PCS*2].data;
+  } else if (bufIdx < (TILEMAP_BUF_LENGTH * 3)) {
+    entry = u_Data[bufIdx - TILEMAP_BUF_LENGTH*2].data;
     coords = vec2(mod(entry.z, u_TilesheetSize.y), floor(entry.z / u_TilesheetSize.x));
   } else {
-    entry = u_Data[bufIdx-QUARTER_TILE_PCS*3].data;
+    entry = u_Data[bufIdx-TILEMAP_BUF_LENGTH*3].data;
     coords = vec2(mod(entry.w, u_TilesheetSize.y), floor(entry.w / u_TilesheetSize.x));
   }
   vec2 uvCoords = (coords.xy + rawUvOffsets) / u_TilesheetSize.xy;

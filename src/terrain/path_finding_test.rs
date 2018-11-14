@@ -5,7 +5,7 @@ const IMPASSABLE_TILES: [[usize; 2]; 12] = [[1, 1], [2, 2], [2, 3], [2, 4], [2, 
 #[test]
 fn path_finding_test_1() {
   use cgmath::Point2;
-  use game::constants::Y_OFFSET_256;
+  use game::constants::Y_OFFSET;
   use shaders::Position;
   use terrain::path_finding::calc_route;
 
@@ -15,7 +15,7 @@ fn path_finding_test_1() {
     .collect();
 
   assert_eq!(expected_result_1,
-             calc_route(Position::new(0.0, -Y_OFFSET_256), Position::new(0.0, -Y_OFFSET_256 + 5.0 * 46.0), &IMPASSABLE_TILES.to_vec())
+             calc_route(Position::new(0.0, -Y_OFFSET), Position::new(0.0, -Y_OFFSET + 5.0 * 46.0), &IMPASSABLE_TILES.to_vec())
                .map_or_else(|| vec![],
                             |(f, _)| f),
              "path_finding_test_1");
@@ -24,7 +24,7 @@ fn path_finding_test_1() {
 #[test]
 fn path_finding_test_2() {
   use cgmath::Point2;
-  use game::constants::Y_OFFSET_256;
+  use game::constants::Y_OFFSET;
   use shaders::Position;
   use terrain::path_finding::calc_route;
 
@@ -34,7 +34,7 @@ fn path_finding_test_2() {
     .collect();
 
   assert_eq!(expected_result,
-             calc_route(Position::new(0.0, -Y_OFFSET_256 + 3.0 * 46.0), Position::new(0.0, -Y_OFFSET_256 + 5.0 * 46.0), &IMPASSABLE_TILES.to_vec())
+             calc_route(Position::new(0.0, -Y_OFFSET + 3.0 * 46.0), Position::new(0.0, -Y_OFFSET + 5.0 * 46.0), &IMPASSABLE_TILES.to_vec())
                .map_or_else(|| vec![],
                             |(f, _)| f),
              "path_finding_test_2");

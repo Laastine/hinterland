@@ -106,11 +106,11 @@ fn direction_movement_test() {
 #[test]
 fn tile_to_coords_test() {
   use cgmath::Point2;
-  use game::constants::Y_OFFSET_256;
+  use game::constants::Y_OFFSET;
   use graphics::{coords_to_tile, tile_to_coords};
   use shaders::Position;
 
-  let map_center = Position::new(0.0, -Y_OFFSET_256);
+  let map_center = Position::new(0.0, -Y_OFFSET);
 
   assert_eq!(map_center, tile_to_coords(Point2::new(0, 0)), "tile_to_coords_test");
 
