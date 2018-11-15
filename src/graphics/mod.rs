@@ -1,6 +1,7 @@
-use bullet::BulletDrawable;
 use cgmath;
 use cgmath::{Angle, Deg, Point2};
+
+use bullet::BulletDrawable;
 use character::CharacterDrawable;
 use game::{constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, Y_OFFSET}, get_rand_from_range};
 use gfx_app::{mouse_controls::MouseInputState};
@@ -86,12 +87,8 @@ pub fn is_not_terrain_object(pos: Point2<i32>) -> bool {
   !TERRAIN_OBJECTS.iter().any(|e| (e[0] as i32 == pos.x) && (e[1] as i32 == pos.y))
 }
 
-pub fn is_map_edge(point: Point2<i32>) -> bool {
-  point.x == 0 || point.x == (TILES_PCS_W - 1usize) as i32 || point.y == 0 || point.y == (TILES_PCS_H - 1usize) as i32
-}
-
 fn is_map_tile(pos: Point2<i32>) -> bool {
-  pos.x >= 0 && pos.y >= 0 && pos.x < TILES_PCS_W as i32 && pos.y < TILES_PCS_H as i32
+  pos.x > 0 && pos.y > 0 && pos.x < (TILES_PCS_W - 1) as i32 && pos.y < (TILES_PCS_H - 1) as i32
 }
 
 pub fn can_move_to_tile(screen_pos: Position) -> bool {
