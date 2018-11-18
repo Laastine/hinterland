@@ -116,7 +116,7 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
 
     for (cd, huds) in (&character_drawable, &mut hud_objects).join() {
       let new_ammo_text = format!("Ammo {}", cd.stats.ammunition);
-      let new_mag_text = format!("Magazines {}", cd.stats.magazines);
+      let new_mag_text = format!("Magazines {}/2", cd.stats.magazines);
       huds.objects[1].update(new_ammo_text);
       huds.objects[2].update(new_mag_text);
     }
