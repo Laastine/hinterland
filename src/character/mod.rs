@@ -179,7 +179,6 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
   }
 }
 
-#[derive(Debug)]
 pub struct PreDrawSystem;
 
 impl PreDrawSystem {

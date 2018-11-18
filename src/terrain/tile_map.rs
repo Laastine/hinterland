@@ -32,7 +32,6 @@ fn populate_tile_map<'a>(tiles: &'a mut Vec<TileMapData>, map: &Map) -> &'a mut 
   tiles
 }
 
-#[derive(Debug)]
 pub struct Terrain {
   pub tiles: Vec<TileMapData>,
   pub tile_sets: [Map; 1],

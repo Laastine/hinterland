@@ -3,7 +3,6 @@ use cgmath;
 use shaders::Position;
 use specs;
 
-#[derive(Debug)]
 pub struct Bullets {
   pub bullets: Vec<BulletDrawable>,
 }

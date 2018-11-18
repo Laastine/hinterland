@@ -2,7 +2,6 @@ use bullet::bullets::Bullets;
 use specs;
 use specs::prelude::WriteStorage;
 
-#[derive(Debug)]
 pub struct CollisionSystem;
 
 impl CollisionSystem {
@@ -11,7 +10,7 @@ impl CollisionSystem {
   }
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub enum Collision {
   Flying,
   Hit,

@@ -9,7 +9,7 @@ use specs::prelude::{Read, ReadStorage, WriteStorage};
 
 type MouseEvent = channel::Sender<(MouseControl, Option<(f64, f64)>)>;
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct MouseInputState {
   pub mouse_left: Option<Point2<f32>>,
   pub mouse_right: Option<Point2<f32>>,
@@ -38,17 +38,13 @@ impl specs::prelude::Component for MouseInputState {
   type Storage = specs::storage::VecStorage<MouseInputState>;
 }
 
-#[derive(Debug)]
 pub enum MouseControl {
   LeftClick,
   RightClick,
 }
 
-#[derive(Debug)]
 pub struct MouseControlSystem {
   queue: channel::Receiver<(MouseControl, Option<(f64, f64)>)>,
-  left_click_pos: Option<(f64, f64)>,
-  right_click_pos: Option<(f64, f64)>,
 }
 
 impl MouseControlSystem {
@@ -56,8 +52,6 @@ impl MouseControlSystem {
     let (tx, rx) = channel::unbounded();
     (MouseControlSystem {
       queue: rx,
-      left_click_pos: None,
-      right_click_pos: None,
     }, tx)
   }
 }

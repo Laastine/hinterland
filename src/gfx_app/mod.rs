@@ -102,7 +102,7 @@ impl WindowContext {
   }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(PartialEq, Eq)]
 pub enum WindowStatus {
   Open,
   Close,

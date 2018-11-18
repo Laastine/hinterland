@@ -3,7 +3,6 @@ use hud::TextDrawable;
 use shaders::Position;
 use specs;
 
-#[derive(Debug)]
 pub struct HudObjects {
   pub objects: Vec<TextDrawable>,
 }

@@ -17,7 +17,6 @@ pub mod hud_objects;
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/text.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/text.f.glsl");
 
-#[derive(Debug)]
 pub struct TextDrawable {
   text: String,
   position: Position,
@@ -100,7 +99,6 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
   }
 }
 
-#[derive(Debug)]
 pub struct PreDrawSystem;
 
 impl PreDrawSystem {

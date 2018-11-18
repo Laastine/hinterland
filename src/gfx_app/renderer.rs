@@ -1,7 +1,6 @@
 use crossbeam_channel as channel;
 use gfx;
 
-#[derive(Debug)]
 pub struct EncoderQueue<D: gfx::Device> {
   pub sender: channel::Sender<gfx::Encoder<D::Resources, D::CommandBuffer>>,
   pub receiver: channel::Receiver<gfx::Encoder<D::Resources, D::CommandBuffer>>,

@@ -16,12 +16,10 @@ pub mod terrain_objects;
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/static_element.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/static_element.f.glsl");
 
-#[derive(Debug)]
 pub struct TerrainObjectDrawable {
   projection: Projection,
   pub position: Position,
   previous_position: Position,
-  offset_delta: Position,
   pub object_type: TerrainTexture
 }
 
@@ -33,7 +31,6 @@ impl TerrainObjectDrawable {
       projection,
       position,
       previous_position: Position::origin(),
-      offset_delta: Position::origin(),
       object_type,
     }
   }
@@ -49,7 +46,7 @@ impl specs::prelude::Component for TerrainObjectDrawable {
   type Storage = specs::storage::VecStorage<TerrainObjectDrawable>;
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum TerrainTexture {
   House,
   Tree,
@@ -106,7 +103,6 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
   }
 }
 
-#[derive(Debug)]
 pub struct PreDrawSystem;
 
 impl PreDrawSystem {

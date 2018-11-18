@@ -20,7 +20,6 @@ fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
   ((point_x - point_y), (point_x + point_y) / 1.78)
 }
 
-#[derive(Debug)]
 pub struct TerrainDrawable {
   projection: Projection,
   pub position: Position,
@@ -152,7 +151,6 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
   }
 }
 
-#[derive(Debug)]
 pub struct PreDrawSystem;
 
 impl PreDrawSystem {

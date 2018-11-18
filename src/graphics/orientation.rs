@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter, Result};
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum Orientation {
   Right,
   UpRight,
@@ -29,7 +29,7 @@ impl Display for Orientation {
   }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub enum Stance {
   Walking,
   Running,

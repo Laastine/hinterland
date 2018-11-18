@@ -3,8 +3,7 @@ use cgmath::{Matrix4, Point3, Vector3};
 use graphics::camera::CameraInputState;
 use shaders::Projection;
 
-
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Default)]
 pub struct Dimensions {
   pub window_width: f32,
   pub window_height: f32,

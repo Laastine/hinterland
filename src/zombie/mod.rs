@@ -32,7 +32,6 @@ pub mod zombies;
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/character.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/character.f.glsl");
 
-#[derive(Debug)]
 pub struct ZombieDrawable {
   projection: Projection,
   pub position: Position,
@@ -44,7 +43,6 @@ pub struct ZombieDrawable {
   pub movement_direction: Point2<f32>,
   zombie_idx: usize,
   zombie_death_idx: usize,
-  is_colliding: bool,
   movement_speed: f32,
   health: f32,
 }
@@ -64,7 +62,6 @@ impl ZombieDrawable {
       movement_direction: Point2::new(0.0, 0.0),
       zombie_idx: 0,
       zombie_death_idx: 0,
-      is_colliding: false,
       movement_speed: 0.0,
       health: 1.0,
     }
@@ -248,7 +245,6 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
   }
 }
 
-#[derive(Debug)]
 pub struct PreDrawSystem;
 
 impl PreDrawSystem {

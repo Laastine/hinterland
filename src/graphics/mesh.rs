@@ -7,7 +7,7 @@ use shaders::VertexData;
 
 const DEFAULT_INDEX_DATA: &[u16] = &[0, 1, 2, 2, 3, 0];
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct PlainMesh<R> where R: Resources {
   pub slice: gfx::Slice<R>,
   pub vertex_buffer: gfx::handle::Buffer<R, VertexData>,
@@ -39,14 +39,14 @@ impl<R> PlainMesh<R> where R: gfx::Resources {
   }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Mesh<R> where R: Resources {
   pub slice: gfx::Slice<R>,
   pub vertex_buffer: gfx::handle::Buffer<R, VertexData>,
   pub texture: Texture<R>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct RectangularMesh<R> where R: Resources {
   pub mesh: Mesh<R>,
   pub size: Point2<f32>,

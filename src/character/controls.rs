@@ -6,7 +6,6 @@ use shaders::Position;
 use specs;
 use specs::prelude::{Read, WriteStorage};
 
-#[derive(Debug)]
 pub struct CharacterInputState {
   pub movement: Position,
   pub orientation: Orientation,
@@ -82,7 +81,6 @@ impl specs::prelude::Component for CharacterInputState {
   type Storage = specs::storage::VecStorage<CharacterInputState>;
 }
 
-#[derive(Debug)]
 pub enum CharacterControl {
   Left,
   Right,
@@ -96,7 +94,6 @@ pub enum CharacterControl {
   ReloadReleased,
 }
 
-#[derive(Debug)]
 pub struct CharacterControlSystem {
   queue: channel::Receiver<CharacterControl>,
   x_move: Option<f32>,

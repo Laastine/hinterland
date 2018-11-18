@@ -7,7 +7,7 @@ use specs;
 use specs::prelude::ReadStorage;
 use std::{fs::File, io::BufReader};
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum Effects {
   PistolFire,
   None

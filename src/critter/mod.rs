@@ -1,6 +1,5 @@
 use specs;
 
-#[derive(Debug)]
 pub struct CharacterSprite {
   pub character_idx: usize,
   pub character_fire_idx: usize,
@@ -36,7 +35,6 @@ impl specs::prelude::Component for CharacterSprite {
   type Storage = specs::storage::VecStorage<CharacterSprite>;
 }
 
-#[derive(Debug)]
 pub struct CritterData {
   pub data: [f32; 4]
 }

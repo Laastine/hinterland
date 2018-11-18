@@ -19,7 +19,7 @@ pub mod collision;
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/bullet.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/bullet.f.glsl");
 
-#[derive(Debug, PartialEq)]
+#[derive(PartialEq)]
 pub struct BulletDrawable {
   projection: Projection,
   pub position: Position,
@@ -113,7 +113,6 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
   }
 }
 
-#[derive(Debug)]
 pub struct PreDrawSystem;
 
 impl PreDrawSystem {

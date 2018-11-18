@@ -4,7 +4,7 @@ use shaders::Position;
 use specs;
 use specs::prelude::WriteStorage;
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct CameraInputState {
   pub distance: f32,
   pub movement: Position,
@@ -29,7 +29,6 @@ impl specs::prelude::Component for CameraInputState {
   type Storage = specs::storage::HashMapStorage<CameraInputState>;
 }
 
-#[derive(Debug)]
 pub enum CameraControl {
   ZoomOut,
   ZoomIn,
@@ -42,12 +41,9 @@ pub enum CameraControl {
   YMoveStop,
 }
 
-#[derive(Debug)]
 pub struct CameraControlSystem {
   queue: channel::Receiver<CameraControl>,
   zoom_level: Option<f32>,
-  x_move: Option<f32>,
-  y_move: Option<f32>,
 }
 
 impl CameraControlSystem {
@@ -56,8 +52,6 @@ impl CameraControlSystem {
     (CameraControlSystem {
       queue: rx,
       zoom_level: None,
-      x_move: None,
-      y_move: None,
     }, tx)
   }
 }

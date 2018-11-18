@@ -8,7 +8,7 @@ use std::collections::HashMap;
 use std::hash::BuildHasher;
 use std::io::Cursor;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Texture<R> where R: Resources {
   pub raw: ShaderResourceView<R, [f32; 4]>,
   pub size: Point2<i32>,
