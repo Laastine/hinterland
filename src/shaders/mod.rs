@@ -106,6 +106,10 @@ impl Position {
     Position { position: [f32::from(x), f32::from(y)] }
   }
 
+  pub fn new_from_array(pos: [f32; 2]) -> Position{
+    Position { position: pos }
+  }
+
   pub fn origin() -> Position {
     Position { position: [0.0, 0.0] }
   }
