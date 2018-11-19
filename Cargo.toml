@@ -5,7 +5,7 @@ authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 
 [dependencies]
 cgmath = "0.16.1"
-crossbeam-channel = "0.3.1"
+crossbeam-channel = "0.3.2"
 gfx_core = "0.8.3"
 gfx_device_gl = "0.15.3"
 gfx = "0.17.1"
@@ -16,7 +16,7 @@ json = "0.11.13"
 pathfinding = "1.0.4"
 rand = "0.6.0"
 rodio = "0.8.1"
-rusttype = "0.7.2"
+rusttype = "0.7.3"
 specs = "0.14.0"
 tiled = "0.8.0"
 
