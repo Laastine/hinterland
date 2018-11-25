@@ -8,6 +8,7 @@ extern crate gfx_device_gl;
 extern crate glutin;
 extern crate image;
 extern crate json;
+extern crate num;
 extern crate pathfinding;
 extern crate rand;
 extern crate rodio;

@@ -1,5 +1,7 @@
+use num::Integer;
 use rand;
 use rand::Rng;
+use rand::distributions::uniform::SampleUniform;
 
 pub mod constants;
 
@@ -8,7 +10,8 @@ pub fn get_random_bool() -> bool {
   rnd.gen()
 }
 
-pub fn get_rand_from_range(min: i32, max: i32) -> i32 {
+pub fn get_rand_from_range<T>(min: T, max: T) -> T
+  where T: Integer + SampleUniform {
   let mut rnd = rand::thread_rng();
   rnd.gen_range(min, max)
 }
