@@ -6,6 +6,7 @@ use character::CharacterDrawable;
 use game::{constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, Y_OFFSET}, get_rand_from_range};
 use gfx_app::{mouse_controls::MouseInputState};
 use graphics::{dimensions::Dimensions, orientation::Orientation};
+use num::{Num, NumCast};
 use shaders::Position;
 use terrain_object::TerrainObjectDrawable;
 use zombie::ZombieDrawable;
@@ -83,8 +84,9 @@ pub fn can_move(screen_pos: Position) -> bool {
   is_within_map_borders(Point2::new(point.x as f32, point.y as f32))
 }
 
-pub fn is_not_terrain_object(pos: Point2<i32>) -> bool {
-  !TERRAIN_OBJECTS.iter().any(|e| (e[0] as i32 == pos.x) && (e[1] as i32 == pos.y))
+pub fn is_not_terrain_object<T>(pos: Point2<T>) -> bool
+  where T: NumCast + Num, i32: std::cmp::PartialEq<T> {
+  !TERRAIN_OBJECTS.iter().any(|e| (e[0] == pos.x) && (e[1] == pos.y))
 }
 
 fn is_map_tile(pos: Point2<i32>) -> bool {
