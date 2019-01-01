@@ -51,7 +51,7 @@ pub fn calc_route(start_point: Position, end_point: Position, impassable_tiles: 
 }
 
 pub fn calc_next_movement(start_point: Position, end_point: Position) -> i32 {
-  let next_step: Point2<i32> = calc_route(start_point, end_point, &TERRAIN_OBJECTS)
+  let next_step: Point2<i32> = calc_route(start_point, end_point, &TERRAIN_OBJECTS.to_vec())
     .map_or_else(|| Point2::new(0, 0),
                  |(route, ..)| {
                    if route.len() > 1 {
