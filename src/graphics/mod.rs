@@ -1,15 +1,14 @@
 use cgmath;
 use cgmath::{Angle, Deg, Point2};
-
-use bullet::BulletDrawable;
-use character::CharacterDrawable;
-use game::{constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, Y_OFFSET}, get_rand_from_range};
-use gfx_app::{mouse_controls::MouseInputState};
-use graphics::{dimensions::Dimensions, orientation::Orientation};
+use crate::bullet::BulletDrawable;
+use crate::character::CharacterDrawable;
+use crate::game::{constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, Y_OFFSET}, get_rand_from_range};
+use crate::gfx_app::{mouse_controls::MouseInputState};
+use crate::graphics::{dimensions::Dimensions, orientation::Orientation};
 use num::{Num, NumCast};
-use shaders::Position;
-use terrain_object::TerrainObjectDrawable;
-use zombie::ZombieDrawable;
+use crate::shaders::Position;
+use crate::terrain_object::TerrainObjectDrawable;
+use crate::zombie::ZombieDrawable;
 
 pub mod camera;
 pub mod dimensions;

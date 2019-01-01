@@ -3,14 +3,13 @@ use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Ve
 use gfx;
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
-
-use character::controls::CharacterInputState;
-use game::constants::{ASPECT_RATIO, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
-use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, can_move_to_tile, coords_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix}};
-use graphics::mesh::Mesh;
-use graphics::texture::{load_texture, Texture};
-use shaders::{Position, Projection, tilemap_pipeline, TilemapSettings, VertexData};
+use crate::character::controls::CharacterInputState;
+use crate::game::constants::{ASPECT_RATIO, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
+use crate::gfx_app::{ColorFormat, DepthFormat};
+use crate::graphics::{camera::CameraInputState, can_move_to_tile, coords_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix}};
+use crate::graphics::mesh::Mesh;
+use crate::graphics::texture::{load_texture, Texture};
+use crate::shaders::{Position, Projection, tilemap_pipeline, TilemapSettings, VertexData};
 
 pub mod path_finding;
 mod path_finding_test;

@@ -1,15 +1,15 @@
 use cgmath::Point2;
-use character::controls::CharacterInputState;
-use game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
+use crate::character::controls::CharacterInputState;
+use crate::game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
 use gfx;
-use gfx_app::{ColorFormat, DepthFormat};
-use graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, texture::load_texture};
-use graphics::mesh::RectangularMesh;
-use graphics::texture::Texture;
-use shaders::{Position, Projection, static_element_pipeline};
+use crate::gfx_app::{ColorFormat, DepthFormat};
+use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, texture::load_texture};
+use crate::graphics::mesh::RectangularMesh;
+use crate::graphics::texture::Texture;
+use crate::shaders::{Position, Projection, static_element_pipeline};
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
-use terrain_object::terrain_objects::TerrainObjects;
+use crate::terrain_object::terrain_objects::TerrainObjects;
 
 pub mod terrain_objects;
 

@@ -1,7 +1,7 @@
-use character::controls::CharacterControl;
-use game::constants::{RESOLUTION_X, RESOLUTION_Y};
+use crate::character::controls::CharacterControl;
+use crate::game::constants::{RESOLUTION_X, RESOLUTION_Y};
 use gfx;
-use gfx_app::controls::{Control, TilemapControls};
+use crate::gfx_app::controls::{Control, TilemapControls};
 use gfx::memory::Typed;
 use gfx_device_gl;
 use gfx_core::format::SurfaceType;

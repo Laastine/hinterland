@@ -1,7 +1,7 @@
 #[test]
 fn direction_test() {
   use cgmath::Point2;
-  use graphics;
+  use crate::graphics;
 
   assert_eq!(0.0, graphics::direction(Point2 {
     x: 1.0,
@@ -56,7 +56,7 @@ fn direction_test() {
 #[test]
 fn direction_movement_test() {
   use cgmath::Point2;
-  use graphics;
+  use crate::graphics;
 
   assert_eq!(Point2 { x: 1.0, y: 0.0 },
              graphics::direction_movement(
@@ -106,9 +106,9 @@ fn direction_movement_test() {
 #[test]
 fn tile_to_coords_test() {
   use cgmath::Point2;
-  use game::constants::Y_OFFSET;
-  use graphics::{coords_to_tile, tile_to_coords};
-  use shaders::Position;
+  use crate::game::constants::Y_OFFSET;
+  use crate::graphics::{coords_to_tile, tile_to_coords};
+  use crate::shaders::Position;
 
   let map_center = Position::new(0.0, -Y_OFFSET);
 

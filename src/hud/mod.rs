@@ -1,12 +1,12 @@
 use cgmath::Point2;
-use character::CharacterDrawable;
+use crate::character::CharacterDrawable;
 use gfx;
-use gfx_app::ColorFormat;
-use gfx_app::DepthFormat;
-use graphics::{mesh::RectangularMesh};
-use graphics::texture::{text_texture, Texture};
+use crate::gfx_app::ColorFormat;
+use crate::gfx_app::DepthFormat;
+use crate::graphics::{mesh::RectangularMesh};
+use crate::graphics::texture::{text_texture, Texture};
 use rusttype::FontCollection;
-use shaders::{Position, text_pipeline};
+use crate::shaders::{Position, text_pipeline};
 use specs;
 use specs::{ReadStorage, WriteStorage};
 use std::collections::HashMap;

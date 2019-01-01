@@ -1,20 +1,20 @@
-use bullet;
-use character;
-use critter::CharacterSprite;
-use game::constants::{CURRENT_AMMO_TEXT, HUD_TEXTS, VERSION_NUMBER_TEXT};
+use crate::bullet;
+use crate::character;
+use crate::critter::CharacterSprite;
+use crate::game::constants::{CURRENT_AMMO_TEXT, HUD_TEXTS, VERSION_NUMBER_TEXT};
 use gfx;
-use gfx_app::{ColorFormat, DepthFormat};
-use gfx_app::renderer::EncoderQueue;
-use graphics::{DeltaTime, orientation::Stance};
-use graphics::Drawables;
-use hud;
+use crate::gfx_app::{ColorFormat, DepthFormat};
+use crate::gfx_app::renderer::EncoderQueue;
+use crate::graphics::{DeltaTime, orientation::Stance};
+use crate::graphics::Drawables;
+use crate::hud;
 use specs;
 use specs::prelude::{Read, WriteStorage};
 use std::time::Instant;
-use terrain;
-use terrain_object;
-use terrain_object::TerrainTexture;
-use zombie;
+use crate::terrain;
+use crate::terrain_object;
+use crate::terrain_object::TerrainTexture;
+use crate::zombie;
 
 pub struct DrawSystem<D: gfx::Device> {
   render_target_view: gfx::handle::RenderTargetView<D::Resources, ColorFormat>,
@@ -123,7 +123,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
         if c.stance == Stance::Walking {
           cs.update_run();
         }
-        for mut z in &mut zs.zombies {
+        for z in &mut zs.zombies {
           match z.stance {
             Stance::NormalDeath => z.update_death_idx(5),
             Stance::CriticalDeath => z.update_death_idx(7),
@@ -137,7 +137,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
       }
 
       if self.run_cool_down == 0.0 {
-        for mut z in &mut zs.zombies {
+        for z in &mut zs.zombies {
           if let Stance::Running = z.stance {
             z.update_alive_idx(7)
           }
@@ -164,7 +164,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
           .unwrap()
       });
 
-      for mut e in &mut drawables {
+      for e in &mut drawables {
         match *e {
           Drawables::Bullet(ref e) => { self.bullet_system.draw(e, &mut encoder) },
           Drawables::Zombie(ref mut e) => { self.zombie_system.draw(e, &mut encoder) },

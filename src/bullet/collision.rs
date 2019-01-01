@@ -1,4 +1,4 @@
-use bullet::bullets::Bullets;
+use crate::bullet::bullets::Bullets;
 use specs;
 use specs::prelude::WriteStorage;
 

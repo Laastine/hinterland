@@ -1,7 +1,7 @@
-use game::constants::{AMMO_POSITIONS, HOUSE_POSITIONS, TREE_POSITIONS};
-use shaders::Position;
+use crate::game::constants::{AMMO_POSITIONS, HOUSE_POSITIONS, TREE_POSITIONS};
+use crate::shaders::Position;
 use specs;
-use terrain_object::{TerrainObjectDrawable, TerrainTexture};
+use crate::terrain_object::{TerrainObjectDrawable, TerrainTexture};
 
 pub struct TerrainObjects {
   pub objects: Vec<TerrainObjectDrawable>,

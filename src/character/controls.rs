@@ -1,8 +1,8 @@
-use character::CharacterDrawable;
+use crate::character::CharacterDrawable;
 use crossbeam_channel as channel;
-use game::constants::{CHARACTER_X_SPEED, CHARACTER_Y_SPEED};
-use graphics::{camera::CameraInputState, can_move_to_tile, DeltaTime, orientation::Orientation};
-use shaders::Position;
+use crate::game::constants::{CHARACTER_X_SPEED, CHARACTER_Y_SPEED};
+use crate::graphics::{camera::CameraInputState, can_move_to_tile, DeltaTime, orientation::{Orientation, Stance}};
+use crate::shaders::Position;
 use specs;
 use specs::prelude::{Read, WriteStorage};
 
@@ -125,7 +125,7 @@ impl<'a> specs::prelude::System<'a> for CharacterControlSystem {
 
   fn run(&mut self, (mut character_input, mut character, mut camera_input, d): Self::SystemData) {
     use specs::join::Join;
-    use graphics::orientation::Stance;
+
     let delta = d.0;
 
     if self.cool_down == 0.0 {

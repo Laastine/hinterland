@@ -2,8 +2,8 @@ use cgmath::Point2;
 use gfx;
 use gfx::Resources;
 use gfx::traits::FactoryExt;
-use graphics::texture::Texture;
-use shaders::VertexData;
+use crate::graphics::texture::Texture;
+use crate::shaders::VertexData;
 
 const DEFAULT_INDEX_DATA: &[u16] = &[0, 1, 2, 2, 3, 0];
 

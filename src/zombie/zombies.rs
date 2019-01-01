@@ -1,6 +1,6 @@
-use shaders::Position;
+use crate::shaders::Position;
 use specs;
-use zombie::ZombieDrawable;
+use crate::zombie::ZombieDrawable;
 
 pub struct Zombies {
   pub zombies: Vec<ZombieDrawable>,

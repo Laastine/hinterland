@@ -1,7 +1,7 @@
 use cgmath::Point2;
 use gfx::{Factory, format::Rgba8, handle::ShaderResourceView, Resources, texture::{AaMode, Kind, Mipmap, Size}};
-use gfx_app::ColorFormat;
-use hud::font::draw_text;
+use crate::gfx_app::ColorFormat;
+use crate::hud::font::draw_text;
 use image;
 use rusttype::Font;
 use std::collections::HashMap;

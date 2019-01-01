@@ -1,13 +1,12 @@
-
 #[allow(dead_code)]
 const IMPASSABLE_TILES: [[i32; 2]; 12] = [[1, 1], [2, 2], [2, 3], [2, 4], [2, 5], [3, 0], [3, 5], [4, 0], [4, 2], [4, 3], [4, 4], [4, 5]];
 
 #[test]
 fn path_finding_test_1() {
   use cgmath::Point2;
-  use game::constants::Y_OFFSET;
-  use shaders::Position;
-  use terrain::path_finding::calc_route;
+  use crate::game::constants::Y_OFFSET;
+  use crate::shaders::Position;
+  use crate::terrain::path_finding::calc_route;
 
   let expected_result_1: Vec<Point2<i32>> = vec![[0, 0], [1, 0], [2, 1], [3, 2], [4, 1], [5, 2], [5, 3], [5, 4], [5, 5]]
     .iter()
@@ -24,9 +23,9 @@ fn path_finding_test_1() {
 #[test]
 fn path_finding_test_2() {
   use cgmath::Point2;
-  use game::constants::Y_OFFSET;
-  use shaders::Position;
-  use terrain::path_finding::calc_route;
+  use crate::game::constants::Y_OFFSET;
+  use crate::shaders::Position;
+  use crate::terrain::path_finding::calc_route;
 
   let expected_result: Vec<Point2<i32>> = vec![[3, 3], [3, 2], [4, 1], [5, 2], [5, 3], [5, 4], [5, 5]]
     .iter()

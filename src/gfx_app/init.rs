@@ -1,26 +1,26 @@
-use audio::AudioSystem;
-use bullet;
-use bullet::bullets::Bullets;
-use bullet::collision::CollisionSystem;
-use character;
-use character::controls::CharacterControlSystem;
-use critter::CharacterSprite;
+use crate::audio::AudioSystem;
+use crate::bullet;
+use crate::bullet::bullets::Bullets;
+use crate::bullet::collision::CollisionSystem;
+use crate::character;
+use crate::character::controls::CharacterControlSystem;
+use crate::critter::CharacterSprite;
 use gfx;
-use gfx_app::{Window, WindowStatus};
-use gfx_app::controls::TilemapControls;
-use gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
-use gfx_app::renderer::{DeviceRenderer, EncoderQueue};
-use gfx_app::system::DrawSystem;
-use graphics;
-use graphics::{DeltaTime, dimensions::Dimensions, GameTime};
-use graphics::camera::CameraControlSystem;
-use hud;
+use crate::gfx_app::{Window, WindowStatus};
+use crate::gfx_app::controls::TilemapControls;
+use crate::gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
+use crate::gfx_app::renderer::{DeviceRenderer, EncoderQueue};
+use crate::gfx_app::system::DrawSystem;
+use crate::graphics;
+use crate::graphics::{DeltaTime, dimensions::Dimensions, GameTime};
+use crate::graphics::camera::CameraControlSystem;
+use crate::hud;
 use specs::{Builder, prelude::DispatcherBuilder, world::World};
 use std::time;
-use terrain;
-use terrain_object;
-use zombie;
-use zombie::zombies::Zombies;
+use crate::terrain;
+use crate::terrain_object;
+use crate::zombie;
+use crate::zombie::zombies::Zombies;
 
 pub fn run<W, D, F>(window: &mut W)
                     where W: Window<D, F>,

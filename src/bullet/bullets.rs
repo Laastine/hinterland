@@ -1,6 +1,6 @@
-use bullet::{BulletDrawable, collision::Collision};
+use crate::bullet::{BulletDrawable, collision::Collision};
 use cgmath;
-use shaders::Position;
+use crate::shaders::Position;
 use specs;
 
 pub struct Bullets {

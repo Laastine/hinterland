@@ -1,7 +1,7 @@
 use cgmath;
 use cgmath::{Matrix4, Point3, Vector3};
-use graphics::camera::CameraInputState;
-use shaders::Projection;
+use crate::graphics::camera::CameraInputState;
+use crate::shaders::Projection;
 
 #[derive(Clone, Default)]
 pub struct Dimensions {

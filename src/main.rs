@@ -1,20 +1,5 @@
-extern crate cgmath;
-extern crate crossbeam_channel;
-extern crate genmesh;
 #[macro_use]
 extern crate gfx;
-extern crate gfx_core;
-extern crate gfx_device_gl;
-extern crate glutin;
-extern crate image;
-extern crate json;
-extern crate num;
-extern crate pathfinding;
-extern crate rand;
-extern crate rodio;
-extern crate rusttype;
-extern crate specs;
-extern crate tiled;
 
 mod audio;
 mod bullet;

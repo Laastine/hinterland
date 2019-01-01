@@ -1,6 +1,6 @@
-use game::constants::{CURRENT_AMMO_TEXT, CURRENT_MAGAZINE_TEXT, VERSION_NUMBER_TEXT};
-use hud::TextDrawable;
-use shaders::Position;
+use crate::game::constants::{CURRENT_AMMO_TEXT, CURRENT_MAGAZINE_TEXT, VERSION_NUMBER_TEXT};
+use crate::hud::TextDrawable;
+use crate::shaders::Position;
 use specs;
 
 pub struct HudObjects {

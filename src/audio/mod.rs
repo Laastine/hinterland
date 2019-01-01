@@ -1,6 +1,6 @@
-use character::{CharacterDrawable, controls::CharacterInputState};
+use crate::character::{CharacterDrawable, controls::CharacterInputState};
 use crossbeam_channel as channel;
-use game::constants::PISTOL_AUDIO_PATH;
+use crate::game::constants::PISTOL_AUDIO_PATH;
 use rodio;
 use rodio::Sink;
 use specs;

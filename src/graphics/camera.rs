@@ -1,6 +1,6 @@
 use crossbeam_channel as channel;
-use game::constants::VIEW_DISTANCE;
-use shaders::Position;
+use crate::game::constants::VIEW_DISTANCE;
+use crate::shaders::Position;
 use specs;
 use specs::prelude::WriteStorage;
 

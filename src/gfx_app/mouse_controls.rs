@@ -1,9 +1,9 @@
-use bullet::bullets::Bullets;
+use crate::bullet::bullets::Bullets;
 use cgmath::Point2;
-use character::{CharacterDrawable, controls::CharacterInputState};
+use crate::character::{CharacterDrawable, controls::CharacterInputState};
 use crossbeam_channel as channel;
-use graphics::{camera::CameraInputState, dimensions::Dimensions, direction, direction_movement};
-use shaders::Position;
+use crate::graphics::{camera::CameraInputState, dimensions::Dimensions, direction, direction_movement};
+use crate::shaders::Position;
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 

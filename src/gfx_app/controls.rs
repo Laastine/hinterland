@@ -1,8 +1,8 @@
-use audio::Effects;
-use character::controls::CharacterControl;
+use crate::audio::Effects;
+use crate::character::controls::CharacterControl;
 use crossbeam_channel as channel;
-use gfx_app::mouse_controls::MouseControl;
-use graphics::camera::CameraControl;
+use crate::gfx_app::mouse_controls::MouseControl;
+use crate::graphics::camera::CameraControl;
 
 pub enum Control {
   Plus,
