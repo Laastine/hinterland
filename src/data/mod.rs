@@ -1,9 +1,11 @@
-use crate::critter::CritterData;
-use crate::game::constants::{CHARACTER_BUF_LENGTH, CHARACTER_JSON_PATH, ZOMBIE_JSON_PATH};
-use json;
 use std::{fs::File, io::BufReader, io::prelude::*, path::Path, string::String, vec::Vec};
+
+use json;
 use tiled;
 use tiled::Map;
+
+use crate::critter::CritterData;
+use crate::game::constants::{CHARACTER_BUF_LENGTH, CHARACTER_JSON_PATH, ZOMBIE_JSON_PATH};
 
 pub fn load_map_file(filename: &str) -> Map {
   let file = match File::open(&Path::new(&filename)) {

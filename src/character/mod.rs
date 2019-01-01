@@ -1,18 +1,20 @@
+use std;
+
 use cgmath::Point2;
+use gfx;
+use specs;
+use specs::prelude::{Read, ReadStorage, WriteStorage};
+
 use crate::character::{character_stats::CharacterStats, controls::CharacterInputState};
 use crate::critter::{CharacterSprite, CritterData};
 use crate::data;
 use crate::game::constants::{AMMO_POSITIONS, ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE};
-use gfx;
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::gfx_app::mouse_controls::MouseInputState;
 use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, get_orientation_from_center, orientation::{Orientation, Stance}, overlaps, texture::load_texture};
 use crate::graphics::mesh::RectangularMesh;
 use crate::graphics::texture::Texture;
 use crate::shaders::{CharacterSheet, critter_pipeline, Position, Projection};
-use specs;
-use specs::prelude::{Read, ReadStorage, WriteStorage};
-use std;
 use crate::terrain_object::{terrain_objects::TerrainObjects, TerrainObjectDrawable, TerrainTexture};
 use crate::zombie::{ZombieDrawable, zombies::Zombies};
 
@@ -62,12 +64,12 @@ impl CharacterDrawable {
 
     if !cfg!(feature = "godmode") &&
       zombies.iter()
-             .any(|z|
-               zombie_not_dead(z) &&
-                 overlaps(ci.movement,
-                          ci.movement - z.position,
-                          15.0,
-                          30.0)) {
+        .any(|z|
+          zombie_not_dead(z) &&
+            overlaps(ci.movement,
+                     ci.movement - z.position,
+                     15.0,
+                     30.0)) {
       self.stance = Stance::NormalDeath;
       println!("Player died");
       std::process::exit(0);
@@ -86,7 +88,7 @@ impl CharacterDrawable {
     }
   }
 
-  fn ammo_pick_up(&mut self, movement: Position,  objs: &mut Vec<TerrainObjectDrawable>, idx: usize) {
+  fn ammo_pick_up(&mut self, movement: Position, objs: &mut Vec<TerrainObjectDrawable>, idx: usize) {
     if objs[idx].object_type == TerrainTexture::Ammo && overlaps(movement, movement - objs[idx].position, 20.0, 20.0) {
       self.stats.magazines = 2;
       objs.remove(idx);
@@ -113,7 +115,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> CharacterDrawSystem<R>
-                where F: gfx::Factory<R> {
+    where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
     let charter_bytes = &include_bytes!("../../assets/character.png")[..];
@@ -123,8 +125,8 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
       RectangularMesh::new(factory, Texture::new(char_texture, None), Point2::new(20.0, 28.0));
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, critter_pipeline::new())
-                     .map_err(|err| panic!("Character shader loading error {:?}", err))
-                     .unwrap();
+      .map_err(|err| panic!("Character shader loading error {:?}", err))
+      .unwrap();
 
     let pipeline_data = critter_pipeline::Data {
       vbuf: rect_mesh.mesh.vertex_buffer,
@@ -168,7 +170,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
                  mut drawable: &mut CharacterDrawable,
                  character: &CharacterSprite,
                  encoder: &mut gfx::Encoder<R, C>)
-                 where C: gfx::CommandBuffer<R> {
+    where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     encoder.update_constant_buffer(&self.bundle.data.character_sprite_cb,

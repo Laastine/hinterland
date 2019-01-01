@@ -1,7 +1,8 @@
-use cgmath::BaseFloat;
-use gfx;
 use std;
 use std::{fmt::{Display, Formatter, Result}, ops::{Add, Sub}};
+
+use cgmath::BaseFloat;
+use gfx;
 
 gfx_defines! {
   constant TileMapData {
@@ -106,7 +107,7 @@ impl Position {
     Position { position: [f32::from(x), f32::from(y)] }
   }
 
-  pub fn new_from_array(pos: [f32; 2]) -> Position{
+  pub fn new_from_array(pos: [f32; 2]) -> Position {
     Position { position: pos }
   }
 

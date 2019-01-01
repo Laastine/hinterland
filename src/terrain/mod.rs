@@ -3,6 +3,7 @@ use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Ve
 use gfx;
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
+
 use crate::character::controls::CharacterInputState;
 use crate::game::constants::{ASPECT_RATIO, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
 use crate::gfx_app::{ColorFormat, DepthFormat};
@@ -32,7 +33,7 @@ impl TerrainDrawable {
     TerrainDrawable {
       projection,
       position: Position::origin(),
-      tile_position: coords_to_tile(Position::origin())
+      tile_position: coords_to_tile(Position::origin()),
     }
   }
 
@@ -65,7 +66,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>)
                 -> TerrainDrawSystem<R>
-                where F: gfx::Factory<R> {
+    where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
     let tile_size = 32;
@@ -77,28 +78,28 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     let plane = Plane::subdivide(width, width);
     let vertex_data: Vec<VertexData> =
       plane.shared_vertex_iter()
-           .map(|vertex| {
-             let (raw_x, raw_y) = cartesian_to_isometric(vertex.pos[0], vertex.pos[1]);
-             let vertex_x = half_width as f32 * raw_x;
-             let vertex_y = half_height as f32 * raw_y;
+        .map(|vertex| {
+          let (raw_x, raw_y) = cartesian_to_isometric(vertex.pos[0], vertex.pos[1]);
+          let vertex_x = half_width as f32 * raw_x;
+          let vertex_y = half_height as f32 * raw_y;
 
-             let (u_pos, v_pos) = ((raw_x / 4.0 - raw_y / 2.25) + 0.5, (raw_x / 4.0 + raw_y / 2.25) + 0.5);
-             let tile_map_x = u_pos * width as f32;
-             let tile_map_y = v_pos * height as f32;
+          let (u_pos, v_pos) = ((raw_x / 4.0 - raw_y / 2.25) + 0.5, (raw_x / 4.0 + raw_y / 2.25) + 0.5);
+          let tile_map_x = u_pos * width as f32;
+          let tile_map_y = v_pos * height as f32;
 
-             VertexData {
-               pos: [vertex_x, vertex_y],
-               uv: [tile_map_x as f32, tile_map_y as f32],
-             }
-           })
-           .collect();
+          VertexData {
+            pos: [vertex_x, vertex_y],
+            uv: [tile_map_x as f32, tile_map_y as f32],
+          }
+        })
+        .collect();
 
     let index_data =
       plane.indexed_polygon_iter()
-           .triangulate()
-           .vertices()
-           .map(|i| i as u16)
-           .collect::<Vec<u16>>();
+        .triangulate()
+        .vertices()
+        .map(|i| i as u16)
+        .collect::<Vec<u16>>();
 
     let tile_sheet_bytes = &include_bytes!("../../assets/maps/terrain.png")[..];
     let tile_texture = load_texture(factory, tile_sheet_bytes);
@@ -106,8 +107,8 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     let mesh = Mesh::new(factory, &vertex_data.as_slice(), index_data.as_slice(), Texture::new(tile_texture, None));
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, tilemap_pipeline::new())
-                     .map_err(|err| panic!("Terrain shader loading error {:?}", err))
-                     .unwrap();
+      .map_err(|err| panic!("Terrain shader loading error {:?}", err))
+      .unwrap();
 
     let terrain = tile_map::Terrain::new();
 
@@ -134,7 +135,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
   pub fn draw<C>(&mut self,
                  drawable: &TerrainDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
-                 where C: gfx::CommandBuffer<R> {
+    where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
 

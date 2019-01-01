@@ -1,14 +1,15 @@
 use cgmath::Point2;
+use gfx;
+use specs;
+use specs::prelude::{Read, ReadStorage, WriteStorage};
+
 use crate::character::controls::CharacterInputState;
 use crate::game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
-use gfx;
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, texture::load_texture};
 use crate::graphics::mesh::RectangularMesh;
 use crate::graphics::texture::Texture;
 use crate::shaders::{Position, Projection, static_element_pipeline};
-use specs;
-use specs::prelude::{Read, ReadStorage, WriteStorage};
 use crate::terrain_object::terrain_objects::TerrainObjects;
 
 pub mod terrain_objects;
@@ -20,7 +21,7 @@ pub struct TerrainObjectDrawable {
   projection: Projection,
   pub position: Position,
   previous_position: Position,
-  pub object_type: TerrainTexture
+  pub object_type: TerrainTexture,
 }
 
 impl TerrainObjectDrawable {
@@ -62,7 +63,7 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>,
                 texture: TerrainTexture) -> TerrainObjectDrawSystem<R>
-                where F: gfx::Factory<R> {
+    where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
     let (texture_size, texture_bytes) = match texture {
@@ -76,8 +77,8 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
     let mesh = RectangularMesh::new(factory, Texture::new(terrain_object_texture, None), texture_size);
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, static_element_pipeline::new())
-                     .map_err(|err| panic!("Terrain object shader loading error {:?}", err))
-                     .unwrap();
+      .map_err(|err| panic!("Terrain object shader loading error {:?}", err))
+      .unwrap();
 
     let pipeline_data = static_element_pipeline::Data {
       vbuf: mesh.mesh.vertex_buffer,
@@ -96,7 +97,7 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
   pub fn draw<C>(&self,
                  drawable: &TerrainObjectDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
-                 where C: gfx::CommandBuffer<R> {
+    where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     self.bundle.encode(encoder);

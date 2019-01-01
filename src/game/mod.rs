@@ -1,7 +1,7 @@
 use num::Integer;
 use rand;
-use rand::Rng;
 use rand::distributions::uniform::SampleUniform;
+use rand::Rng;
 
 pub mod constants;
 

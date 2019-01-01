@@ -1,28 +1,30 @@
-use crate::character::{CharacterDrawable, controls::CharacterInputState};
+use std::{fs::File, io::BufReader};
+
 use crossbeam_channel as channel;
-use crate::game::constants::PISTOL_AUDIO_PATH;
 use rodio;
 use rodio::Sink;
 use specs;
 use specs::prelude::ReadStorage;
-use std::{fs::File, io::BufReader};
+
+use crate::character::{CharacterDrawable, controls::CharacterInputState};
+use crate::game::constants::PISTOL_AUDIO_PATH;
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum Effects {
   PistolFire,
-  None
+  None,
 }
 
 pub struct AudioSystem {
   effects: Effects,
   sink: Sink,
-  queue: channel::Receiver<Effects>
+  queue: channel::Receiver<Effects>,
 }
 
 impl AudioSystem {
   pub fn new() -> (AudioSystem, channel::Sender<Effects>) {
     #[allow(deprecated)]
-    let (tx, rx) = channel::unbounded();
+      let (tx, rx) = channel::unbounded();
     let endpoint = rodio::default_output_device().unwrap();
 
     (AudioSystem {

@@ -1,16 +1,18 @@
+use std::time::Instant;
+
+use gfx;
+use specs;
+use specs::prelude::{Read, WriteStorage};
+
 use crate::bullet;
 use crate::character;
 use crate::critter::CharacterSprite;
 use crate::game::constants::{CURRENT_AMMO_TEXT, HUD_TEXTS, VERSION_NUMBER_TEXT};
-use gfx;
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::gfx_app::renderer::EncoderQueue;
 use crate::graphics::{DeltaTime, orientation::Stance};
 use crate::graphics::Drawables;
 use crate::hud;
-use specs;
-use specs::prelude::{Read, WriteStorage};
-use std::time::Instant;
 use crate::terrain;
 use crate::terrain_object;
 use crate::terrain_object::TerrainTexture;
@@ -39,7 +41,7 @@ impl<D: gfx::Device> DrawSystem<D> {
                 dsv: &gfx::handle::DepthStencilView<D::Resources, DepthFormat>,
                 encoder_queue: EncoderQueue<D>)
                 -> DrawSystem<D>
-                where F: gfx::Factory<D::Resources> {
+    where F: gfx::Factory<D::Resources> {
     DrawSystem {
       render_target_view: rtv.clone(),
       depth_stencil_view: dsv.clone(),
@@ -70,7 +72,6 @@ impl<D: gfx::Device> DrawSystem<D> {
 impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
   where D: gfx::Device,
         D::CommandBuffer: Send {
-
   type SystemData = (WriteStorage<'a, terrain::TerrainDrawable>,
                      WriteStorage<'a, character::CharacterDrawable>,
                      WriteStorage<'a, CharacterSprite>,
@@ -166,12 +167,12 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
 
       for e in &mut drawables {
         match *e {
-          Drawables::Bullet(ref e) => { self.bullet_system.draw(e, &mut encoder) },
-          Drawables::Zombie(ref mut e) => { self.zombie_system.draw(e, &mut encoder) },
-          Drawables::TerrainAmmo(ref mut e) => { self.terrain_object_system[0].draw(e, &mut encoder) },
-          Drawables::TerrainHouse(ref mut e) => { self.terrain_object_system[1].draw(e, &mut encoder) },
-          Drawables::TerrainTree(ref mut e) => { self.terrain_object_system[2].draw(e, &mut encoder) },
-          Drawables::Character(ref mut e) => { self.character_system.draw(e, cs, &mut encoder) },
+          Drawables::Bullet(ref e) => { self.bullet_system.draw(e, &mut encoder) }
+          Drawables::Zombie(ref mut e) => { self.zombie_system.draw(e, &mut encoder) }
+          Drawables::TerrainAmmo(ref mut e) => { self.terrain_object_system[0].draw(e, &mut encoder) }
+          Drawables::TerrainHouse(ref mut e) => { self.terrain_object_system[1].draw(e, &mut encoder) }
+          Drawables::TerrainTree(ref mut e) => { self.terrain_object_system[2].draw(e, &mut encoder) }
+          Drawables::Character(ref mut e) => { self.character_system.draw(e, cs, &mut encoder) }
         }
       }
     }

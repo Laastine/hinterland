@@ -1,10 +1,11 @@
-use crate::character::CharacterDrawable;
 use crossbeam_channel as channel;
+use specs;
+use specs::prelude::{Read, WriteStorage};
+
+use crate::character::CharacterDrawable;
 use crate::game::constants::{CHARACTER_X_SPEED, CHARACTER_Y_SPEED};
 use crate::graphics::{camera::CameraInputState, can_move_to_tile, DeltaTime, orientation::{Orientation, Stance}};
 use crate::shaders::Position;
-use specs;
-use specs::prelude::{Read, WriteStorage};
 
 pub struct CharacterInputState {
   pub movement: Position,

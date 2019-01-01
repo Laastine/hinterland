@@ -1,8 +1,9 @@
 use crossbeam_channel as channel;
-use crate::game::constants::VIEW_DISTANCE;
-use crate::shaders::Position;
 use specs;
 use specs::prelude::WriteStorage;
+
+use crate::game::constants::VIEW_DISTANCE;
+use crate::shaders::Position;
 
 #[derive(Clone)]
 pub struct CameraInputState {

@@ -1,6 +1,7 @@
-use crate::bullet::bullets::Bullets;
 use specs;
 use specs::prelude::WriteStorage;
+
+use crate::bullet::bullets::Bullets;
 
 pub struct CollisionSystem;
 

@@ -1,11 +1,12 @@
 use cgmath;
 use cgmath::{Angle, Deg, Point2};
+use num::{Num, NumCast};
+
 use crate::bullet::BulletDrawable;
 use crate::character::CharacterDrawable;
 use crate::game::{constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, Y_OFFSET}, get_rand_from_range};
 use crate::gfx_app::{mouse_controls::MouseInputState};
 use crate::graphics::{dimensions::Dimensions, orientation::Orientation};
-use num::{Num, NumCast};
 use crate::shaders::Position;
 use crate::terrain_object::TerrainObjectDrawable;
 use crate::zombie::ZombieDrawable;
@@ -75,7 +76,7 @@ pub fn overlaps(area: Position, el: Position, width: f32, height: f32) -> bool {
 }
 
 pub fn is_within_map_borders(point: Point2<f32>) -> bool {
-  point.x >= 0.0 && point.x < (TILES_PCS_W as f32 - 1f32)  && point.y >= 0.0 && point.y < (TILES_PCS_H as f32 - 1f32)
+  point.x >= 0.0 && point.x < (TILES_PCS_W as f32 - 1f32) && point.y >= 0.0 && point.y < (TILES_PCS_H as f32 - 1f32)
 }
 
 pub fn can_move(screen_pos: Position) -> bool {
@@ -103,7 +104,7 @@ pub fn coords_to_tile(position: Position) -> Point2<i32> {
     y: position.y() + Y_OFFSET,
   };
   Point2::new((pos.x / TILE_WIDTH + (pos.y / TILE_WIDTH)) as i32,
-                          (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32)
+              (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32)
 }
 
 pub fn coords_to_tile_offset(position: Position) -> Point2<i32> {
@@ -137,7 +138,7 @@ pub fn add_random_offset_to_screen_pos(pos: Position) -> Position {
   loop {
     let res = iter(pos);
     if can_move_to_tile(res) {
-      return res
+      return res;
     }
   }
 }

@@ -1,17 +1,19 @@
+use std::f32;
+
+use cgmath::Point2;
+use gfx;
+use specs;
+use specs::prelude::{Read, ReadStorage, WriteStorage};
+
 use crate::bullet::bullets::Bullets;
 use crate::bullet::collision::Collision;
-use cgmath::Point2;
 use crate::character::controls::CharacterInputState;
 use crate::game::constants::{ASPECT_RATIO, BULLET_SPEED, VIEW_DISTANCE};
-use gfx;
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::graphics::{camera::CameraInputState, can_move, dimensions::{Dimensions, get_projection, get_view_matrix}};
 use crate::graphics::can_move_to_tile;
 use crate::graphics::mesh::PlainMesh;
 use crate::shaders::{bullet_pipeline, Position, Projection};
-use specs;
-use specs::prelude::{Read, ReadStorage, WriteStorage};
-use std::f32;
 
 pub mod bullets;
 pub mod collision;
@@ -81,14 +83,14 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> BulletDrawSystem<R>
-                where F: gfx::Factory<R> {
+    where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
     let mesh = PlainMesh::new_with_data(factory, Point2::new(2.0, 2.0));
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, bullet_pipeline::new())
-                     .map_err(|err| panic!("Bullet shader loading error {:?}", err))
-                     .unwrap();
+      .map_err(|err| panic!("Bullet shader loading error {:?}", err))
+      .unwrap();
 
     let pipeline_data = bullet_pipeline::Data {
       vbuf: mesh.vertex_buffer,
@@ -106,7 +108,7 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
   pub fn draw<C>(&mut self,
                  drawable: &BulletDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
-                 where C: gfx::CommandBuffer<R> {
+    where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     self.bundle.encode(encoder);

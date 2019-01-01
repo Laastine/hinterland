@@ -1,15 +1,17 @@
+use std::collections::HashMap;
+
 use cgmath::Point2;
-use crate::character::CharacterDrawable;
 use gfx;
+use rusttype::FontCollection;
+use specs;
+use specs::{ReadStorage, WriteStorage};
+
+use crate::character::CharacterDrawable;
 use crate::gfx_app::ColorFormat;
 use crate::gfx_app::DepthFormat;
 use crate::graphics::{mesh::RectangularMesh};
 use crate::graphics::texture::{text_texture, Texture};
-use rusttype::FontCollection;
 use crate::shaders::{Position, text_pipeline};
-use specs;
-use specs::{ReadStorage, WriteStorage};
-use std::collections::HashMap;
 
 pub mod font;
 pub mod hud_objects;
@@ -51,7 +53,7 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
                 current_text: &str,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>) -> TextDrawSystem<R>
-                where F: gfx::Factory<R> {
+    where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
     let font_bytes = &include_bytes!("../../assets/DejaVuSans.ttf")[..];
@@ -64,8 +66,8 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
     text_texture(factory, &font, texts, &mut texture_cache);
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, text_pipeline::new())
-                     .map_err(|err| panic!("HUD shader loading error {:?}", err))
-                     .unwrap();
+      .map_err(|err| panic!("HUD shader loading error {:?}", err))
+      .unwrap();
 
     let texture = texture_cache[current_text].clone();
 
@@ -89,7 +91,7 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
   pub fn draw<C>(&mut self,
                  drawable: &TextDrawable,
                  encoder: &mut gfx::Encoder<R, C>)
-                 where C: gfx::CommandBuffer<R> {
+    where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
     if self.current_text.trim() != drawable.text.trim() {
       self.current_text = drawable.text.to_owned();

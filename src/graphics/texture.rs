@@ -1,12 +1,14 @@
-use cgmath::Point2;
-use gfx::{Factory, format::Rgba8, handle::ShaderResourceView, Resources, texture::{AaMode, Kind, Mipmap, Size}};
-use crate::gfx_app::ColorFormat;
-use crate::hud::font::draw_text;
-use image;
-use rusttype::Font;
 use std::collections::HashMap;
 use std::hash::BuildHasher;
 use std::io::Cursor;
+
+use cgmath::Point2;
+use gfx::{Factory, format::Rgba8, handle::ShaderResourceView, Resources, texture::{AaMode, Kind, Mipmap, Size}};
+use image;
+use rusttype::Font;
+
+use crate::gfx_app::ColorFormat;
+use crate::hud::font::draw_text;
 
 #[derive(Clone)]
 pub struct Texture<R> where R: Resources {
@@ -34,7 +36,7 @@ pub fn load_texture<R, F>(factory: &mut F, data: &[u8]) -> ShaderResourceView<R,
 }
 
 pub fn load_raw_texture<R, F>(factory: &mut F, data: &[u8], size: Point2<i32>) -> ShaderResourceView<R, [f32; 4]>
-                              where R: Resources, F: Factory<R> {
+  where R: Resources, F: Factory<R> {
   let kind = Kind::D2(size.x as Size, size.y as Size, AaMode::Single);
   let mipmap = Mipmap::Provided;
   match factory
@@ -49,7 +51,7 @@ pub fn text_texture<'a, R, F, S: BuildHasher>(factory: &mut F,
                                               texts: &[&str],
                                               texture_cache: &'a mut HashMap<String, Texture<R>, S>)
                                               -> &'a mut HashMap<String, Texture<R>, S>
-                                              where R: Resources, F: Factory<R> {
+  where R: Resources, F: Factory<R> {
   let text_texture_height = 100.0;
   texts.iter().for_each(|text| {
     let (texture_size, texture_data) = draw_text(&font, text_texture_height, text);

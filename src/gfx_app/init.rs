@@ -1,3 +1,8 @@
+use std::time;
+
+use gfx;
+use specs::{Builder, prelude::DispatcherBuilder, world::World};
+
 use crate::audio::AudioSystem;
 use crate::bullet;
 use crate::bullet::bullets::Bullets;
@@ -5,7 +10,6 @@ use crate::bullet::collision::CollisionSystem;
 use crate::character;
 use crate::character::controls::CharacterControlSystem;
 use crate::critter::CharacterSprite;
-use gfx;
 use crate::gfx_app::{Window, WindowStatus};
 use crate::gfx_app::controls::TilemapControls;
 use crate::gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
@@ -15,18 +19,16 @@ use crate::graphics;
 use crate::graphics::{DeltaTime, dimensions::Dimensions, GameTime};
 use crate::graphics::camera::CameraControlSystem;
 use crate::hud;
-use specs::{Builder, prelude::DispatcherBuilder, world::World};
-use std::time;
 use crate::terrain;
 use crate::terrain_object;
 use crate::zombie;
 use crate::zombie::zombies::Zombies;
 
 pub fn run<W, D, F>(window: &mut W)
-                    where W: Window<D, F>,
-                          D: gfx::Device + 'static,
-                          F: gfx::Factory<D::Resources>,
-                          D::CommandBuffer: Send {
+  where W: Window<D, F>,
+        D: gfx::Device + 'static,
+        F: gfx::Factory<D::Resources>,
+        D::CommandBuffer: Send {
   let (mut device_renderer, enc_queue) = DeviceRenderer::new(window.create_buffers(2));
 
   let mut w = World::new();
@@ -53,26 +55,26 @@ fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) 
   world.add_resource(GameTime(0));
 
   world.create_entity()
-       .with(terrain::TerrainDrawable::new())
-       .with(character::CharacterDrawable::new())
-       .with(hud::hud_objects::HudObjects::new())
-       .with(terrain_object::terrain_objects::TerrainObjects::new())
-       .with(Zombies::new())
-       .with(Bullets::new())
-       .with(CharacterSprite::new())
-       .with(graphics::camera::CameraInputState::new())
-       .with(character::controls::CharacterInputState::new())
-       .with(MouseInputState::new()).build();
+    .with(terrain::TerrainDrawable::new())
+    .with(character::CharacterDrawable::new())
+    .with(hud::hud_objects::HudObjects::new())
+    .with(terrain_object::terrain_objects::TerrainObjects::new())
+    .with(Zombies::new())
+    .with(Bullets::new())
+    .with(CharacterSprite::new())
+    .with(graphics::camera::CameraInputState::new())
+    .with(character::controls::CharacterInputState::new())
+    .with(MouseInputState::new()).build();
 }
 
 fn dispatch_loop<W, D, F>(window: &mut W,
                           device_renderer: &mut DeviceRenderer<D>,
                           w: &mut World,
                           encoder_queue: EncoderQueue<D>)
-                          where W: Window<D, F>,
-                                D: gfx::Device + 'static,
-                                F: gfx::Factory<D::Resources>,
-                                D::CommandBuffer: Send {
+  where W: Window<D, F>,
+        D: gfx::Device + 'static,
+        F: gfx::Factory<D::Resources>,
+        D::CommandBuffer: Send {
   let draw = {
     let rtv = window.get_render_target_view();
     let dsv = window.get_depth_stencil_view();
@@ -122,7 +124,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     }
 
     if let WindowStatus::Close = window.poll_events() {
-      break
+      break;
     }
   }
 }

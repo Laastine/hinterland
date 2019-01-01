@@ -2,6 +2,7 @@ use cgmath::Point2;
 use gfx;
 use gfx::Resources;
 use gfx::traits::FactoryExt;
+
 use crate::graphics::texture::Texture;
 use crate::shaders::VertexData;
 
@@ -65,7 +66,7 @@ impl<R> RectangularMesh<R> where R: gfx::Resources {
     let mesh = Mesh::new(factory, vertex_data, &DEFAULT_INDEX_DATA, texture);
     RectangularMesh {
       mesh,
-      size
+      size,
     }
   }
 }

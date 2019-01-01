@@ -1,6 +1,7 @@
+use crossbeam_channel as channel;
+
 use crate::audio::Effects;
 use crate::character::controls::CharacterControl;
-use crossbeam_channel as channel;
 use crate::gfx_app::mouse_controls::MouseControl;
 use crate::graphics::camera::CameraControl;
 
@@ -31,7 +32,7 @@ impl TilemapControls {
   }
 
   pub fn zoom(&mut self, control: &Control) {
-    let _ =match control {
+    let _ = match control {
       Control::Plus => self.terrain_control.send(CameraControl::ZoomIn),
       Control::Negative => self.terrain_control.send(CameraControl::ZoomOut),
       Control::Released => self.terrain_control.send(CameraControl::ZoomStop),

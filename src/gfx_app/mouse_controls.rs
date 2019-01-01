@@ -1,11 +1,12 @@
-use crate::bullet::bullets::Bullets;
 use cgmath::Point2;
-use crate::character::{CharacterDrawable, controls::CharacterInputState};
 use crossbeam_channel as channel;
-use crate::graphics::{camera::CameraInputState, dimensions::Dimensions, direction, direction_movement};
-use crate::shaders::Position;
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
+
+use crate::bullet::bullets::Bullets;
+use crate::character::{CharacterDrawable, controls::CharacterInputState};
+use crate::graphics::{camera::CameraInputState, dimensions::Dimensions, direction, direction_movement};
+use crate::shaders::Position;
 
 type MouseEvent = channel::Sender<(MouseControl, Option<(f64, f64)>)>;
 
@@ -57,7 +58,6 @@ impl MouseControlSystem {
 }
 
 impl<'a> specs::prelude::System<'a> for MouseControlSystem {
-
   type SystemData = (WriteStorage<'a, MouseInputState>,
                      WriteStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, CameraInputState>,

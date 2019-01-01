@@ -1,29 +1,30 @@
-use crate::bullet::{BulletDrawable, bullets::Bullets};
 use cgmath::Point2;
+use gfx;
+use specs;
+use specs::prelude::{Read, ReadStorage, WriteStorage};
+
+use crate::bullet::{BulletDrawable, bullets::Bullets};
 use crate::character::controls::CharacterInputState;
 use crate::critter::CritterData;
 use crate::data;
 use crate::game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE, ZOMBIE_SHEET_TOTAL_WIDTH, ZOMBIE_STILL_SPRITE_OFFSET};
 use crate::game::get_random_bool;
-use gfx;
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::graphics::{add_random_offset_to_screen_pos,
-               calc_hypotenuse,
-               camera::CameraInputState,
-               can_move_to_tile,
-               direction,
-               direction_movement,
-               direction_movement_180,
-               GameTime,
-               orientation::{Orientation, Stance},
-               orientation_to_direction,
-               overlaps};
+                      calc_hypotenuse,
+                      camera::CameraInputState,
+                      can_move_to_tile,
+                      direction,
+                      direction_movement,
+                      direction_movement_180,
+                      GameTime,
+                      orientation::{Orientation, Stance},
+                      orientation_to_direction,
+                      overlaps};
 use crate::graphics::dimensions::{Dimensions, get_projection, get_view_matrix};
 use crate::graphics::mesh::RectangularMesh;
 use crate::graphics::texture::{load_texture, Texture};
 use crate::shaders::{CharacterSheet, critter_pipeline, Position, Projection};
-use specs;
-use specs::prelude::{Read, ReadStorage, WriteStorage};
 use crate::terrain::path_finding::calc_next_movement;
 use crate::zombie::zombies::Zombies;
 

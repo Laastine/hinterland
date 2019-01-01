@@ -1,5 +1,6 @@
-use crate::shaders::Position;
 use specs;
+
+use crate::shaders::Position;
 use crate::zombie::ZombieDrawable;
 
 pub struct Zombies {

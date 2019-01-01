@@ -1,15 +1,16 @@
-use crate::character::controls::CharacterControl;
-use crate::game::constants::{RESOLUTION_X, RESOLUTION_Y};
 use gfx;
-use crate::gfx_app::controls::{Control, TilemapControls};
 use gfx::memory::Typed;
-use gfx_device_gl;
 use gfx_core::format::SurfaceType;
+use gfx_device_gl;
 use glutin;
 use glutin::{GlContext, KeyboardInput, MouseButton};
+use glutin::dpi::LogicalSize;
 use glutin::ElementState::{Pressed, Released};
 use glutin::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
-use glutin::dpi::LogicalSize;
+
+use crate::character::controls::CharacterControl;
+use crate::game::constants::{RESOLUTION_X, RESOLUTION_Y};
+use crate::gfx_app::controls::{Control, TilemapControls};
 
 pub mod init;
 pub mod renderer;
@@ -57,8 +58,8 @@ impl WindowContext {
 
       let logical_size = LogicalSize::new(resolution.0.into(), resolution.1);
       window_title.with_fullscreen(Some(monitor))
-                  .with_decorations(false)
-                  .with_dimensions(logical_size)
+        .with_decorations(false)
+        .with_dimensions(logical_size)
     };
 
     let context = glutin::ContextBuilder::new()
@@ -125,8 +126,8 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
   fn swap_window(&mut self) {
     use gfx::Device;
     self.window
-        .swap_buffers()
-        .expect("Unable to swap buffers");
+      .swap_buffers()
+      .expect("Unable to swap buffers");
     self.device.cleanup();
   }
 
@@ -190,7 +191,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
     self.events_loop.poll_events(|event| {
       game_status = if let glutin::Event::WindowEvent { event, .. } = event {
         match event {
-          glutin::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input, controls) },
+          glutin::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input, controls) }
           MouseInput { state: Pressed, button: MouseButton::Left, .. } => {
             controls.mouse_left_click(Some(*m_pos));
             WindowStatus::Open
@@ -256,10 +257,10 @@ fn process_keyboard_input(input: glutin::KeyboardInput, controls: &mut TilemapCo
     }
     KeyboardInput { state: Pressed, virtual_keycode: Some(R), .. } => {
       controls.reload_weapon(true);
-    },
+    }
     KeyboardInput { state: Released, virtual_keycode: Some(R), .. } => {
       controls.reload_weapon(false);
-    },
+    }
     KeyboardInput { state: Pressed, modifiers, .. } => {
       if modifiers.ctrl {
         controls.ctrl_pressed(true);

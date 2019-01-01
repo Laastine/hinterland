@@ -1,7 +1,8 @@
+use tiled::Map;
+
 use crate::data::{get_map_tile, load_map_file};
 use crate::game::constants::{MAP_FILE_PATH, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W};
 use crate::shaders::TileMapData;
-use tiled::Map;
 
 fn calc_index(x_pos: usize, y_pos: usize) -> usize {
   (y_pos * TILES_PCS_W) + x_pos
@@ -26,7 +27,6 @@ fn populate_tile_map<'a>(tiles: &'a mut Vec<TileMapData>, map: &Map) -> &'a mut 
         tiles[idx - TILE_MAP_BUF_LENGTH * 3] =
           TileMapData::new([tiles[idx - TILE_MAP_BUF_LENGTH * 3].data[0], tiles[idx - TILE_MAP_BUF_LENGTH * 3].data[1], tiles[idx - TILE_MAP_BUF_LENGTH * 3].data[2], map_val as f32]);
       }
-
     }
   }
   tiles

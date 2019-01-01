@@ -36,9 +36,9 @@ impl<D: gfx::Device> DeviceRenderer<D> {
 
   pub fn draw(&mut self, device: &mut D) {
     let _ = self.queue.receiver.recv()
-                .map(|mut encoder| {
-                  encoder.flush(device);
-                  let _ = self.queue.sender.send(encoder);
-                });
+      .map(|mut encoder| {
+        encoder.flush(device);
+        let _ = self.queue.sender.send(encoder);
+      });
   }
 }
