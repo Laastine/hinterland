@@ -89,8 +89,7 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
     let mesh = PlainMesh::new_with_data(factory, Point2::new(2.0, 2.0));
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, bullet_pipeline::new())
-      .map_err(|err| panic!("Bullet shader loading error {:?}", err))
-      .unwrap();
+      .expect("Bullet shader loading error");
 
     let pipeline_data = bullet_pipeline::Data {
       vbuf: mesh.vertex_buffer,

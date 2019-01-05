@@ -83,7 +83,9 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
 
   fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut hud_objects, mut zombies, mut bullets, mut terrain_objects, dt): Self::SystemData) {
     use specs::join::Join;
-    let mut encoder = self.encoder_queue.receiver.recv().unwrap();
+    let mut encoder = self.encoder_queue.receiver
+      .recv()
+      .expect("Encoder error");
 
     let delta = dt.0;
 
@@ -162,7 +164,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
       drawables.sort_by(|a, b| {
         Drawables::get_y(b)
           .partial_cmp(&Drawables::get_y(a))
-          .unwrap()
+          .expect("Z-axis sorting failed")
       });
 
       for e in &mut drawables {

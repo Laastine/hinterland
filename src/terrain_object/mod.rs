@@ -77,8 +77,7 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
     let mesh = RectangularMesh::new(factory, Texture::new(terrain_object_texture, None), texture_size);
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, static_element_pipeline::new())
-      .map_err(|err| panic!("Terrain object shader loading error {:?}", err))
-      .unwrap();
+      .expect("Terrain object shader loading error");
 
     let pipeline_data = static_element_pipeline::Data {
       vbuf: mesh.mesh.vertex_buffer,

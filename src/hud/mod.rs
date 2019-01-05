@@ -66,8 +66,7 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
     text_texture(factory, &font, texts, &mut texture_cache);
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, text_pipeline::new())
-      .map_err(|err| panic!("HUD shader loading error {:?}", err))
-      .unwrap();
+      .expect("HUD shader loading error");
 
     let texture = texture_cache[current_text].clone();
 

@@ -125,8 +125,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
       RectangularMesh::new(factory, Texture::new(char_texture, None), Point2::new(20.0, 28.0));
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, critter_pipeline::new())
-      .map_err(|err| panic!("Character shader loading error {:?}", err))
-      .unwrap();
+      .expect("Character shader loading error");
 
     let pipeline_data = critter_pipeline::Data {
       vbuf: rect_mesh.mesh.vertex_buffer,

@@ -68,10 +68,12 @@ impl WindowContext {
       .with_pixel_format(24, 8)
       .with_srgb(true);
 
-    let window = glutin::GlWindow::new(builder, context, &events_loop).unwrap();
+    let window = glutin::GlWindow::new(builder, context, &events_loop)
+      .expect("GLWindow creation failed");
 
     let (width, height) = {
-      let size = window.get_inner_size().unwrap().to_physical(window.get_hidpi_factor());
+      let inner_size = window.get_inner_size().expect("get_inner_size failed");
+      let size = inner_size.to_physical(window.get_hidpi_factor());
       (size.width as _, size.height as _)
     };
 
@@ -81,7 +83,7 @@ impl WindowContext {
 
     let window_dimensions = (width, height, 1, aa.into());
 
-    unsafe { window.make_current().unwrap() };
+    unsafe { window.make_current().expect("Window focus failed") };
     let (device, factory) = gfx_device_gl::create(|s|
       window.get_proc_address(s) as *const std::os::raw::c_void);
 

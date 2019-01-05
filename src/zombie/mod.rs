@@ -174,8 +174,7 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
 
     let pso =
       factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, critter_pipeline::new())
-        .map_err(|err| panic!("Zombie shader loading error {:?}", err))
-        .unwrap();
+        .expect("Zombie shader loading error");
 
     let pipeline_data = critter_pipeline::Data {
       vbuf: rect_mesh.mesh.vertex_buffer,

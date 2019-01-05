@@ -19,7 +19,7 @@ impl<D: gfx::Device> DeviceRenderer<D> {
       let encoder = gfx::Encoder::from(cb);
       let _ = a_send
         .send(encoder)
-        .map_err(|e| panic!("Boom {:?}", e));
+        .map_err(|e| panic!("Device renderer error {:?}", e));
     }
 
     (DeviceRenderer {

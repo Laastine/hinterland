@@ -107,8 +107,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     let mesh = Mesh::new(factory, &vertex_data.as_slice(), index_data.as_slice(), Texture::new(tile_texture, None));
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, tilemap_pipeline::new())
-      .map_err(|err| panic!("Terrain shader loading error {:?}", err))
-      .unwrap();
+      .expect("Terrain shader loading error");
 
     let terrain = tile_map::Terrain::new();
 
