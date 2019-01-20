@@ -5,21 +5,21 @@ authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 edition = "2018"
 
 [dependencies]
-cgmath = "0.16.1"
+cgmath = "0.17.0"
 crossbeam-channel = "0.3.6"
 gfx_core = "0.8.3"
 gfx_device_gl = "0.15.5"
 gfx = "0.17.1"
 glutin = "0.19.0"
 genmesh = "0.5.0"
-image = "0.20.1"
+image = "0.21.0"
 json = "0.11.13"
 num = "0.2.0"
 pathfinding = "1.1.10"
-rand = "0.6.3"
+rand = "0.6.4"
 rodio = "0.8.1"
 rusttype = "0.7.3"
-specs = "0.14.2"
+specs = "0.14.3"
 tiled = "0.8.0"
 
 [features]
