@@ -1,5 +1,6 @@
 use gfx;
 use gfx::memory::Typed;
+use gfx::handle::{DepthStencilView, RenderTargetView};
 use gfx_core::format::SurfaceType;
 use gfx_device_gl;
 use glutin;
@@ -30,8 +31,8 @@ pub struct WindowContext {
   events_loop: glutin::EventsLoop,
   device: gfx_device_gl::Device,
   factory: gfx_device_gl::Factory,
-  render_target_view: gfx::handle::RenderTargetView<gfx_device_gl::Resources, ColorFormat>,
-  depth_stencil_view: gfx::handle::DepthStencilView<gfx_device_gl::Resources, DepthFormat>,
+  render_target_view: RenderTargetView<gfx_device_gl::Resources, ColorFormat>,
+  depth_stencil_view: DepthStencilView<gfx_device_gl::Resources, DepthFormat>,
   mouse_pos: (f64, f64),
 }
 
@@ -98,8 +99,8 @@ impl WindowContext {
       events_loop,
       device,
       factory,
-      render_target_view: gfx::handle::RenderTargetView::new(rtv),
-      depth_stencil_view: gfx::handle::DepthStencilView::new(dsv),
+      render_target_view: RenderTargetView::new(rtv),
+      depth_stencil_view: DepthStencilView::new(dsv),
       mouse_pos: (0.0, 0.0),
     }
   }
@@ -119,8 +120,8 @@ pub trait Window<D: gfx::Device, F: gfx::Factory<D::Resources>> {
   fn get_device(&mut self) -> &mut D;
   fn get_factory(&mut self) -> &mut F;
   fn get_hidpi_factor(&mut self) -> f32;
-  fn get_render_target_view(&mut self) -> gfx::handle::RenderTargetView<D::Resources, ColorFormat>;
-  fn get_depth_stencil_view(&mut self) -> gfx::handle::DepthStencilView<D::Resources, DepthFormat>;
+  fn get_render_target_view(&mut self) -> RenderTargetView<D::Resources, ColorFormat>;
+  fn get_depth_stencil_view(&mut self) -> DepthStencilView<D::Resources, DepthFormat>;
   fn poll_events(&mut self) -> WindowStatus;
 }
 
@@ -171,11 +172,11 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
     }
   }
 
-  fn get_render_target_view(&mut self) -> gfx::handle::RenderTargetView<gfx_device_gl::Resources, ColorFormat> {
+  fn get_render_target_view(&mut self) -> RenderTargetView<gfx_device_gl::Resources, ColorFormat> {
     self.render_target_view.clone()
   }
 
-  fn get_depth_stencil_view(&mut self) -> gfx::handle::DepthStencilView<gfx_device_gl::Resources, DepthFormat> {
+  fn get_depth_stencil_view(&mut self) -> DepthStencilView<gfx_device_gl::Resources, DepthFormat> {
     self.depth_stencil_view.clone()
   }
 
