@@ -1,7 +1,7 @@
 use gfx;
 use gfx::memory::Typed;
 use gfx::handle::{DepthStencilView, RenderTargetView};
-use gfx_core::format::SurfaceType;
+use gfx::format::SurfaceType;
 use gfx_device_gl;
 use glutin;
 use glutin::{GlContext, KeyboardInput, MouseButton};
