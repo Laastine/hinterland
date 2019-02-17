@@ -100,7 +100,7 @@ pub fn can_move_to_tile(screen_pos: Position) -> bool {
 
 pub fn coords_to_tile(position: Position) -> Point2<i32> {
   let pos = Point2::new(-position.x(), position.y() + Y_OFFSET);
-  Point2::new(((pos.x  + pos.y) / TILE_WIDTH) as i32, ((pos.y - pos.x) / TILE_WIDTH) as i32)
+  Point2::new(((pos.x + pos.y) / TILE_WIDTH) as i32, ((pos.y - pos.x) / TILE_WIDTH) as i32)
 }
 
 pub fn tile_to_coords(tile: Point2<i32>) -> Position {
@@ -119,10 +119,10 @@ fn round(number: f32, precision: usize) -> f32 {
 pub fn add_random_offset_to_screen_pos(pos: Position) -> Position {
   fn iter(pos: Position) -> Position {
     let offset = Position::new(get_rand_from_range(-2, 2) as f32, get_rand_from_range(-2, 2) as f32);
-    let tile_width = TILE_WIDTH;
-    let x = round(offset.x() * tile_width - offset.y() / tile_width, 3);
-    let y = round(offset.y() * tile_width - offset.y() / tile_width, 3);
-    let offset_point = Position::new(x, y);
+    let offset_point = Position::new(
+      round(offset.x() * TILE_WIDTH - offset.y() / TILE_WIDTH, 3),
+      round(offset.y() * TILE_WIDTH - offset.y() / TILE_WIDTH, 3),
+    );
     pos + offset_point
   }
   loop {
