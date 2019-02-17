@@ -162,8 +162,8 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
       drawables.push(Drawables::Character(c));
 
       drawables.sort_by(|a, b| {
-        Drawables::get_y(b)
-          .partial_cmp(&Drawables::get_y(a))
+        Drawables::get_vertical_pos(b)
+          .partial_cmp(&Drawables::get_vertical_pos(a))
           .expect("Z-axis sorting failed")
       });
 

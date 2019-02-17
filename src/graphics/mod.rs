@@ -157,7 +157,7 @@ pub enum Drawables<'b> {
 }
 
 impl<'b> Drawables<'b> {
-  pub fn get_y(drawable: &Drawables) -> f32 {
+  pub fn get_vertical_pos(drawable: &Drawables) -> f32 {
     match drawable {
       Drawables::Bullet(e) => e.position.y(),
       Drawables::Zombie(e) => e.position.y(),
