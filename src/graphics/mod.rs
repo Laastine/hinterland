@@ -29,7 +29,7 @@ pub fn flip_y_axel(point: Point2<f32>) -> Point2<f32> {
 }
 
 pub fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> f32 {
-  let theta = cgmath::Angle::atan2(end_point.y - start_point.y, end_point.x - start_point.x);
+  let theta = Angle::atan2(end_point.y - start_point.y, end_point.x - start_point.x);
   let Deg(angle) = theta;
   if angle < 0.0 { (360.0 + angle) } else { angle }
 }
@@ -99,18 +99,8 @@ pub fn can_move_to_tile(screen_pos: Position) -> bool {
 }
 
 pub fn coords_to_tile(position: Position) -> Point2<i32> {
-  let pos = Point2 {
-    x: -position.x(),
-    y: position.y() + Y_OFFSET,
-  };
-  Point2::new((pos.x / TILE_WIDTH + (pos.y / TILE_WIDTH)) as i32,
-              (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32)
-}
-
-pub fn coords_to_tile_offset(position: Position) -> Point2<i32> {
   let pos = Point2::new(-position.x(), position.y() + Y_OFFSET);
-  Point2::new((pos.x / TILE_WIDTH + (pos.y / TILE_WIDTH)) as i32,
-              (pos.y / TILE_WIDTH - (pos.x / TILE_WIDTH)) as i32)
+  Point2::new(((pos.x  + pos.y) / TILE_WIDTH) as i32, ((pos.y - pos.x) / TILE_WIDTH) as i32)
 }
 
 pub fn tile_to_coords(tile: Point2<i32>) -> Position {

@@ -3,7 +3,7 @@ use pathfinding::{directed::astar::astar, utils::absdiff};
 
 use crate::game::constants::{TERRAIN_OBJECTS, TILES_PCS_H, TILES_PCS_W};
 use crate::game::get_rand_from_range;
-use crate::graphics::coords_to_tile_offset;
+use crate::graphics::coords_to_tile;
 use crate::shaders::Position;
 
 fn neighbours<'c>(curr_pos: Point2<i32>, impassable_tiles: &[[i32; 2]], neighbour_tiles: &'c mut Vec<Point2<i32>>) -> Vec<&'c Point2<i32>> {
@@ -40,9 +40,9 @@ fn find_next_best_endpoint<'c>(end_point: &'c Point2<i32>, impassable_tiles: &[[
 
 pub fn calc_route(start_point: Position, end_point: Position, impassable_tiles: &[[i32; 2]]) -> Option<(Vec<Point2<i32>>, i32)> {
   let mut neighbour_tiles = vec![];
-  let end_point_with_offset = coords_to_tile_offset(end_point);
+  let end_point_with_offset = coords_to_tile(end_point);
 
-  let start = coords_to_tile_offset(start_point);
+  let start = coords_to_tile(start_point);
   let end = find_next_best_endpoint(&end_point_with_offset, &impassable_tiles, &mut neighbour_tiles);
 
   astar(&start,
@@ -62,7 +62,7 @@ pub fn calc_next_movement(start_point: Position, end_point: Position) -> i32 {
                    }
                  });
 
-  let start = coords_to_tile_offset(start_point);
+  let start = coords_to_tile(start_point);
   let diff: (i32, i32) = (next_step.x - start.x, next_step.y - start.y);
 
   match diff {
