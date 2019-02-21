@@ -30,8 +30,6 @@ Isometric shooter game written in Rust.<br> Works on Linux, MacOS and Window [re
 
 Run windowed mode with `cargo run --features "windowed godmode framerate"`
 
-Tested with Rust 1.30.0 with macOS, Linux and Windows.<br/>
-
 ## External asset licence list
 
 * Character: [graphics](http://opengameart.org/content/tmim-heroine-bleeds-game-art) Creative Commons V3
