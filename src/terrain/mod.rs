@@ -79,7 +79,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     let vertex_data: Vec<VertexData> =
       plane.shared_vertex_iter()
         .map(|vertex| {
-          let (raw_x, raw_y) = cartesian_to_isometric(vertex.pos[0], vertex.pos[1]);
+          let (raw_x, raw_y) = cartesian_to_isometric(vertex.pos.x, vertex.pos.y);
           let vertex_x = half_width as f32 * raw_x;
           let vertex_y = half_height as f32 * raw_y;
 
