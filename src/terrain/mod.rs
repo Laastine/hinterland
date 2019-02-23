@@ -5,7 +5,7 @@ use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 
 use crate::character::controls::CharacterInputState;
-use crate::game::constants::{ASPECT_RATIO, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
+use crate::game::constants::{ASPECT_RATIO, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::graphics::{camera::CameraInputState, can_move_to_tile, coords_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix}};
 use crate::graphics::mesh::Mesh;
@@ -69,28 +69,19 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
-    let tile_size = 32;
-    let width = TILES_PCS_W;
-    let height = TILES_PCS_H;
-    let half_width = (tile_size * width) / 2;
-    let half_height = (tile_size * height) / 2;
-
-    let plane = Plane::subdivide(width, width);
+    let plane = Plane::subdivide(TILES_PCS_W, TILES_PCS_H);
     let vertex_data: Vec<VertexData> =
       plane.shared_vertex_iter()
         .map(|vertex| {
           let (raw_x, raw_y) = cartesian_to_isometric(vertex.pos.x, vertex.pos.y);
-          let vertex_x = half_width as f32 * raw_x;
-          let vertex_y = half_height as f32 * raw_y;
+          let vertex_x = (TILE_SIZE * (TILES_PCS_W as f32) / 2.0) * raw_x;
+          let vertex_y = (TILE_SIZE * (TILES_PCS_H as f32) / 2.0) * raw_y;
 
           let (u_pos, v_pos) = ((raw_x / 4.0 - raw_y / 2.25) + 0.5, (raw_x / 4.0 + raw_y / 2.25) + 0.5);
-          let tile_map_x = u_pos * width as f32;
-          let tile_map_y = v_pos * height as f32;
+          let tile_map_x = u_pos * TILES_PCS_W as f32;
+          let tile_map_y = v_pos * TILES_PCS_H as f32;
 
-          VertexData {
-            pos: [vertex_x, vertex_y],
-            uv: [tile_map_x as f32, tile_map_y as f32],
-          }
+          VertexData::new([vertex_x, vertex_y], [tile_map_x, tile_map_y])
         })
         .collect();
 
