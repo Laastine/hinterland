@@ -1,4 +1,6 @@
-use cgmath::Point2;
+use cgmath::{Matrix2, Point2, Vector2};
+use cgmath::Angle;
+use cgmath::Deg;
 use gfx;
 use gfx::Resources;
 use gfx::traits::FactoryExt;
@@ -23,16 +25,27 @@ impl<R> PlainMesh<R> where R: gfx::Resources {
     }
   }
 
-  pub fn new_with_data<F>(factory: &mut F, size: Point2<f32>) -> PlainMesh<R> where F: gfx::Factory<R> {
+  pub fn new_with_data<F>(factory: &mut F, size: Point2<f32>, rotation: Option<f32>) -> PlainMesh<R> where F: gfx::Factory<R> {
     let w = size.x;
     let h = size.y;
-    let vertex_data: &[VertexData; 4] = &[
+    let rot = rotation.unwrap_or(0.0);
+
+    let vertex_data: Vec<VertexData> = vec![
       VertexData::new([-w, -h], [0.0, 1.0]),
       VertexData::new([w, -h], [1.0, 1.0]),
       VertexData::new([w, h], [1.0, 0.0]),
       VertexData::new([-w, h], [0.0, 0.0]),
-    ];
-    let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(vertex_data, DEFAULT_INDEX_DATA);
+    ].iter()
+      .map(|el| {
+        let cos = Angle::cos(Deg(rot));
+        let sin = Angle::sin(Deg(rot));
+        let rotated =
+          Matrix2::<f32>::new(cos, -sin, sin, cos) * Vector2::<f32>::new(el.pos[0] as f32, el.pos[1] as f32);
+        VertexData { pos: [rotated.x, rotated.y], uv: el.uv }
+      })
+      .collect();
+
+    let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&vertex_data[..], DEFAULT_INDEX_DATA);
     PlainMesh {
       slice,
       vertex_buffer,
