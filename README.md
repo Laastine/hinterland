@@ -10,10 +10,6 @@ Download from [Github releases](https://github.com/Laastine/hinterland/releases)
 
 <img src="assets/hinterland-gl-2018-09-21.gif">
 
-## Project overview
-- [Blog](https://laastine.kapsi.fi/code/2018/06/18/hinterland-status-update.html)
-- [Project's task board](https://github.com/Laastine/hinterland/projects/1)
-
 ## Build & Run
 
 `cargo run --release`
