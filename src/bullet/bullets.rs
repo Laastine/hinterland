@@ -1,4 +1,3 @@
-use cgmath;
 use specs;
 
 use crate::bullet::{BulletDrawable, collision::Collision};
@@ -15,8 +14,8 @@ impl Bullets {
     }
   }
 
-  pub fn add_bullet(&mut self, position: Position, movement_direction: cgmath::Point2<f32>) {
-    self.bullets.push(BulletDrawable::new(position, movement_direction));
+  pub fn add_bullet(&mut self, position: Position, movement_direction: cgmath::Point2<f32>, direction: f32) {
+    self.bullets.push(BulletDrawable::new(position, movement_direction, direction));
   }
 
   pub fn remove_old_bullets(&mut self) {

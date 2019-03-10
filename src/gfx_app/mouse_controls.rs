@@ -78,8 +78,9 @@ impl<'a> specs::prelude::System<'a> for MouseControlSystem {
                 let start_point = Point2::new(dim.window_width / 2.0 * dim.hidpi_factor, dim.window_height / 2.0 * dim.hidpi_factor);
                 let end_point = Point2::new(val.0 as f32 * dim.hidpi_factor, val.1 as f32 * dim.hidpi_factor);
                 mi.left_click_point = Some(end_point);
-                let movement_direction = direction_movement(direction(start_point, end_point));
-                Bullets::add_bullet(bs, Position::new(-ca.movement.x(), ca.movement.y()), movement_direction);
+                let dir = direction(start_point, end_point);
+                let movement_direction = direction_movement(dir);
+                Bullets::add_bullet(bs, Position::new(-ca.movement.x(), ca.movement.y()), movement_direction, dir);
               }
             } else {
               mi.left_click_point = None;

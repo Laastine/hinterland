@@ -13,7 +13,8 @@ use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::graphics::{camera::CameraInputState, can_move, dimensions::{Dimensions, get_projection, get_view_matrix}};
 use crate::graphics::can_move_to_tile;
 use crate::graphics::mesh::PlainMesh;
-use crate::shaders::{bullet_pipeline, Position, Projection};
+use crate::shaders::{bullet_pipeline, Position, Projection, Rotation};
+use std::f32::consts::PI;
 
 pub mod bullets;
 pub mod collision;
@@ -27,6 +28,7 @@ const SCALING_FACTOR: f32 = 5.0 / 3.0;
 pub struct BulletDrawable {
   projection: Projection,
   pub position: Position,
+  pub rotation: Rotation,
   previous_position: Position,
   offset_delta: Position,
   pub movement_direction: Point2<f32>,
@@ -34,12 +36,14 @@ pub struct BulletDrawable {
 }
 
 impl BulletDrawable {
-  pub fn new(position: Position, movement_direction: Point2<f32>) -> BulletDrawable {
+  pub fn new(position: Position, movement_direction: Point2<f32>, direction: f32) -> BulletDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
     let projection = get_projection(view, ASPECT_RATIO);
+    let rotation = Rotation::new( direction * PI / 180.0);
     BulletDrawable {
       projection,
       position,
+      rotation,
       previous_position: Position::origin(),
       offset_delta: Position::origin(),
       movement_direction,
@@ -88,7 +92,7 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
     where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
-    let mesh = PlainMesh::new_with_data(factory, Point2::new(2.0, 2.0), None);
+    let mesh = PlainMesh::new_with_data(factory, Point2::new(2.4, 0.8), None);
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, bullet_pipeline::new())
       .expect("Bullet shader loading error");
@@ -97,6 +101,7 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
       vbuf: mesh.vertex_buffer,
       projection_cb: factory.create_constant_buffer(1),
       position_cb: factory.create_constant_buffer(1),
+      rotation_cb: factory.create_constant_buffer(1),
       out_color: rtv,
       out_depth: dsv,
     };
@@ -112,6 +117,7 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
     where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
+    encoder.update_constant_buffer(&self.bundle.data.rotation_cb, &drawable.rotation);
     self.bundle.encode(encoder);
   }
 }

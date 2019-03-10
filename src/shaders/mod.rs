@@ -30,10 +30,15 @@ gfx_defines! {
     position: [f32; 2] = "a_position",
   }
 
+  constant Rotation {
+    rotation: f32 = "a_rotation",
+  }
+
   pipeline bullet_pipeline {
     vbuf: gfx::VertexBuffer<VertexData> = (),
     projection_cb: gfx::ConstantBuffer<Projection> = "b_VsLocals",
     position_cb: gfx::ConstantBuffer<Position> = "b_BulletPosition",
+    rotation_cb: gfx::ConstantBuffer<Rotation> = "b_BulletRotation",
     out_color: gfx::RenderTarget<gfx::format::Rgba8> = "Target0",
     out_depth: gfx::DepthTarget<gfx::format::DepthStencil> = gfx::preset::depth::LESS_EQUAL_WRITE,
   }
@@ -83,12 +88,28 @@ gfx_defines! {
   }
 }
 
+impl Rotation {
+  pub fn new(rotation: f32) -> Rotation {
+    Rotation {
+      rotation
+    }
+  }
+}
+
 impl VertexData {
   pub fn new(pos: [f32; 2], uv: [f32; 2]) -> VertexData {
     VertexData {
       pos,
       uv,
     }
+  }
+}
+
+impl Iterator for VertexData {
+  type Item = VertexData;
+
+  fn next(&mut self) -> Option<Self::Item> {
+    Some(VertexData {pos: self.pos, uv: self.uv})
   }
 }
 
