@@ -1,9 +1,9 @@
-use std::f32;
-
 use cgmath::Point2;
 use gfx;
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
+use std::f32::consts::PI;
+use std::f32;
 
 use crate::bullet::bullets::Bullets;
 use crate::bullet::collision::Collision;
@@ -14,7 +14,6 @@ use crate::graphics::{camera::CameraInputState, can_move, dimensions::{Dimension
 use crate::graphics::can_move_to_tile;
 use crate::graphics::mesh::PlainMesh;
 use crate::shaders::{bullet_pipeline, Position, Projection, Rotation};
-use std::f32::consts::PI;
 
 pub mod bullets;
 pub mod collision;
