@@ -21,6 +21,8 @@ pub mod collision;
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/bullet.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/bullet.f.glsl");
 
+const SCALING_FACTOR: f32 = 5.0 / 3.0;
+
 #[derive(PartialEq)]
 pub struct BulletDrawable {
   projection: Projection,
@@ -57,11 +59,11 @@ impl BulletDrawable {
       };
 
     self.previous_position = Position::new(
-      ci.movement.x() - (self.movement_direction.x * BULLET_SPEED / (5.0 / 3.0)),
+      ci.movement.x() - (self.movement_direction.x * BULLET_SPEED / SCALING_FACTOR),
       ci.movement.y() + (self.movement_direction.y * BULLET_SPEED));
 
     self.position = self.position + self.offset_delta +
-      Position::new(self.movement_direction.x * BULLET_SPEED / (5.0 / 3.0), -self.movement_direction.y * BULLET_SPEED);
+      Position::new(self.movement_direction.x * BULLET_SPEED / SCALING_FACTOR, -self.movement_direction.y * BULLET_SPEED);
 
     let tile_pos = ci.movement - self.position;
 
