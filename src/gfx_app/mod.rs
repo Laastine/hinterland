@@ -4,7 +4,7 @@ use gfx::handle::{DepthStencilView, RenderTargetView};
 use gfx::format::SurfaceType;
 use gfx_device_gl;
 use glutin;
-use glutin::{GlContext, KeyboardInput, MouseButton};
+use glutin::{ContextTrait, KeyboardInput, MouseButton, WindowedContext};
 use glutin::dpi::LogicalSize;
 use glutin::ElementState::{Pressed, Released};
 use glutin::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
@@ -26,7 +26,7 @@ pub const COLOR_FORMAT_VALUE: SurfaceType = SurfaceType::R8_G8_B8_A8;
 pub const DEPTH_FORMAT_VALUE: SurfaceType = SurfaceType::D24_S8;
 
 pub struct WindowContext {
-  window: glutin::GlWindow,
+  window: glutin::WindowedContext,
   controls: Option<controls::TilemapControls>,
   events_loop: glutin::EventsLoop,
   device: gfx_device_gl::Device,
@@ -69,7 +69,7 @@ impl WindowContext {
       .with_pixel_format(24, 8)
       .with_srgb(true);
 
-    let window = glutin::GlWindow::new(builder, context, &events_loop)
+    let window = WindowedContext::new_windowed(builder, context, &events_loop)
       .expect("GLWindow creation failed");
 
     let (width, height) = {
