@@ -13,9 +13,10 @@ mod terrain_object;
 mod terrain;
 mod character;
 mod shaders;
+mod window;
 mod zombie;
 
 pub fn main() {
-  let mut window = gfx_app::WindowContext::new();
-  gfx_app::init::run(&mut window);
+  let mut window = window::Window::new();
+  window.run();
 }
