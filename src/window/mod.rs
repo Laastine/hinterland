@@ -1,4 +1,11 @@
 use winit;
+use winit::{ControlFlow, KeyboardInput, VirtualKeyCode};
+
+#[derive(PartialEq, Eq)]
+pub enum WindowStatus {
+  Open,
+  Close,
+}
 
 pub struct Window {
   events_loop: winit::EventsLoop,
@@ -15,15 +22,28 @@ impl Window {
     }
   }
 
-  pub fn run(&mut self) {
-    self.events_loop.run_forever(|event| {
-      match event {
-        winit::Event::WindowEvent {
-          event: winit::WindowEvent::CloseRequested,
-          ..
-        } => winit::ControlFlow::Break,
-        _ => winit::ControlFlow::Continue,
+  pub fn run(&mut self) -> WindowStatus {
+    let mut game_status = WindowStatus::Open;
+
+    self.events_loop.poll_events(|event| {
+      game_status = if let winit::Event::WindowEvent { event, .. } = event {
+        match event {
+          winit::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input) }
+          winit::WindowEvent::CloseRequested => { WindowStatus::Close },
+          _ => WindowStatus::Open
+        }
+      } else {
+        WindowStatus::Open
       }
     });
+    game_status
+  }
+}
+
+fn process_keyboard_input(input: KeyboardInput) -> WindowStatus {
+  if let Some(VirtualKeyCode::Escape) = input.virtual_keycode {
+    WindowStatus::Close
+  } else {
+    WindowStatus::Open
   }
 }

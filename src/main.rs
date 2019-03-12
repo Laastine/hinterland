@@ -1,9 +1,12 @@
-#[macro_use]
-extern crate gfx;
+use window::WindowStatus;
 
 mod window;
 
 pub fn main() {
   let mut window = window::Window::new();
-  window.run();
+  loop {
+    if let WindowStatus::Close = window.run() {
+      break;
+    }
+  }
 }
