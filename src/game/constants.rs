@@ -75,11 +75,11 @@ pub const TERRAIN_OBJECTS: [[i32; 2]; 34] = [[48, 50],
   [47, 77],
   [48, 78]];
 
-pub const HUD_TEXTS: [&str; 15] = ["v0.3.9", "Ammo 0", "Ammo 1", "Ammo 2", "Ammo 3",
+pub const HUD_TEXTS: [&str; 15] = ["v0.3.10", "Ammo 0", "Ammo 1", "Ammo 2", "Ammo 3",
   "Ammo 4", "Ammo 5", "Ammo 6",
   "Ammo 7", "Ammo 8", "Ammo 9", "Ammo 10",
   "Magazines 0/2", "Magazines 1/2", "Magazines 2/2"];
 
 pub const CURRENT_AMMO_TEXT: &str = "Ammo 10";
 pub const CURRENT_MAGAZINE_TEXT: &str = "Magazines 2/2";
-pub const VERSION_NUMBER_TEXT: &str = "v0.3.9";
+pub const VERSION_NUMBER_TEXT: &str = "v0.3.10";
