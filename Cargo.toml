@@ -5,9 +5,23 @@ authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 edition = "2018"
 
 [dependencies]
-winit = "0.19.0"
+cgmath = "0.17.0"
+genmesh = "0.6.2"
+glsl-to-spirv = "0.1"
+json = "0.11.13"
+num = "0.2.0"
+rand = "0.6.5"
+tiled = "0.8.0"
+wgpu = "0.2.0"
+winit = "0.18.1"
 
 [features]
+default = ["wgpu/metal"]
+metal-auto-capture = ["wgpu/metal-auto-capture"]
+metal = ["wgpu/metal"]
+dx11 = ["wgpu/dx11"]
+dx12 = ["wgpu/dx12"]
+vulkan = ["wgpu/vulkan"]
 godmode = []
 framerate = []
 windowed = []

@@ -1,12 +1,10 @@
-use window::WindowStatus;
+use render::RenderSystem;
 
-mod window;
+mod critter;
+mod data;
+mod game;
+mod render;
 
 pub fn main() {
-  let mut window = window::Window::new();
-  loop {
-    if let WindowStatus::Close = window.run() {
-      break;
-    }
-  }
+  render::window::run::<RenderSystem>("Hinterland");
 }
