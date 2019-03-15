@@ -30,7 +30,7 @@ addons:
     - libasound2-dev
 
 script:
-  - cargo build
+  - cargo build --release
   - cargo test
 
 before_deploy:
