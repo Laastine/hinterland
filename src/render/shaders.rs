@@ -1,6 +1,5 @@
 use std::fs::read_to_string;
 use std::io::Read;
-use std::path::PathBuf;
 
 #[allow(dead_code)]
 pub enum ShaderStage {

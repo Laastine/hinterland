@@ -3,7 +3,6 @@ use std::mem;
 use cgmath::{Deg, Matrix4, Point3, Vector3};
 use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Vertices};
 use winit;
-use winit::Event::WindowEvent;
 
 use crate::game::constants::{TILE_SIZE, TILES_PCS_H, TILES_PCS_W};
 use crate::render::window::WindowStatus;
@@ -119,6 +118,11 @@ impl window::GameWindow for RenderSystem {
           visibility: wgpu::ShaderStageFlags::FRAGMENT,
           ty: wgpu::BindingType::Sampler,
         },
+        wgpu::BindGroupLayoutBinding {
+          binding: 3,
+          visibility: wgpu::ShaderStageFlags::VERTEX | wgpu::ShaderStageFlags::FRAGMENT,
+          ty: wgpu::BindingType::UniformBuffer,
+        }
       ],
     });
     let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
@@ -188,6 +192,12 @@ impl window::GameWindow for RenderSystem {
 
     let terrain = tile_map::Terrain::new();
 
+    let terrain_buf = device
+      .create_buffer_mapped(
+        4096,
+        wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
+      .fill_from_slice(&terrain.tiles.as_slice());
+
     let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
       layout: &bind_group_layout,
       bindings: &[
@@ -205,6 +215,13 @@ impl window::GameWindow for RenderSystem {
         wgpu::Binding {
           binding: 2,
           resource: wgpu::BindingResource::Sampler(&sampler),
+        },
+        wgpu::Binding {
+          binding: 3,
+          resource: wgpu::BindingResource::Buffer {
+            buffer: &uniform_buf,
+            range: 0..64,
+          },
         },
       ],
     });

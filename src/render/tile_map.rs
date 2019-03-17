@@ -3,7 +3,7 @@ use tiled::Map;
 use crate::data::{get_map_tile, load_map_file};
 use crate::game::constants::{MAP_FILE_PATH, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct TileMapData {
   data: [f32; 4],
 }
