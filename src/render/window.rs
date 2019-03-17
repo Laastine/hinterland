@@ -1,4 +1,5 @@
 use wgpu::winit::{Event, EventsLoop, Window, WindowEvent};
+use winit::dpi::LogicalSize;
 
 #[allow(dead_code)]
 pub fn cast_slice<T>(data: &[T]) -> &[u8] {
@@ -34,6 +35,7 @@ pub fn run<W: GameWindow>(title: &str) {
 
   let mut events_loop = EventsLoop::new();
   let window = Window::new(&events_loop).unwrap();
+  window.set_inner_size(LogicalSize::new(1920.0, 1080.0));
   window.set_title(title);
   let size = window
     .get_inner_size()
