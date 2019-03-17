@@ -10,7 +10,12 @@ use crate::render::window::WindowStatus;
 
 mod dimensions;
 mod shaders;
+mod tile_map;
 pub mod window;
+
+fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
+  ((point_x - point_y), (point_x + point_y) / 1.78)
+}
 
 #[derive(Clone, Copy)]
 struct Vertex {
@@ -28,16 +33,27 @@ impl Vertex {
 }
 
 fn create_vertices() -> (Vec<Vertex>, Vec<u16>) {
-  let vertex_data = [
-    Vertex::new([-1.0, -1.0, 0.0], [0.0, 0.0]),
-    Vertex::new([1.0, -1.0, 0.0], [1.0, 0.0]),
-    Vertex::new([1.0, 1.0, 0.0], [1.0, 1.0]),
-    Vertex::new([-1.0, 1.0, 0.0], [0.0, 1.0]),
-  ];
+  let plane = Plane::subdivide(TILES_PCS_W, TILES_PCS_H);
+  let vertex_data: Vec<Vertex> =
+    plane.shared_vertex_iter()
+      .map(|vertex| {
+        let (raw_x, raw_y) = cartesian_to_isometric(vertex.pos.x, vertex.pos.y);
+        let vertex_x = (TILE_SIZE * (TILES_PCS_W as f32) / 2.0) * raw_x;
+        let vertex_y = (TILE_SIZE * (TILES_PCS_H as f32) / 2.0) * raw_y;
 
-  let index_data: &[u16] = &[
-    0, 1, 2, 2, 3, 0
-  ];
+        let (u_pos, v_pos) = ((raw_x / 4.0 - raw_y / 2.25) + 0.5, (raw_x / 4.0 + raw_y / 2.25) + 0.5);
+        let tile_map_x = u_pos * TILES_PCS_W as f32;
+        let tile_map_y = v_pos * TILES_PCS_H as f32;
+
+        Vertex::new([vertex_x, vertex_y, 0.0], [tile_map_x, tile_map_y])
+      })
+      .collect();
+
+  let index_data = plane.indexed_polygon_iter()
+    .triangulate()
+    .vertices()
+    .map(|i| i as u16)
+    .collect::<Vec<u16>>();
 
   (vertex_data.to_vec(), index_data.to_vec())
 }
@@ -59,9 +75,9 @@ pub struct RenderSystem {
 
 impl RenderSystem {
   fn generate_matrix(aspect_ratio: f32) -> Matrix4<f32> {
-    let projection: Matrix4<f32> = cgmath::perspective(Deg(60f32), aspect_ratio, 1.0, 10.0);
+    let projection: Matrix4<f32> = cgmath::perspective(Deg(60f32), aspect_ratio, 1.0, 1000.0);
     let view: Matrix4<f32> = Matrix4::look_at(
-      Point3::new(0.0, 0.0, 5.0),
+      Point3::new(0.0, 0.0, 300.0),
       Point3::new(0.0, 0.0, 0.0),
       Vector3::unit_y(),
     );
@@ -169,6 +185,8 @@ impl window::GameWindow for RenderSystem {
         wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST,
       )
       .fill_from_slice(mx_ref);
+
+    let terrain = tile_map::Terrain::new();
 
     let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
       layout: &bind_group_layout,
