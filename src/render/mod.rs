@@ -2,6 +2,8 @@ use std::mem;
 
 use cgmath::{Deg, Matrix4, Point3, Vector3};
 use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Vertices};
+use image;
+use std::io::Cursor;
 use winit;
 
 use crate::game::constants::{TILE_SIZE, TILES_PCS_H, TILES_PCS_W};
@@ -131,9 +133,12 @@ impl window::GameWindow for RenderSystem {
 
     let size = 256u32;
     let texels = &include_bytes!("../../assets/maps/terrain.png")[..];
+    let img = image::load(Cursor::new(texels), image::PNG).unwrap().to_rgba();
+    let (width, height) = img.dimensions();
+
     let texture_extent = wgpu::Extent3d {
-      width: size,
-      height: size,
+      width,
+      height,
       depth: 1,
     };
     let texture = device.create_texture(&wgpu::TextureDescriptor {
@@ -141,18 +146,19 @@ impl window::GameWindow for RenderSystem {
       array_size: 1,
       dimension: wgpu::TextureDimension::D2,
       format: wgpu::TextureFormat::Rgba8Unorm,
-      usage: wgpu::TextureUsageFlags::SAMPLED | wgpu::TextureUsageFlags::TRANSFER_DST,
+      usage: wgpu::TextureUsageFlags::TRANSFER_DST,
     });
     let texture_view = texture.create_default_view();
     let temp_buf = device
-      .create_buffer_mapped(texels.len(), wgpu::BufferUsageFlags::TRANSFER_SRC)
-      .fill_from_slice(&texels);
+      .create_buffer_mapped(img.len(), wgpu::BufferUsageFlags::TRANSFER_SRC)
+      .fill_from_slice(img.into_raw().as_slice());
+
     init_encoder.copy_buffer_to_texture(
       wgpu::BufferCopyView {
         buffer: &temp_buf,
         offset: 0,
-        row_pitch: 4 * size,
-        image_height: size,
+        row_pitch: 4 * width,
+        image_height: height,
       },
       wgpu::TextureCopyView {
         texture: &texture,
@@ -219,7 +225,7 @@ impl window::GameWindow for RenderSystem {
         wgpu::Binding {
           binding: 3,
           resource: wgpu::BindingResource::Buffer {
-            buffer: &uniform_buf,
+            buffer: &terrain_buf,
             range: 0..64,
           },
         },

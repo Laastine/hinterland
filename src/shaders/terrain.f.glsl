@@ -10,7 +10,7 @@ struct TileMapData {
 };
 
 const int TILEMAP_BUF_LENGTH = 4096;
-const float SHADING_MULTIPLIER = 0.2;
+const float SHADING_MULTIPLIER = 0.5;
 
 const vec2 u_WorldSize = vec2(128.0, 128.0);
 const vec2 u_TilesheetSize = vec2(32.0, 32.0);
