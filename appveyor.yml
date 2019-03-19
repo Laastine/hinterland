@@ -1,5 +1,9 @@
 version: 0.3.10-{build}
 
+branches:
+  only:
+    - master
+
 environment:
   RUST_BACKTRACE: full
   global:
