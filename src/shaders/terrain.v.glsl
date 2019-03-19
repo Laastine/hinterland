@@ -5,10 +5,12 @@ layout(location = 1) in vec2 a_TexCoord;
 layout(location = 0) out vec2 v_TexCoord;
 
 layout(set = 0, binding = 0) uniform Locals {
-    mat4 u_Transform;
+  mat4 u_Model;
+  mat4 u_View;
+  mat4 u_Proj;
 };
 
 void main() {
     v_TexCoord = a_TexCoord;
-    gl_Position = u_Transform * a_Pos;
+    gl_Position = u_Proj * u_View * u_Model * a_Pos;
 }

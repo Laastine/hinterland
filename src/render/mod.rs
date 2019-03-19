@@ -1,15 +1,15 @@
+use std::io::Cursor;
 use std::mem;
 
 use cgmath::{Deg, Matrix4, Point3, Vector3};
 use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Vertices};
 use image;
-use std::io::Cursor;
 use winit;
 
-use crate::game::constants::{TILE_SIZE, TILES_PCS_H, TILES_PCS_W};
+use crate::game::constants::{ASPECT_RATIO, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
+use crate::graphics::dimensions::{get_projection, get_view_matrix, Projection};
 use crate::render::window::WindowStatus;
 
-mod dimensions;
 mod shaders;
 mod tile_map;
 pub mod window;
@@ -59,12 +59,6 @@ fn create_vertices() -> (Vec<Vertex>, Vec<u16>) {
   (vertex_data.to_vec(), index_data.to_vec())
 }
 
-struct Projection {
-  model: Matrix4<f32>,
-  view: Matrix4<f32>,
-  proj: Matrix4<f32>,
-}
-
 pub struct RenderSystem {
   vertex_buf: wgpu::Buffer,
   index_buf: wgpu::Buffer,
@@ -72,19 +66,7 @@ pub struct RenderSystem {
   bind_group: wgpu::BindGroup,
   uniform_buf: wgpu::Buffer,
   pipeline: wgpu::RenderPipeline,
-}
-
-impl RenderSystem {
-  fn generate_matrix(aspect_ratio: f32) -> Matrix4<f32> {
-    let projection: Matrix4<f32> = cgmath::perspective(Deg(60f32), aspect_ratio, 1.0, 1000.0);
-    let view: Matrix4<f32> = Matrix4::look_at(
-      Point3::new(0.0, 0.0, 300.0),
-      Point3::new(0.0, 0.0, 0.0),
-      Vector3::unit_y(),
-    );
-    let model = view;
-    projection * view * model
-  }
+  projection: Projection,
 }
 
 impl window::GameWindow for RenderSystem {
@@ -186,15 +168,14 @@ impl window::GameWindow for RenderSystem {
       compare_function: wgpu::CompareFunction::Always,
       border_color: wgpu::BorderColor::TransparentBlack,
     });
-    let mx_total = Self::generate_matrix(sc_desc.width as f32 / sc_desc.height as f32);
-    let mx_ref: &[f32; 16] = mx_total.as_ref();
+    let view = get_view_matrix(VIEW_DISTANCE);
+    let projection = get_projection(view, ASPECT_RATIO);
 
     let uniform_buf = device
-      .create_buffer_mapped(
-        16,
-        wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST,
-      )
-      .fill_from_slice(mx_ref);
+      .create_buffer(&wgpu::BufferDescriptor {
+        size: 1024,
+        usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST,
+      });
 
     let terrain = tile_map::Terrain::new();
 
@@ -211,7 +192,7 @@ impl window::GameWindow for RenderSystem {
           binding: 0,
           resource: wgpu::BindingResource::Buffer {
             buffer: &uniform_buf,
-            range: 0..64,
+            range: 0..1024,
           },
         },
         wgpu::Binding {
@@ -291,20 +272,17 @@ impl window::GameWindow for RenderSystem {
       bind_group,
       uniform_buf,
       pipeline,
+      projection,
     }
   }
 
   fn resize(&mut self, sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device) {
-    let mx_total = Self::generate_matrix(sc_desc.width as f32 / sc_desc.height as f32);
-    let mx_ref: &[f32; 16] = mx_total.as_ref();
-
-    let temp_buf = device
-      .create_buffer_mapped(16, wgpu::BufferUsageFlags::TRANSFER_SRC)
-      .fill_from_slice(mx_ref);
+    let view = get_view_matrix(VIEW_DISTANCE);
+    self.projection = get_projection(view, sc_desc.width as f32 / sc_desc.height as f32);
 
     let mut encoder =
       device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
-    encoder.copy_buffer_to_buffer(&temp_buf, 0, &self.uniform_buf, 0, 64);
+    self.uniform_buf.set_sub_data(0, &self.projection.as_raw());
     device.get_queue().submit(&[encoder.finish()]);
   }
 
@@ -337,6 +315,7 @@ impl window::GameWindow for RenderSystem {
       render_pass.set_bind_group(0, &self.bind_group);
       render_pass.set_index_buffer(&self.index_buf, 0);
       render_pass.set_vertex_buffers(&[(&self.vertex_buf, 0)]);
+      self.uniform_buf.set_sub_data(0, &self.projection.as_raw());
       render_pass.draw_indexed(0..self.index_count as u32, 0, 0..1);
     }
 
