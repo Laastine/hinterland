@@ -2,21 +2,7 @@ use tiled::Map;
 
 use crate::data::{get_map_tile, load_map_file};
 use crate::game::constants::{MAP_FILE_PATH, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W};
-
-#[derive(Clone, Copy, Debug)]
-pub struct TileMapData {
-  data: [f32; 4],
-}
-
-impl TileMapData {
-  pub fn new_empty() -> TileMapData {
-    TileMapData { data: [32.0, 32.0, 0.0, 0.0] }
-  }
-
-  pub fn new(data: [f32; 4]) -> TileMapData {
-    TileMapData { data }
-  }
-}
+use crate::graphics::shaders::TileMapData;
 
 fn calc_index(x_pos: usize, y_pos: usize) -> usize {
   (y_pos * TILES_PCS_W) + x_pos
