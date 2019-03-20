@@ -8,29 +8,14 @@ use winit;
 
 use crate::game::constants::{ASPECT_RATIO, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
 use crate::graphics::dimensions::{get_projection, get_view_matrix, Projection};
-use crate::render::window::WindowStatus;
+use crate::gfx_app::{GameWindow, WindowStatus};
+use crate::graphics::shaders::{load_glsl, ShaderStage, Vertex};
 
-mod shaders;
 mod tile_map;
 pub mod window;
 
 fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
   ((point_x - point_y), (point_x + point_y) / 1.78)
-}
-
-#[derive(Clone, Copy)]
-struct Vertex {
-  pos: [f32; 4],
-  uv: [f32; 2],
-}
-
-impl Vertex {
-  pub fn new(pos: [f32; 3], uv: [f32; 2]) -> Vertex {
-    Vertex {
-      pos: [pos[0], pos[1], pos[2], 1.0],
-      uv,
-    }
-  }
 }
 
 fn create_vertices() -> (Vec<Vertex>, Vec<u16>) {
@@ -69,7 +54,7 @@ pub struct RenderSystem {
   projection: Projection,
 }
 
-impl window::GameWindow for RenderSystem {
+impl GameWindow for RenderSystem {
   fn init(sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device) -> Self {
 
     let mut init_encoder =
@@ -213,8 +198,8 @@ impl window::GameWindow for RenderSystem {
       ],
     });
 
-    let vs_bytes = shaders::load_glsl("src/shaders/terrain.v.glsl", shaders::ShaderStage::Vertex);
-    let fs_bytes = shaders::load_glsl("src/shaders/terrain.f.glsl", shaders::ShaderStage::Fragment);
+    let vs_bytes = load_glsl("src/shaders/terrain.v.glsl", ShaderStage::Vertex);
+    let fs_bytes = load_glsl("src/shaders/terrain.f.glsl", ShaderStage::Fragment);
     let vs_module = device.create_shader_module(&vs_bytes);
     let fs_module = device.create_shader_module(&fs_bytes);
 

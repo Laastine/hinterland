@@ -1,6 +1,21 @@
 use std::fs::read_to_string;
 use std::io::Read;
 
+#[derive(Clone, Copy)]
+pub struct Vertex {
+  pos: [f32; 4],
+  uv: [f32; 2],
+}
+
+impl Vertex {
+  pub fn new(pos: [f32; 3], uv: [f32; 2]) -> Vertex {
+    Vertex {
+      pos: [pos[0], pos[1], pos[2], 1.0],
+      uv,
+    }
+  }
+}
+
 #[allow(dead_code)]
 pub enum ShaderStage {
   Vertex,

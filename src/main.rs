@@ -1,11 +1,13 @@
-use render::RenderSystem;
+use gfx_app::run;
+use terrain::RenderSystem;
 
 mod critter;
 mod data;
 mod game;
+mod gfx_app;
 mod graphics;
-mod render;
+mod terrain;
 
 pub fn main() {
-  render::window::run::<RenderSystem>("Hinterland");
+  run::<RenderSystem>("Hinterland");
 }
