@@ -2,6 +2,8 @@ use wgpu::winit::{Event, EventsLoop, Window, WindowEvent};
 use winit::dpi::LogicalSize;
 
 use crate::terrain::TerrainDrawSystem;
+use crate::graphics::dimensions::{get_view_matrix, get_projection};
+use crate::game::constants::VIEW_DISTANCE;
 
 #[derive(PartialEq, Eq)]
 pub enum WindowStatus {
@@ -52,14 +54,14 @@ pub fn run() {
         sc_desc.width = physical.width as u32;
         sc_desc.height = physical.height as u32;
         swap_chain = device.create_swap_chain(&surface, &sc_desc);
-        game_window.resize(&sc_desc, &mut device);
+        resize(&sc_desc, &mut device, &mut game_window);
       }
       Event::WindowEvent { event, .. } => match event {
         WindowEvent::CloseRequested => {
           game_status = WindowStatus::Close;
         }
         _ => {
-          game_status = game_window.update(event);
+          game_status = update(event);
         }
       },
       _ => (),
@@ -71,5 +73,30 @@ pub fn run() {
     if let WindowStatus::Close = game_status {
       break;
     }
+  }
+}
+
+fn resize(sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device, terrain_system: &mut TerrainDrawSystem) {
+  let view = get_view_matrix(VIEW_DISTANCE);
+  terrain_system.projection = get_projection(view, sc_desc.width as f32 / sc_desc.height as f32);
+
+  let mut encoder =
+    device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
+  terrain_system.uniform_buf.set_sub_data(0, &terrain_system.projection.as_raw());
+  device.get_queue().submit(&[encoder.finish()]);
+}
+
+fn update(window_event: wgpu::winit::WindowEvent) -> WindowStatus {
+  match window_event {
+    winit::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input) },
+    _ => WindowStatus::Open
+  }
+}
+
+fn process_keyboard_input(input: winit::KeyboardInput) -> WindowStatus {
+  if let Some(winit::VirtualKeyCode::Escape) = input.virtual_keycode {
+    WindowStatus::Close
+  } else {
+    WindowStatus::Open
   }
 }

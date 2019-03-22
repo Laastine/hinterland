@@ -49,9 +49,9 @@ pub struct TerrainDrawSystem {
   index_buf: wgpu::Buffer,
   index_count: usize,
   bind_group: wgpu::BindGroup,
-  uniform_buf: wgpu::Buffer,
+  pub uniform_buf: wgpu::Buffer,
   pipeline: wgpu::RenderPipeline,
-  projection: Projection,
+  pub projection: Projection,
 }
 
 impl TerrainDrawSystem {
@@ -261,23 +261,6 @@ impl TerrainDrawSystem {
     }
   }
 
-  pub fn resize(&mut self, sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device) {
-    let view = get_view_matrix(VIEW_DISTANCE);
-    self.projection = get_projection(view, sc_desc.width as f32 / sc_desc.height as f32);
-
-    let mut encoder =
-      device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
-    self.uniform_buf.set_sub_data(0, &self.projection.as_raw());
-    device.get_queue().submit(&[encoder.finish()]);
-  }
-
-  pub fn update(&mut self, window_event: wgpu::winit::WindowEvent) -> WindowStatus {
-      match window_event {
-        winit::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input) },
-        _ => WindowStatus::Open
-      }
-  }
-
   pub fn render(&mut self, frame: &wgpu::SwapChainOutput, device: &mut wgpu::Device) {
     let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
 
@@ -305,13 +288,5 @@ impl TerrainDrawSystem {
     }
 
     device.get_queue().submit(&[encoder.finish()]);
-  }
-}
-
-fn process_keyboard_input(input: winit::KeyboardInput) -> WindowStatus {
-  if let Some(winit::VirtualKeyCode::Escape) = input.virtual_keycode {
-    WindowStatus::Close
-  } else {
-    WindowStatus::Open
   }
 }
