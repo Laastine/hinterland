@@ -1,5 +1,5 @@
 use gfx_app::run;
-use terrain::RenderSystem;
+use terrain::TerrainDrawSystem;
 
 mod critter;
 mod data;
@@ -9,5 +9,5 @@ mod graphics;
 mod terrain;
 
 pub fn main() {
-  run::<RenderSystem>("Hinterland");
+  run();
 }

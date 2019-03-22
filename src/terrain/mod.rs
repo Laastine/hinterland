@@ -8,7 +8,7 @@ use winit;
 
 use crate::game::constants::{ASPECT_RATIO, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
 use crate::graphics::dimensions::{get_projection, get_view_matrix, Projection};
-use crate::gfx_app::{GameWindow, WindowStatus};
+use crate::gfx_app::{WindowStatus};
 use crate::graphics::shaders::{load_glsl, ShaderStage, Vertex};
 
 mod tile_map;
@@ -44,7 +44,7 @@ fn create_vertices() -> (Vec<Vertex>, Vec<u16>) {
   (vertex_data.to_vec(), index_data.to_vec())
 }
 
-pub struct RenderSystem {
+pub struct TerrainDrawSystem {
   vertex_buf: wgpu::Buffer,
   index_buf: wgpu::Buffer,
   index_count: usize,
@@ -54,8 +54,8 @@ pub struct RenderSystem {
   projection: Projection,
 }
 
-impl GameWindow for RenderSystem {
-  fn init(sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device) -> Self {
+impl TerrainDrawSystem {
+  pub fn new(sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device) -> TerrainDrawSystem {
 
     let mut init_encoder =
       device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
@@ -250,7 +250,7 @@ impl GameWindow for RenderSystem {
 
     let init_command_buf = init_encoder.finish();
     device.get_queue().submit(&[init_command_buf]);
-    RenderSystem {
+    TerrainDrawSystem {
       vertex_buf,
       index_buf,
       index_count: index_data.len(),
@@ -261,7 +261,7 @@ impl GameWindow for RenderSystem {
     }
   }
 
-  fn resize(&mut self, sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device) {
+  pub fn resize(&mut self, sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device) {
     let view = get_view_matrix(VIEW_DISTANCE);
     self.projection = get_projection(view, sc_desc.width as f32 / sc_desc.height as f32);
 
@@ -271,14 +271,14 @@ impl GameWindow for RenderSystem {
     device.get_queue().submit(&[encoder.finish()]);
   }
 
-  fn update(&mut self, window_event: wgpu::winit::WindowEvent) -> WindowStatus {
+  pub fn update(&mut self, window_event: wgpu::winit::WindowEvent) -> WindowStatus {
       match window_event {
         winit::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input) },
         _ => WindowStatus::Open
       }
   }
 
-  fn render(&mut self, frame: &wgpu::SwapChainOutput, device: &mut wgpu::Device) {
+  pub fn render(&mut self, frame: &wgpu::SwapChainOutput, device: &mut wgpu::Device) {
     let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
 
     {

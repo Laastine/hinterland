@@ -1,20 +1,15 @@
 use wgpu::winit::{Event, EventsLoop, Window, WindowEvent};
 use winit::dpi::LogicalSize;
 
+use crate::terrain::TerrainDrawSystem;
+
 #[derive(PartialEq, Eq)]
 pub enum WindowStatus {
   Open,
   Close,
 }
 
-pub trait GameWindow {
-  fn init(sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device) -> Self;
-  fn resize(&mut self, sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device);
-  fn update(&mut self, event: wgpu::winit::WindowEvent) -> WindowStatus;
-  fn render(&mut self, frame: &wgpu::SwapChainOutput, device: &mut wgpu::Device);
-}
-
-pub fn run<W: GameWindow>(title: &str) {
+pub fn run() {
   let instance = wgpu::Instance::new();
   let adapter = instance.get_adapter(&wgpu::AdapterDescriptor {
     power_preference: wgpu::PowerPreference::LowPower,
@@ -28,7 +23,7 @@ pub fn run<W: GameWindow>(title: &str) {
   let mut events_loop = EventsLoop::new();
   let window = Window::new(&events_loop).unwrap();
   window.set_inner_size(LogicalSize::new(1920.0, 1080.0));
-  window.set_title(title);
+  window.set_title("Hinterland");
   let size = window
     .get_inner_size()
     .unwrap()
@@ -43,7 +38,7 @@ pub fn run<W: GameWindow>(title: &str) {
   };
   let mut swap_chain = device.create_swap_chain(&surface, &sc_desc);
 
-  let mut game_window = W::init(&sc_desc, &mut device);
+  let mut game_window = TerrainDrawSystem::new(&sc_desc, &mut device);
 
   let mut game_status = WindowStatus::Open;
 
