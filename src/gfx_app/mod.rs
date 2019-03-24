@@ -1,7 +1,7 @@
 use wgpu::winit::{Event, EventsLoop, Window, WindowEvent};
 use winit::dpi::LogicalSize;
 
-use crate::terrain::TerrainDrawSystem;
+use crate::terrain::{TerrainDrawSystem, TerrainDrawable};
 use crate::graphics::dimensions::{get_view_matrix, get_projection};
 use crate::game::constants::VIEW_DISTANCE;
 
@@ -40,22 +40,13 @@ pub fn run() {
   };
   let mut swap_chain = device.create_swap_chain(&surface, &sc_desc);
 
-  let mut game_window = TerrainDrawSystem::new(&sc_desc, &mut device);
+  let mut terrain_draw_system = TerrainDrawSystem::new(&sc_desc, &mut device);
+  let mut terrain_drawable = TerrainDrawable::new();
 
   let mut game_status = WindowStatus::Open;
 
   loop {
     events_loop.poll_events(|event| match event {
-      Event::WindowEvent {
-        event: WindowEvent::Resized(size),
-        ..
-      } => {
-        let physical = size.to_physical(window.get_hidpi_factor());
-        sc_desc.width = physical.width as u32;
-        sc_desc.height = physical.height as u32;
-        swap_chain = device.create_swap_chain(&surface, &sc_desc);
-        resize(&sc_desc, &mut device, &mut game_window);
-      }
       Event::WindowEvent { event, .. } => match event {
         WindowEvent::CloseRequested => {
           game_status = WindowStatus::Close;
@@ -68,22 +59,12 @@ pub fn run() {
     });
 
     let frame = swap_chain.get_next_texture();
-    game_window.render(&frame, &mut device);
+    terrain_draw_system.render(&mut terrain_drawable, &frame, &mut device);
 
     if let WindowStatus::Close = game_status {
       break;
     }
   }
-}
-
-fn resize(sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device, terrain_system: &mut TerrainDrawSystem) {
-  let view = get_view_matrix(VIEW_DISTANCE);
-  terrain_system.projection = get_projection(view, sc_desc.width as f32 / sc_desc.height as f32);
-
-  let mut encoder =
-    device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
-  terrain_system.uniform_buf.set_sub_data(0, &terrain_system.projection.as_raw());
-  device.get_queue().submit(&[encoder.finish()]);
 }
 
 fn update(window_event: wgpu::winit::WindowEvent) -> WindowStatus {

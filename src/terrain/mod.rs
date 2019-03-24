@@ -14,6 +14,25 @@ use crate::graphics::shaders::{load_glsl, ShaderStage, Vertex};
 mod tile_map;
 pub mod window;
 
+pub struct TerrainDrawable {
+  projection: Projection
+}
+
+impl TerrainDrawable {
+  pub fn new() -> TerrainDrawable {
+    let view = get_view_matrix(VIEW_DISTANCE);
+    let projection = get_projection(view, ASPECT_RATIO);
+    TerrainDrawable {
+      projection
+    }
+  }
+
+  pub fn update(&mut self) {
+    let view = get_view_matrix(VIEW_DISTANCE);
+    self.projection = get_projection(view, ASPECT_RATIO);
+  }
+}
+
 fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
   ((point_x - point_y), (point_x + point_y) / 1.78)
 }
@@ -51,7 +70,6 @@ pub struct TerrainDrawSystem {
   bind_group: wgpu::BindGroup,
   pub uniform_buf: wgpu::Buffer,
   pipeline: wgpu::RenderPipeline,
-  pub projection: Projection,
 }
 
 impl TerrainDrawSystem {
@@ -153,8 +171,6 @@ impl TerrainDrawSystem {
       compare_function: wgpu::CompareFunction::Always,
       border_color: wgpu::BorderColor::TransparentBlack,
     });
-    let view = get_view_matrix(VIEW_DISTANCE);
-    let projection = get_projection(view, ASPECT_RATIO);
 
     let uniform_buf = device
       .create_buffer(&wgpu::BufferDescriptor {
@@ -257,11 +273,12 @@ impl TerrainDrawSystem {
       bind_group,
       uniform_buf,
       pipeline,
-      projection,
     }
   }
 
-  pub fn render(&mut self, frame: &wgpu::SwapChainOutput, device: &mut wgpu::Device) {
+  pub fn render(&mut self,
+                drawable: &mut TerrainDrawable,
+                frame: &wgpu::SwapChainOutput, device: &mut wgpu::Device) {
     let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
 
     {
@@ -283,7 +300,7 @@ impl TerrainDrawSystem {
       render_pass.set_bind_group(0, &self.bind_group);
       render_pass.set_index_buffer(&self.index_buf, 0);
       render_pass.set_vertex_buffers(&[(&self.vertex_buf, 0)]);
-      self.uniform_buf.set_sub_data(0, &self.projection.as_raw());
+      self.uniform_buf.set_sub_data(0, &drawable.projection.as_raw());
       render_pass.draw_indexed(0..self.index_count as u32, 0, 0..1);
     }
 
