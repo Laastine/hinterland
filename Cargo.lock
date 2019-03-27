@@ -531,7 +531,7 @@ dependencies = [
  "num 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.6.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "tiled 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "wgpu 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "wgpu 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "winit 0.18.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -1386,7 +1386,7 @@ dependencies = [
 
 [[package]]
 name = "wgpu"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "arrayvec 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1676,7 +1676,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum wayland-protocols 0.21.11 (registry+https://github.com/rust-lang/crates.io-index)" = "fd94211387fa8ff50df1e4ff7a5529b5a9aebe68ba88acc48e5b7f5fd98f6eef"
 "checksum wayland-scanner 0.21.11 (registry+https://github.com/rust-lang/crates.io-index)" = "3611f231e675e15c2feb7623103e6449edc6f10b0598cafb3e16e590a0561355"
 "checksum wayland-sys 0.21.11 (registry+https://github.com/rust-lang/crates.io-index)" = "2a69d729a1747a5bf40ae05b94c7904b64fbf2381e365c046d872ce4a34aa826"
-"checksum wgpu 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "faeef261f3ccc3d6524283299937489ab5f6906e01cfcf6fe5b6124af5e718b2"
+"checksum wgpu 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "cf01cc350ab760949d04e88d188ae8942fbe5eb9c6059cd029d8708e335838f3"
 "checksum wgpu-native 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "3aa6389a85547c7c8b651740046af5477be538a11a24d3be6fded98a72c202d1"
 "checksum winapi 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)" = "92c1eb33641e276cfa214a0522acad57be5c56b10cb348b3c5117db75f3ac4b0"
 "checksum winapi-i686-pc-windows-gnu 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ac3b87c63620426dd9b991e5ce0329eff545bccbbb34f3be09ff6fb6ab51b7b6"
