@@ -5,6 +5,8 @@ use crate::terrain::{TerrainDrawSystem, TerrainDrawable};
 use crate::graphics::dimensions::{get_view_matrix, get_projection};
 use crate::game::constants::{VIEW_DISTANCE, RESOLUTION_Y, RESOLUTION_X};
 
+pub mod init;
+
 #[derive(PartialEq, Eq)]
 pub enum WindowStatus {
   Open,

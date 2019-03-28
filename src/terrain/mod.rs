@@ -4,6 +4,7 @@ use std::mem;
 use cgmath::{Deg, Matrix4, Point3, Vector3};
 use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Vertices};
 use image;
+use specs;
 use winit;
 
 use crate::game::constants::{ASPECT_RATIO, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
@@ -31,6 +32,10 @@ impl TerrainDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
     self.projection = get_projection(view, ASPECT_RATIO);
   }
+}
+
+impl specs::prelude::Component for TerrainDrawable {
+  type Storage = specs::storage::HashMapStorage<TerrainDrawable>;
 }
 
 fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
