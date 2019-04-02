@@ -1,5 +1,5 @@
 use std::mem::size_of;
-use std::slice::{from_mut, from_raw_parts};
+use std::slice::from_raw_parts;
 
 use cgmath;
 use cgmath::{BaseFloat, Matrix4, Point3, Vector3};

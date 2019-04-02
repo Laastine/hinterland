@@ -1,16 +1,15 @@
 use std::io::Cursor;
 use std::mem;
 
-use cgmath::{Deg, Matrix4, Point3, Vector3};
 use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Vertices};
 use image;
 use specs;
-use winit;
 
 use crate::game::constants::{ASPECT_RATIO, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
-use crate::graphics::dimensions::{get_projection, get_view_matrix, Projection};
-use crate::gfx_app::{WindowStatus};
+use crate::graphics::dimensions::{get_projection, get_view_matrix, Projection, Dimensions};
 use crate::graphics::shaders::{load_glsl, ShaderStage, Vertex};
+use wgpu::CommandEncoder;
+use specs::{WriteStorage, Read};
 
 mod tile_map;
 pub mod window;
@@ -28,9 +27,8 @@ impl TerrainDrawable {
     }
   }
 
-  pub fn update(&mut self) {
-    let view = get_view_matrix(VIEW_DISTANCE);
-    self.projection = get_projection(view, ASPECT_RATIO);
+  pub fn update(&mut self, world_to_clip: &Projection) {
+//    self.projection = *world_to_clip;
   }
 }
 
@@ -79,7 +77,6 @@ pub struct TerrainDrawSystem {
 
 impl TerrainDrawSystem {
   pub fn new(sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device) -> TerrainDrawSystem {
-
     let mut init_encoder =
       device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
 
@@ -271,6 +268,7 @@ impl TerrainDrawSystem {
 
     let init_command_buf = init_encoder.finish();
     device.get_queue().submit(&[init_command_buf]);
+
     TerrainDrawSystem {
       vertex_buf,
       index_buf,
@@ -281,10 +279,14 @@ impl TerrainDrawSystem {
     }
   }
 
-  pub fn render(&mut self,
-                drawable: &mut TerrainDrawable,
-                frame: &wgpu::SwapChainOutput, device: &mut wgpu::Device) {
-    let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
+  pub fn draw(&mut self,
+              drawable: &mut TerrainDrawable,
+              frame: &wgpu::SwapChainOutput,
+              device: &mut wgpu::Device) {
+
+    let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+      todo: 0,
+    });
 
     {
       let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
@@ -308,7 +310,28 @@ impl TerrainDrawSystem {
       self.uniform_buf.set_sub_data(0, &drawable.projection.as_raw());
       render_pass.draw_indexed(0..self.index_count as u32, 0, 0..1);
     }
-
     device.get_queue().submit(&[encoder.finish()]);
+  }
+}
+
+pub struct PreDrawSystem;
+
+impl PreDrawSystem {
+  pub fn new() -> PreDrawSystem {
+    PreDrawSystem {}
+  }
+}
+
+impl<'a> specs::prelude::System<'a> for PreDrawSystem {
+  type SystemData = (WriteStorage<'a, TerrainDrawable>,
+                     Read<'a, Dimensions>);
+
+  fn run(&mut self, (mut terrain, dim): Self::SystemData) {
+    use specs::join::Join;
+
+    for t in (&mut terrain).join() {
+      let world_to_clip = dim.world_to_projection();
+      t.update(&world_to_clip);
+    }
   }
 }

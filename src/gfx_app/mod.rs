@@ -1,11 +1,12 @@
+use wgpu::{Device, SwapChain, SwapChainDescriptor, CommandEncoder};
 use wgpu::winit::{Event, EventsLoop, Window, WindowEvent};
 use winit::dpi::LogicalSize;
 
-use crate::terrain::{TerrainDrawSystem, TerrainDrawable};
-use crate::graphics::dimensions::{get_view_matrix, get_projection};
-use crate::game::constants::{VIEW_DISTANCE, RESOLUTION_Y, RESOLUTION_X};
+use crate::game::constants::{RESOLUTION_X, RESOLUTION_Y};
 
 pub mod init;
+//pub mod renderer;
+pub mod system;
 
 #[derive(PartialEq, Eq)]
 pub enum WindowStatus {
@@ -20,8 +21,9 @@ pub struct WindowContext {
 
 impl WindowContext {
   pub fn new() -> WindowContext {
-    let mut events_loop = EventsLoop::new();
+    let events_loop = EventsLoop::new();
     let window = Window::new(&events_loop).unwrap();
+
     window.set_inner_size(LogicalSize::new(RESOLUTION_X as f64, RESOLUTION_Y as f64));
     window.set_title("Hinterland");
 
@@ -29,6 +31,10 @@ impl WindowContext {
       events_loop,
       window,
     }
+  }
+
+  pub fn get_window(&self) -> & Window {
+    &self.window
   }
 
   pub fn get_hidpi_factor(&self) -> f32 {
@@ -49,61 +55,27 @@ impl WindowContext {
     }
   }
 
-  pub fn run(&mut self) {
-    let instance = wgpu::Instance::new();
-    let adapter = instance.get_adapter(&wgpu::AdapterDescriptor {
-      power_preference: wgpu::PowerPreference::LowPower,
-    });
-    let mut device = adapter.create_device(&wgpu::DeviceDescriptor {
-      extensions: wgpu::Extensions {
-        anisotropic_filtering: false,
-      },
-    });
-    let size = self.window
-      .get_inner_size()
-      .unwrap()
-      .to_physical(self.window.get_hidpi_factor());
-
-    let surface = instance.create_surface(&self.window);
-    let mut sc_desc = wgpu::SwapChainDescriptor {
-      usage: wgpu::TextureUsageFlags::OUTPUT_ATTACHMENT,
-      format: wgpu::TextureFormat::Bgra8Unorm,
-      width: size.width as u32,
-      height: size.height as u32,
-    };
-    let mut swap_chain = device.create_swap_chain(&surface, &sc_desc);
-
-    let mut terrain_draw_system = TerrainDrawSystem::new(&sc_desc, &mut device);
-    let mut terrain_drawable = TerrainDrawable::new();
-
+  pub fn poll_events(&mut self) -> WindowStatus {
     let mut game_status = WindowStatus::Open;
 
-    loop {
-      self.events_loop.poll_events(|event| match event {
-        Event::WindowEvent { event, .. } => match event {
-          WindowEvent::CloseRequested => {
-            game_status = WindowStatus::Close;
-          }
-          _ => {
-            game_status = update(event);
-          }
-        },
-        _ => (),
-      });
-
-      let frame = swap_chain.get_next_texture();
-      terrain_draw_system.render(&mut terrain_drawable, &frame, &mut device);
-
-      if let WindowStatus::Close = game_status {
-        break;
-      }
-    }
+    self.events_loop.poll_events(|event| match event {
+      Event::WindowEvent { event, .. } => match event {
+        WindowEvent::CloseRequested => {
+          game_status = WindowStatus::Close;
+        }
+        _ => {
+          game_status = update(event);
+        }
+      },
+      _ => (),
+    });
+    game_status
   }
 }
 
 fn update(window_event: wgpu::winit::WindowEvent) -> WindowStatus {
   match window_event {
-    winit::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input) },
+    winit::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input) }
     _ => WindowStatus::Open
   }
 }
