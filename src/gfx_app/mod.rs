@@ -1,9 +1,16 @@
 use wgpu::{Device, SwapChain, SwapChainDescriptor, CommandEncoder};
 use wgpu::winit::{Event, EventsLoop, Window, WindowEvent};
+use winit::ElementState::{Pressed, Released};
+use winit::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
 use winit::dpi::LogicalSize;
 
 use crate::game::constants::{RESOLUTION_X, RESOLUTION_Y};
+use winit::KeyboardInput;
+use image::imageops::contrast;
+use crate::gfx_app::controls::{TilemapControls, Control};
+use crate::graphics::orientation::Stance::NormalDeath;
 
+pub mod controls;
 pub mod init;
 //pub mod renderer;
 pub mod system;
@@ -16,6 +23,7 @@ pub enum WindowStatus {
 
 pub struct WindowContext {
   events_loop: EventsLoop,
+  controls: Option<TilemapControls>,
   window: Window,
 }
 
@@ -23,11 +31,12 @@ impl WindowContext {
   pub fn new() -> WindowContext {
     let events_loop = EventsLoop::new();
     let window = Window::new(&events_loop).unwrap();
-
+    let controls = None;
     window.set_inner_size(LogicalSize::new(RESOLUTION_X as f64, RESOLUTION_Y as f64));
     window.set_title("Hinterland");
 
     WindowContext {
+      controls,
       events_loop,
       window,
     }
@@ -35,6 +44,10 @@ impl WindowContext {
 
   pub fn get_window(&self) -> & Window {
     &self.window
+  }
+
+  fn set_controls(&mut self, controls: controls::TilemapControls) {
+    self.controls = Some(controls);
   }
 
   pub fn get_hidpi_factor(&self) -> f32 {
@@ -58,13 +71,18 @@ impl WindowContext {
   pub fn poll_events(&mut self) -> WindowStatus {
     let mut game_status = WindowStatus::Open;
 
+    let controls = match self.controls {
+      Some(ref mut c) => c,
+      None => panic!("Terrain controls have not been initialized"),
+    };
+
     self.events_loop.poll_events(|event| match event {
       Event::WindowEvent { event, .. } => match event {
         WindowEvent::CloseRequested => {
           game_status = WindowStatus::Close;
         }
         _ => {
-          game_status = update(event);
+          game_status = update(event, controls);
         }
       },
       _ => (),
@@ -73,15 +91,49 @@ impl WindowContext {
   }
 }
 
-fn update(window_event: wgpu::winit::WindowEvent) -> WindowStatus {
+fn update(window_event: wgpu::winit::WindowEvent, controls: &mut TilemapControls) -> WindowStatus {
   match window_event {
-    winit::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input) }
+    winit::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input, controls) }
     _ => WindowStatus::Open
   }
 }
 
-fn process_keyboard_input(input: winit::KeyboardInput) -> WindowStatus {
-  if let Some(winit::VirtualKeyCode::Escape) = input.virtual_keycode {
+fn process_keyboard_input(input: winit::KeyboardInput, controls: &mut TilemapControls) -> WindowStatus {
+  match input {
+    KeyboardInput { state: Pressed, virtual_keycode: Some(Z), .. } => {
+      controls.zoom(&Control::Negative);
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(X), .. } => {
+      controls.zoom(&Control::Plus);
+    }
+    KeyboardInput { state: Released, virtual_keycode: Some(Z), .. } |
+    KeyboardInput { state: Released, virtual_keycode: Some(X), .. } => {
+      controls.zoom(&Control::Released);
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {
+    }
+    KeyboardInput { state: Released, virtual_keycode: Some(W), .. } |
+    KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {
+    }
+    KeyboardInput { state: Released, virtual_keycode: Some(A), .. } |
+    KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(R), .. } => {
+    }
+    KeyboardInput { state: Released, virtual_keycode: Some(R), .. } => {
+    }
+    KeyboardInput { state: Pressed, modifiers, .. } => {
+    }
+    KeyboardInput { state: Released, modifiers, .. } => {
+    }
+  }
+  if let Some(Escape) = input.virtual_keycode {
     WindowStatus::Close
   } else {
     WindowStatus::Open

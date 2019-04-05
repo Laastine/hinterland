@@ -9,7 +9,8 @@ use crate::game::constants::{ASPECT_RATIO, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, 
 use crate::graphics::dimensions::{get_projection, get_view_matrix, Projection, Dimensions};
 use crate::graphics::shaders::{load_glsl, ShaderStage, Vertex};
 use wgpu::CommandEncoder;
-use specs::{WriteStorage, Read};
+use specs::{WriteStorage, Read, ReadStorage};
+use crate::graphics::camera::CameraInputState;
 
 mod tile_map;
 pub mod window;
@@ -28,7 +29,7 @@ impl TerrainDrawable {
   }
 
   pub fn update(&mut self, world_to_clip: &Projection) {
-//    self.projection = *world_to_clip;
+    self.projection = world_to_clip.clone();
   }
 }
 
@@ -324,13 +325,14 @@ impl PreDrawSystem {
 
 impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   type SystemData = (WriteStorage<'a, TerrainDrawable>,
+                     ReadStorage<'a, CameraInputState>,
                      Read<'a, Dimensions>);
 
-  fn run(&mut self, (mut terrain, dim): Self::SystemData) {
+  fn run(&mut self, (mut terrain, camera_input, dim): Self::SystemData) {
     use specs::join::Join;
 
-    for t in (&mut terrain).join() {
-      let world_to_clip = dim.world_to_projection();
+    for (t, camera) in (&mut terrain, &camera_input).join() {
+      let world_to_clip = dim.world_to_projection(camera);
       t.update(&world_to_clip);
     }
   }

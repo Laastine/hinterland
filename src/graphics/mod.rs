@@ -5,6 +5,7 @@ use num::{Num, NumCast};
 use crate::game::{constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, Y_OFFSET}, get_rand_from_range};
 use crate::graphics::{dimensions::Dimensions, orientation::Orientation, shaders::Position};
 
+pub mod camera;
 pub mod dimensions;
 pub mod shaders;
 pub mod orientation;

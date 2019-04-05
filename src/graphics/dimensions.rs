@@ -3,6 +3,7 @@ use std::slice::from_raw_parts;
 
 use cgmath;
 use cgmath::{BaseFloat, Matrix4, Point3, Vector3};
+use crate::graphics::camera::CameraInputState;
 
 #[derive(Debug, Default)]
 pub struct Position {
@@ -80,8 +81,8 @@ impl Dimensions {
     }
   }
 
-  pub fn world_to_projection(&self) -> Projection {
-    let view: Matrix4<f32> = get_view_matrix(1500.0);
+  pub fn world_to_projection(&self, input: &CameraInputState) -> Projection {
+    let view: Matrix4<f32> = get_view_matrix(input.distance);
     let aspect_ratio = self.window_width / self.window_height;
     get_projection(view, aspect_ratio)
   }
