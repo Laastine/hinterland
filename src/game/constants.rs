@@ -15,7 +15,7 @@ pub const RESOLUTION_Y: u32 = 900;
 
 pub const ASPECT_RATIO: f32 = (RESOLUTION_X / RESOLUTION_Y) as f32;
 
-pub const VIEW_DISTANCE: f32 = 300.0;
+pub const VIEW_DISTANCE: f32 = 3000.0;
 
 pub const CHARACTER_SHEET_TOTAL_WIDTH: f32 = 16_128f32;
 pub const SPRITE_OFFSET: f32 = 2.0;
