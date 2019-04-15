@@ -1,4 +1,7 @@
-//use specs;
+use std::mem::size_of;
+use std::slice::from_raw_parts;
+
+use specs;
 
 pub struct CharacterSprite {
   pub character_idx: usize,
@@ -10,6 +13,13 @@ impl CharacterSprite {
     CharacterSprite {
       character_idx: 0,
       character_fire_idx: 0,
+    }
+  }
+
+  pub fn as_raw(&self) -> &[u8] {
+    let all = [self.character_idx, self.character_fire_idx];
+    unsafe {
+      from_raw_parts(all.as_ptr() as *const u8, all.len() * size_of::<CharacterSprite>())
     }
   }
 
@@ -31,9 +41,9 @@ impl CharacterSprite {
   }
 }
 
-//impl specs::prelude::Component for CharacterSprite {
-//  type Storage = specs::storage::VecStorage<CharacterSprite>;
-//}
+impl specs::prelude::Component for CharacterSprite {
+  type Storage = specs::storage::VecStorage<CharacterSprite>;
+}
 
 pub struct CritterData {
   pub data: [f32; 4]

@@ -64,8 +64,8 @@ impl<'a> specs::prelude::System<'a> for CameraControlSystem {
 
     while let Ok(control) = self.queue.try_recv() {
       match control {
-        CameraControl::ZoomIn => self.zoom_level = Some(2.0),
-        CameraControl::ZoomOut => self.zoom_level = Some(-2.0),
+        CameraControl::ZoomIn => self.zoom_level = Some(5.0),
+        CameraControl::ZoomOut => self.zoom_level = Some(-5.0),
         CameraControl::ZoomStop => self.zoom_level = None,
         _ => (),
       }

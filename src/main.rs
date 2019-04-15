@@ -1,5 +1,6 @@
 use crate::gfx_app::WindowContext;
 
+mod character;
 mod critter;
 mod data;
 mod game;

@@ -1,13 +1,13 @@
-use wgpu::{Device, SwapChain, SwapChainDescriptor, CommandEncoder};
+use image::imageops::contrast;
+use wgpu::{CommandEncoder, Device, SwapChain, SwapChainDescriptor};
 use wgpu::winit::{Event, EventsLoop, Window, WindowEvent};
-use winit::ElementState::{Pressed, Released};
-use winit::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
 use winit::dpi::LogicalSize;
+use winit::ElementState::{Pressed, Released};
+use winit::KeyboardInput;
+use winit::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
 
 use crate::game::constants::{RESOLUTION_X, RESOLUTION_Y};
-use winit::KeyboardInput;
-use image::imageops::contrast;
-use crate::gfx_app::controls::{TilemapControls, Control};
+use crate::gfx_app::controls::{Control, TilemapControls};
 use crate::graphics::orientation::Stance::NormalDeath;
 
 pub mod controls;
@@ -25,6 +25,8 @@ pub struct WindowContext {
   events_loop: EventsLoop,
   controls: Option<TilemapControls>,
   window: Window,
+//  device: wgpu::Device,
+//  instance: wgpu::Instance,
 }
 
 impl WindowContext {
@@ -39,10 +41,20 @@ impl WindowContext {
       controls,
       events_loop,
       window,
+//      device,
+//      instance,
     }
   }
 
-  pub fn get_window(&self) -> & Window {
+//  pub fn get_device(&mut self) -> &mut wgpu::Device {
+//    &mut self.device
+//  }
+//
+//  pub fn get_instance(&self) -> &wgpu::Instance {
+//    &self.instance
+//  }
+
+  pub fn get_window(&self) -> &Window {
     &self.window
   }
 
@@ -58,7 +70,7 @@ impl WindowContext {
     }
   }
 
-  fn get_viewport_size(&mut self) -> (f32, f32) {
+  fn get_viewport_size(&self) -> (f32, f32) {
     if cfg!(feature = "windowed") {
       (RESOLUTION_X as f32, RESOLUTION_Y as f32)
     } else {
@@ -110,28 +122,18 @@ fn process_keyboard_input(input: winit::KeyboardInput, controls: &mut TilemapCon
     KeyboardInput { state: Released, virtual_keycode: Some(X), .. } => {
       controls.zoom(&Control::Released);
     }
-    KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {
-    }
-    KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {
-    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {}
+    KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {}
     KeyboardInput { state: Released, virtual_keycode: Some(W), .. } |
-    KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {
-    }
-    KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {
-    }
-    KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {
-    }
+    KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {}
+    KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {}
+    KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {}
     KeyboardInput { state: Released, virtual_keycode: Some(A), .. } |
-    KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {
-    }
-    KeyboardInput { state: Pressed, virtual_keycode: Some(R), .. } => {
-    }
-    KeyboardInput { state: Released, virtual_keycode: Some(R), .. } => {
-    }
-    KeyboardInput { state: Pressed, modifiers, .. } => {
-    }
-    KeyboardInput { state: Released, modifiers, .. } => {
-    }
+    KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {}
+    KeyboardInput { state: Pressed, virtual_keycode: Some(R), .. } => {}
+    KeyboardInput { state: Released, virtual_keycode: Some(R), .. } => {}
+    KeyboardInput { state: Pressed, modifiers, .. } => {}
+    KeyboardInput { state: Released, modifiers, .. } => {}
   }
   if let Some(Escape) = input.virtual_keycode {
     WindowStatus::Close

@@ -1,83 +1,96 @@
+use std;
 use std::io::Cursor;
 use std::mem;
 
-use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Vertices};
-use image;
+use cgmath::Point2;
+use rand::Rng;
 use specs;
-use specs::{Read, ReadStorage, WriteStorage};
-use wgpu::{CommandEncoder, CommandBuffer};
+use specs::prelude::{Read, ReadStorage, WriteStorage};
+use wgpu;
 
-use crate::game::constants::{ASPECT_RATIO, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
-use crate::graphics::camera::CameraInputState;
-use crate::graphics::dimensions::{Dimensions, get_projection, get_view_matrix};
-use crate::graphics::shaders::{load_glsl, Projection, ShaderStage, Vertex};
+use crate::character::{character_stats::CharacterStats, controls::CharacterInputState};
+use crate::critter::{CharacterSprite, CritterData};
+use crate::data;
+use crate::game::constants::{AMMO_POSITIONS, ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE};
+use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, get_orientation_from_center, orientation::{Orientation, Stance}, overlaps};
+use crate::graphics::shaders::{CharacterSpriteSheet, load_glsl, Position, Projection, ShaderStage, Vertex};
+use wgpu::CommandBuffer;
 
-mod tile_map;
-pub mod window;
+pub mod controls;
+mod character_stats;
 
-pub struct TerrainDrawable {
-  projection: Projection
+const SHADER_VERT: &[u8] = include_bytes!("../shaders/character.v.glsl");
+const SHADER_FRAG: &[u8] = include_bytes!("../shaders/character.f.glsl");
+
+#[derive(Clone)]
+pub struct CharacterDrawable {
+  pub stats: CharacterStats,
+  projection: Projection,
+  pub position: Position,
+  orientation: Orientation,
+  pub stance: Stance,
+  direction: Orientation,
 }
 
-impl TerrainDrawable {
-  pub fn new() -> TerrainDrawable {
+impl CharacterDrawable {
+  pub fn new() -> CharacterDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
     let projection = get_projection(view, ASPECT_RATIO);
-    TerrainDrawable {
-      projection
+    let stats = CharacterStats::new();
+    CharacterDrawable {
+      stats,
+      projection,
+      position: Position::origin(),
+      orientation: Orientation::Right,
+      stance: Stance::Walking,
+      direction: Orientation::Right,
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, dimensions: &Dimensions) {
     self.projection = world_to_clip.clone();
   }
 }
 
-impl specs::prelude::Component for TerrainDrawable {
-  type Storage = specs::storage::HashMapStorage<TerrainDrawable>;
+impl Default for CharacterDrawable {
+  fn default() -> Self {
+    CharacterDrawable::new()
+  }
 }
 
-fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
-  ((point_x - point_y), (point_x + point_y) / 1.78)
+impl specs::prelude::Component for CharacterDrawable {
+  type Storage = specs::storage::VecStorage<CharacterDrawable>;
 }
 
 fn create_vertices() -> (Vec<Vertex>, Vec<u16>) {
-  let plane = Plane::subdivide(TILES_PCS_W, TILES_PCS_H);
-  let vertex_data: Vec<Vertex> =
-    plane.shared_vertex_iter()
-      .map(|vertex| {
-        let (raw_x, raw_y) = cartesian_to_isometric(vertex.pos.x, vertex.pos.y);
-        let vertex_x = (TILE_SIZE * (TILES_PCS_W as f32) / 2.0) * raw_x;
-        let vertex_y = (TILE_SIZE * (TILES_PCS_H as f32) / 2.0) * raw_y;
+  let w = 20.0;
+  let h = 28.0;
+  let vertex_data: &[Vertex; 4] = &[
+    Vertex::new([-w, -h, 0.0], [0.0, 1.0]),
+    Vertex::new([w, -h, 0.0], [1.0, 1.0]),
+    Vertex::new([w, h, 0.0], [1.0, 0.0]),
+    Vertex::new([-w, h, 0.0], [0.0, 0.0]),
+  ];
 
-        let (u_pos, v_pos) = ((raw_x / 4.0 - raw_y / 2.25) + 0.5, (raw_x / 4.0 + raw_y / 2.25) + 0.5);
-        let tile_map_x = u_pos * TILES_PCS_W as f32;
-        let tile_map_y = v_pos * TILES_PCS_H as f32;
-
-        Vertex::new([vertex_x, vertex_y, 0.0], [tile_map_x, tile_map_y])
-      })
-      .collect();
-
-  let index_data = plane.indexed_polygon_iter()
-    .triangulate()
-    .vertices()
-    .map(|i| i as u16)
-    .collect::<Vec<u16>>();
+  let index_data = &[0, 1, 2, 2, 3, 0];
 
   (vertex_data.to_vec(), index_data.to_vec())
 }
 
-pub struct TerrainDrawSystem {
+pub struct CharacterDrawSystem {
   vertex_buf: wgpu::Buffer,
   index_buf: wgpu::Buffer,
   index_count: usize,
   bind_group: wgpu::BindGroup,
   pub projection_buf: wgpu::Buffer,
+  pub position_buf: wgpu::Buffer,
+  pub character_sprite_sheet_buf: wgpu::Buffer,
   pipeline: wgpu::RenderPipeline,
+  data: Vec<CritterData>,
 }
 
-impl TerrainDrawSystem {
-  pub fn new(sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device) -> TerrainDrawSystem {
+impl CharacterDrawSystem {
+  pub fn new(sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device) -> CharacterDrawSystem {
     let mut init_encoder =
       device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
 
@@ -112,6 +125,16 @@ impl TerrainDrawSystem {
           binding: 3,
           visibility: wgpu::ShaderStageFlags::VERTEX | wgpu::ShaderStageFlags::FRAGMENT,
           ty: wgpu::BindingType::UniformBuffer,
+        },
+        wgpu::BindGroupLayoutBinding {
+          binding: 4,
+          visibility: wgpu::ShaderStageFlags::VERTEX | wgpu::ShaderStageFlags::FRAGMENT,
+          ty: wgpu::BindingType::UniformBuffer,
+        },
+        wgpu::BindGroupLayoutBinding {
+          binding: 5,
+          visibility: wgpu::ShaderStageFlags::VERTEX | wgpu::ShaderStageFlags::FRAGMENT,
+          ty: wgpu::BindingType::UniformBuffer,
         }
       ],
     });
@@ -120,7 +143,7 @@ impl TerrainDrawSystem {
     });
 
     let size = 256u32;
-    let texels = &include_bytes!("../../assets/maps/terrain.png")[..];
+    let texels = &include_bytes!("../../assets/character.png")[..];
     let img = image::load(Cursor::new(texels), image::PNG).unwrap().to_rgba();
     let (width, height) = img.dimensions();
 
@@ -175,19 +198,26 @@ impl TerrainDrawSystem {
       border_color: wgpu::BorderColor::TransparentBlack,
     });
 
-    let projection_buf = device
-      .create_buffer(&wgpu::BufferDescriptor {
-        size: 1024,
-        usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST,
-      });
+    let projection_buf = device.create_buffer(&wgpu::BufferDescriptor {
+      size: 1024,
+      usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST,
+    });
 
-    let terrain = tile_map::Terrain::new();
+    let character_position = Position::origin();
+    let position_buf = device
+      .create_buffer_mapped(16, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
+      .fill_from_slice(&character_position.as_raw());
 
-    let terrain_buf = device
+    let character_sprite = CharacterSprite::new();
+    let character_sprite_sheet_buf = device
+      .create_buffer(&wgpu::BufferDescriptor {size: 64, usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST });
+
+    let character_sprite = CharacterSpriteSheet::new(0.0, 0.0, 0, 0);
+    let character_sprite_buf = device
       .create_buffer_mapped(
-        4096,
+        64,
         wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
-      .fill_from_slice(&terrain.tiles.as_slice());
+      .fill_from_slice(&character_sprite.as_raw());
 
     let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
       layout: &bind_group_layout,
@@ -210,15 +240,29 @@ impl TerrainDrawSystem {
         wgpu::Binding {
           binding: 3,
           resource: wgpu::BindingResource::Buffer {
-            buffer: &terrain_buf,
+            buffer: &character_sprite_sheet_buf,
             range: 0..64,
+          },
+        },
+        wgpu::Binding {
+          binding: 4,
+          resource: wgpu::BindingResource::Buffer {
+            buffer: &character_sprite_buf,
+            range: 0..64,
+          },
+        },
+        wgpu::Binding {
+          binding: 5,
+          resource: wgpu::BindingResource::Buffer {
+            buffer: &position_buf,
+            range: 0..16,
           },
         },
       ],
     });
 
-    let vs_bytes = load_glsl("src/shaders/terrain.v.glsl", ShaderStage::Vertex);
-    let fs_bytes = load_glsl("src/shaders/terrain.f.glsl", ShaderStage::Fragment);
+    let vs_bytes = load_glsl("src/shaders/character.v.glsl", ShaderStage::Vertex);
+    let fs_bytes = load_glsl("src/shaders/character.f.glsl", ShaderStage::Fragment);
     let vs_module = device.create_shader_module(&vs_bytes);
     let fs_module = device.create_shader_module(&fs_bytes);
 
@@ -235,8 +279,8 @@ impl TerrainDrawSystem {
       rasterization_state: wgpu::RasterizationStateDescriptor {
         front_face: wgpu::FrontFace::Cw,
         cull_mode: wgpu::CullMode::Back,
-        depth_bias: 0,
-        depth_bias_slope_scale: 0.0,
+        depth_bias: 2,
+        depth_bias_slope_scale: 2.0,
         depth_bias_clamp: 0.0,
       },
       primitive_topology: wgpu::PrimitiveTopology::TriangleList,
@@ -246,7 +290,7 @@ impl TerrainDrawSystem {
         alpha: wgpu::BlendDescriptor::REPLACE,
         write_mask: wgpu::ColorWriteFlags::ALL,
       }],
-//      color_states: &[],
+      //      color_states: &[],
       depth_stencil_state: Some(wgpu::DepthStencilStateDescriptor {
         format: wgpu::TextureFormat::Bgra8Unorm,
         depth_write_enabled: true,
@@ -279,18 +323,44 @@ impl TerrainDrawSystem {
     let init_command_buf = init_encoder.finish();
     device.get_queue().submit(&[init_command_buf]);
 
-    TerrainDrawSystem {
+    let data = data::load_character();
+
+    CharacterDrawSystem {
       vertex_buf,
       index_buf,
       index_count: index_data.len(),
       bind_group,
       projection_buf,
+      position_buf,
+      character_sprite_sheet_buf,
       pipeline,
+      data,
+    }
+  }
+
+  fn get_next_sprite(&self, character_idx: usize, character_fire_idx: usize, drawable: &mut CharacterDrawable) -> CharacterSpriteSheet {
+    let sprite_idx =
+      if drawable.orientation == Orientation::Still && drawable.stance == Stance::Walking {
+        (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET)
+      } else if drawable.stance == Stance::Walking {
+        drawable.direction = drawable.orientation;
+        (drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET)
+      } else {
+        (drawable.orientation as usize * 8 + character_fire_idx)
+      } as usize;
+
+    let elements_x = CHARACTER_SHEET_TOTAL_WIDTH / (self.data[sprite_idx].data[2] + SPRITE_OFFSET);
+    CharacterSpriteSheet {
+      x_div: elements_x,
+      y_div: 0.0,
+      row_idx: 0,
+      index: sprite_idx as u32,
     }
   }
 
   pub fn draw(&mut self,
-              drawable: &mut TerrainDrawable,
+              mut drawable: &mut CharacterDrawable,
+              character: &CharacterSprite,
               frame: &wgpu::SwapChainOutput,
               render_pass: &mut wgpu::RenderPass) {
 //    let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
@@ -319,12 +389,16 @@ impl TerrainDrawSystem {
 //          clear_stencil: 0,
 //        }),
 //      });
+
+      let next_sprite = self.get_next_sprite(character.character_idx, character.character_fire_idx, &mut drawable);
+
       render_pass.set_pipeline(&self.pipeline);
       render_pass.set_bind_group(0, &self.bind_group);
       render_pass.set_index_buffer(&self.index_buf, 0);
-      render_pass.set_vertex_buffers(&[(&self.vertex_buf, 0)]);
       self.projection_buf.set_sub_data(0, &drawable.projection.as_raw());
-      render_pass.draw_indexed(0..self.index_count as u32, 0, 0..1);
+      self.position_buf.set_sub_data(0, &drawable.position.as_raw());
+      self.character_sprite_sheet_buf.set_sub_data(0, &next_sprite.as_raw());
+      render_pass.set_vertex_buffers(&[(&self.vertex_buf, 0)]);
 //    device.get_queue().submit(&[encoder.finish()]);
 //    encoder.finish()
   }
@@ -339,16 +413,17 @@ impl PreDrawSystem {
 }
 
 impl<'a> specs::prelude::System<'a> for PreDrawSystem {
-  type SystemData = (WriteStorage<'a, TerrainDrawable>,
+  type SystemData = (WriteStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, CameraInputState>,
+                     ReadStorage<'a, CharacterInputState>,
                      Read<'a, Dimensions>);
 
-  fn run(&mut self, (mut terrain, camera_input, dim): Self::SystemData) {
+  fn run(&mut self, (mut character, camera_input, character_input, dim): Self::SystemData) {
     use specs::join::Join;
 
-    for (t, camera) in (&mut terrain, &camera_input).join() {
+    for (c, camera, ci) in (&mut character, &camera_input, &character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      t.update(&world_to_clip);
+      c.update(&world_to_clip, ci, &dim);
     }
   }
 }
