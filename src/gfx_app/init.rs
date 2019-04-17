@@ -54,6 +54,7 @@ fn dispatch_loop(window_context: &mut WindowContext,
     .with(terrain::PreDrawSystem::new(), "draw-prep-terrain", &["drawing"])
     .with(character::PreDrawSystem::new(), "draw-prep-character", &["drawing"])
     .with(camera_system, "terrain-system", &[])
+    .with(character_system, "character-system", &[])
     .build();
 
   window_context.set_controls(controls);

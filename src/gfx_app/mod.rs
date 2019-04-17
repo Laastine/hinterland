@@ -9,6 +9,7 @@ use winit::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
 use crate::game::constants::{RESOLUTION_X, RESOLUTION_Y};
 use crate::gfx_app::controls::{Control, TilemapControls};
 use crate::graphics::orientation::Stance::NormalDeath;
+use crate::character::controls::CharacterControl;
 
 pub mod controls;
 pub mod init;
@@ -122,14 +123,26 @@ fn process_keyboard_input(input: winit::KeyboardInput, controls: &mut TilemapCon
     KeyboardInput { state: Released, virtual_keycode: Some(X), .. } => {
       controls.zoom(&Control::Released);
     }
-    KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {}
-    KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {}
+    KeyboardInput { state: Pressed, virtual_keycode: Some(W), .. } => {
+      controls.move_character(CharacterControl::Up);
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(S), .. } => {
+      controls.move_character(CharacterControl::Down);
+    }
     KeyboardInput { state: Released, virtual_keycode: Some(W), .. } |
-    KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {}
-    KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {}
-    KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {}
+    KeyboardInput { state: Released, virtual_keycode: Some(S), .. } => {
+      controls.move_character(CharacterControl::YMoveStop);
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(A), .. } => {
+      controls.move_character(CharacterControl::Left);
+    }
+    KeyboardInput { state: Pressed, virtual_keycode: Some(D), .. } => {
+      controls.move_character(CharacterControl::Right);
+    }
     KeyboardInput { state: Released, virtual_keycode: Some(A), .. } |
-    KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {}
+    KeyboardInput { state: Released, virtual_keycode: Some(D), .. } => {
+      controls.move_character(CharacterControl::XMoveStop);
+    }
     KeyboardInput { state: Pressed, virtual_keycode: Some(R), .. } => {}
     KeyboardInput { state: Released, virtual_keycode: Some(R), .. } => {}
     KeyboardInput { state: Pressed, modifiers, .. } => {}

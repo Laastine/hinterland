@@ -1,22 +1,27 @@
 use std::io::Cursor;
 use std::mem;
 
+use cgmath::Point2;
 use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Vertices};
 use image;
 use specs;
 use specs::{Read, ReadStorage, WriteStorage};
-use wgpu::{CommandEncoder, CommandBuffer};
+use wgpu::{CommandBuffer, CommandEncoder};
 
+use crate::character::controls::CharacterInputState;
 use crate::game::constants::{ASPECT_RATIO, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
+use crate::graphics::{can_move_to_tile, coords_to_tile};
 use crate::graphics::camera::CameraInputState;
 use crate::graphics::dimensions::{Dimensions, get_projection, get_view_matrix};
-use crate::graphics::shaders::{load_glsl, Projection, ShaderStage, Vertex};
+use crate::graphics::shaders::{load_glsl, Position, Projection, ShaderStage, Vertex};
 
 mod tile_map;
 pub mod window;
 
 pub struct TerrainDrawable {
-  projection: Projection
+  projection: Projection,
+  pub position: Position,
+  pub tile_position: Point2<i32>,
 }
 
 impl TerrainDrawable {
@@ -24,12 +29,22 @@ impl TerrainDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
     let projection = get_projection(view, ASPECT_RATIO);
     TerrainDrawable {
-      projection
+      projection,
+      position: Position::origin(),
+      tile_position: coords_to_tile(Position::origin()),
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection) {
+  pub fn update(&mut self, world_to_clip: &Projection, ci: &mut CharacterInputState) {
     self.projection = world_to_clip.clone();
+    if can_move_to_tile(ci.movement) {
+      println!("can move");
+      ci.is_colliding = false;
+      self.position = ci.movement;
+      self.tile_position = coords_to_tile(self.position);
+    } else {
+      ci.is_colliding = true;
+    }
   }
 }
 
@@ -73,6 +88,7 @@ pub struct TerrainDrawSystem {
   index_count: usize,
   bind_group: wgpu::BindGroup,
   pub projection_buf: wgpu::Buffer,
+  pub position_buf: wgpu::Buffer,
   pipeline: wgpu::RenderPipeline,
 }
 
@@ -112,6 +128,11 @@ impl TerrainDrawSystem {
           binding: 3,
           visibility: wgpu::ShaderStageFlags::VERTEX | wgpu::ShaderStageFlags::FRAGMENT,
           ty: wgpu::BindingType::UniformBuffer,
+        },
+        wgpu::BindGroupLayoutBinding {
+          binding: 4,
+          visibility: wgpu::ShaderStageFlags::VERTEX,
+          ty: wgpu::BindingType::UniformBuffer,
         }
       ],
     });
@@ -134,7 +155,7 @@ impl TerrainDrawSystem {
       array_size: 1,
       dimension: wgpu::TextureDimension::D2,
       format: wgpu::TextureFormat::Rgba8Unorm,
-      usage: wgpu::TextureUsageFlags::TRANSFER_DST,
+      usage: wgpu::TextureUsageFlags::SAMPLED | wgpu::TextureUsageFlags::TRANSFER_DST,
     });
     let texture_view = texture.create_default_view();
     let temp_buf = device
@@ -189,6 +210,11 @@ impl TerrainDrawSystem {
         wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
       .fill_from_slice(&terrain.tiles.as_slice());
 
+    let terrain_position = Position::origin();
+    let position_buf = device
+      .create_buffer_mapped(16, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
+      .fill_from_slice(&terrain_position.as_raw());
+
     let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
       layout: &bind_group_layout,
       bindings: &[
@@ -212,6 +238,13 @@ impl TerrainDrawSystem {
           resource: wgpu::BindingResource::Buffer {
             buffer: &terrain_buf,
             range: 0..64,
+          },
+        },
+        wgpu::Binding {
+          binding: 4,
+          resource: wgpu::BindingResource::Buffer {
+            buffer: &terrain_buf,
+            range: 0..16,
           },
         },
       ],
@@ -285,6 +318,7 @@ impl TerrainDrawSystem {
       index_count: index_data.len(),
       bind_group,
       projection_buf,
+      position_buf,
       pipeline,
     }
   }
@@ -341,14 +375,15 @@ impl PreDrawSystem {
 impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   type SystemData = (WriteStorage<'a, TerrainDrawable>,
                      ReadStorage<'a, CameraInputState>,
+                     WriteStorage<'a, CharacterInputState>,
                      Read<'a, Dimensions>);
 
-  fn run(&mut self, (mut terrain, camera_input, dim): Self::SystemData) {
+  fn run(&mut self, (mut terrain, camera_input, mut character_input, dim): Self::SystemData) {
     use specs::join::Join;
 
-    for (t, camera) in (&mut terrain, &camera_input).join() {
+    for (t, camera, ci) in (&mut terrain, &camera_input, &mut character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      t.update(&world_to_clip);
+      t.update(&world_to_clip, ci);
     }
   }
 }
