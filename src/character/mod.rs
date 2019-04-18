@@ -7,6 +7,7 @@ use rand::Rng;
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 use wgpu;
+use wgpu::CommandBuffer;
 
 use crate::character::{character_stats::CharacterStats, controls::CharacterInputState};
 use crate::critter::{CharacterSprite, CritterData};
@@ -14,7 +15,6 @@ use crate::data;
 use crate::game::constants::{AMMO_POSITIONS, ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE};
 use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, get_orientation_from_center, orientation::{Orientation, Stance}, overlaps};
 use crate::graphics::shaders::{CharacterSpriteSheet, load_glsl, Position, Projection, ShaderStage, Vertex};
-use wgpu::CommandBuffer;
 
 pub mod controls;
 mod character_stats;
@@ -199,25 +199,25 @@ impl CharacterDrawSystem {
     });
 
     let projection_buf = device.create_buffer(&wgpu::BufferDescriptor {
-      size: 1024,
+      size: 1,
       usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST,
     });
 
     let character_position = Position::origin();
     let position_buf = device
-      .create_buffer_mapped(16, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
-      .fill_from_slice(&character_position.as_raw());
+      .create_buffer_mapped(1, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
+      .fill_from_slice(&[character_position]);
 
     let character_sprite = CharacterSprite::new();
     let character_sprite_sheet_buf = device
-      .create_buffer(&wgpu::BufferDescriptor {size: 64, usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST });
+      .create_buffer(&wgpu::BufferDescriptor { size: 1, usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST });
 
     let character_sprite = CharacterSpriteSheet::new(0.0, 0.0, 0, 0);
     let character_sprite_buf = device
       .create_buffer_mapped(
-        64,
+        1,
         wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
-      .fill_from_slice(&character_sprite.as_raw());
+      .fill_from_slice(&[character_sprite]);
 
     let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
       layout: &bind_group_layout,
@@ -226,7 +226,7 @@ impl CharacterDrawSystem {
           binding: 0,
           resource: wgpu::BindingResource::Buffer {
             buffer: &projection_buf,
-            range: 0..1024,
+            range: 0..1,
           },
         },
         wgpu::Binding {
@@ -241,21 +241,21 @@ impl CharacterDrawSystem {
           binding: 3,
           resource: wgpu::BindingResource::Buffer {
             buffer: &character_sprite_sheet_buf,
-            range: 0..64,
+            range: 0..1,
           },
         },
         wgpu::Binding {
           binding: 4,
           resource: wgpu::BindingResource::Buffer {
             buffer: &character_sprite_buf,
-            range: 0..64,
+            range: 0..1,
           },
         },
         wgpu::Binding {
           binding: 5,
           resource: wgpu::BindingResource::Buffer {
             buffer: &position_buf,
-            range: 0..16,
+            range: 0..1,
           },
         },
       ],
@@ -390,15 +390,16 @@ impl CharacterDrawSystem {
 //        }),
 //      });
 
-      let next_sprite = self.get_next_sprite(character.character_idx, character.character_fire_idx, &mut drawable);
+    let next_sprite = self.get_next_sprite(character.character_idx, character.character_fire_idx, &mut drawable);
 
-      render_pass.set_pipeline(&self.pipeline);
-      render_pass.set_bind_group(0, &self.bind_group);
-      render_pass.set_index_buffer(&self.index_buf, 0);
-      self.projection_buf.set_sub_data(0, &drawable.projection.as_raw());
-      self.position_buf.set_sub_data(0, &drawable.position.as_raw());
-      self.character_sprite_sheet_buf.set_sub_data(0, &next_sprite.as_raw());
-      render_pass.set_vertex_buffers(&[(&self.vertex_buf, 0)]);
+    render_pass.set_pipeline(&self.pipeline);
+    render_pass.set_bind_group(0, &self.bind_group);
+    render_pass.set_index_buffer(&self.index_buf, 0);
+    render_pass.set_vertex_buffers(&[(&self.vertex_buf, 0)]);
+
+//      self.projection_buf.set_sub_data(0, &drawable.projection.as_raw());
+//      self.position_buf.set_sub_data(0, &drawable.position.as_raw());
+//      self.character_sprite_sheet_buf.set_sub_data(0, &next_sprite.as_raw());
 //    device.get_queue().submit(&[encoder.finish()]);
 //    encoder.finish()
   }

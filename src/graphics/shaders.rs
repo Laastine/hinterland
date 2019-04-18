@@ -6,7 +6,8 @@ use std::slice::from_raw_parts;
 
 use cgmath::BaseFloat;
 
-#[derive(Clone, Default)]
+#[repr(C)]
+#[derive(Clone, Copy)]
 pub struct Projection {
   pub model: [[f32; 4]; 4],
   pub view: [[f32; 4]; 4],
@@ -22,6 +23,7 @@ impl Projection {
   }
 }
 
+#[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub struct CharacterSpriteSheet {
   pub x_div: f32,
@@ -48,6 +50,7 @@ impl CharacterSpriteSheet {
   }
 }
 
+#[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub struct Position {
   position: [f32; 2],

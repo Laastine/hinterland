@@ -19,7 +19,7 @@ mod tile_map;
 pub mod window;
 
 pub struct TerrainDrawable {
-  projection: Projection,
+  pub projection: Projection,
   pub position: Position,
   pub tile_position: Point2<i32>,
 }
@@ -198,7 +198,7 @@ impl TerrainDrawSystem {
 
     let projection_buf = device
       .create_buffer(&wgpu::BufferDescriptor {
-        size: 1024,
+        size: 1,
         usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST,
       });
 
@@ -210,10 +210,10 @@ impl TerrainDrawSystem {
         wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
       .fill_from_slice(&terrain.tiles.as_slice());
 
-    let terrain_position = Position::origin();
+    let terrain_position = Position::new(0.0, 0.0);
     let position_buf = device
-      .create_buffer_mapped(16, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
-      .fill_from_slice(&terrain_position.as_raw());
+      .create_buffer_mapped(1, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
+      .fill_from_slice(&[terrain_position]);
 
     let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
       layout: &bind_group_layout,
@@ -222,7 +222,7 @@ impl TerrainDrawSystem {
           binding: 0,
           resource: wgpu::BindingResource::Buffer {
             buffer: &projection_buf,
-            range: 0..1024,
+            range: 0..1,
           },
         },
         wgpu::Binding {
@@ -243,8 +243,8 @@ impl TerrainDrawSystem {
         wgpu::Binding {
           binding: 4,
           resource: wgpu::BindingResource::Buffer {
-            buffer: &terrain_buf,
-            range: 0..16,
+            buffer: &position_buf,
+            range: 0..1,
           },
         },
       ],
@@ -353,12 +353,13 @@ impl TerrainDrawSystem {
 //          clear_stencil: 0,
 //        }),
 //      });
-      render_pass.set_pipeline(&self.pipeline);
-      render_pass.set_bind_group(0, &self.bind_group);
-      render_pass.set_index_buffer(&self.index_buf, 0);
-      render_pass.set_vertex_buffers(&[(&self.vertex_buf, 0)]);
-      self.projection_buf.set_sub_data(0, &drawable.projection.as_raw());
-      render_pass.draw_indexed(0..self.index_count as u32, 0, 0..1);
+    render_pass.set_pipeline(&self.pipeline);
+    render_pass.set_bind_group(0, &self.bind_group);
+    render_pass.set_index_buffer(&self.index_buf, 0);
+    render_pass.set_vertex_buffers(&[(&self.vertex_buf, 0)]);
+    render_pass.draw_indexed(0..self.index_count as u32, 0, 0..1);
+
+//    self.projection_buf.set_sub_data(0, &drawable.projection.as_raw());
 //    device.get_queue().submit(&[encoder.finish()]);
 //    encoder.finish()
   }
