@@ -54,7 +54,7 @@ fn dispatch_loop(window_context: &mut WindowContext,
     .with(terrain::PreDrawSystem::new(), "draw-prep-terrain", &["drawing"])
     .with(character::PreDrawSystem::new(), "draw-prep-character", &["drawing"])
     .with(camera_system, "terrain-system", &[])
-    .with(character_system, "character-system", &[])
+    .with(character_system, "character-system", &["terrain-system"])
     .build();
 
   window_context.set_controls(controls);
@@ -66,8 +66,6 @@ fn dispatch_loop(window_context: &mut WindowContext,
     let elapsed = last_time.elapsed();
     let delta = f64::from(elapsed.subsec_nanos()) / 1e9 + elapsed.as_secs() as f64;
 
-    // Throttle update speed
-    if delta >= 0.016 {
       last_time = time::Instant::now();
       dispatcher.dispatch(&w.res);
       w.maintain();
@@ -75,9 +73,9 @@ fn dispatch_loop(window_context: &mut WindowContext,
       *w.write_resource::<DeltaTime>() = DeltaTime(delta);
       *w.write_resource::<GameTime>() = GameTime(start_time.elapsed().as_secs());
 //      device_renderer.draw(window_context.get_device());
-    }
-
+    println!("main {}", delta);
     if let WindowStatus::Close = window_context.poll_events() {
+      println!("BREAK");
       break;
     }
   }

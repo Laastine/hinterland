@@ -33,10 +33,20 @@ pub struct WindowContext {
 impl WindowContext {
   pub fn new() -> WindowContext {
     let events_loop = EventsLoop::new();
-    let window = Window::new(&events_loop).unwrap();
+    let dpi = events_loop
+      .get_primary_monitor()
+      .get_hidpi_factor();
+    let window = winit::WindowBuilder::new()
+      .with_title("Hinterland")
+      .with_dimensions(
+        winit::dpi::LogicalSize::from_physical((RESOLUTION_X as f64, RESOLUTION_Y as f64), dpi),
+      )
+      .with_resizable(true)
+      .build(&events_loop)
+      .unwrap();
     let controls = None;
-    window.set_inner_size(LogicalSize::new(RESOLUTION_X as f64, RESOLUTION_Y as f64));
-    window.set_title("Hinterland");
+//    window.set_inner_size(LogicalSize::new(RESOLUTION_X as f64, RESOLUTION_Y as f64));
+//    window.set_title("Hinterland");
 
     WindowContext {
       controls,
@@ -89,16 +99,16 @@ impl WindowContext {
       None => panic!("Terrain controls have not been initialized"),
     };
 
-    self.events_loop.poll_events(|event| match event {
-      Event::WindowEvent { event, .. } => match event {
-        WindowEvent::CloseRequested => {
-          game_status = WindowStatus::Close;
+    self.events_loop.poll_events(|event| {
+      println!("Event {:?}", event);
+      game_status = if let winit::Event::WindowEvent { event, .. } = event {
+        match event {
+          winit::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input, controls) }
+          _ => WindowStatus::Open,
         }
-        _ => {
-          game_status = update(event, controls);
-        }
-      },
-      _ => (),
+      } else {
+        WindowStatus::Open
+      };
     });
     game_status
   }

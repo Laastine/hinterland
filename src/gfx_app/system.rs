@@ -14,11 +14,22 @@ use crate::graphics::orientation::{Orientation, Stance};
 use crate::graphics::shaders::{CharacterSpriteSheet, Position, Projection};
 use crate::terrain::{TerrainDrawable, TerrainDrawSystem};
 
+pub const COLOR_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Bgra8Unorm;
+pub const DEPTH_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::D32Float;
+
+pub struct ScreenTargets<'a> {
+  pub extent: wgpu::Extent3d,
+  pub color: &'a wgpu::TextureView,
+  pub depth: &'a wgpu::TextureView,
+}
+
 pub struct DrawSystem {
   terrain_system: TerrainDrawSystem,
   character_system: CharacterDrawSystem,
   swap_chain: SwapChain,
   device: Device,
+  depth_target: wgpu::TextureView,
+  extent: wgpu::Extent3d,
 //  encoder_queue: EncoderQueue,
 }
 
@@ -34,7 +45,7 @@ impl DrawSystem {
 
     let instance = wgpu::Instance::new();
     let adapter = instance.get_adapter(&wgpu::AdapterDescriptor {
-      power_preference: wgpu::PowerPreference::LowPower,
+      power_preference: wgpu::PowerPreference::HighPerformance,
     });
     let mut device = adapter.create_device(&wgpu::DeviceDescriptor {
       extensions: wgpu::Extensions {
@@ -44,12 +55,26 @@ impl DrawSystem {
 
     let surface = instance.create_surface(&window_context.get_window());
 
+    let extent = wgpu::Extent3d {
+      width: size.width as u32,
+      height: size.height as u32,
+      depth: 1,
+    };
     let sc_desc = wgpu::SwapChainDescriptor {
       usage: wgpu::TextureUsageFlags::OUTPUT_ATTACHMENT,
       format: wgpu::TextureFormat::Bgra8Unorm,
-      width: size.width as u32,
-      height: size.height as u32,
+      width: extent.width,
+      height: extent.height,
     };
+    let depth_target = device
+      .create_texture(&wgpu::TextureDescriptor {
+        size: extent,
+        array_size: 1,
+        dimension: wgpu::TextureDimension::D2,
+        format: wgpu::TextureFormat::D32Float,
+        usage: wgpu::TextureUsageFlags::OUTPUT_ATTACHMENT,
+      })
+      .create_default_view();
 
     let swap_chain = device.create_swap_chain(&surface, &sc_desc);
 
@@ -61,13 +86,15 @@ impl DrawSystem {
       character_system,
       swap_chain,
       device,
+      depth_target,
+      extent,
 //      encoder_queue,
     }
   }
 
   fn update_terrain<'a>(&mut self, encoder: &'a mut CommandEncoder, drawable: &mut TerrainDrawable) {
     let new_projection_buf = self.device
-      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_DST)
+      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
       .fill_from_slice(&[drawable.projection]);
 
     encoder.copy_buffer_to_buffer(
@@ -79,7 +106,7 @@ impl DrawSystem {
     );
 
     let new_position_buf = self.device
-      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_DST)
+      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
       .fill_from_slice(&[drawable.position]);
 
     encoder.copy_buffer_to_buffer(
@@ -113,7 +140,7 @@ impl DrawSystem {
 
   fn update_character<'a>(&mut self, encoder: &'a mut CommandEncoder, drawable: &mut CharacterDrawable, character: &CharacterSprite) {
     let new_projection_buf = self.device
-      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_DST)
+      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
       .fill_from_slice(&[drawable.projection]);
 
     encoder.copy_buffer_to_buffer(
@@ -125,7 +152,7 @@ impl DrawSystem {
     );
 
     let new_position_buf = self.device
-      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_DST)
+      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
       .fill_from_slice(&[drawable.position]);
 
     encoder.copy_buffer_to_buffer(
@@ -137,18 +164,17 @@ impl DrawSystem {
     );
     let next_sprite = self.get_next_sprite(character.character_idx, character.character_fire_idx, &drawable);
     println!("next_sprite {:?}", next_sprite);
-    let new_sprite_sheet_buf = self.device
-      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_DST)
+    let new_character_sprite_buf = self.device
+      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
       .fill_from_slice(&[next_sprite]);
 
     encoder.copy_buffer_to_buffer(
-      &new_sprite_sheet_buf,
+      &new_character_sprite_buf,
       0,
-      &self.character_system.character_sprite_sheet_buf,
+      &self.character_system.character_sprite_buf,
       0,
       1024,
     );
-
   }
 }
 
@@ -161,29 +187,40 @@ impl<'a> specs::prelude::System<'a> for DrawSystem {
   fn run(&mut self, (mut terrain, mut character, mut character_sprite, dt): Self::SystemData) {
     use specs::join::Join;
 
+    let delta = dt.0;
+    println!("delta {}", delta);
+
     let mut encoder = self.device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
 
+    // Update uniform buffers
     for (t, c, cs) in (&mut terrain, &mut character, &mut character_sprite).join() {
       self.update_terrain(&mut encoder, t);
       self.update_character(&mut encoder, c, cs)
     }
+
     {
       let mut render_pass = {
-        let texture_view = &self.swap_chain.get_next_texture().view;
+        let frame = self.swap_chain.get_next_texture();
+        let targets = ScreenTargets {
+          extent: self.extent,
+          color: &frame.view,
+          depth: &self.depth_target,
+        };
+
         encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
           color_attachments: &[wgpu::RenderPassColorAttachmentDescriptor {
-            attachment: &texture_view,
+            attachment: &targets.color,
             load_op: wgpu::LoadOp::Clear,
             store_op: wgpu::StoreOp::Store,
             clear_color: wgpu::Color {
-              r: 16.0 / 256.0,
-              g: 16.0 / 256.0,
-              b: 20.0 / 256.0,
+              r: 0.1,
+              g: 0.1,
+              b: 0.1,
               a: 1.0,
             },
           }],
           depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachmentDescriptor {
-            attachment: &texture_view,
+            attachment: &targets.depth,
             depth_load_op: wgpu::LoadOp::Clear,
             depth_store_op: wgpu::StoreOp::Store,
             stencil_load_op: wgpu::LoadOp::Clear,
@@ -194,17 +231,9 @@ impl<'a> specs::prelude::System<'a> for DrawSystem {
         })
       };
 
-      let delta = dt.0;
-      println!("delta {}", delta);
-
-      self.swap_chain.get_next_texture();
-      self.swap_chain.get_next_texture();
-      for (t, c) in (&mut terrain, &mut character).join() {
-        self.character_system.draw(c, &mut render_pass);
-        self.terrain_system.draw(t, &mut render_pass);
-      }
+      self.terrain_system.draw(&mut render_pass);
+      self.character_system.draw(&mut render_pass);
     }
     self.device.get_queue().submit(&[encoder.finish()]);
-//    let _ = self.encoder_queue.sender.send(encoder);
   }
 }

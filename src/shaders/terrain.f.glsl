@@ -41,7 +41,7 @@ void main() {
   }
   vec2 uvCoords = (coords.xy + rawUvOffsets) / u_TilesheetSize.xy;
 
-  vec4 t0 = texture(sampler2D(t_Color, t_TileSheet), uvCoords);
-  t0 *= SHADING_MULTIPLIER;
-  Target0 = t0;
+  vec4 tex = texture(sampler2D(t_Color, t_TileSheet), uvCoords);
+  tex *= SHADING_MULTIPLIER;
+  Target0 = tex;
 }

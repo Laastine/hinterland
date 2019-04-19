@@ -156,7 +156,7 @@ impl TerrainDrawSystem {
       format: wgpu::TextureFormat::Rgba8Unorm,
       usage: wgpu::TextureUsageFlags::SAMPLED | wgpu::TextureUsageFlags::TRANSFER_DST,
     });
-    let texture_view = texture.create_default_view();
+    let terrain_texture = texture.create_default_view();
     let temp_buf = device
       .create_buffer_mapped(img.len(), wgpu::BufferUsageFlags::TRANSFER_SRC)
       .fill_from_slice(img.into_raw().as_slice());
@@ -198,7 +198,7 @@ impl TerrainDrawSystem {
     let projection_buf = device
       .create_buffer(&wgpu::BufferDescriptor {
         size: 1,
-        usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST,
+        usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_SRC,
       });
 
     let terrain = tile_map::Terrain::new();
@@ -206,12 +206,12 @@ impl TerrainDrawSystem {
     let terrain_buf = device
       .create_buffer_mapped(
         4096,
-        wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
+        wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_SRC)
       .fill_from_slice(&terrain.tiles.as_slice());
 
     let terrain_position = Position::origin();
     let position_buf = device
-      .create_buffer_mapped(1, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
+      .create_buffer_mapped(1, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_SRC)
       .fill_from_slice(&[terrain_position]);
 
     let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
@@ -226,7 +226,7 @@ impl TerrainDrawSystem {
         },
         wgpu::Binding {
           binding: 1,
-          resource: wgpu::BindingResource::TextureView(&texture_view),
+          resource: wgpu::BindingResource::TextureView(&terrain_texture),
         },
         wgpu::Binding {
           binding: 2,
@@ -278,9 +278,8 @@ impl TerrainDrawSystem {
         alpha: wgpu::BlendDescriptor::REPLACE,
         write_mask: wgpu::ColorWriteFlags::ALL,
       }],
-//      color_states: &[],
       depth_stencil_state: Some(wgpu::DepthStencilStateDescriptor {
-        format: wgpu::TextureFormat::Bgra8Unorm,
+        format: wgpu::TextureFormat::D32Float,
         depth_write_enabled: true,
         depth_compare: wgpu::CompareFunction::Less,
         stencil_front: wgpu::StencilStateFaceDescriptor::IGNORE,
@@ -323,7 +322,6 @@ impl TerrainDrawSystem {
   }
 
   pub fn draw(&mut self,
-              drawable: &mut TerrainDrawable,
               render_pass: &mut wgpu::RenderPass) {
     render_pass.set_pipeline(&self.pipeline);
     render_pass.set_bind_group(0, &self.bind_group);

@@ -51,7 +51,7 @@ impl CharacterDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: Projection, ci: &CharacterInputState, dimensions: &Dimensions) {
+  pub fn update(&mut self, world_to_clip: Projection, ci: &CharacterInputState) {
     self.projection = world_to_clip;
   }
 }
@@ -67,8 +67,8 @@ impl specs::prelude::Component for CharacterDrawable {
 }
 
 fn create_vertices() -> (Vec<Vertex>, Vec<u16>) {
-  let w = 200.0;
-  let h = 280.0;
+  let w = 20.0;
+  let h = 28.0;
   let vertex_data: &[Vertex; 4] = &[
     Vertex::new([-w, -h, 0.0], [0.0, 1.0]),
     Vertex::new([w, -h, 0.0], [1.0, 1.0]),
@@ -88,7 +88,7 @@ pub struct CharacterDrawSystem {
   bind_group: wgpu::BindGroup,
   pub projection_buf: wgpu::Buffer,
   pub position_buf: wgpu::Buffer,
-  pub character_sprite_sheet_buf: wgpu::Buffer,
+  pub character_sprite_buf: wgpu::Buffer,
   pipeline: wgpu::RenderPipeline,
 }
 
@@ -99,6 +99,7 @@ impl CharacterDrawSystem {
 
     let vertex_size = mem::size_of::<Vertex>();
     let (vertex_data, index_data) = create_vertices();
+
     let vertex_buf = device
       .create_buffer_mapped(vertex_data.len(), wgpu::BufferUsageFlags::VERTEX)
       .fill_from_slice(&vertex_data);
@@ -111,17 +112,17 @@ impl CharacterDrawSystem {
       bindings: &[
         wgpu::BindGroupLayoutBinding {
           binding: 0,
-          visibility: wgpu::ShaderStageFlags::VERTEX,
+          visibility: wgpu::ShaderStageFlags::VERTEX | wgpu::ShaderStageFlags::FRAGMENT,
           ty: wgpu::BindingType::UniformBuffer,
         },
         wgpu::BindGroupLayoutBinding {
           binding: 1,
-          visibility: wgpu::ShaderStageFlags::FRAGMENT,
+          visibility: wgpu::ShaderStageFlags::VERTEX | wgpu::ShaderStageFlags::FRAGMENT,
           ty: wgpu::BindingType::SampledTexture,
         },
         wgpu::BindGroupLayoutBinding {
           binding: 2,
-          visibility: wgpu::ShaderStageFlags::FRAGMENT,
+          visibility: wgpu::ShaderStageFlags::VERTEX | wgpu::ShaderStageFlags::FRAGMENT,
           ty: wgpu::BindingType::Sampler,
         },
         wgpu::BindGroupLayoutBinding {
@@ -131,11 +132,6 @@ impl CharacterDrawSystem {
         },
         wgpu::BindGroupLayoutBinding {
           binding: 4,
-          visibility: wgpu::ShaderStageFlags::VERTEX | wgpu::ShaderStageFlags::FRAGMENT,
-          ty: wgpu::BindingType::UniformBuffer,
-        },
-        wgpu::BindGroupLayoutBinding {
-          binding: 5,
           visibility: wgpu::ShaderStageFlags::VERTEX | wgpu::ShaderStageFlags::FRAGMENT,
           ty: wgpu::BindingType::UniformBuffer,
         }
@@ -161,7 +157,7 @@ impl CharacterDrawSystem {
       format: wgpu::TextureFormat::Rgba8Unorm,
       usage: wgpu::TextureUsageFlags::SAMPLED | wgpu::TextureUsageFlags::TRANSFER_DST,
     });
-    let texture_view = texture.create_default_view();
+    let character_texture = texture.create_default_view();
     let temp_buf = device
       .create_buffer_mapped(img.len(), wgpu::BufferUsageFlags::TRANSFER_SRC)
       .fill_from_slice(img.into_raw().as_slice());
@@ -171,7 +167,7 @@ impl CharacterDrawSystem {
         buffer: &temp_buf,
         offset: 0,
         row_pitch: 4 * width,
-        image_height: 64,
+        image_height: 256,
       },
       wgpu::TextureCopyView {
         texture: &texture,
@@ -202,24 +198,17 @@ impl CharacterDrawSystem {
 
     let projection_buf = device.create_buffer(&wgpu::BufferDescriptor {
       size: 1,
-      usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST,
+      usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_SRC,
     });
 
     let character_position = Position::origin();
     let position_buf = device
-      .create_buffer_mapped(1, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
+      .create_buffer_mapped(1, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_SRC)
       .fill_from_slice(&[character_position]);
 
-    let character_sprite = CharacterSprite::new();
-    let character_sprite_sheet_buf = device
-      .create_buffer_mapped(1, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
-      .fill_from_slice(&[character_sprite]);
-
     let character_sprite_buf = device
-      .create_buffer(&wgpu::BufferDescriptor {
-        size: mem::size_of::<CharacterSpriteSheet>() as u32,
-        usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST,
-      });
+      .create_buffer_mapped(1, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_SRC)
+      .fill_from_slice(&[CharacterSpriteSheet { x_div: 288.0, y_div: 0.0, row_idx: 0, index: 64 }]);
 
     let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
       layout: &bind_group_layout,
@@ -233,7 +222,7 @@ impl CharacterDrawSystem {
         },
         wgpu::Binding {
           binding: 1,
-          resource: wgpu::BindingResource::TextureView(&texture_view),
+          resource: wgpu::BindingResource::TextureView(&character_texture),
         },
         wgpu::Binding {
           binding: 2,
@@ -242,19 +231,12 @@ impl CharacterDrawSystem {
         wgpu::Binding {
           binding: 3,
           resource: wgpu::BindingResource::Buffer {
-            buffer: &character_sprite_sheet_buf,
-            range: 0..1,
-          },
-        },
-        wgpu::Binding {
-          binding: 4,
-          resource: wgpu::BindingResource::Buffer {
             buffer: &character_sprite_buf,
             range: 0..1,
           },
         },
         wgpu::Binding {
-          binding: 5,
+          binding: 4,
           resource: wgpu::BindingResource::Buffer {
             buffer: &position_buf,
             range: 0..1,
@@ -281,8 +263,8 @@ impl CharacterDrawSystem {
       rasterization_state: wgpu::RasterizationStateDescriptor {
         front_face: wgpu::FrontFace::Cw,
         cull_mode: wgpu::CullMode::Back,
-        depth_bias: 2,
-        depth_bias_slope_scale: 2.0,
+        depth_bias: 0,
+        depth_bias_slope_scale: 0.0,
         depth_bias_clamp: 0.0,
       },
       primitive_topology: wgpu::PrimitiveTopology::TriangleList,
@@ -292,9 +274,8 @@ impl CharacterDrawSystem {
         alpha: wgpu::BlendDescriptor::REPLACE,
         write_mask: wgpu::ColorWriteFlags::ALL,
       }],
-      //      color_states: &[],
       depth_stencil_state: Some(wgpu::DepthStencilStateDescriptor {
-        format: wgpu::TextureFormat::Bgra8Unorm,
+        format: wgpu::TextureFormat::D32Float,
         depth_write_enabled: true,
         depth_compare: wgpu::CompareFunction::Less,
         stencil_front: wgpu::StencilStateFaceDescriptor::IGNORE,
@@ -332,13 +313,12 @@ impl CharacterDrawSystem {
       bind_group,
       projection_buf,
       position_buf,
-      character_sprite_sheet_buf,
+      character_sprite_buf,
       pipeline,
     }
   }
 
   pub fn draw(&mut self,
-              mut drawable: &mut CharacterDrawable,
               render_pass: &mut wgpu::RenderPass) {
     render_pass.set_pipeline(&self.pipeline);
     render_pass.set_bind_group(0, &self.bind_group);
@@ -367,7 +347,7 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
 
     for (c, camera, ci) in (&mut character, &camera_input, &character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      c.update(world_to_clip, ci, &dim);
+      c.update(world_to_clip, ci);
     }
   }
 }

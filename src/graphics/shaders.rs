@@ -124,7 +124,7 @@ impl TileMapData {
   }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Vertex {
   pos: [f32; 4],
   uv: [f32; 2],
