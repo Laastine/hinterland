@@ -1,15 +1,15 @@
 use image::imageops::contrast;
 use wgpu::{CommandEncoder, Device, SwapChain, SwapChainDescriptor};
 use wgpu::winit::{Event, EventsLoop, Window, WindowEvent};
-use winit::dpi::LogicalSize;
-use winit::ElementState::{Pressed, Released};
-use winit::KeyboardInput;
-use winit::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
+use wgpu::winit::dpi::LogicalSize;
+use wgpu::winit::ElementState::{Pressed, Released};
+use wgpu::winit::KeyboardInput;
+use wgpu::winit::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
 
+use crate::character::controls::CharacterControl;
 use crate::game::constants::{RESOLUTION_X, RESOLUTION_Y};
 use crate::gfx_app::controls::{Control, TilemapControls};
 use crate::graphics::orientation::Stance::NormalDeath;
-use crate::character::controls::CharacterControl;
 
 pub mod controls;
 pub mod init;
@@ -36,10 +36,10 @@ impl WindowContext {
     let dpi = events_loop
       .get_primary_monitor()
       .get_hidpi_factor();
-    let window = winit::WindowBuilder::new()
+    let window = wgpu::winit::WindowBuilder::new()
       .with_title("Hinterland")
       .with_dimensions(
-        winit::dpi::LogicalSize::from_physical((RESOLUTION_X as f64, RESOLUTION_Y as f64), dpi),
+        wgpu::winit::dpi::LogicalSize::from_physical((RESOLUTION_X as f64, RESOLUTION_Y as f64), dpi),
       )
       .with_resizable(true)
       .build(&events_loop)
@@ -101,9 +101,9 @@ impl WindowContext {
 
     self.events_loop.poll_events(|event| {
       println!("Event {:?}", event);
-      game_status = if let winit::Event::WindowEvent { event, .. } = event {
+      game_status = if let wgpu::winit::Event::WindowEvent { event, .. } = event {
         match event {
-          winit::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input, controls) }
+          wgpu::winit::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input, controls) }
           _ => WindowStatus::Open,
         }
       } else {
@@ -116,12 +116,12 @@ impl WindowContext {
 
 fn update(window_event: wgpu::winit::WindowEvent, controls: &mut TilemapControls) -> WindowStatus {
   match window_event {
-    winit::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input, controls) }
+    wgpu::winit::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input, controls) }
     _ => WindowStatus::Open
   }
 }
 
-fn process_keyboard_input(input: winit::KeyboardInput, controls: &mut TilemapControls) -> WindowStatus {
+fn process_keyboard_input(input: wgpu::winit::KeyboardInput, controls: &mut TilemapControls) -> WindowStatus {
   match input {
     KeyboardInput { state: Pressed, virtual_keycode: Some(Z), .. } => {
       controls.zoom(&Control::Negative);
