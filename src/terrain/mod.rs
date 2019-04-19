@@ -35,10 +35,9 @@ impl TerrainDrawable {
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &mut CharacterInputState) {
-    self.projection = world_to_clip.clone();
+  pub fn update(&mut self, world_to_clip: Projection, ci: &mut CharacterInputState) {
+    self.projection = world_to_clip;
     if can_move_to_tile(ci.movement) {
-      println!("can move");
       ci.is_colliding = false;
       self.position = ci.movement;
       self.tile_position = coords_to_tile(self.position);
@@ -167,7 +166,7 @@ impl TerrainDrawSystem {
         buffer: &temp_buf,
         offset: 0,
         row_pitch: 4 * width,
-        image_height: height,
+        image_height: size,
       },
       wgpu::TextureCopyView {
         texture: &texture,
@@ -210,7 +209,7 @@ impl TerrainDrawSystem {
         wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
       .fill_from_slice(&terrain.tiles.as_slice());
 
-    let terrain_position = Position::new(0.0, 0.0);
+    let terrain_position = Position::origin();
     let position_buf = device
       .create_buffer_mapped(1, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
       .fill_from_slice(&[terrain_position]);
@@ -325,43 +324,12 @@ impl TerrainDrawSystem {
 
   pub fn draw(&mut self,
               drawable: &mut TerrainDrawable,
-              frame: &wgpu::SwapChainOutput,
               render_pass: &mut wgpu::RenderPass) {
-//    let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
-//      todo: 0,
-//    });
-
-//      let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-//        color_attachments: &[wgpu::RenderPassColorAttachmentDescriptor {
-//          attachment: &frame.view,
-//          load_op: wgpu::LoadOp::Clear,
-//          store_op: wgpu::StoreOp::Store,
-//          clear_color: wgpu::Color {
-//            r: 16.0 / 256.0,
-//            g: 16.0 / 256.0,
-//            b: 20.0 / 256.0,
-//            a: 1.0,
-//          },
-//        }],
-//        depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachmentDescriptor {
-//          attachment: &frame.view,
-//          depth_load_op: wgpu::LoadOp::Clear,
-//          depth_store_op: wgpu::StoreOp::Store,
-//          stencil_load_op: wgpu::LoadOp::Clear,
-//          stencil_store_op: wgpu::StoreOp::Store,
-//          clear_depth: 1.0,
-//          clear_stencil: 0,
-//        }),
-//      });
     render_pass.set_pipeline(&self.pipeline);
     render_pass.set_bind_group(0, &self.bind_group);
     render_pass.set_index_buffer(&self.index_buf, 0);
     render_pass.set_vertex_buffers(&[(&self.vertex_buf, 0)]);
     render_pass.draw_indexed(0..self.index_count as u32, 0, 0..1);
-
-//    self.projection_buf.set_sub_data(0, &drawable.projection.as_raw());
-//    device.get_queue().submit(&[encoder.finish()]);
-//    encoder.finish()
   }
 }
 
@@ -384,7 +352,7 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
 
     for (t, camera, ci) in (&mut terrain, &camera_input, &mut character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      t.update(&world_to_clip, ci);
+      t.update(world_to_clip, ci);
     }
   }
 }

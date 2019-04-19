@@ -6,10 +6,12 @@ use wgpu::{CommandBuffer, CommandEncoder, Device, SwapChain, SwapChainDescriptor
 
 use crate::character::{CharacterDrawable, CharacterDrawSystem};
 use crate::critter::CharacterSprite;
+use crate::game::constants::{CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET};
 //use crate::gfx_app::renderer::EncoderQueue;
 use crate::gfx_app::WindowContext;
 use crate::graphics::DeltaTime;
-use crate::graphics::shaders::{Position, Projection};
+use crate::graphics::orientation::{Orientation, Stance};
+use crate::graphics::shaders::{CharacterSpriteSheet, Position, Projection};
 use crate::terrain::{TerrainDrawable, TerrainDrawSystem};
 
 pub struct DrawSystem {
@@ -64,29 +66,89 @@ impl DrawSystem {
   }
 
   fn update_terrain<'a>(&mut self, encoder: &'a mut CommandEncoder, drawable: &mut TerrainDrawable) {
-    let temp_buf_data = self.device
+    let new_projection_buf = self.device
       .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_DST)
       .fill_from_slice(&[drawable.projection]);
 
     encoder.copy_buffer_to_buffer(
-      &temp_buf_data,
+      &new_projection_buf,
       0,
       &self.terrain_system.projection_buf,
       0,
       1024,
     );
 
-    let position_buf = self.device
+    let new_position_buf = self.device
       .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_DST)
       .fill_from_slice(&[drawable.position]);
 
     encoder.copy_buffer_to_buffer(
-      &position_buf,
+      &new_position_buf,
       0,
       &self.terrain_system.position_buf,
       0,
       1024,
     );
+  }
+
+  fn get_next_sprite(&self, character_idx: usize, character_fire_idx: usize, drawable: &CharacterDrawable) -> CharacterSpriteSheet {
+    let sprite_idx =
+      if drawable.orientation == Orientation::Still && drawable.stance == Stance::Walking {
+        (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET)
+      } else if drawable.stance == Stance::Walking {
+//        drawable.direction = drawable.orientation;
+        (drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET)
+      } else {
+        (drawable.orientation as usize * 8 + character_fire_idx)
+      } as usize;
+
+    let elements_x = CHARACTER_SHEET_TOTAL_WIDTH / (drawable.critter_data[sprite_idx].data[2] + SPRITE_OFFSET);
+    CharacterSpriteSheet {
+      x_div: elements_x,
+      y_div: 0.0,
+      row_idx: 0,
+      index: sprite_idx as u32,
+    }
+  }
+
+  fn update_character<'a>(&mut self, encoder: &'a mut CommandEncoder, drawable: &mut CharacterDrawable, character: &CharacterSprite) {
+    let new_projection_buf = self.device
+      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_DST)
+      .fill_from_slice(&[drawable.projection]);
+
+    encoder.copy_buffer_to_buffer(
+      &new_projection_buf,
+      0,
+      &self.character_system.projection_buf,
+      0,
+      1024,
+    );
+
+    let new_position_buf = self.device
+      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_DST)
+      .fill_from_slice(&[drawable.position]);
+
+    encoder.copy_buffer_to_buffer(
+      &new_position_buf,
+      0,
+      &self.character_system.position_buf,
+      0,
+      1024,
+    );
+    let next_sprite = self.get_next_sprite(character.character_idx, character.character_fire_idx, &drawable);
+    println!("next_sprite {:?}", next_sprite);
+    let new_sprite_sheet_buf = self.device
+      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_DST)
+      .fill_from_slice(&[next_sprite]);
+
+    encoder.copy_buffer_to_buffer(
+      &new_sprite_sheet_buf,
+      0,
+      &self.character_system.character_sprite_sheet_buf,
+      0,
+      1024,
+    );
+
   }
 }
 
@@ -103,39 +165,43 @@ impl<'a> specs::prelude::System<'a> for DrawSystem {
 
     for (t, c, cs) in (&mut terrain, &mut character, &mut character_sprite).join() {
       self.update_terrain(&mut encoder, t);
+      self.update_character(&mut encoder, c, cs)
     }
     {
+      let mut render_pass = {
+        let texture_view = &self.swap_chain.get_next_texture().view;
+        encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+          color_attachments: &[wgpu::RenderPassColorAttachmentDescriptor {
+            attachment: &texture_view,
+            load_op: wgpu::LoadOp::Clear,
+            store_op: wgpu::StoreOp::Store,
+            clear_color: wgpu::Color {
+              r: 16.0 / 256.0,
+              g: 16.0 / 256.0,
+              b: 20.0 / 256.0,
+              a: 1.0,
+            },
+          }],
+          depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachmentDescriptor {
+            attachment: &texture_view,
+            depth_load_op: wgpu::LoadOp::Clear,
+            depth_store_op: wgpu::StoreOp::Store,
+            stencil_load_op: wgpu::LoadOp::Clear,
+            stencil_store_op: wgpu::StoreOp::Store,
+            clear_depth: 1.0,
+            clear_stencil: 0,
+          }),
+        })
+      };
+
       let delta = dt.0;
       println!("delta {}", delta);
-      for (t, c, cs) in (&mut terrain, &mut character, &mut character_sprite).join() {
 
-        let mut render_pass = {
-          let texture_view = &self.swap_chain.get_next_texture().view;
-          encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-            color_attachments: &[wgpu::RenderPassColorAttachmentDescriptor {
-              attachment: &texture_view,
-              load_op: wgpu::LoadOp::Clear,
-              store_op: wgpu::StoreOp::Store,
-              clear_color: wgpu::Color {
-                r: 16.0 / 256.0,
-                g: 16.0 / 256.0,
-                b: 20.0 / 256.0,
-                a: 1.0,
-              },
-            }],
-            depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachmentDescriptor {
-              attachment: &texture_view,
-              depth_load_op: wgpu::LoadOp::Clear,
-              depth_store_op: wgpu::StoreOp::Store,
-              stencil_load_op: wgpu::LoadOp::Clear,
-              stencil_store_op: wgpu::StoreOp::Store,
-              clear_depth: 1.0,
-              clear_stencil: 0,
-            }),
-          })
-        };
-        self.terrain_system.draw(t, &self.swap_chain.get_next_texture(), &mut render_pass);
-        self.character_system.draw(c, cs, &self.swap_chain.get_next_texture(), &mut render_pass);
+      self.swap_chain.get_next_texture();
+      self.swap_chain.get_next_texture();
+      for (t, c) in (&mut terrain, &mut character).join() {
+        self.character_system.draw(c, &mut render_pass);
+        self.terrain_system.draw(t, &mut render_pass);
       }
     }
     self.device.get_queue().submit(&[encoder.finish()]);

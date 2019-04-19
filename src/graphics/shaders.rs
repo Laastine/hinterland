@@ -5,6 +5,8 @@ use std::mem::size_of;
 use std::slice::from_raw_parts;
 
 use cgmath::BaseFloat;
+use crate::game::constants::{CHARACTER_SHEET_TOTAL_WIDTH, SPRITE_OFFSET};
+use crate::critter::CritterData;
 
 #[repr(C)]
 #[derive(Clone, Copy)]
@@ -33,11 +35,12 @@ pub struct CharacterSpriteSheet {
 }
 
 impl CharacterSpriteSheet {
-  pub fn new(x_div: f32, y_div: f32, row_idx: u32, index: u32) -> CharacterSpriteSheet {
+  pub fn new(index: u32, critter_data: &[CritterData]) -> CharacterSpriteSheet {
+    let x_div = CHARACTER_SHEET_TOTAL_WIDTH / (critter_data[0].data[2] + SPRITE_OFFSET);
     CharacterSpriteSheet {
       x_div,
-      y_div,
-      row_idx,
+      y_div: 0.0,
+      row_idx: 0,
       index,
     }
   }

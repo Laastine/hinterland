@@ -8,10 +8,10 @@ layout(set = 0, binding = 2) uniform sampler t_CharacterSheet;
 const float SHADING_MULTIPLIER = 0.5;
 
 void main() {
-  vec4 tex = texture(sampler2D(t_Color, t_CharacterSheet), v_TexCoord).rgba;
+  vec4 tex = texture(sampler2D(t_Color, t_CharacterSheet), v_TexCoord);
   tex *= SHADING_MULTIPLIER;
-  if (tex.a < 0.1) {
-    discard;
-  }
+//  if (tex.a < 0.1) {
+//    discard;
+//  }
   Target0 = tex;
 }

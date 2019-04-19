@@ -25,11 +25,12 @@ const SHADER_FRAG: &[u8] = include_bytes!("../shaders/character.f.glsl");
 #[derive(Clone)]
 pub struct CharacterDrawable {
   pub stats: CharacterStats,
-  projection: Projection,
+  pub projection: Projection,
   pub position: Position,
-  orientation: Orientation,
+  pub orientation: Orientation,
   pub stance: Stance,
-  direction: Orientation,
+  pub direction: Orientation,
+  pub critter_data: Vec<CritterData>,
 }
 
 impl CharacterDrawable {
@@ -37,6 +38,8 @@ impl CharacterDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
     let projection = get_projection(view, ASPECT_RATIO);
     let stats = CharacterStats::new();
+
+    let critter_data = data::load_character();
     CharacterDrawable {
       stats,
       projection,
@@ -44,11 +47,12 @@ impl CharacterDrawable {
       orientation: Orientation::Right,
       stance: Stance::Walking,
       direction: Orientation::Right,
+      critter_data,
     }
   }
 
-  pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, dimensions: &Dimensions) {
-    self.projection = world_to_clip.clone();
+  pub fn update(&mut self, world_to_clip: Projection, ci: &CharacterInputState, dimensions: &Dimensions) {
+    self.projection = world_to_clip;
   }
 }
 
@@ -63,8 +67,8 @@ impl specs::prelude::Component for CharacterDrawable {
 }
 
 fn create_vertices() -> (Vec<Vertex>, Vec<u16>) {
-  let w = 20.0;
-  let h = 28.0;
+  let w = 200.0;
+  let h = 280.0;
   let vertex_data: &[Vertex; 4] = &[
     Vertex::new([-w, -h, 0.0], [0.0, 1.0]),
     Vertex::new([w, -h, 0.0], [1.0, 1.0]),
@@ -86,7 +90,6 @@ pub struct CharacterDrawSystem {
   pub position_buf: wgpu::Buffer,
   pub character_sprite_sheet_buf: wgpu::Buffer,
   pipeline: wgpu::RenderPipeline,
-  data: Vec<CritterData>,
 }
 
 impl CharacterDrawSystem {
@@ -142,7 +145,6 @@ impl CharacterDrawSystem {
       bind_group_layouts: &[&bind_group_layout],
     });
 
-    let size = 256u32;
     let texels = &include_bytes!("../../assets/character.png")[..];
     let img = image::load(Cursor::new(texels), image::PNG).unwrap().to_rgba();
     let (width, height) = img.dimensions();
@@ -157,7 +159,7 @@ impl CharacterDrawSystem {
       array_size: 1,
       dimension: wgpu::TextureDimension::D2,
       format: wgpu::TextureFormat::Rgba8Unorm,
-      usage: wgpu::TextureUsageFlags::TRANSFER_DST,
+      usage: wgpu::TextureUsageFlags::SAMPLED | wgpu::TextureUsageFlags::TRANSFER_DST,
     });
     let texture_view = texture.create_default_view();
     let temp_buf = device
@@ -169,7 +171,7 @@ impl CharacterDrawSystem {
         buffer: &temp_buf,
         offset: 0,
         row_pitch: 4 * width,
-        image_height: height,
+        image_height: 64,
       },
       wgpu::TextureCopyView {
         texture: &texture,
@@ -210,14 +212,14 @@ impl CharacterDrawSystem {
 
     let character_sprite = CharacterSprite::new();
     let character_sprite_sheet_buf = device
-      .create_buffer(&wgpu::BufferDescriptor { size: 1, usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST });
-
-    let character_sprite = CharacterSpriteSheet::new(0.0, 0.0, 0, 0);
-    let character_sprite_buf = device
-      .create_buffer_mapped(
-        1,
-        wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
+      .create_buffer_mapped(1, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST)
       .fill_from_slice(&[character_sprite]);
+
+    let character_sprite_buf = device
+      .create_buffer(&wgpu::BufferDescriptor {
+        size: mem::size_of::<CharacterSpriteSheet>() as u32,
+        usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_DST,
+      });
 
     let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
       layout: &bind_group_layout,
@@ -323,8 +325,6 @@ impl CharacterDrawSystem {
     let init_command_buf = init_encoder.finish();
     device.get_queue().submit(&[init_command_buf]);
 
-    let data = data::load_character();
-
     CharacterDrawSystem {
       vertex_buf,
       index_buf,
@@ -334,74 +334,17 @@ impl CharacterDrawSystem {
       position_buf,
       character_sprite_sheet_buf,
       pipeline,
-      data,
-    }
-  }
-
-  fn get_next_sprite(&self, character_idx: usize, character_fire_idx: usize, drawable: &mut CharacterDrawable) -> CharacterSpriteSheet {
-    let sprite_idx =
-      if drawable.orientation == Orientation::Still && drawable.stance == Stance::Walking {
-        (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET)
-      } else if drawable.stance == Stance::Walking {
-        drawable.direction = drawable.orientation;
-        (drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET)
-      } else {
-        (drawable.orientation as usize * 8 + character_fire_idx)
-      } as usize;
-
-    let elements_x = CHARACTER_SHEET_TOTAL_WIDTH / (self.data[sprite_idx].data[2] + SPRITE_OFFSET);
-    CharacterSpriteSheet {
-      x_div: elements_x,
-      y_div: 0.0,
-      row_idx: 0,
-      index: sprite_idx as u32,
     }
   }
 
   pub fn draw(&mut self,
               mut drawable: &mut CharacterDrawable,
-              character: &CharacterSprite,
-              frame: &wgpu::SwapChainOutput,
               render_pass: &mut wgpu::RenderPass) {
-//    let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
-//      todo: 0,
-//    });
-
-//      let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-//        color_attachments: &[wgpu::RenderPassColorAttachmentDescriptor {
-//          attachment: &frame.view,
-//          load_op: wgpu::LoadOp::Clear,
-//          store_op: wgpu::StoreOp::Store,
-//          clear_color: wgpu::Color {
-//            r: 16.0 / 256.0,
-//            g: 16.0 / 256.0,
-//            b: 20.0 / 256.0,
-//            a: 1.0,
-//          },
-//        }],
-//        depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachmentDescriptor {
-//          attachment: &frame.view,
-//          depth_load_op: wgpu::LoadOp::Clear,
-//          depth_store_op: wgpu::StoreOp::Store,
-//          stencil_load_op: wgpu::LoadOp::Clear,
-//          stencil_store_op: wgpu::StoreOp::Store,
-//          clear_depth: 1.0,
-//          clear_stencil: 0,
-//        }),
-//      });
-
-    let next_sprite = self.get_next_sprite(character.character_idx, character.character_fire_idx, &mut drawable);
-
     render_pass.set_pipeline(&self.pipeline);
     render_pass.set_bind_group(0, &self.bind_group);
     render_pass.set_index_buffer(&self.index_buf, 0);
     render_pass.set_vertex_buffers(&[(&self.vertex_buf, 0)]);
-
-//      self.projection_buf.set_sub_data(0, &drawable.projection.as_raw());
-//      self.position_buf.set_sub_data(0, &drawable.position.as_raw());
-//      self.character_sprite_sheet_buf.set_sub_data(0, &next_sprite.as_raw());
-//    device.get_queue().submit(&[encoder.finish()]);
-//    encoder.finish()
+    render_pass.draw_indexed(0..self.index_count as u32, 0, 0..1);
   }
 }
 
@@ -424,7 +367,7 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
 
     for (c, camera, ci) in (&mut character, &camera_input, &character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      c.update(&world_to_clip, ci, &dim);
+      c.update(world_to_clip, ci, &dim);
     }
   }
 }
