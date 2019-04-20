@@ -163,7 +163,7 @@ impl DrawSystem {
       1024,
     );
     let next_sprite = self.get_next_sprite(character.character_idx, character.character_fire_idx, &drawable);
-    println!("next_sprite {:?}", next_sprite);
+//    println!("next_sprite {:?}", next_sprite);
     let new_character_sprite_buf = self.device
       .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
       .fill_from_slice(&[next_sprite]);
@@ -195,7 +195,7 @@ impl<'a> specs::prelude::System<'a> for DrawSystem {
     // Update uniform buffers
     for (t, c, cs) in (&mut terrain, &mut character, &mut character_sprite).join() {
       self.update_terrain(&mut encoder, t);
-      self.update_character(&mut encoder, c, cs)
+      self.update_character(&mut encoder, c, cs);
     }
 
     {
@@ -230,7 +230,6 @@ impl<'a> specs::prelude::System<'a> for DrawSystem {
           }),
         })
       };
-
       self.terrain_system.draw(&mut render_pass);
       self.character_system.draw(&mut render_pass);
     }

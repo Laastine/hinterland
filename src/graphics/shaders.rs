@@ -5,8 +5,9 @@ use std::mem::size_of;
 use std::slice::from_raw_parts;
 
 use cgmath::BaseFloat;
-use crate::game::constants::{CHARACTER_SHEET_TOTAL_WIDTH, SPRITE_OFFSET};
+
 use crate::critter::CritterData;
+use crate::game::constants::{CHARACTER_SHEET_TOTAL_WIDTH, SPRITE_OFFSET};
 
 #[repr(C)]
 #[derive(Clone, Copy)]

@@ -11,7 +11,6 @@ use crate::graphics::{camera, DeltaTime, GameTime};
 use crate::graphics::camera::CameraControlSystem;
 use crate::graphics::dimensions::Dimensions;
 use crate::terrain;
-//use crate::gfx_app::renderer::DeviceRenderer;
 
 pub fn run(window_context: &mut WindowContext) {
   let mut w = World::new();
@@ -66,16 +65,14 @@ fn dispatch_loop(window_context: &mut WindowContext,
     let elapsed = last_time.elapsed();
     let delta = f64::from(elapsed.subsec_nanos()) / 1e9 + elapsed.as_secs() as f64;
 
-      last_time = time::Instant::now();
-      dispatcher.dispatch(&w.res);
-      w.maintain();
+    last_time = time::Instant::now();
+    dispatcher.dispatch(&w.res);
+    w.maintain();
 
-      *w.write_resource::<DeltaTime>() = DeltaTime(delta);
-      *w.write_resource::<GameTime>() = GameTime(start_time.elapsed().as_secs());
+    *w.write_resource::<DeltaTime>() = DeltaTime(delta);
+    *w.write_resource::<GameTime>() = GameTime(start_time.elapsed().as_secs());
 //      device_renderer.draw(window_context.get_device());
-    println!("main {}", delta);
     if let WindowStatus::Close = window_context.poll_events() {
-      println!("BREAK");
       break;
     }
   }

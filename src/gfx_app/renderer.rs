@@ -34,12 +34,10 @@ impl DeviceRenderer {
   }
 
   pub fn draw(&mut self, device: &mut wgpu::Device) {
-    println!("recv");
     let _ = self.queue.receiver.recv()
       .map(|mut encoder| {
 //        let _ = self.encoder_queue.sender.send(encoder.finish());
         device.get_queue().submit(&[encoder.finish()]);
-        println!("draw");
 //        let _ = self.queue.sender.send(encoder);
       });
   }

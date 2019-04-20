@@ -1,6 +1,7 @@
 use image::imageops::contrast;
 use wgpu::{CommandEncoder, Device, SwapChain, SwapChainDescriptor};
 use wgpu::winit::{Event, EventsLoop, Window, WindowEvent};
+use wgpu::winit;
 use wgpu::winit::dpi::LogicalSize;
 use wgpu::winit::ElementState::{Pressed, Released};
 use wgpu::winit::KeyboardInput;
@@ -32,7 +33,7 @@ pub struct WindowContext {
 
 impl WindowContext {
   pub fn new() -> WindowContext {
-    let events_loop = EventsLoop::new();
+    let events_loop = winit::EventsLoop::new();
     let dpi = events_loop
       .get_primary_monitor()
       .get_hidpi_factor();
