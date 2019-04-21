@@ -25,7 +25,8 @@ Download from [Github releases](https://github.com/Laastine/hinterland/releases)
 
 ## Development
 
-Run windowed mode with `cargo run --features "windowed godmode framerate"`
+Run windowed mode with `cargo run --features metal` (Mac OS)<br/>
+Run windowed mode with `cargo run --features vulkan` (Linux/Windows)
 
 ## External asset licence list
 
