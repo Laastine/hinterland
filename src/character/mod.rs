@@ -53,6 +53,15 @@ impl CharacterDrawable {
 
   pub fn update(&mut self, world_to_clip: Projection, ci: &CharacterInputState) {
     self.projection = world_to_clip;
+
+    if self.stance != Stance::NormalDeath {
+      if ci.is_colliding {
+        self.stance = Stance::Still;
+      } else {
+        self.stance = Stance::Walking;
+        self.orientation = ci.orientation;
+      }
+    }
   }
 }
 
@@ -63,7 +72,7 @@ impl Default for CharacterDrawable {
 }
 
 impl specs::prelude::Component for CharacterDrawable {
-  type Storage = specs::storage::VecStorage<CharacterDrawable>;
+  type Storage = specs::storage::HashMapStorage<CharacterDrawable>;
 }
 
 fn create_vertices() -> (Vec<Vertex>, Vec<u16>) {

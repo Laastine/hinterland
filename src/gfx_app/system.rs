@@ -31,6 +31,9 @@ pub struct DrawSystem {
   depth_target: wgpu::TextureView,
   extent: wgpu::Extent3d,
 //  encoder_queue: EncoderQueue,
+  cool_down: f64,
+  run_cool_down: f64,
+  fire_cool_down: f64,
 }
 
 impl DrawSystem {
@@ -89,6 +92,9 @@ impl DrawSystem {
       depth_target,
       extent,
 //      encoder_queue,
+      cool_down: 1.0,
+      run_cool_down: 1.0,
+      fire_cool_down: 1.0,
     }
   }
 
@@ -118,12 +124,12 @@ impl DrawSystem {
     );
   }
 
-  fn get_next_sprite(&self, character_idx: usize, character_fire_idx: usize, drawable: &CharacterDrawable) -> CharacterSpriteSheet {
+  fn get_next_sprite(&self, character_idx: usize, character_fire_idx: usize, drawable: &mut CharacterDrawable) -> CharacterSpriteSheet {
     let sprite_idx =
       if drawable.orientation == Orientation::Still && drawable.stance == Stance::Walking {
         (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET)
       } else if drawable.stance == Stance::Walking {
-//        drawable.direction = drawable.orientation;
+        drawable.direction = drawable.orientation;
         (drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET)
       } else {
         (drawable.orientation as usize * 8 + character_fire_idx)
@@ -162,7 +168,7 @@ impl DrawSystem {
       0,
       1024,
     );
-    let next_sprite = self.get_next_sprite(character.character_idx, character.character_fire_idx, &drawable);
+    let next_sprite = self.get_next_sprite(character.character_idx, character.character_fire_idx, drawable);
 //    println!("next_sprite {:?}", next_sprite);
     let new_character_sprite_buf = self.device
       .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
@@ -190,12 +196,33 @@ impl<'a> specs::prelude::System<'a> for DrawSystem {
     let delta = dt.0;
     println!("delta {}", delta);
 
+    if self.cool_down == 0.0 {
+      self.cool_down += 0.05;
+    }
+    if self.fire_cool_down == 0.0 {
+      self.fire_cool_down += 0.2;
+    }
+    if self.run_cool_down == 0.0 {
+      self.run_cool_down += 0.02;
+    }
+    self.cool_down = (self.cool_down - delta).max(0.0);
+    self.run_cool_down = (self.run_cool_down - delta).max(0.0);
+    self.fire_cool_down = (self.fire_cool_down - delta).max(0.0);
+
     let mut encoder = self.device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
 
     // Update uniform buffers
     for (t, c, cs) in (&mut terrain, &mut character, &mut character_sprite).join() {
       self.update_terrain(&mut encoder, t);
       self.update_character(&mut encoder, c, cs);
+
+      if self.cool_down == 0.0 {
+        if c.stance == Stance::Walking {
+          cs.update_run();
+        }
+      } else if self.fire_cool_down == 0.0 && c.stance == Stance::Firing {
+        cs.update_fire();
+      }
     }
 
     {

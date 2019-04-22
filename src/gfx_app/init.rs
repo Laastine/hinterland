@@ -62,18 +62,20 @@ fn dispatch_loop(window_context: &mut WindowContext,
   let mut last_time = time::Instant::now();
 
   loop {
+    if let WindowStatus::Close = window_context.poll_events() {
+      break;
+    }
     let elapsed = last_time.elapsed();
     let delta = f64::from(elapsed.subsec_nanos()) / 1e9 + elapsed.as_secs() as f64;
 
-    last_time = time::Instant::now();
-    dispatcher.dispatch(&w.res);
-    w.maintain();
+    if delta >= 0.016 {
+      last_time = time::Instant::now();
+      dispatcher.dispatch(&w.res);
+      w.maintain();
 
-    *w.write_resource::<DeltaTime>() = DeltaTime(delta);
-    *w.write_resource::<GameTime>() = GameTime(start_time.elapsed().as_secs());
+      *w.write_resource::<DeltaTime>() = DeltaTime(delta);
+      *w.write_resource::<GameTime>() = GameTime(start_time.elapsed().as_secs());
 //      device_renderer.draw(window_context.get_device());
-    if let WindowStatus::Close = window_context.poll_events() {
-      break;
     }
   }
 }

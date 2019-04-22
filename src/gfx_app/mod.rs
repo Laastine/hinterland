@@ -101,7 +101,7 @@ impl WindowContext {
     };
 
     self.events_loop.poll_events(|event| {
-      println!("Event {:?}", event);
+//      println!("Event {:?}", event);
       game_status = if let wgpu::winit::Event::WindowEvent { event, .. } = event {
         match event {
           wgpu::winit::WindowEvent::KeyboardInput { input, .. } => { process_keyboard_input(input, controls) }
