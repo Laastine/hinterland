@@ -7,7 +7,6 @@ use wgpu::{CommandBuffer, CommandEncoder, Device, SwapChain, SwapChainDescriptor
 use crate::character::{CharacterDrawable, CharacterDrawSystem};
 use crate::critter::CharacterSprite;
 use crate::game::constants::{CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET};
-//use crate::gfx_app::renderer::EncoderQueue;
 use crate::gfx_app::WindowContext;
 use crate::graphics::DeltaTime;
 use crate::graphics::orientation::{Orientation, Stance};
@@ -30,7 +29,6 @@ pub struct DrawSystem {
   device: Device,
   depth_target: wgpu::TextureView,
   extent: wgpu::Extent3d,
-//  encoder_queue: EncoderQueue,
   cool_down: f64,
   run_cool_down: f64,
   fire_cool_down: f64,
@@ -48,7 +46,7 @@ impl DrawSystem {
 
     let instance = wgpu::Instance::new();
     let adapter = instance.get_adapter(&wgpu::AdapterDescriptor {
-      power_preference: wgpu::PowerPreference::HighPerformance,
+      power_preference: wgpu::PowerPreference::Default,
     });
     let mut device = adapter.create_device(&wgpu::DeviceDescriptor {
       extensions: wgpu::Extensions {
@@ -91,7 +89,6 @@ impl DrawSystem {
       device,
       depth_target,
       extent,
-//      encoder_queue,
       cool_down: 1.0,
       run_cool_down: 1.0,
       fire_cool_down: 1.0,

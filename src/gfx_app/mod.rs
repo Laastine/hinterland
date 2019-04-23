@@ -14,7 +14,6 @@ use crate::graphics::orientation::Stance::NormalDeath;
 
 pub mod controls;
 pub mod init;
-//pub mod renderer;
 pub mod system;
 
 #[derive(PartialEq, Eq)]
@@ -27,8 +26,6 @@ pub struct WindowContext {
   events_loop: EventsLoop,
   controls: Option<TilemapControls>,
   window: Window,
-//  device: wgpu::Device,
-//  instance: wgpu::Instance,
 }
 
 impl WindowContext {

@@ -22,7 +22,6 @@ mod character_stats;
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/character.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/character.f.glsl");
 
-#[derive(Clone)]
 pub struct CharacterDrawable {
   pub stats: CharacterStats,
   pub projection: Projection,
