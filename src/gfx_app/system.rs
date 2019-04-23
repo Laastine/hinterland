@@ -260,6 +260,11 @@ impl<'a> specs::prelude::System<'a> for DrawSystem {
       self.terrain_system.draw(&mut render_pass);
       self.character_system.draw(&mut render_pass);
     }
+
+    // Nasty hack waits proper solution
+    for _ in 0..2 {
+      self.swap_chain.get_next_texture();
+    }
     self.device.get_queue().submit(&[encoder.finish()]);
   }
 }
