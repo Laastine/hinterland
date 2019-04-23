@@ -9,7 +9,7 @@ pub fn get_projection(view: nalgebra::base::Matrix4<f32>, aspect_ratio: f32) -> 
   Projection {
     model: view.into(),
     view: view.into(),
-    proj: nalgebra::Perspective3::new(aspect_ratio, 75.0f32, 0.1, 10000.0).into_inner().into(),
+    proj: nalgebra::Perspective3::new(aspect_ratio, 75.0f32, 0.1, 4000.0).into_inner().into(),
   }
 }
 
