@@ -17,13 +17,6 @@ impl CharacterSprite {
     }
   }
 
-  pub fn as_raw(&self) -> &[u8] {
-    let all = [self.character_idx, self.character_fire_idx];
-    unsafe {
-      from_raw_parts(all.as_ptr() as *const u8, all.len() * size_of::<CharacterSprite>())
-    }
-  }
-
   pub fn update_run(&mut self) {
     if self.character_idx < 12 {
       self.character_idx += 1;

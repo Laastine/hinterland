@@ -17,15 +17,6 @@ pub struct Projection {
   pub proj: [[f32; 4]; 4],
 }
 
-impl Projection {
-  pub fn as_raw(&self) -> &[u8] {
-    let all = [self.model, self.view, self.proj];
-    unsafe {
-      from_raw_parts(all.as_ptr() as *const u8, all.len() * size_of::<Projection>())
-    }
-  }
-}
-
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub struct CharacterSpriteSheet {
@@ -45,13 +36,6 @@ impl CharacterSpriteSheet {
       index,
     }
   }
-
-  pub fn as_raw(&self) -> &[u8] {
-    let all = [self.x_div, self.y_div, self.row_idx as f32, self.index as f32];
-    unsafe {
-      from_raw_parts(all.as_ptr() as *const u8, all.len() * size_of::<CharacterSpriteSheet>())
-    }
-  }
 }
 
 #[repr(C)]
@@ -63,12 +47,6 @@ pub struct Position {
 impl Position {
   pub fn new<T: BaseFloat>(x: T, y: T) -> Position where f32: std::convert::From<T> {
     Position { position: [f32::from(x), f32::from(y)] }
-  }
-
-  pub fn as_raw(&self) -> &[u8] {
-    unsafe {
-      from_raw_parts(self.position.as_ptr() as *const u8, self.position.len() * size_of::<Position>())
-    }
   }
 
   pub fn new_from_array(pos: [f32; 2]) -> Position {
