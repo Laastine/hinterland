@@ -61,14 +61,11 @@ fn dispatch_loop(window_context: &mut WindowContext,
   let start_time = time::Instant::now();
   let mut last_time = time::Instant::now();
 
-  loop {
-    if let WindowStatus::Close = window_context.poll_events() {
-      break;
-    }
+  while WindowStatus::Open == window_context.poll_events() {
     let elapsed = last_time.elapsed();
     let delta = f64::from(elapsed.subsec_nanos()) / 1e9 + elapsed.as_secs() as f64;
 
-    if delta >= 0.016 {
+    if delta > 0.016 {
       last_time = time::Instant::now();
       dispatcher.dispatch(&w.res);
       w.maintain();
