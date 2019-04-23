@@ -339,12 +339,6 @@ impl CharacterDrawSystem {
 
 pub struct PreDrawSystem;
 
-impl PreDrawSystem {
-  pub fn new() -> PreDrawSystem {
-    PreDrawSystem {}
-  }
-}
-
 impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   type SystemData = (WriteStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, CameraInputState>,

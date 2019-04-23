@@ -50,8 +50,8 @@ fn dispatch_loop(window_context: &mut WindowContext,
 
   let mut dispatcher = DispatcherBuilder::new()
     .with(draw_system, "drawing", &[])
-    .with(terrain::PreDrawSystem::new(), "draw-prep-terrain", &["drawing"])
-    .with(character::PreDrawSystem::new(), "draw-prep-character", &["drawing"])
+    .with(terrain::PreDrawSystem, "draw-prep-terrain", &["drawing"])
+    .with(character::PreDrawSystem, "draw-prep-character", &["drawing"])
     .with(camera_system, "terrain-system", &[])
     .with(character_system, "character-system", &["terrain-system"])
     .build();
