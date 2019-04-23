@@ -1,4 +1,5 @@
-use std::mem;
+use std::{mem, thread, time};
+use std::time::{Duration, Instant};
 
 use crossbeam_channel as channel;
 use specs::{Read, WriteStorage};
@@ -29,6 +30,8 @@ pub struct DrawSystem {
   device: Device,
   depth_target: wgpu::TextureView,
   extent: wgpu::Extent3d,
+  game_time: Instant,
+  frames: u32,
   cool_down: f64,
   run_cool_down: f64,
   fire_cool_down: f64,
@@ -89,6 +92,8 @@ impl DrawSystem {
       device,
       depth_target,
       extent,
+      game_time: Instant::now(),
+      frames: 0,
       cool_down: 1.0,
       run_cool_down: 1.0,
       fire_cool_down: 1.0,
@@ -189,9 +194,17 @@ impl<'a> specs::prelude::System<'a> for DrawSystem {
 
   fn run(&mut self, (mut terrain, mut character, mut character_sprite, dt): Self::SystemData) {
     use specs::join::Join;
-
+    let mut last_time = time::Instant::now();
     let delta = dt.0;
     println!("delta {}", delta);
+
+    let current_time = Instant::now();
+    self.frames += 1;
+    if cfg!(feature = "framerate") && (current_time.duration_since(self.game_time).as_secs()) >= 1 {
+      println!("{:?} ms/frames", 1000.0 / f64::from(self.frames));
+      self.frames = 0;
+      self.game_time = Instant::now();
+    }
 
     if self.cool_down == 0.0 {
       self.cool_down += 0.05;
