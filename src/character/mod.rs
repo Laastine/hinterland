@@ -7,7 +7,7 @@ use rand::Rng;
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 use wgpu;
-use wgpu::CommandBuffer;
+use wgpu::{Buffer, BufferDescriptor, CommandBuffer};
 
 use crate::character::{character_stats::CharacterStats, controls::CharacterInputState};
 use crate::critter::{CharacterSprite, CritterData};
@@ -31,6 +31,7 @@ pub struct CharacterDrawable {
   pub stance: Stance,
   pub direction: Orientation,
   pub critter_data: Vec<CritterData>,
+  pub character_sprite: CharacterSpriteSheet,
 }
 
 impl CharacterDrawable {
@@ -47,12 +48,33 @@ impl CharacterDrawable {
       orientation: Orientation::Right,
       stance: Stance::Walking,
       direction: Orientation::Right,
+      character_sprite: CharacterSpriteSheet::new(64, &critter_data.as_slice()),
       critter_data,
     }
   }
 
-  pub fn update(&mut self, world_to_clip: Projection, ci: &CharacterInputState) {
+  fn get_next_sprite(&self, character_sprite: &CharacterSprite) -> CharacterSpriteSheet {
+    let sprite_idx =
+      if self.orientation == Orientation::Still && self.stance == Stance::Walking {
+        (self.direction as usize * 28 + RUN_SPRITE_OFFSET)
+      } else if self.stance == Stance::Walking {
+        (self.orientation as usize * 28 + character_sprite.character_idx + RUN_SPRITE_OFFSET)
+      } else {
+        (self.orientation as usize * 8 + character_sprite.character_fire_idx)
+      } as usize;
+
+    let elements_x = CHARACTER_SHEET_TOTAL_WIDTH / (self.critter_data[sprite_idx].data[2] + SPRITE_OFFSET);
+    CharacterSpriteSheet {
+      x_div: elements_x,
+      y_div: 0.0,
+      row_idx: 0,
+      index: sprite_idx as u32,
+    }
+  }
+
+  pub fn update(&mut self, world_to_clip: Projection, character_sprite: &CharacterSprite, ci: &CharacterInputState) {
     self.projection = world_to_clip;
+    self.character_sprite = self.get_next_sprite(character_sprite);
 
     if self.stance != Stance::NormalDeath {
       if ci.is_colliding {
@@ -328,14 +350,15 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   type SystemData = (WriteStorage<'a, CharacterDrawable>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
+                     ReadStorage<'a, CharacterSprite>,
                      Read<'a, Dimensions>);
 
-  fn run(&mut self, (mut character, camera_input, character_input, dim): Self::SystemData) {
+  fn run(&mut self, (mut character, camera_input, character_input, character_sprite, dim): Self::SystemData) {
     use specs::join::Join;
 
-    for (c, camera, ci) in (&mut character, &camera_input, &character_input).join() {
+    for (c, camera, ci, cs) in (&mut character, &camera_input, &character_input, &character_sprite).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      c.update(world_to_clip, ci);
+      c.update(world_to_clip, &cs, ci);
     }
   }
 }

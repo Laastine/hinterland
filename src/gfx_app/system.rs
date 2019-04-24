@@ -146,7 +146,7 @@ impl DrawSystem {
     }
   }
 
-  fn update_character<'a>(&mut self, encoder: &'a mut CommandEncoder, drawable: &mut CharacterDrawable, character: &CharacterSprite) {
+  fn update_character<'a>(&mut self, encoder: &'a mut CommandEncoder, drawable: &mut CharacterDrawable) {
     let new_projection_buf = self.device
       .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
       .fill_from_slice(&[drawable.projection]);
@@ -170,11 +170,10 @@ impl DrawSystem {
       0,
       1024,
     );
-    let next_sprite = self.get_next_sprite(character.character_idx, character.character_fire_idx, drawable);
-//    println!("next_sprite {:?}", next_sprite);
+
     let new_character_sprite_buf = self.device
       .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
-      .fill_from_slice(&[next_sprite]);
+      .fill_from_slice(&[drawable.character_sprite]);
 
     encoder.copy_buffer_to_buffer(
       &new_character_sprite_buf,
@@ -224,7 +223,7 @@ impl<'a> specs::prelude::System<'a> for DrawSystem {
     // Update uniform buffers
     for (t, c, cs) in (&mut terrain, &mut character, &mut character_sprite).join() {
       self.update_terrain(&mut encoder, t);
-      self.update_character(&mut encoder, c, cs);
+      self.update_character(&mut encoder, c);
 
       if self.cool_down == 0.0 {
         if c.stance == Stance::Walking {
