@@ -14,6 +14,7 @@ use crate::critter::{CharacterSprite, CritterData};
 use crate::data;
 use crate::game::constants::{AMMO_POSITIONS, ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE};
 use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, get_orientation_from_center, orientation::{Orientation, Stance}, overlaps};
+use crate::graphics::mesh::create_vertices;
 use crate::graphics::shaders::{CharacterSpriteSheet, load_glsl, Position, Projection, ShaderStage, Vertex};
 
 pub mod controls;
@@ -74,21 +75,6 @@ impl specs::prelude::Component for CharacterDrawable {
   type Storage = specs::storage::HashMapStorage<CharacterDrawable>;
 }
 
-fn create_vertices() -> (Vec<Vertex>, Vec<u16>) {
-  let w = 20.0;
-  let h = 28.0;
-  let vertex_data: &[Vertex; 4] = &[
-    Vertex::new([-w, -h, 0.0], [0.0, 1.0]),
-    Vertex::new([w, -h, 0.0], [1.0, 1.0]),
-    Vertex::new([w, h, 0.0], [1.0, 0.0]),
-    Vertex::new([-w, h, 0.0], [0.0, 0.0]),
-  ];
-
-  let index_data = &[0, 1, 2, 2, 3, 0];
-
-  (vertex_data.to_vec(), index_data.to_vec())
-}
-
 pub struct CharacterDrawSystem {
   vertex_buf: wgpu::Buffer,
   index_buf: wgpu::Buffer,
@@ -106,7 +92,7 @@ impl CharacterDrawSystem {
       device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
 
     let vertex_size = mem::size_of::<Vertex>();
-    let (vertex_data, index_data) = create_vertices();
+    let (vertex_data, index_data) = create_vertices(25.0, 35.0);
 
     let vertex_buf = device
       .create_buffer_mapped(vertex_data.len(), wgpu::BufferUsageFlags::VERTEX)

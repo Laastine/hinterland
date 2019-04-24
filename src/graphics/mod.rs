@@ -7,6 +7,7 @@ use crate::graphics::{dimensions::Dimensions, orientation::Orientation, shaders:
 
 pub mod camera;
 pub mod dimensions;
+pub mod mesh;
 pub mod shaders;
 pub mod orientation;
 
