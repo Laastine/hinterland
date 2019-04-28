@@ -15,6 +15,7 @@ use crate::graphics::camera::CameraInputState;
 use crate::graphics::dimensions::{Dimensions, get_projection, get_view_matrix};
 use crate::graphics::shaders::{load_glsl, Position, Projection, ShaderStage, Vertex};
 
+pub mod path_finding;
 mod tile_map;
 pub mod window;
 
