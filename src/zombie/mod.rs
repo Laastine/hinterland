@@ -1,116 +1,187 @@
-use std;
 use std::io::Cursor;
 use std::mem;
 
 use cgmath::Point2;
-use rand::Rng;
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
-use wgpu;
-use wgpu::{Buffer, BufferDescriptor, CommandBuffer};
 
-use crate::character::{character_stats::CharacterStats, controls::CharacterInputState};
+use crate::character::CharacterDrawable;
+use crate::character::controls::CharacterInputState;
 use crate::critter::{CharacterSprite, CritterData};
 use crate::data;
-use crate::game::constants::{AMMO_POSITIONS, ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE};
-use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, get_orientation_from_center, orientation::{Orientation, Stance}, overlaps};
+use crate::game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE, ZOMBIE_SHEET_TOTAL_WIDTH, ZOMBIE_STILL_SPRITE_OFFSET};
+use crate::game::get_random_bool;
+use crate::graphics::{add_random_offset_to_screen_pos, calc_hypotenuse, camera::CameraInputState, can_move_to_tile, direction, direction_movement, direction_movement_180, GameTime, orientation_to_direction, overlaps};
+use crate::graphics::dimensions::{Dimensions, get_projection, get_view_matrix};
 use crate::graphics::mesh::create_vertices;
+use crate::graphics::orientation::{Orientation, Stance};
 use crate::graphics::shaders::{CharacterSpriteSheet, load_glsl, Position, Projection, ShaderStage, Vertex};
+use crate::terrain::path_finding::calc_next_movement;
+use crate::zombie::zombies::Zombies;
 
-pub mod controls;
-mod character_stats;
+pub mod zombies;
 
-const SHADER_VERT: &[u8] = include_bytes!("../shaders/character.v.glsl");
-const SHADER_FRAG: &[u8] = include_bytes!("../shaders/character.f.glsl");
-
-pub struct CharacterDrawable {
-  pub stats: CharacterStats,
+pub struct ZombieDrawable {
   pub projection: Projection,
   pub position: Position,
-  pub orientation: Orientation,
+  previous_position: Position,
+  orientation: Orientation,
   pub stance: Stance,
-  pub direction: Orientation,
-  pub critter_data: Vec<CritterData>,
+  direction: Orientation,
+  last_decision: i64,
+  pub movement_direction: Point2<f32>,
+  zombie_idx: usize,
+  zombie_death_idx: usize,
+  movement_speed: f32,
+  health: f32,
   pub character_sprite: CharacterSpriteSheet,
+  pub critter_data: Vec<CritterData>,
 }
 
-impl CharacterDrawable {
-  pub fn new() -> CharacterDrawable {
+impl ZombieDrawable {
+  pub fn new(position: Position) -> ZombieDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
     let projection = get_projection(view, ASPECT_RATIO);
-    let stats = CharacterStats::new();
 
-    let critter_data = data::load_character();
-    CharacterDrawable {
-      stats,
+    let critter_data = data::load_zombie();
+    ZombieDrawable {
       projection,
-      position: Position::origin(),
-      orientation: Orientation::Right,
-      stance: Stance::Walking,
-      direction: Orientation::Right,
-      character_sprite: CharacterSpriteSheet::new(64, &critter_data.as_slice()),
+      position,
+      previous_position: Position::origin(),
+      orientation: Orientation::Left,
+      stance: Stance::Still,
+      direction: Orientation::Left,
+      last_decision: -2,
+      movement_direction: Point2::new(0.0, 0.0),
+      zombie_idx: 0,
+      zombie_death_idx: 0,
+      movement_speed: 0.0,
+      health: 1.0,
+      character_sprite: CharacterSpriteSheet::new(0, &critter_data.as_slice()),
       critter_data,
     }
   }
 
-  fn get_next_sprite(&mut self, character_sprite: &CharacterSprite) -> CharacterSpriteSheet {
-    let sprite_idx =
-      if self.orientation == Orientation::Still && self.stance == Stance::Walking {
-        (self.direction as usize * 28 + RUN_SPRITE_OFFSET)
-      } else if self.stance == Stance::Walking {
-        self.direction = self.orientation;
-        (self.orientation as usize * 28 + character_sprite.character_idx + RUN_SPRITE_OFFSET)
-      } else {
-        (self.orientation as usize * 8 + character_sprite.character_fire_idx)
-      } as usize;
 
-    let elements_x = CHARACTER_SHEET_TOTAL_WIDTH / (self.critter_data[sprite_idx].data[2] + SPRITE_OFFSET);
+  fn get_next_sprite(&mut self) -> CharacterSpriteSheet {
+    let sprite_idx = match self.stance {
+      Stance::Still => {
+        (self.direction as usize * 4 + self.zombie_idx)
+      }
+      Stance::Walking if self.orientation != Orientation::Still => {
+        (self.direction as usize * 8 + self.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
+      }
+      Stance::Running if self.orientation != Orientation::Still => {
+        (self.direction as usize * 8 + self.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
+      }
+      Stance::NormalDeath if self.orientation != Orientation::Still => {
+        (self.direction as usize * 6 + self.zombie_death_idx + NORMAL_DEATH_SPRITE_OFFSET)
+      }
+      Stance::CriticalDeath if self.orientation != Orientation::Still => {
+        (self.direction as usize * 8 + self.zombie_death_idx)
+      }
+      _ => {
+        self.direction = self.orientation;
+        (self.orientation as usize * 8 + self.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
+      }
+    } as usize;
+
+    let (y_div, row_idx) =
+      if self.stance == Stance::NormalDeath || self.stance == Stance::CriticalDeath {
+        (0.0, 2)
+      } else {
+        (1.0, 2)
+      };
+
+    let elements_x = ZOMBIE_SHEET_TOTAL_WIDTH / (self.critter_data[sprite_idx].data[2] + SPRITE_OFFSET);
     CharacterSpriteSheet {
       x_div: elements_x,
-      y_div: 0.0,
-      row_idx: 0,
+      y_div,
+      row_idx,
       index: sprite_idx as u32,
     }
   }
 
-  pub fn update(&mut self, world_to_clip: Projection, character_sprite: &CharacterSprite, ci: &CharacterInputState) {
+  pub fn update(&mut self, world_to_clip: Projection, ci: &CharacterInputState, game_time: u64) {
     self.projection = world_to_clip;
-    self.character_sprite = self.get_next_sprite(character_sprite);
+    self.character_sprite = self.get_next_sprite();
 
-    if self.stance != Stance::NormalDeath {
-      if ci.is_colliding {
-        self.stance = Stance::Still;
+    let offset_delta = ci.movement - self.previous_position;
+    self.previous_position = ci.movement;
+
+    let x_y_distance_to_player = self.position - offset_delta;
+
+    let distance_to_player = calc_hypotenuse(x_y_distance_to_player.x().abs(), x_y_distance_to_player.y().abs());
+
+    let is_alive = self.health > 0.0 && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
+
+    if is_alive {
+      let zombie_pos = ci.movement - self.position;
+
+      if distance_to_player < 400.0 {
+        let dir = calc_next_movement(zombie_pos, self.previous_position) as f32;
+        self.direction = orientation_to_direction(dir);
+        self.movement_direction = direction_movement(dir);
+        self.stance = Stance::Running;
+        self.movement_speed = 2.4 * self.health;
       } else {
-        self.stance = Stance::Walking;
-        self.orientation = ci.orientation;
+        self.idle_direction_movement(zombie_pos, game_time as i64);
+        self.movement_speed = 1.2 * self.health;
       }
+    } else {
+      self.movement_direction = Point2::new(0.0, 0.0);
+    }
+
+    self.position = Position::new(self.movement_direction.x * self.movement_speed,
+                                  self.movement_direction.y * self.movement_speed) + self.position + offset_delta;
+  }
+
+  fn idle_direction_movement(&mut self, zombie_pos: Position, game_time: i64) {
+    if !can_move_to_tile(zombie_pos) {
+      let dir = direction(self.movement_direction, Point2::new(0.0, 0.0));
+      self.movement_direction = direction_movement_180(self.movement_direction);
+      self.orientation = orientation_to_direction(dir);
+      self.direction = orientation_to_direction(dir);
+    }
+
+    if self.last_decision + 2 < game_time {
+      self.stance = Stance::Walking;
+      self.last_decision = game_time;
+      let end_point = add_random_offset_to_screen_pos(zombie_pos);
+      let dir = calc_next_movement(zombie_pos, end_point) as f32;
+      self.movement_direction = direction_movement(dir);
+      self.direction = orientation_to_direction(dir);
+    }
+  }
+
+  pub fn update_alive_idx(&mut self, max_idx: usize) {
+    if self.zombie_idx < max_idx {
+      self.zombie_idx += 1;
+    } else {
+      self.zombie_idx = 0;
+    }
+  }
+
+  pub fn update_death_idx(&mut self, max_idx: usize) {
+    if self.zombie_death_idx < max_idx {
+      self.zombie_death_idx += 1;
     }
   }
 }
 
-impl Default for CharacterDrawable {
-  fn default() -> Self {
-    CharacterDrawable::new()
-  }
-}
-
-impl specs::prelude::Component for CharacterDrawable {
-  type Storage = specs::storage::HashMapStorage<CharacterDrawable>;
-}
-
-pub struct CharacterDrawSystem {
+pub struct ZombieDrawSystem {
   vertex_buf: wgpu::Buffer,
   index_buf: wgpu::Buffer,
   index_count: usize,
   bind_group: wgpu::BindGroup,
   pub projection_buf: wgpu::Buffer,
   pub position_buf: wgpu::Buffer,
-  pub character_sprite_buf: wgpu::Buffer,
+  pub zombie_sprite_buf: wgpu::Buffer,
   pipeline: wgpu::RenderPipeline,
 }
 
-impl CharacterDrawSystem {
-  pub fn new(sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device) -> CharacterDrawSystem {
+impl ZombieDrawSystem {
+  pub fn new(sc_desc: &wgpu::SwapChainDescriptor, device: &mut wgpu::Device) -> ZombieDrawSystem {
     let mut init_encoder =
       device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
 
@@ -158,7 +229,7 @@ impl CharacterDrawSystem {
       bind_group_layouts: &[&bind_group_layout],
     });
 
-    let texels = &include_bytes!("../../assets/character.png")[..];
+    let texels = &include_bytes!("../../assets/zombie.png")[..];
     let img = image::load(Cursor::new(texels), image::PNG).unwrap().to_rgba();
     let (width, height) = img.dimensions();
 
@@ -218,14 +289,14 @@ impl CharacterDrawSystem {
       usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_SRC,
     });
 
-    let character_position = Position::origin();
+    let zombie_position = Position::origin();
     let position_buf = device
       .create_buffer_mapped(1, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_SRC)
-      .fill_from_slice(&[character_position]);
+      .fill_from_slice(&[zombie_position]);
 
-    let character_sprite_buf = device
+    let zombie_sprite_buf = device
       .create_buffer_mapped(1, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_SRC)
-      .fill_from_slice(&[CharacterSpriteSheet { x_div: 288.0, y_div: 1.0, row_idx: 2, index: 64 }]);
+      .fill_from_slice(&[CharacterSpriteSheet { x_div: 112.0, y_div: 1.0, row_idx: 2, index: 16 }]);
 
     let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
       layout: &bind_group_layout,
@@ -248,7 +319,7 @@ impl CharacterDrawSystem {
         wgpu::Binding {
           binding: 3,
           resource: wgpu::BindingResource::Buffer {
-            buffer: &character_sprite_buf,
+            buffer: &zombie_sprite_buf,
             range: 0..1,
           },
         },
@@ -320,17 +391,16 @@ impl CharacterDrawSystem {
       sample_count: 1,
     });
 
-    let init_command_buf = init_encoder.finish();
-    device.get_queue().submit(&[init_command_buf]);
+    device.get_queue().submit(&[init_encoder.finish()]);
 
-    CharacterDrawSystem {
+    ZombieDrawSystem {
       vertex_buf,
       index_buf,
       index_count: index_data.len(),
       bind_group,
       projection_buf,
       position_buf,
-      character_sprite_buf,
+      zombie_sprite_buf,
       pipeline,
     }
   }
@@ -348,18 +418,22 @@ impl CharacterDrawSystem {
 pub struct PreDrawSystem;
 
 impl<'a> specs::prelude::System<'a> for PreDrawSystem {
-  type SystemData = (WriteStorage<'a, CharacterDrawable>,
+  type SystemData = (WriteStorage<'a, Zombies>,
                      ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
-                     ReadStorage<'a, CharacterSprite>,
-                     Read<'a, Dimensions>);
+                     Read<'a, Dimensions>,
+                     Read<'a, GameTime>);
 
-  fn run(&mut self, (mut character, camera_input, character_input, character_sprite, dim): Self::SystemData) {
+  fn run(&mut self, (mut zombies, camera_input, character_input, dim, gt): Self::SystemData) {
     use specs::join::Join;
 
-    for (c, camera, ci, cs) in (&mut character, &camera_input, &character_input, &character_sprite).join() {
+    for (zs, camera, ci) in (&mut zombies, &camera_input, &character_input).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      c.update(world_to_clip, &cs, ci);
+
+      for z in &mut zs.zombies {
+        z.update(world_to_clip, ci, gt.0);
+      }
     }
   }
 }
+

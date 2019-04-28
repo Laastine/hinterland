@@ -13,6 +13,8 @@ use crate::graphics::DeltaTime;
 use crate::graphics::orientation::{Orientation, Stance};
 use crate::graphics::shaders::{CharacterSpriteSheet, Position, Projection};
 use crate::terrain::{TerrainDrawable, TerrainDrawSystem};
+use crate::zombie::{ZombieDrawable, ZombieDrawSystem};
+use crate::zombie::zombies::Zombies;
 
 pub const COLOR_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Bgra8Unorm;
 pub const DEPTH_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::D32Float;
@@ -26,6 +28,7 @@ pub struct ScreenTargets<'a> {
 pub struct DrawSystem {
   terrain_system: TerrainDrawSystem,
   character_system: CharacterDrawSystem,
+  zombie_system: ZombieDrawSystem,
   swap_chain: SwapChain,
   device: Device,
   depth_target: wgpu::TextureView,
@@ -84,10 +87,12 @@ impl DrawSystem {
 
     let terrain_system = TerrainDrawSystem::new(&sc_desc, &mut device);
     let character_system = CharacterDrawSystem::new(&sc_desc, &mut device);
+    let zombie_system = ZombieDrawSystem::new(&sc_desc, &mut device);
 
     DrawSystem {
       terrain_system,
       character_system,
+      zombie_system,
       swap_chain,
       device,
       depth_target,
@@ -124,26 +129,6 @@ impl DrawSystem {
       0,
       1024,
     );
-  }
-
-  fn get_next_sprite(&self, character_idx: usize, character_fire_idx: usize, drawable: &mut CharacterDrawable) -> CharacterSpriteSheet {
-    let sprite_idx =
-      if drawable.orientation == Orientation::Still && drawable.stance == Stance::Walking {
-        (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET)
-      } else if drawable.stance == Stance::Walking {
-        drawable.direction = drawable.orientation;
-        (drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET)
-      } else {
-        (drawable.orientation as usize * 8 + character_fire_idx)
-      } as usize;
-
-    let elements_x = CHARACTER_SHEET_TOTAL_WIDTH / (drawable.critter_data[sprite_idx].data[2] + SPRITE_OFFSET);
-    CharacterSpriteSheet {
-      x_div: elements_x,
-      y_div: 0.0,
-      row_idx: 0,
-      index: sprite_idx as u32,
-    }
   }
 
   fn update_character<'a>(&mut self, encoder: &'a mut CommandEncoder, drawable: &mut CharacterDrawable) {
@@ -183,19 +168,60 @@ impl DrawSystem {
       1024,
     );
   }
+
+  fn update_zombie<'a>(&mut self, encoder: &'a mut CommandEncoder, zs: &mut Zombies) {
+    for drawable in &mut zs.zombies {
+      let new_projection_buf = self.device
+        .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
+        .fill_from_slice(&[drawable.projection]);
+
+      encoder.copy_buffer_to_buffer(
+        &new_projection_buf,
+        0,
+        &self.zombie_system.projection_buf,
+        0,
+        1024,
+      );
+
+      let new_position_buf = self.device
+        .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
+        .fill_from_slice(&[drawable.position]);
+
+      encoder.copy_buffer_to_buffer(
+        &new_position_buf,
+        0,
+        &self.zombie_system.position_buf,
+        0,
+        1024,
+      );
+
+      let new_character_sprite_buf = self.device
+        .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
+        .fill_from_slice(&[drawable.character_sprite]);
+
+      encoder.copy_buffer_to_buffer(
+        &new_character_sprite_buf,
+        0,
+        &self.zombie_system.zombie_sprite_buf,
+        0,
+        1024,
+      );
+    }
+  }
 }
 
 impl<'a> specs::prelude::System<'a> for DrawSystem {
   type SystemData = (WriteStorage<'a, TerrainDrawable>,
                      WriteStorage<'a, CharacterDrawable>,
                      WriteStorage<'a, CharacterSprite>,
+                     WriteStorage<'a, Zombies>,
                      Read<'a, DeltaTime>);
 
-  fn run(&mut self, (mut terrain, mut character, mut character_sprite, dt): Self::SystemData) {
+  fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut zombies, dt): Self::SystemData) {
     use specs::join::Join;
     let mut last_time = time::Instant::now();
     let delta = dt.0;
-    println!("delta {}", delta);
+//    println!("delta {}", delta);
 
     let current_time = Instant::now();
     self.frames += 1;
@@ -221,9 +247,10 @@ impl<'a> specs::prelude::System<'a> for DrawSystem {
     let mut encoder = self.device.create_command_encoder(&wgpu::CommandEncoderDescriptor { todo: 0 });
 
     // Update uniform buffers
-    for (t, c, cs) in (&mut terrain, &mut character, &mut character_sprite).join() {
+    for (t, c, cs, zs) in (&mut terrain, &mut character, &mut character_sprite, &mut zombies).join() {
       self.update_terrain(&mut encoder, t);
       self.update_character(&mut encoder, c);
+      self.update_zombie(&mut encoder, zs);
 
       if self.cool_down == 0.0 {
         if c.stance == Stance::Walking {
@@ -232,42 +259,54 @@ impl<'a> specs::prelude::System<'a> for DrawSystem {
       } else if self.fire_cool_down == 0.0 && c.stance == Stance::Firing {
         cs.update_fire();
       }
-    }
 
-    {
-      let mut render_pass = {
-        let frame = self.swap_chain.get_next_texture();
-        let targets = ScreenTargets {
-          extent: self.extent,
-          color: &frame.view,
-          depth: &self.depth_target,
+      if self.run_cool_down == 0.0 {
+        for z in &mut zs.zombies {
+          if let Stance::Running = z.stance {
+            z.update_alive_idx(7)
+          }
+        }
+      }
+
+      {
+        let mut render_pass = {
+          let frame = self.swap_chain.get_next_texture();
+          let targets = ScreenTargets {
+            extent: self.extent,
+            color: &frame.view,
+            depth: &self.depth_target,
+          };
+
+          encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+            color_attachments: &[wgpu::RenderPassColorAttachmentDescriptor {
+              attachment: &targets.color,
+              load_op: wgpu::LoadOp::Clear,
+              store_op: wgpu::StoreOp::Store,
+              clear_color: wgpu::Color {
+                r: 0.1,
+                g: 0.1,
+                b: 0.1,
+                a: 1.0,
+              },
+            }],
+            depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachmentDescriptor {
+              attachment: &targets.depth,
+              depth_load_op: wgpu::LoadOp::Clear,
+              depth_store_op: wgpu::StoreOp::Store,
+              stencil_load_op: wgpu::LoadOp::Clear,
+              stencil_store_op: wgpu::StoreOp::Store,
+              clear_depth: 1.0,
+              clear_stencil: 0,
+            }),
+          })
         };
+        self.terrain_system.draw(&mut render_pass);
+        self.character_system.draw(&mut render_pass);
 
-        encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-          color_attachments: &[wgpu::RenderPassColorAttachmentDescriptor {
-            attachment: &targets.color,
-            load_op: wgpu::LoadOp::Clear,
-            store_op: wgpu::StoreOp::Store,
-            clear_color: wgpu::Color {
-              r: 0.1,
-              g: 0.1,
-              b: 0.1,
-              a: 1.0,
-            },
-          }],
-          depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachmentDescriptor {
-            attachment: &targets.depth,
-            depth_load_op: wgpu::LoadOp::Clear,
-            depth_store_op: wgpu::StoreOp::Store,
-            stencil_load_op: wgpu::LoadOp::Clear,
-            stencil_store_op: wgpu::StoreOp::Store,
-            clear_depth: 1.0,
-            clear_stencil: 0,
-          }),
-        })
-      };
-      self.terrain_system.draw(&mut render_pass);
-      self.character_system.draw(&mut render_pass);
+        for _ in &mut zs.zombies {
+          self.zombie_system.draw(&mut render_pass)
+        }
+      }
     }
 
     // Nasty hack waits proper solution

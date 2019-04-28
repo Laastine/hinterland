@@ -2,7 +2,7 @@ use std::time;
 
 use specs::{Builder, DispatcherBuilder, World};
 
-use crate::character;
+use crate::{character, zombie};
 use crate::character::controls::CharacterControlSystem;
 use crate::critter::CharacterSprite;
 use crate::gfx_app::{system::DrawSystem, WindowContext, WindowStatus};
@@ -11,6 +11,7 @@ use crate::graphics::{camera, DeltaTime, GameTime};
 use crate::graphics::camera::CameraControlSystem;
 use crate::graphics::dimensions::Dimensions;
 use crate::terrain;
+use crate::zombie::zombies::Zombies;
 
 pub fn run(window_context: &mut WindowContext) {
   let mut w = World::new();
@@ -21,6 +22,7 @@ pub fn run(window_context: &mut WindowContext) {
 fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) {
   world.register::<terrain::TerrainDrawable>();
   world.register::<character::CharacterDrawable>();
+  world.register::<Zombies>();
   world.register::<CharacterSprite>();
   world.register::<camera::CameraInputState>();
   world.register::<character::controls::CharacterInputState>();
@@ -33,6 +35,7 @@ fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) 
   world.create_entity()
     .with(terrain::TerrainDrawable::new())
     .with(character::CharacterDrawable::new())
+    .with(Zombies::new())
     .with(CharacterSprite::new())
     .with(camera::CameraInputState::new())
     .with(character::controls::CharacterInputState::new())
@@ -52,6 +55,7 @@ fn dispatch_loop(window_context: &mut WindowContext,
     .with(draw_system, "drawing", &[])
     .with(terrain::PreDrawSystem, "draw-prep-terrain", &["drawing"])
     .with(character::PreDrawSystem, "draw-prep-character", &["drawing"])
+    .with(zombie::PreDrawSystem, "draw-prep-zombie", &["drawing"])
     .with(camera_system, "terrain-system", &[])
     .with(character_system, "character-system", &["terrain-system"])
     .build();

@@ -7,6 +7,7 @@ mod game;
 mod gfx_app;
 mod graphics;
 mod terrain;
+mod zombie;
 
 pub fn main() {
   let mut window = WindowContext::new();
