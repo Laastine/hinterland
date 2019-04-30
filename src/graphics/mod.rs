@@ -2,21 +2,14 @@ use cgmath;
 use cgmath::{Angle, Deg, Point2};
 use num::{Num, NumCast};
 
-use crate::bullet::BulletDrawable;
-use crate::character::CharacterDrawable;
 use crate::game::{constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, Y_OFFSET}, get_rand_from_range};
-use crate::gfx_app::{mouse_controls::MouseInputState};
-use crate::graphics::{dimensions::Dimensions, orientation::Orientation};
-use crate::shaders::Position;
-use crate::terrain_object::TerrainObjectDrawable;
-use crate::zombie::ZombieDrawable;
+use crate::graphics::{dimensions::Dimensions, orientation::Orientation, shaders::Position};
 
 pub mod camera;
 pub mod dimensions;
-mod graphics_test;
 pub mod mesh;
+pub mod shaders;
 pub mod orientation;
-pub mod texture;
 
 #[derive(Default)]
 pub struct DeltaTime(pub f64);
@@ -24,7 +17,7 @@ pub struct DeltaTime(pub f64);
 #[derive(Default)]
 pub struct GameTime(pub u64);
 
-pub fn flip_y_axel(point: Point2<f32>) -> Point2<f32> {
+pub fn flip_y_axel(point: &Point2<f32>) -> Point2<f32> {
   Point2::new(point.x, RESOLUTION_Y as f32 - point.y)
 }
 
@@ -58,14 +51,10 @@ pub fn orientation_to_direction(angle_in_degrees: f32) -> Orientation {
   }
 }
 
-pub fn get_orientation_from_center(mouse_input: &MouseInputState, dim: &Dimensions) -> Orientation {
-  if let Some(end_point_gl) = mouse_input.left_click_point {
-    let start_point = Point2::new(dim.window_width / 2.0 * dim.hidpi_factor, dim.window_height / 2.0 * dim.hidpi_factor);
-    let dir = direction(start_point, flip_y_axel(end_point_gl));
-    orientation_to_direction(dir)
-  } else {
-    Orientation::Right
-  }
+pub fn get_orientation_from_center(mouse_input: &Point2<f32>, dim: &Dimensions) -> Orientation {
+  let start_point = Point2::new(dim.window_width / 2.0 * dim.hidpi_factor, dim.window_height / 2.0 * dim.hidpi_factor);
+  let dir = direction(start_point, flip_y_axel(mouse_input));
+  orientation_to_direction(dir)
 }
 
 pub fn overlaps(area: Position, el: Position, width: f32, height: f32) -> bool {
@@ -135,26 +124,4 @@ pub fn add_random_offset_to_screen_pos(pos: Position) -> Position {
 
 pub fn calc_hypotenuse(a: f32, b: f32) -> f32 {
   (a.powf(2.0) + b.powf(2.0)).sqrt()
-}
-
-pub enum Drawables<'b> {
-  Bullet(&'b BulletDrawable),
-  Character(&'b mut CharacterDrawable),
-  TerrainAmmo(&'b TerrainObjectDrawable),
-  TerrainHouse(&'b TerrainObjectDrawable),
-  TerrainTree(&'b TerrainObjectDrawable),
-  Zombie(&'b mut ZombieDrawable),
-}
-
-impl<'b> Drawables<'b> {
-  pub fn get_vertical_pos(drawable: &Drawables) -> f32 {
-    match drawable {
-      Drawables::Bullet(e) => e.position.y(),
-      Drawables::Zombie(e) => e.position.y(),
-      Drawables::TerrainAmmo(e) => e.position.y(),
-      Drawables::TerrainHouse(e) => e.position.y(),
-      Drawables::TerrainTree(e) => e.position.y(),
-      Drawables::Character(e) => e.position.y(),
-    }
-  }
 }

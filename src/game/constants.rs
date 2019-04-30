@@ -15,7 +15,7 @@ pub const RESOLUTION_Y: u32 = 900;
 
 pub const ASPECT_RATIO: f32 = (RESOLUTION_X / RESOLUTION_Y) as f32;
 
-pub const VIEW_DISTANCE: f32 = 300.0;
+pub const VIEW_DISTANCE: f32 = 600.0;
 
 pub const CHARACTER_SHEET_TOTAL_WIDTH: f32 = 16_128f32;
 pub const SPRITE_OFFSET: f32 = 2.0;
@@ -23,8 +23,8 @@ pub const SPRITE_OFFSET: f32 = 2.0;
 pub const ZOMBIE_SHEET_TOTAL_WIDTH: f32 = 9_184f32;
 
 pub const BULLET_SPEED: f32 = 15.0;
-pub const CHARACTER_X_SPEED: f32 = 3.0;
-pub const CHARACTER_Y_SPEED: f32 = 3.0;
+pub const CHARACTER_X_SPEED: f32 = 30.0;
+pub const CHARACTER_Y_SPEED: f32 = 30.0;
 
 //Assets
 pub const ZOMBIE_JSON_PATH: &str = "assets/zombie.json";

@@ -1,5 +1,9 @@
+use std::mem::size_of;
+use std::slice::from_raw_parts;
+
 use specs;
 
+#[derive(Copy, Clone, Debug)]
 pub struct CharacterSprite {
   pub character_idx: usize,
   pub character_fire_idx: usize,
@@ -35,6 +39,7 @@ impl specs::prelude::Component for CharacterSprite {
   type Storage = specs::storage::VecStorage<CharacterSprite>;
 }
 
+#[derive(Clone)]
 pub struct CritterData {
   pub data: [f32; 4]
 }

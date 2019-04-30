@@ -2,7 +2,7 @@ use tiled::Map;
 
 use crate::data::{get_map_tile, load_map_file};
 use crate::game::constants::{MAP_FILE_PATH, TILE_MAP_BUF_LENGTH, TILES_PCS_H, TILES_PCS_W};
-use crate::shaders::TileMapData;
+use crate::graphics::shaders::TileMapData;
 
 fn calc_index(x_pos: usize, y_pos: usize) -> usize {
   (y_pos * TILES_PCS_W) + x_pos

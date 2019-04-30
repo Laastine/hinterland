@@ -5,7 +5,7 @@ use specs::prelude::{Read, WriteStorage};
 use crate::character::CharacterDrawable;
 use crate::game::constants::{CHARACTER_X_SPEED, CHARACTER_Y_SPEED};
 use crate::graphics::{camera::CameraInputState, can_move_to_tile, DeltaTime, orientation::{Orientation, Stance}};
-use crate::shaders::Position;
+use crate::graphics::shaders::Position;
 
 pub struct CharacterInputState {
   pub movement: Position,
@@ -34,8 +34,8 @@ impl CharacterInputState {
           self.movement = vertical_movement;
           camera.movement = camera.movement - Position::new(0.0, y);
           self.orientation = match y {
-            y if y < 0.0 => Orientation::Up,
-            y if y > 0.0 => Orientation::Down,
+            y if y < 0.0 => Orientation::Down,
+            y if y > 0.0 => Orientation::Up,
             _ => Orientation::Still,
           };
         }
@@ -50,10 +50,10 @@ impl CharacterInputState {
           camera.movement = camera.movement + horizontal_movement - vertical_movement;
 
           self.orientation = match (x, y) {
-            (x, y) if x > 0.0 && y > 0.0 => Orientation::DownLeft,
-            (x, y) if x > 0.0 && y < 0.0 => Orientation::UpLeft,
-            (x, y) if x < 0.0 && y > 0.0 => Orientation::DownRight,
-            (x, y) if x < 0.0 && y < 0.0 => Orientation::UpRight,
+            (x, y) if x > 0.0 && y > 0.0 => Orientation::UpRight,
+            (x, y) if x > 0.0 && y < 0.0 => Orientation::DownRight,
+            (x, y) if x < 0.0 && y > 0.0 => Orientation::UpLeft,
+            (x, y) if x < 0.0 && y < 0.0 => Orientation::DownLeft,
             _ => Orientation::Still,
           };
         }
@@ -62,8 +62,8 @@ impl CharacterInputState {
         self.movement = self.movement + horizontal_movement;
         camera.movement = camera.movement + horizontal_movement;
         self.orientation = match x {
-          x if x < 0.0 => Orientation::Right,
-          x if x > 0.0 => Orientation::Left,
+          x if x > 0.0 => Orientation::Right,
+          x if x < 0.0 => Orientation::Left,
           _ => Orientation::Still,
         };
       }
@@ -135,8 +135,8 @@ impl<'a> specs::prelude::System<'a> for CharacterControlSystem {
       self.cool_down = (self.cool_down - delta).max(0.0);
       while let Ok(control) = self.queue.try_recv() {
         match control {
-          CharacterControl::Up => self.y_move = Some(-CHARACTER_Y_SPEED),
-          CharacterControl::Down => self.y_move = Some(CHARACTER_Y_SPEED),
+          CharacterControl::Up => self.y_move = Some(CHARACTER_Y_SPEED),
+          CharacterControl::Down => self.y_move = Some(-CHARACTER_Y_SPEED),
           CharacterControl::YMoveStop => self.y_move = None,
           CharacterControl::Right => self.x_move = Some(-CHARACTER_X_SPEED),
           CharacterControl::Left => self.x_move = Some(CHARACTER_X_SPEED),

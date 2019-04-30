@@ -7,22 +7,24 @@ edition = "2018"
 [dependencies]
 cgmath = "0.17.0"
 crossbeam-channel = "0.3.8"
-gfx_core = "0.9.0"
-gfx_device_gl = "0.16.0"
-gfx = "0.18.0"
-glutin = "0.20.0"
 genmesh = "0.6.2"
+glsl-to-spirv = "0.1"
 image = "0.21.0"
 json = "0.11.13"
+nalgebra = "0.18.0"
 num = "0.2.0"
 pathfinding = "1.1.12"
 rand = "0.6.5"
-rodio = "0.8.1"
-rusttype = "0.7.5"
 specs = "0.14.3"
 tiled = "0.8.0"
+wgpu = "0.2.3"
 
 [features]
+default = ["wgpu/metal"]
+metal = ["wgpu/metal"]
+dx11 = ["wgpu/dx11"]
+dx12 = ["wgpu/dx12"]
+vulkan = ["wgpu/vulkan"]
 godmode = []
 framerate = []
 windowed = []

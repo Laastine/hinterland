@@ -1,29 +1,27 @@
-#version 150 core
+#version 450
 
-in vec2 v_BufPos;
-out vec4 Target0;
+layout(location = 0) in vec2 v_TexCoord;
+layout(location = 0) out vec4 Target0;
+layout(set = 0, binding = 1) uniform texture2D t_Color;
+layout(set = 0, binding = 2) uniform sampler t_TileSheet;
 
 struct TileMapData {
   vec4 data;
 };
 
 const int TILEMAP_BUF_LENGTH = 4096;
-const float SHADING_MULTIPLIER = 0.2;
+const float SHADING_MULTIPLIER = 0.5;
 
-layout (std140) uniform b_TileMap {
+const vec2 u_WorldSize = vec2(128.0, 128.0);
+const vec2 u_TilesheetSize = vec2(32.0, 32.0);
+
+layout (set = 0, binding = 3) uniform b_TileMap {
   TileMapData u_Data[TILEMAP_BUF_LENGTH];
 };
 
-layout (std140) uniform b_PsLocals {
-  vec2 u_WorldSize;
-  vec2 u_TilesheetSize;
-};
-
-uniform sampler2D t_TileSheet;
-
 void main() {
-  vec2 bufTileCoords = floor(v_BufPos);
-  vec2 rawUvOffsets = vec2(v_BufPos.x - bufTileCoords.x, 1.0 - (v_BufPos.y - bufTileCoords.y));
+  vec2 bufTileCoords = floor(v_TexCoord);
+  vec2 rawUvOffsets = vec2(v_TexCoord.x - bufTileCoords.x, 1.0 - (v_TexCoord.y - bufTileCoords.y));
 
   int bufIdx = int((bufTileCoords.y * u_WorldSize.x) + bufTileCoords.x);
   vec4 entry = u_Data[bufIdx].data;
@@ -43,7 +41,7 @@ void main() {
   }
   vec2 uvCoords = (coords.xy + rawUvOffsets) / u_TilesheetSize.xy;
 
-  vec4 t0 = texture(t_TileSheet, uvCoords);
-  t0 *= SHADING_MULTIPLIER;
-  Target0 = t0;
+  vec4 tex = texture(sampler2D(t_Color, t_TileSheet), uvCoords);
+  tex *= SHADING_MULTIPLIER;
+  Target0 = tex;
 }

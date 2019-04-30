@@ -3,7 +3,7 @@ use specs;
 use specs::prelude::WriteStorage;
 
 use crate::game::constants::VIEW_DISTANCE;
-use crate::shaders::Position;
+use crate::graphics::shaders::Position;
 
 #[derive(Clone)]
 pub struct CameraInputState {
@@ -64,15 +64,15 @@ impl<'a> specs::prelude::System<'a> for CameraControlSystem {
 
     while let Ok(control) = self.queue.try_recv() {
       match control {
-        CameraControl::ZoomIn => self.zoom_level = Some(2.0),
-        CameraControl::ZoomOut => self.zoom_level = Some(-2.0),
+        CameraControl::ZoomIn => self.zoom_level = Some(15.0),
+        CameraControl::ZoomOut => self.zoom_level = Some(-15.0),
         CameraControl::ZoomStop => self.zoom_level = None,
         _ => (),
       }
     }
     if let Some(zoom) = self.zoom_level {
       for m in (&mut map_input).join() {
-        if m.distance > 200.0 && zoom < 0.0 || m.distance < 600.0 && zoom > 0.0 {
+        if m.distance > 200.0 && zoom < 0.0 || m.distance < 3000.0 && zoom > 0.0 {
           m.distance += zoom;
         }
       }

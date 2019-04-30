@@ -1,8 +1,6 @@
 use crossbeam_channel as channel;
 
-use crate::audio::Effects;
 use crate::character::controls::CharacterControl;
-use crate::gfx_app::mouse_controls::MouseControl;
 use crate::graphics::camera::CameraControl;
 
 pub enum Control {
@@ -12,30 +10,24 @@ pub enum Control {
 }
 
 pub struct TilemapControls {
-  audio_control: channel::Sender<Effects>,
-  terrain_control: channel::Sender<CameraControl>,
+  camera_control: channel::Sender<CameraControl>,
   character_control: channel::Sender<CharacterControl>,
-  mouse_control: channel::Sender<(MouseControl, Option<(f64, f64)>)>,
 }
 
 impl TilemapControls {
-  pub fn new(atc: channel::Sender<Effects>,
-             ttc: channel::Sender<CameraControl>,
-             ctc: channel::Sender<CharacterControl>,
-             mtc: channel::Sender<(MouseControl, Option<(f64, f64)>)>) -> TilemapControls {
+  pub fn new(ttc: channel::Sender<CameraControl>,
+             ctc: channel::Sender<CharacterControl>) -> TilemapControls {
     TilemapControls {
-      audio_control: atc,
-      terrain_control: ttc,
+      camera_control: ttc,
       character_control: ctc,
-      mouse_control: mtc,
     }
   }
 
   pub fn zoom(&mut self, control: &Control) {
     let _ = match control {
-      Control::Plus => self.terrain_control.send(CameraControl::ZoomIn),
-      Control::Negative => self.terrain_control.send(CameraControl::ZoomOut),
-      Control::Released => self.terrain_control.send(CameraControl::ZoomStop),
+      Control::Plus => self.camera_control.send(CameraControl::ZoomIn),
+      Control::Negative => self.camera_control.send(CameraControl::ZoomOut),
+      Control::Released => self.camera_control.send(CameraControl::ZoomStop),
     };
   }
 
@@ -57,17 +49,5 @@ impl TilemapControls {
     } else {
       self.character_control.send(CharacterControl::ReloadReleased)
     };
-  }
-
-  pub fn mouse_left_click(&mut self, mouse_pos: Option<(f64, f64)>) {
-    let _ = self.mouse_control.send((MouseControl::LeftClick, mouse_pos));
-    let _ = match mouse_pos {
-      Some(_) => self.audio_control.send(Effects::PistolFire),
-      _ => self.audio_control.send(Effects::None),
-    };
-  }
-
-  pub fn mouse_right_click(&mut self, mouse_pos: Option<(f64, f64)>) {
-    let _ = self.mouse_control.send((MouseControl::RightClick, mouse_pos));
   }
 }

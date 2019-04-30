@@ -1,21 +1,15 @@
-#[macro_use]
-extern crate gfx;
+use crate::gfx_app::WindowContext;
 
-mod audio;
-mod bullet;
-mod gfx_app;
-mod game;
-mod data;
-mod critter;
-pub mod graphics;
-mod hud;
-mod terrain_object;
-mod terrain;
 mod character;
-mod shaders;
+mod critter;
+mod data;
+mod game;
+mod gfx_app;
+mod graphics;
+mod terrain;
 mod zombie;
 
 pub fn main() {
-  let mut window = gfx_app::WindowContext::new();
+  let mut window = WindowContext::new();
   gfx_app::init::run(&mut window);
 }
