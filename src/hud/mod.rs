@@ -102,12 +102,6 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
 
 pub struct PreDrawSystem;
 
-impl PreDrawSystem {
-  pub fn new() -> PreDrawSystem {
-    PreDrawSystem {}
-  }
-}
-
 impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   type SystemData = (ReadStorage<'a, CharacterDrawable>,
                      WriteStorage<'a, hud_objects::HudObjects>);

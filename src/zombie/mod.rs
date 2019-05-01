@@ -247,12 +247,6 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
 
 pub struct PreDrawSystem;
 
-impl PreDrawSystem {
-  pub fn new() -> PreDrawSystem {
-    PreDrawSystem {}
-  }
-}
-
 impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   type SystemData = (WriteStorage<'a, Zombies>,
                      ReadStorage<'a, CameraInputState>,

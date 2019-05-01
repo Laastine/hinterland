@@ -123,12 +123,6 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
 
 pub struct PreDrawSystem;
 
-impl PreDrawSystem {
-  pub fn new() -> PreDrawSystem {
-    PreDrawSystem {}
-  }
-}
-
 impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   type SystemData = (ReadStorage<'a, CameraInputState>,
                      WriteStorage<'a, Bullets>,

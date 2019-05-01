@@ -105,12 +105,6 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
 
 pub struct PreDrawSystem;
 
-impl PreDrawSystem {
-  pub fn new() -> PreDrawSystem {
-    PreDrawSystem {}
-  }
-}
-
 impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   type SystemData = (ReadStorage<'a, CameraInputState>,
                      ReadStorage<'a, CharacterInputState>,
