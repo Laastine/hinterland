@@ -13,7 +13,7 @@ use crate::critter::CharacterSprite;
 use crate::gfx_app::{Window, WindowStatus};
 use crate::gfx_app::controls::TilemapControls;
 use crate::gfx_app::mouse_controls::{MouseControlSystem, MouseInputState};
-use crate::gfx_app::renderer::{DeviceRenderer, EncoderQueue};
+use crate::gfx_app::renderer::DeviceRenderer;
 use crate::gfx_app::system::DrawSystem;
 use crate::graphics;
 use crate::graphics::{DeltaTime, dimensions::Dimensions, GameTime};
@@ -29,11 +29,10 @@ pub fn run<W, D, F>(window: &mut W)
         D: gfx::Device + 'static,
         F: gfx::Factory<D::Resources>,
         D::CommandBuffer: Send {
-  let (mut device_renderer, enc_queue) = DeviceRenderer::new(window.create_buffers(2));
 
   let mut w = World::new();
   setup_world(&mut w, window.get_viewport_size(), window.get_hidpi_factor());
-  dispatch_loop(window, &mut device_renderer, &mut w, enc_queue);
+  dispatch_loop(window, &mut w);
 }
 
 fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) {
@@ -68,13 +67,12 @@ fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) 
 }
 
 fn dispatch_loop<W, D, F>(window: &mut W,
-                          device_renderer: &mut DeviceRenderer<D>,
-                          w: &mut World,
-                          encoder_queue: EncoderQueue<D>)
+                          w: &mut World)
   where W: Window<D, F>,
         D: gfx::Device + 'static,
         F: gfx::Factory<D::Resources>,
         D::CommandBuffer: Send {
+  let (mut device_renderer, encoder_queue) = DeviceRenderer::new(window.create_buffers(2));
   let draw = {
     let rtv = window.get_render_target_view();
     let dsv = window.get_depth_stencil_view();
