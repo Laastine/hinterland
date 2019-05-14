@@ -1,10 +1,10 @@
 use gfx;
-use gfx::memory::Typed;
-use gfx::handle::{DepthStencilView, RenderTargetView};
 use gfx::format::SurfaceType;
+use gfx::handle::{DepthStencilView, RenderTargetView};
+use gfx::memory::Typed;
 use gfx_device_gl;
 use glutin;
-use glutin::{ContextTrait, KeyboardInput, MouseButton, WindowedContext};
+use glutin::{KeyboardInput, MouseButton, PossiblyCurrent, WindowedContext};
 use glutin::dpi::LogicalSize;
 use glutin::ElementState::{Pressed, Released};
 use glutin::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
@@ -26,7 +26,7 @@ pub const COLOR_FORMAT_VALUE: SurfaceType = SurfaceType::R8_G8_B8_A8;
 pub const DEPTH_FORMAT_VALUE: SurfaceType = SurfaceType::D24_S8;
 
 pub struct WindowContext {
-  window: glutin::WindowedContext,
+  window_context: WindowedContext<PossiblyCurrent>,
   controls: Option<controls::TilemapControls>,
   events_loop: glutin::EventsLoop,
   device: gfx_device_gl::Device,
@@ -63,30 +63,34 @@ impl WindowContext {
         .with_dimensions(logical_size)
     };
 
-    let context = glutin::ContextBuilder::new()
+    let window_context = glutin::ContextBuilder::new()
       .with_vsync(true)
       .with_double_buffer(Some(true))
       .with_pixel_format(24, 8)
-      .with_srgb(true);
+      .with_srgb(true)
+      .build_windowed(builder, &events_loop)
+      .expect("Window context creation failed");
 
-    let window = WindowedContext::new_windowed(builder, context, &events_loop)
-      .expect("GLWindow creation failed");
+    let window_context = unsafe {
+      window_context
+        .make_current()
+        .expect("Window focus failed")
+    };
 
     let (width, height) = {
-      let inner_size = window.get_inner_size().expect("get_inner_size failed");
-      let size = inner_size.to_physical(window.get_hidpi_factor());
+      let inner_size = window_context.window().get_inner_size().expect("get_inner_size failed");
+      let size = inner_size.to_physical(window_context.window().get_hidpi_factor());
       (size.width as _, size.height as _)
     };
 
-    let aa = window
+    let aa = window_context
       .get_pixel_format().multisampling
       .unwrap_or(0) as u8;
 
     let window_dimensions = (width, height, 1, aa.into());
 
-    unsafe { window.make_current().expect("Window focus failed") };
     let (device, factory) = gfx_device_gl::create(|s|
-      window.get_proc_address(s) as *const std::os::raw::c_void);
+      window_context.get_proc_address(s) as *const std::os::raw::c_void);
 
     let (rtv, dsv) =
       gfx_device_gl::create_main_targets_raw(window_dimensions,
@@ -94,7 +98,7 @@ impl WindowContext {
                                              DEPTH_FORMAT_VALUE);
 
     WindowContext {
-      window,
+      window_context,
       controls: None,
       events_loop,
       device,
@@ -128,7 +132,7 @@ pub trait Window<D: gfx::Device, F: gfx::Factory<D::Resources>> {
 impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
   fn swap_window(&mut self) {
     use gfx::Device;
-    self.window
+    self.window_context
       .swap_buffers()
       .expect("Unable to swap buffers");
     self.device.cleanup();
@@ -168,7 +172,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
     if cfg!(feature = "windowed") {
       1.0
     } else {
-      self.window.get_hidpi_factor() as f32
+      self.window_context.window().get_hidpi_factor() as f32
     }
   }
 
