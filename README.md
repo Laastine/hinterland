@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/Laastine/hinterland.svg?branch=master)](https://travis-ci.org/Laastine/hinterland)
 [![Build status](https://ci.appveyor.com/api/projects/status/q30iw99u5f3ua237?svg=true&branch=master)](https://ci.appveyor.com/project/Laastine/hinterland)
 
-Isometric shooter game written in Rust.<br> Works on Linux, MacOS and Window.<br/>
+Isometric shooter game written in Rust. Shoot zombies, collect ammo and survive.<br> Works on Linux, MacOS and Window.<br/>
 Download from [Github releases](https://github.com/Laastine/hinterland/releases) page.
 
 ## Preview
