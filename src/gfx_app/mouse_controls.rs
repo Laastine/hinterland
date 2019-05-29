@@ -15,7 +15,6 @@ pub struct MouseInputState {
   pub mouse_left: Option<Point2<f32>>,
   pub mouse_right: Option<Point2<f32>>,
   pub left_click_point: Option<Point2<f32>>,
-  pub right_click_point: Option<Point2<f32>>,
 }
 
 impl MouseInputState {
@@ -24,7 +23,6 @@ impl MouseInputState {
       mouse_left: None,
       mouse_right: None,
       left_click_point: None,
-      right_click_point: None,
     }
   }
 }
@@ -41,7 +39,6 @@ impl specs::prelude::Component for MouseInputState {
 
 pub enum MouseControl {
   LeftClick,
-  RightClick,
 }
 
 pub struct MouseControlSystem {
@@ -84,15 +81,6 @@ impl<'a> specs::prelude::System<'a> for MouseControlSystem {
               }
             } else {
               mi.left_click_point = None;
-            }
-          }
-        }
-        MouseControl::RightClick => {
-          for mi in (&mut mouse_input).join() {
-            if let Some(val) = value {
-              mi.right_click_point = Some(Point2::new(val.0 as f32, val.1 as f32));
-            } else {
-              mi.right_click_point = None
             }
           }
         }

@@ -207,14 +207,6 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
             controls.mouse_left_click(None);
             WindowStatus::Open
           }
-          MouseInput { state: Pressed, button: MouseButton::Right, .. } => {
-            controls.mouse_right_click(Some(*m_pos));
-            WindowStatus::Open
-          }
-          MouseInput { state: Released, button: MouseButton::Right, .. } => {
-            controls.mouse_right_click(None);
-            WindowStatus::Open
-          }
           CursorMoved { position, .. } => {
             *m_pos = ((position.x as f32).into(), (position.y as f32).into());
             WindowStatus::Open
