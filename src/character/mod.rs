@@ -75,16 +75,14 @@ impl CharacterDrawable {
       std::process::exit(0);
     }
 
-    if self.stance != Stance::NormalDeath {
-      if ci.is_shooting && mouse_input.left_click_point.is_some() && !ci.is_colliding {
-        self.stance = Stance::Firing;
-        self.orientation = get_orientation_from_center(mouse_input, dimensions);
-      } else if ci.is_colliding {
-        self.stance = Stance::Still;
-      } else {
-        self.stance = Stance::Walking;
-        self.orientation = ci.orientation;
-      }
+    if ci.is_shooting && mouse_input.left_click_point.is_some() && !ci.is_colliding {
+      self.stance = Stance::Firing;
+      self.orientation = get_orientation_from_center(mouse_input, dimensions);
+    } else if ci.is_colliding {
+      self.stance = Stance::Still;
+    } else {
+      self.stance = Stance::Walking;
+      self.orientation = ci.orientation;
     }
   }
 
