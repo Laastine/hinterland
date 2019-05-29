@@ -67,6 +67,21 @@ impl<D: gfx::Device> DrawSystem<D> {
       fire_cool_down: 1.0,
     }
   }
+
+  fn update_cooldown(&mut self, delta: f64) {
+    if self.cool_down == 0.0 {
+      self.cool_down += 0.05;
+    }
+    if self.fire_cool_down == 0.0 {
+      self.fire_cool_down += 0.2;
+    }
+    if self.run_cool_down == 0.0 {
+      self.run_cool_down += 0.02;
+    }
+    self.cool_down = (self.cool_down - delta).max(0.0);
+    self.run_cool_down = (self.run_cool_down - delta).max(0.0);
+    self.fire_cool_down = (self.fire_cool_down - delta).max(0.0);
+  }
 }
 
 impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
@@ -87,20 +102,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
       .recv()
       .expect("Encoder error");
 
-    let delta = dt.0;
-
-    if self.cool_down == 0.0 {
-      self.cool_down += 0.05;
-    }
-    if self.fire_cool_down == 0.0 {
-      self.fire_cool_down += 0.2;
-    }
-    if self.run_cool_down == 0.0 {
-      self.run_cool_down += 0.02;
-    }
-    self.cool_down = (self.cool_down - delta).max(0.0);
-    self.run_cool_down = (self.run_cool_down - delta).max(0.0);
-    self.fire_cool_down = (self.fire_cool_down - delta).max(0.0);
+    self.update_cooldown(dt.0);
 
     let current_time = Instant::now();
     self.frames += 1;
