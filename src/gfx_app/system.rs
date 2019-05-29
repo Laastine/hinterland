@@ -179,6 +179,6 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
       }
     }
 
-    let _ = self.encoder_queue.sender.send(encoder);
+    self.encoder_queue.sender.send(encoder).expect("Encoder queue update error");
   }
 }

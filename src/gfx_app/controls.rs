@@ -32,42 +32,38 @@ impl TilemapControls {
   }
 
   pub fn zoom(&mut self, control: &Control) {
-    let _ = match control {
+    match control {
       Control::Plus => self.terrain_control.send(CameraControl::ZoomIn),
       Control::Negative => self.terrain_control.send(CameraControl::ZoomOut),
       Control::Released => self.terrain_control.send(CameraControl::ZoomStop),
-    };
+    }.expect("Terrain control update error");
   }
 
   pub fn ctrl_pressed(&mut self, is_ctrl: bool) {
-    let _ = if is_ctrl {
+    if is_ctrl {
       self.character_control.send(CharacterControl::CtrlPressed)
     } else {
       self.character_control.send(CharacterControl::CtrlReleased)
-    };
+    }.expect("Character Ctrl control update error");
   }
 
   pub fn move_character(&mut self, character_control: CharacterControl) {
-    let _ = self.character_control.send(character_control);
+    self.character_control.send(character_control).expect("Character move control update error");
   }
 
   pub fn reload_weapon(&mut self, is_reloading: bool) {
-    let _ = if is_reloading {
+    if is_reloading {
       self.character_control.send(CharacterControl::ReloadPressed)
     } else {
       self.character_control.send(CharacterControl::ReloadReleased)
-    };
+    }.expect("Character reload weapon control update error");
   }
 
   pub fn mouse_left_click(&mut self, mouse_pos: Option<(f64, f64)>) {
-    let _ = self.mouse_control.send((MouseControl::LeftClick, mouse_pos));
-    let _ = match mouse_pos {
+    self.mouse_control.send((MouseControl::LeftClick, mouse_pos)).expect("Mouse control shoot update error");
+    match mouse_pos {
       Some(_) => self.audio_control.send(Effects::PistolFire),
       _ => self.audio_control.send(Effects::None),
-    };
-  }
-
-  pub fn mouse_right_click(&mut self, mouse_pos: Option<(f64, f64)>) {
-    let _ = self.mouse_control.send((MouseControl::RightClick, mouse_pos));
+    }.expect("Audio control update error");
   }
 }
