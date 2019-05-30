@@ -1,6 +1,7 @@
 use specs;
 
 use crate::bullet::{BulletDrawable, collision::Collision};
+use crate::graphics::direction_movement;
 use crate::shaders::Position;
 
 pub struct Bullets {
@@ -14,7 +15,8 @@ impl Bullets {
     }
   }
 
-  pub fn add_bullet(&mut self, position: Position, movement_direction: cgmath::Point2<f32>, direction: f32) {
+  pub fn add_bullet(&mut self, position: Position, direction: f32) {
+    let movement_direction = direction_movement(direction);
     self.bullets.push(BulletDrawable::new(position, movement_direction, direction));
   }
 

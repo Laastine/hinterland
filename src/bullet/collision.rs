@@ -5,12 +5,6 @@ use crate::bullet::bullets::Bullets;
 
 pub struct CollisionSystem;
 
-impl CollisionSystem {
-  pub fn new() -> CollisionSystem {
-    CollisionSystem {}
-  }
-}
-
 #[derive(Clone, PartialEq)]
 pub enum Collision {
   Flying,

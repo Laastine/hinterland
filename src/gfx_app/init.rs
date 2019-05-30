@@ -97,7 +97,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     .with(character_system, "character-system", &[])
     .with(mouse_system, "mouse-system", &[])
     .with(audio_system, "audio-system", &[])
-    .with(CollisionSystem::new(), "collision-system", &["mouse-system"])
+    .with(CollisionSystem, "collision-system", &["mouse-system"])
     .build();
 
   window.set_controls(controls);

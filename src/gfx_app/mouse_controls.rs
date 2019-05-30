@@ -5,7 +5,7 @@ use specs::prelude::{Read, ReadStorage, WriteStorage};
 
 use crate::bullet::bullets::Bullets;
 use crate::character::{CharacterDrawable, controls::CharacterInputState};
-use crate::graphics::{camera::CameraInputState, dimensions::Dimensions, direction, direction_movement};
+use crate::graphics::{camera::CameraInputState, dimensions::Dimensions, direction};
 use crate::shaders::Position;
 
 type MouseEvent = channel::Sender<(MouseControl, Option<(f64, f64)>)>;
@@ -76,8 +76,7 @@ impl<'a> specs::prelude::System<'a> for MouseControlSystem {
                 let end_point = Point2::new(val.0 as f32 * dim.hidpi_factor, val.1 as f32 * dim.hidpi_factor);
                 mi.left_click_point = Some(end_point);
                 let dir = direction(start_point, end_point);
-                let movement_direction = direction_movement(dir);
-                Bullets::add_bullet(bs, Position::new(-ca.movement.x(), ca.movement.y()), movement_direction, dir);
+                Bullets::add_bullet(bs, Position::new(-ca.movement.x(), ca.movement.y()), dir);
               }
             } else {
               mi.left_click_point = None;

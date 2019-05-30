@@ -68,7 +68,7 @@ impl<D: gfx::Device> DrawSystem<D> {
     }
   }
 
-  fn update_cooldown(&mut self, delta: f64) {
+  fn update_cooldowns(&mut self, delta: f64) {
     if self.cool_down == 0.0 {
       self.cool_down += 0.05;
     }
@@ -102,7 +102,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
       .recv()
       .expect("Encoder error");
 
-    self.update_cooldown(dt.0);
+    self.update_cooldowns(dt.0);
 
     let current_time = Instant::now();
     self.frames += 1;
