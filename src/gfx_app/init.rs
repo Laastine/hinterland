@@ -1,7 +1,7 @@
 use std::time;
 
 use gfx;
-use specs::{Builder, prelude::DispatcherBuilder, world::World};
+use specs::{Builder, prelude::DispatcherBuilder, shred::World, world::WorldExt};
 
 use crate::audio::AudioSystem;
 use crate::bullet;
@@ -30,7 +30,7 @@ pub fn run<W, D, F>(window: &mut W)
         F: gfx::Factory<D::Resources>,
         D::CommandBuffer: Send {
 
-  let mut w = World::new();
+  let mut w = WorldExt::new();
   setup_world(&mut w, window.get_viewport_size(), window.get_hidpi_factor());
   dispatch_loop(window, &mut w);
 }
@@ -47,11 +47,11 @@ fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) 
   world.register::<character::controls::CharacterInputState>();
   world.register::<MouseInputState>();
 
-  world.add_resource(Dimensions::new(viewport_size.0, viewport_size.1, hidpi_factor));
-  world.add_resource(character::controls::CharacterInputState::new());
-  world.add_resource(MouseInputState::new());
-  world.add_resource(DeltaTime(0.0));
-  world.add_resource(GameTime(0));
+  world.insert(Dimensions::new(viewport_size.0, viewport_size.1, hidpi_factor));
+  world.insert(character::controls::CharacterInputState::new());
+  world.insert(MouseInputState::new());
+  world.insert(DeltaTime(0.0));
+  world.insert(GameTime(0));
 
   world.create_entity()
     .with(terrain::TerrainDrawable::new())
@@ -110,7 +110,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     // Throttle update speed
     if delta >= 0.016 {
       last_time = time::Instant::now();
-      dispatcher.dispatch(&w.res);
+      dispatcher.dispatch(&w);
       w.maintain();
 
       *w.write_resource::<DeltaTime>() = DeltaTime(delta);

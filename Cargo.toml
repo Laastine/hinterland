@@ -16,10 +16,10 @@ image = "0.21.2"
 json = "0.11.14"
 num = "0.2.0"
 pathfinding = "1.1.12"
-rand = "0.6.5"
+rand = "0.7.0"
 rodio = "0.9.0"
 rusttype = "0.7.7"
-specs = "0.14.3"
+specs = "0.15.0"
 tiled = "0.8.0"
 
 [features]
