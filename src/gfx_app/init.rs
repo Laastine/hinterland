@@ -31,11 +31,16 @@ pub fn run<W, D, F>(window: &mut W)
         D::CommandBuffer: Send {
 
   let mut w = WorldExt::new();
-  setup_world(&mut w, window.get_viewport_size(), window.get_hidpi_factor());
+  let viewport_size = window.get_viewport_size();
+  let dimensions = Dimensions::new(viewport_size.0,
+                                   viewport_size.1,
+                                   window.get_hidpi_factor(),
+                                   window.is_windowed());
+  setup_world(&mut w, dimensions);
   dispatch_loop(window, &mut w);
 }
 
-fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) {
+fn setup_world(world: &mut World, dimensions: Dimensions) {
   world.register::<terrain::TerrainDrawable>();
   world.register::<graphics::camera::CameraInputState>();
   world.register::<character::CharacterDrawable>();
@@ -47,7 +52,7 @@ fn setup_world(world: &mut World, viewport_size: (f32, f32), hidpi_factor: f32) 
   world.register::<character::controls::CharacterInputState>();
   world.register::<MouseInputState>();
 
-  world.insert(Dimensions::new(viewport_size.0, viewport_size.1, hidpi_factor));
+  world.insert(dimensions);
   world.insert(character::controls::CharacterInputState::new());
   world.insert(MouseInputState::new());
   world.insert(DeltaTime(0.0));

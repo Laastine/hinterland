@@ -10,7 +10,7 @@ use glutin::ElementState::{Pressed, Released};
 use glutin::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
 
 use crate::character::controls::CharacterControl;
-use crate::game::constants::{RESOLUTION_X, RESOLUTION_Y};
+use crate::game::constants::{GAME_TITLE, RESOLUTION_X, RESOLUTION_Y};
 use crate::gfx_app::controls::{Control, TilemapControls};
 
 pub mod init;
@@ -25,6 +25,21 @@ pub type DepthFormat = gfx::format::DepthStencil;
 pub const COLOR_FORMAT_VALUE: SurfaceType = SurfaceType::R8_G8_B8_A8;
 pub const DEPTH_FORMAT_VALUE: SurfaceType = SurfaceType::D24_S8;
 
+pub struct GameOptions {
+  is_windowed: bool,
+  print_frame_rate: bool,
+}
+
+impl GameOptions {
+  pub fn new(is_windowed: bool, print_frame_rate: bool) -> GameOptions {
+    GameOptions {
+      is_windowed,
+      print_frame_rate,
+    }
+  }
+}
+
+
 pub struct WindowContext {
   window_context: WindowedContext<PossiblyCurrent>,
   controls: Option<controls::TilemapControls>,
@@ -34,17 +49,17 @@ pub struct WindowContext {
   render_target_view: RenderTargetView<gfx_device_gl::Resources, ColorFormat>,
   depth_stencil_view: DepthStencilView<gfx_device_gl::Resources, DepthFormat>,
   mouse_pos: (f64, f64),
+  game_options: GameOptions
 }
 
 impl WindowContext {
-  pub fn new() -> WindowContext {
+  pub fn new(game_options: GameOptions) -> WindowContext {
     let events_loop = glutin::EventsLoop::new();
 
     let window_title = glutin::WindowBuilder::new()
-      .with_title("Hinterland");
+      .with_title(GAME_TITLE);
 
-
-    let builder = if cfg!(feature = "windowed") {
+    let builder = if game_options.is_windowed {
       let logical_size = LogicalSize::new(RESOLUTION_X.into(), RESOLUTION_Y.into());
       window_title
         .with_dimensions(logical_size)
@@ -106,6 +121,7 @@ impl WindowContext {
       render_target_view: RenderTargetView::new(rtv),
       depth_stencil_view: DepthStencilView::new(dsv),
       mouse_pos: (0.0, 0.0),
+      game_options,
     }
   }
 }
@@ -127,6 +143,8 @@ pub trait Window<D: gfx::Device, F: gfx::Factory<D::Resources>> {
   fn get_render_target_view(&mut self) -> RenderTargetView<D::Resources, ColorFormat>;
   fn get_depth_stencil_view(&mut self) -> DepthStencilView<D::Resources, DepthFormat>;
   fn poll_events(&mut self) -> WindowStatus;
+  fn is_windowed(&self) -> bool;
+  fn print_frame_rate(&self) -> bool;
 }
 
 impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
@@ -150,8 +168,16 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
     self.controls = Some(controls);
   }
 
+  fn is_windowed(&self) -> bool {
+    self.game_options.is_windowed || cfg!(feature = "windowed")
+  }
+
+  fn print_frame_rate(&self) -> bool {
+    self.game_options.print_frame_rate || cfg!(feature = "framerate")
+  }
+
   fn get_viewport_size(&mut self) -> (f32, f32) {
-    if cfg!(feature = "windowed") {
+    if self.game_options.is_windowed {
       (RESOLUTION_X as f32, RESOLUTION_Y as f32)
     } else {
       let monitor = self.events_loop.get_available_monitors().nth(0).expect("No monitor found");
@@ -169,7 +195,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
   }
 
   fn get_hidpi_factor(&mut self) -> f32 {
-    if cfg!(feature = "windowed") {
+    if self.game_options.is_windowed {
       1.0
     } else {
       self.window_context.window().get_hidpi_factor() as f32

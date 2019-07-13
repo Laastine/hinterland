@@ -671,6 +671,7 @@ name = "hinterland"
 version = "0.3.10"
 dependencies = [
  "cgmath 0.17.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "crossbeam-channel 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "genmesh 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "gfx 0.18.1 (registry+https://github.com/rust-lang/crates.io-index)",

@@ -5,6 +5,7 @@ authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 edition = "2018"
 
 [dependencies]
+clap = "2.33.0"
 cgmath = "0.17.0"
 crossbeam-channel = "0.3.8"
 gfx_core = "0.9.1"
