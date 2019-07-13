@@ -1,6 +1,6 @@
 use specs;
 
-use crate::game::constants::{CURRENT_AMMO_TEXT, CURRENT_MAGAZINE_TEXT, VERSION_NUMBER_TEXT};
+use crate::game::constants::{CURRENT_AMMO_TEXT, CURRENT_MAGAZINE_TEXT, GAME_VERSION};
 use crate::hud::TextDrawable;
 use crate::shaders::Position;
 
@@ -12,7 +12,7 @@ impl HudObjects {
   pub fn new() -> HudObjects {
     HudObjects {
       objects: vec![
-        TextDrawable::new(VERSION_NUMBER_TEXT, Position::origin()),
+        TextDrawable::new(GAME_VERSION, Position::origin()),
         TextDrawable::new(CURRENT_AMMO_TEXT, Position::new(1.9, -1.9)),
         TextDrawable::new(CURRENT_MAGAZINE_TEXT, Position::new(1.9, -1.94)),
       ]

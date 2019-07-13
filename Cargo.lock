@@ -668,7 +668,7 @@ dependencies = [
 
 [[package]]
 name = "hinterland"
-version = "0.3.10"
+version = "0.3.11"
 dependencies = [
  "cgmath 0.17.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)",

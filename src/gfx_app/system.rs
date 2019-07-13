@@ -7,7 +7,7 @@ use specs::prelude::{Read, WriteStorage};
 use crate::bullet;
 use crate::character;
 use crate::critter::CharacterSprite;
-use crate::game::constants::{CURRENT_AMMO_TEXT, HUD_TEXTS, VERSION_NUMBER_TEXT};
+use crate::game::constants::{CURRENT_AMMO_TEXT, HUD_TEXTS, GAME_VERSION};
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::gfx_app::renderer::EncoderQueue;
 use crate::graphics::{DeltaTime, orientation::Stance};
@@ -55,7 +55,7 @@ impl<D: gfx::Device> DrawSystem<D> {
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::Tree)
       ],
       text_system: [
-        hud::TextDrawSystem::new(factory, &HUD_TEXTS, VERSION_NUMBER_TEXT, rtv.clone(), dsv.clone()),
+        hud::TextDrawSystem::new(factory, &HUD_TEXTS, GAME_VERSION, rtv.clone(), dsv.clone()),
         hud::TextDrawSystem::new(factory, &HUD_TEXTS, CURRENT_AMMO_TEXT, rtv.clone(), dsv.clone()),
         hud::TextDrawSystem::new(factory, &HUD_TEXTS, CURRENT_AMMO_TEXT, rtv.clone(), dsv.clone())
       ],

@@ -1,4 +1,6 @@
-version: 0.3.10-{build}
+version: 0.3.11-{build}
+
+clone_depth: 5
 
 branches:
   only:
@@ -13,8 +15,6 @@ environment:
       target: x86_64-pc-windows-msvc
     - channel: stable
       target: x86_64-pc-windows-gnu
-    - channel: nightly
-      target: x86_64-pc-windows-msvc
 
 matrix:
   allow_failures:
@@ -48,14 +48,16 @@ before_deploy:
   - xcopy target\release\hinterland.exe hinterland\hinterland.exe*
   - 7z a ./%PROJECT_NAME%-%TARGET%.zip hinterland
   - appveyor PushArtifact ./%PROJECT_NAME%-%TARGET%.zip
+  - Remove-Item ./%PROJECT_NAME%-%TARGET%.zip -Force
+  - Remove-Item ./hinterland/*.* -Force
 
 deploy:
   provider: GitHub
+  description: 'Windows release'
   artifact: /.*\.zip/
-  draft: false
-  prerelease: false
   force_update: true
   auth_token:
     secure: zjp/gY3ooTtDDpz3Kzi97tLidzfDIPUelcgWhb/mpt3NoSQCkLxWbXx0ujvio45F
+  tag: $(APPVEYOR_REPO_TAG_NAME)
   on:
-    appveyor_repo_tag: true
+    APPVEYOR_REPO_TAG: "true"

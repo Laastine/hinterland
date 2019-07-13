@@ -1,6 +1,6 @@
 [package]
 name = "hinterland"
-version = "0.3.10"
+version = "0.3.11"
 authors = ["Mikko Kaistinen <mikko.kaistinen@kapsi.fi>"]
 edition = "2018"
 
