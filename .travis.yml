@@ -1,4 +1,4 @@
-language: rust
+sudo: required
 
 before_cache:
 - rm -rf /home/travis/.cargo/registry
@@ -7,41 +7,59 @@ cache:
   directories:
   - /home/travis/.cargo
 
-env:
-  - PACKAGE_NAME="hinterland-$TRAVIS_OS_NAME.tgz"
-
-rust:
-  - stable
-  - nightly
-
-os:
-  - linux
-  - osx
-
-sudo: required
-
-matrix:
-  allow_failures:
-    - rust: nightly
+git:
+  depth: 5
 
 addons:
   apt:
     packages:
-    - libasound2-dev
+      - libasound2-dev
 
-script:
-  - cargo build --release
-  - cargo test
+matrix:
+  include:
+    # Linux
+    - os: linux
+      language: rust
+      rust: stable
+      env: PACKAGE_NAME="hinterland-$TRAVIS_OS_NAME.tar.gz"
+      before_script:
+        - rustup component add clippy-preview
+      script:
+        - cargo clippy -- -D warnings
+        - cargo test
+        - cargo build --release
+      before_deploy: ci/build_artifact.sh
 
-before_deploy:
-  - mkdir -p hinterland/assets
-  - cp assets/*.png hinterland/assets
-  - cp assets/*.json hinterland/assets
-  - cp -r assets/maps hinterland/assets
-  - cp -r assets/audio hinterland/assets
-  - cp target/release/hinterland hinterland
-  - tar zcfv $PACKAGE_NAME hinterland
-  - rm -rf hinterland
+    # OSX
+    - os: osx
+      language: rust
+      rust: stable
+      env:
+        - TARGET=x86_64-apple-darwin
+        - PACKAGE_NAME="hinterland-$TRAVIS_OS_NAME.tar.gz"
+      before_script:
+        - rustup component add clippy-preview
+      script:
+        - cargo clippy -- -D warnings
+        - cargo test
+        - cargo build --release
+      before_deploy: ci/build_artifact.sh
+
+    # Windows
+    - os: windows
+      language: rust
+      rust: stable
+      env:
+        - TARGET=x86_64-pc-windows-msvc
+        - PACKAGE_NAME="hinterland-$TRAVIS_OS_NAME.zip"
+      before_script:
+        - rustup component add clippy-preview
+      script:
+        - cargo clippy -- -D warnings
+        - cargo test
+        - cargo build --release
+      before_deploy:
+        - powershell -executionpolicy bypass -File "ci\build_artifact.ps1"
 
 deploy:
   provider: releases
