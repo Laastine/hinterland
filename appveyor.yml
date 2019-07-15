@@ -32,32 +32,9 @@ install:
 build: false
 
 test_script:
+  - cmd: 'cargo test'
   - cmd: 'cargo build --release'
 
 cache:
   - target
   - C:\Users\appveyor\.cargo
-
-before_deploy:
-  - mkdir hinterland
-  - mkdir hinterland\assets
-  - xcopy assets\*.png hinterland\assets /y /m
-  - xcopy assets\*.json hinterland\assets /y /m
-  - xcopy assets\maps hinterland\assets\maps /e /i /y /s
-  - xcopy assets\audio hinterland\assets\audio /e /i /y /s
-  - xcopy target\release\hinterland.exe hinterland\hinterland.exe*
-  - 7z a ./%PROJECT_NAME%-%TARGET%.zip hinterland
-  - appveyor PushArtifact ./%PROJECT_NAME%-%TARGET%.zip
-  - Remove-Item ./%PROJECT_NAME%-%TARGET%.zip -Force
-  - Remove-Item ./hinterland/*.* -Force
-
-deploy:
-  provider: GitHub
-  description: 'Windows release'
-  artifact: /.*\.zip/
-  force_update: true
-  auth_token:
-    secure: zjp/gY3ooTtDDpz3Kzi97tLidzfDIPUelcgWhb/mpt3NoSQCkLxWbXx0ujvio45F
-  tag: $(APPVEYOR_REPO_TAG_NAME)
-  on:
-    APPVEYOR_REPO_TAG: "true"
