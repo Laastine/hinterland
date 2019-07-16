@@ -23,7 +23,6 @@ USAGE:
 
 FLAGS:
     -f, --frame_rate       Print current frame rate to console
-    -g, --god_mode         Immortal player character
     -h, --help             Prints help information
     -V, --version          Prints version information
     -w, --windowed_mode    Run game in windowed mode
