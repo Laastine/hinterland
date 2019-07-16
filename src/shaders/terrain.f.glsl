@@ -35,10 +35,10 @@ void main() {
     entry = u_Data[bufIdx - TILEMAP_BUF_LENGTH].data;
     coords = vec2(mod(entry.y, u_TilesheetSize.y), floor(entry.y / u_TilesheetSize.x));
   } else if (bufIdx < (TILEMAP_BUF_LENGTH * 3)) {
-    entry = u_Data[bufIdx - TILEMAP_BUF_LENGTH*2].data;
+    entry = u_Data[bufIdx - TILEMAP_BUF_LENGTH * 2].data;
     coords = vec2(mod(entry.z, u_TilesheetSize.y), floor(entry.z / u_TilesheetSize.x));
   } else {
-    entry = u_Data[bufIdx-TILEMAP_BUF_LENGTH*3].data;
+    entry = u_Data[bufIdx-TILEMAP_BUF_LENGTH * 3].data;
     coords = vec2(mod(entry.w, u_TilesheetSize.y), floor(entry.w / u_TilesheetSize.x));
   }
   vec2 uvCoords = (coords.xy + rawUvOffsets) / u_TilesheetSize.xy;
