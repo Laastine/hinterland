@@ -8,6 +8,7 @@ use glutin::{KeyboardInput, MouseButton, PossiblyCurrent, WindowedContext};
 use glutin::dpi::LogicalSize;
 use glutin::ElementState::{Pressed, Released};
 use glutin::VirtualKeyCode::{A, D, Escape, R, S, W, X, Z};
+use std::fmt::{Display, Formatter, Result};
 
 use crate::character::controls::CharacterControl;
 use crate::game::constants::{GAME_TITLE, RESOLUTION_X, RESOLUTION_Y};
@@ -29,6 +30,12 @@ pub const DEPTH_FORMAT_VALUE: SurfaceType = SurfaceType::D24_S8;
 pub struct GameOptions {
   windowed_mode: bool,
   frame_rate: bool,
+}
+
+impl Display for GameOptions {
+  fn fmt(&self, f: &mut Formatter) -> Result {
+    write!(f, "{}", format!("windowed_mode={}\nframe_rate={}", self.windowed_mode, self.frame_rate))
+  }
 }
 
 impl GameOptions {
@@ -59,7 +66,7 @@ impl WindowContext {
     let window_title = glutin::WindowBuilder::new()
       .with_title(GAME_TITLE);
 
-    println!("{:#?}", game_options);
+    println!("{}", game_options);
 
     let builder = if game_options.windowed_mode {
       let logical_size = LogicalSize::new(RESOLUTION_X.into(), RESOLUTION_Y.into());
