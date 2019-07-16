@@ -25,20 +25,20 @@ pub type DepthFormat = gfx::format::DepthStencil;
 pub const COLOR_FORMAT_VALUE: SurfaceType = SurfaceType::R8_G8_B8_A8;
 pub const DEPTH_FORMAT_VALUE: SurfaceType = SurfaceType::D24_S8;
 
+#[derive(Debug)]
 pub struct GameOptions {
-  is_windowed: bool,
-  print_frame_rate: bool,
+  windowed_mode: bool,
+  frame_rate: bool,
 }
 
 impl GameOptions {
-  pub fn new(is_windowed: bool, print_frame_rate: bool) -> GameOptions {
+  pub fn new(windowed_mode: bool, frame_rate: bool) -> GameOptions {
     GameOptions {
-      is_windowed,
-      print_frame_rate,
+      windowed_mode,
+      frame_rate,
     }
   }
 }
-
 
 pub struct WindowContext {
   window_context: WindowedContext<PossiblyCurrent>,
@@ -59,7 +59,9 @@ impl WindowContext {
     let window_title = glutin::WindowBuilder::new()
       .with_title(GAME_TITLE);
 
-    let builder = if game_options.is_windowed {
+    println!("{:#?}", game_options);
+
+    let builder = if game_options.windowed_mode {
       let logical_size = LogicalSize::new(RESOLUTION_X.into(), RESOLUTION_Y.into());
       window_title
         .with_dimensions(logical_size)
@@ -169,15 +171,15 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
   }
 
   fn is_windowed(&self) -> bool {
-    self.game_options.is_windowed || cfg!(feature = "windowed")
+    self.game_options.windowed_mode || cfg!(feature = "windowed")
   }
 
   fn print_frame_rate(&self) -> bool {
-    self.game_options.print_frame_rate || cfg!(feature = "framerate")
+    self.game_options.frame_rate || cfg!(feature = "framerate")
   }
 
   fn get_viewport_size(&mut self) -> (f32, f32) {
-    if self.game_options.is_windowed {
+    if self.game_options.windowed_mode {
       (RESOLUTION_X as f32, RESOLUTION_Y as f32)
     } else {
       let monitor = self.events_loop.get_available_monitors().nth(0).expect("No monitor found");
@@ -195,7 +197,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
   }
 
   fn get_hidpi_factor(&mut self) -> f32 {
-    if self.game_options.is_windowed {
+    if self.game_options.windowed_mode {
       1.0
     } else {
       self.window_context.window().get_hidpi_factor() as f32
