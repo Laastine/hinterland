@@ -8,7 +8,6 @@ struct TileMapData {
 };
 
 const int TILEMAP_BUF_LENGTH = 4096;
-const float SHADING_MULTIPLIER = 0.2;
 
 layout (std140) uniform b_TileMap {
   TileMapData u_Data[TILEMAP_BUF_LENGTH];
@@ -20,6 +19,10 @@ layout (std140) uniform b_PsLocals {
 };
 
 uniform sampler2D t_TileSheet;
+
+const vec3 lightPos = vec3(-200.0, 150.0, 0.0);
+const vec3 Normal = vec3(0.0, 1.0, 0.0);
+const vec3 lightColor = vec3(0.8, 0.5, 0.5);
 
 void main() {
   vec2 bufTileCoords = floor(v_BufPos);
@@ -43,7 +46,13 @@ void main() {
   }
   vec2 uvCoords = (coords.xy + rawUvOffsets) / u_TilesheetSize.xy;
 
-  vec4 t0 = texture(t_TileSheet, uvCoords);
-  t0 *= SHADING_MULTIPLIER;
-  Target0 = t0;
+  vec3 norm = normalize(Normal);
+  vec3 lightDir = normalize(lightPos - vec3(v_BufPos, 0.0));
+
+  float diff = max(dot(norm, lightDir), 0.0);
+  vec3 diffuse = diff * lightColor;
+
+  vec4 tex = texture(t_TileSheet, uvCoords);
+  tex *= vec4(diffuse, 0.0);
+  Target0 = tex;
 }
