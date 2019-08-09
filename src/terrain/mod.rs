@@ -10,7 +10,7 @@ use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::graphics::{camera::CameraInputState, can_move_to_tile, coords_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix}};
 use crate::graphics::mesh::Mesh;
 use crate::graphics::texture::{load_texture, Texture};
-use crate::shaders::{Position, Projection, tilemap_pipeline, TilemapSettings, VertexData};
+use crate::shaders::{Position, Projection, tilemap_pipeline, TilemapSettings, Time, VertexData};
 
 pub mod path_finding;
 mod path_finding_test;
@@ -105,11 +105,11 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     let pipeline_data = tilemap_pipeline::Data {
       vbuf: mesh.vertex_buffer,
       position_cb: factory.create_constant_buffer(1),
+      time_passed_cb: factory.create_constant_buffer(1),
       projection_cb: factory.create_constant_buffer(1),
-      tilemap: factory
-        .create_buffer_immutable(&terrain.tiles.as_slice(),
-                                 gfx::buffer::Role::Constant,
-                                 gfx::memory::Bind::empty()).unwrap(),
+      tilemap: factory.create_buffer_immutable(&terrain.tiles.as_slice(),
+                                               gfx::buffer::Role::Constant,
+                                               gfx::memory::Bind::empty()).unwrap(),
       tilemap_cb: factory.create_constant_buffer(1),
       tilesheet: (mesh.texture.raw, factory.create_sampler_linear()),
       out_color: rtv,
@@ -124,10 +124,12 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
 
   pub fn draw<C>(&mut self,
                  drawable: &TerrainDrawable,
+                 time_passed: u64,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
+    encoder.update_constant_buffer(&self.bundle.data.time_passed_cb, &Time::new(time_passed));
 
     if self.is_tile_map_dirty {
       encoder.update_constant_buffer(&self.bundle.data.tilemap_cb, &TilemapSettings {
