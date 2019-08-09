@@ -34,6 +34,10 @@ gfx_defines! {
     rotation: f32 = "a_rotation",
   }
 
+  constant Time {
+    time_modulo: f32 = "a_time",
+  }
+
   pipeline bullet_pipeline {
     vbuf: gfx::VertexBuffer<VertexData> = (),
     projection_cb: gfx::ConstantBuffer<Projection> = "b_VsLocals",
@@ -56,6 +60,7 @@ gfx_defines! {
   pipeline tilemap_pipeline {
     vbuf: gfx::VertexBuffer<VertexData> = (),
     position_cb: gfx::ConstantBuffer<Position> = "b_TileMapPosition",
+    time_passed_cb: gfx::ConstantBuffer<Time> = "b_TimeModulo",
     projection_cb: gfx::ConstantBuffer<Projection> = "b_VsLocals",
     tilemap: gfx::ConstantBuffer<TileMapData> = "b_TileMap",
     tilemap_cb: gfx::ConstantBuffer<TilemapSettings> = "b_PsLocals",
@@ -85,6 +90,15 @@ gfx_defines! {
     model: [[f32; 4]; 4] = "u_Model",
     view: [[f32; 4]; 4] = "u_View",
     proj: [[f32; 4]; 4] = "u_Proj",
+  }
+}
+
+impl Time {
+  pub fn new(time_passed: u64) -> Time {
+    let time_modulo = (time_passed % 89) as f32;
+    Time {
+      time_modulo
+    }
   }
 }
 

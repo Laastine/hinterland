@@ -106,7 +106,10 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
 
     let current_time = Instant::now();
     self.frames += 1;
-    if cfg!(feature = "framerate") && (current_time.duration_since(self.game_time).as_secs()) >= 1 {
+
+    let time_passed = current_time.duration_since(self.game_time).as_secs();
+
+    if cfg!(feature = "framerate") && time_passed >= 1 {
       println!("{:?} ms/frames", 1000.0 / f64::from(self.frames));
       self.frames = 0;
       self.game_time = Instant::now();
@@ -117,7 +120,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
 
     for (t, c, cs, hds, zs, bs, obj) in (&mut terrain, &mut character, &mut character_sprite, &mut hud_objects,
                                          &mut zombies, &mut bullets, &mut terrain_objects).join() {
-      self.terrain_system.draw(t, &mut encoder);
+      self.terrain_system.draw(t, time_passed,  &mut encoder);
 
       for hud in &mut hds.objects {
         self.text_system[0].draw(hud, &mut encoder);
