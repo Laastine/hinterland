@@ -9,7 +9,7 @@ use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, texture::load_texture};
 use crate::graphics::mesh::RectangularMesh;
 use crate::graphics::texture::Texture;
-use crate::shaders::{Position, Projection, static_element_pipeline};
+use crate::shaders::{Position, Projection, static_element_pipeline, Time};
 use crate::terrain_object::terrain_objects::TerrainObjects;
 
 pub mod terrain_objects;
@@ -82,6 +82,7 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
     let pipeline_data = static_element_pipeline::Data {
       vbuf: mesh.mesh.vertex_buffer,
       position_cb: factory.create_constant_buffer(1),
+      time_passed_cb: factory.create_constant_buffer(1),
       projection_cb: factory.create_constant_buffer(1),
       static_element_sheet: (mesh.mesh.texture.raw, factory.create_sampler_linear()),
       out_color: rtv,
@@ -95,10 +96,12 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
 
   pub fn draw<C>(&self,
                  drawable: &TerrainObjectDrawable,
+                 time_passed: u64,
                  encoder: &mut gfx::Encoder<R, C>)
     where C: gfx::CommandBuffer<R> {
     encoder.update_constant_buffer(&self.bundle.data.projection_cb, &drawable.projection);
     encoder.update_constant_buffer(&self.bundle.data.position_cb, &drawable.position);
+    encoder.update_constant_buffer(&self.bundle.data.time_passed_cb, &Time::new(time_passed));
     self.bundle.encode(encoder);
   }
 }

@@ -72,6 +72,7 @@ gfx_defines! {
   pipeline static_element_pipeline {
     vbuf: gfx::VertexBuffer<VertexData> = (),
     position_cb: gfx::ConstantBuffer<Position> = "b_StaticElementPosition",
+    time_passed_cb: gfx::ConstantBuffer<Time> = "b_TimeModulo",
     projection_cb: gfx::ConstantBuffer<Projection> = "b_VsLocals",
     static_element_sheet: gfx::TextureSampler<[f32; 4]> = "t_StaticElementSheet",
     out_color: gfx::RenderTarget<gfx::format::Rgba8> = "Target0",

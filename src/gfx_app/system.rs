@@ -176,9 +176,9 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
         match *e {
           Drawables::Bullet(ref e) => { self.bullet_system.draw(e, &mut encoder) }
           Drawables::Zombie(ref mut e) => { self.zombie_system.draw(e, &mut encoder) }
-          Drawables::TerrainAmmo(ref mut e) => { self.terrain_object_system[0].draw(e, &mut encoder) }
-          Drawables::TerrainHouse(ref mut e) => { self.terrain_object_system[1].draw(e, &mut encoder) }
-          Drawables::TerrainTree(ref mut e) => { self.terrain_object_system[2].draw(e, &mut encoder) }
+          Drawables::TerrainAmmo(ref mut e) => { self.terrain_object_system[0].draw(e, time_passed, &mut encoder) }
+          Drawables::TerrainHouse(ref mut e) => { self.terrain_object_system[1].draw(e, time_passed, &mut encoder) }
+          Drawables::TerrainTree(ref mut e) => { self.terrain_object_system[2].draw(e, time_passed, &mut encoder) }
           Drawables::Character(ref mut e) => { self.character_system.draw(e, cs, &mut encoder) }
         }
       }
