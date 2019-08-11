@@ -2,7 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-Note: OSX version works only when started from command line and Linux version needs libasound2-dev package installed.
+Note: 
+  - OSX version works only when started from command line
+  - Linux version needs libasound2-dev package installed.
 
 ## v0.3.11
   - Add command line argument parser
