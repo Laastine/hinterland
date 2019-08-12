@@ -1,6 +1,7 @@
 use std::{fs::File, io::BufReader, io::prelude::*, path::Path, string::String, vec::Vec};
 
 use json;
+use json::JsonValue;
 use tiled;
 use tiled::Map;
 
@@ -54,27 +55,27 @@ pub fn load_character() -> Vec<CritterData> {
     Ok(res) => res,
     Err(e) => panic!("Character {} parse error {:?}", CHARACTER_JSON_PATH, e),
   };
+
+  let frame_data = |character: &JsonValue, key: &String| -> [f32; 4] {
+    [
+      character["frames"][key]["frame"]["x"].as_f32().unwrap(),
+      character["frames"][key]["frame"]["y"].as_f32().unwrap(),
+      character["frames"][key]["frame"]["w"].as_f32().unwrap(),
+      character["frames"][key]["frame"]["h"].as_f32().unwrap(),
+    ]
+  };
+
   for x in 0..16 {
     for y in 0..14 {
       let key = &format!("run_{}_{}", x, y);
-      sprites.push(CritterData::new([
-        character["frames"][key]["frame"]["x"].as_f32().unwrap(),
-        character["frames"][key]["frame"]["y"].as_f32().unwrap(),
-        character["frames"][key]["frame"]["w"].as_f32().unwrap(),
-        character["frames"][key]["frame"]["h"].as_f32().unwrap(),
-      ]));
+      sprites.push(CritterData::new(frame_data(&character, key)));
     }
   }
 
   for x in 0..15 {
     for y in 0..4 {
       let key = &format!("fire_{}_{}", x, y);
-      sprites.push(CritterData::new([
-        character["frames"][key]["frame"]["x"].as_f32().unwrap(),
-        character["frames"][key]["frame"]["y"].as_f32().unwrap(),
-        character["frames"][key]["frame"]["w"].as_f32().unwrap(),
-        character["frames"][key]["frame"]["h"].as_f32().unwrap(),
-      ]));
+      sprites.push(CritterData::new(frame_data(&character, key)));
     }
   }
 
@@ -88,49 +89,39 @@ pub fn load_zombie() -> Vec<CritterData> {
     Ok(res) => res,
     Err(e) => panic!("Zombie {} parse error {:?}", ZOMBIE_JSON_PATH, e),
   };
+
+  let frame_data = |zombie: &JsonValue, key: &String| -> [f32; 4] {
+    [
+      zombie["frames"][key]["frame"]["x"].as_f32().unwrap(),
+      zombie["frames"][key]["frame"]["y"].as_f32().unwrap(),
+      zombie["frames"][key]["frame"]["w"].as_f32().unwrap(),
+      zombie["frames"][key]["frame"]["h"].as_f32().unwrap(),
+    ]
+  };
+
   for x in 0..7 {
     for y in 0..7 {
       let key = &format!("critical_{}_{}", x, y);
-      sprites.push(CritterData::new([
-        zombie["frames"][key]["frame"]["x"].as_f32().unwrap(),
-        zombie["frames"][key]["frame"]["y"].as_f32().unwrap(),
-        zombie["frames"][key]["frame"]["w"].as_f32().unwrap(),
-        zombie["frames"][key]["frame"]["h"].as_f32().unwrap()
-      ]));
+      sprites.push(CritterData::new(frame_data(&zombie, key)));
     }
   }
   for x in 0..7 {
     for y in 0..5 {
       let key = &format!("normal_{}_{}", x, y);
-      sprites.push(CritterData::new([
-        zombie["frames"][key]["frame"]["x"].as_f32().unwrap(),
-        zombie["frames"][key]["frame"]["y"].as_f32().unwrap(),
-        zombie["frames"][key]["frame"]["w"].as_f32().unwrap(),
-        zombie["frames"][key]["frame"]["h"].as_f32().unwrap()
-      ]));
+      sprites.push(CritterData::new(frame_data(&zombie, key)));
     }
   }
   for x in 0..7 {
     for y in 0..4 {
       let key = &format!("still_{}_{}", x, y);
-      sprites.push(CritterData::new([
-        zombie["frames"][key]["frame"]["x"].as_f32().unwrap(),
-        zombie["frames"][key]["frame"]["y"].as_f32().unwrap(),
-        zombie["frames"][key]["frame"]["w"].as_f32().unwrap(),
-        zombie["frames"][key]["frame"]["h"].as_f32().unwrap()
-      ]));
+      sprites.push(CritterData::new(frame_data(&zombie, key)));
     }
   }
 
   for x in 0..7 {
     for y in 0..7 {
       let key = &format!("walk_{}_{}", x, y);
-      sprites.push(CritterData::new([
-        zombie["frames"][key]["frame"]["x"].as_f32().unwrap(),
-        zombie["frames"][key]["frame"]["y"].as_f32().unwrap(),
-        zombie["frames"][key]["frame"]["w"].as_f32().unwrap(),
-        zombie["frames"][key]["frame"]["h"].as_f32().unwrap()
-      ]));
+      sprites.push(CritterData::new(frame_data(&zombie, key)));
     }
   }
   sprites
