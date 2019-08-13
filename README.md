@@ -12,7 +12,7 @@ Download from [Github releases](https://github.com/Laastine/hinterland/releases)
 
 ## Build & Run
 
-`cargo run --release`
+`cargo run -- --windowed_mode`
 
 
 ## Command line arguments
