@@ -48,7 +48,7 @@ fn read_sprite_file(filename: &str) -> String {
   }
 }
 
-fn get_frame_data(character: &JsonValue, key: &String) -> CritterData {
+fn get_frame_data(character: &JsonValue, key: &str) -> CritterData {
   CritterData::new([
     character["frames"][key]["frame"]["x"].as_f32().unwrap(),
     character["frames"][key]["frame"]["y"].as_f32().unwrap(),
