@@ -113,7 +113,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     let elapsed = last_time.elapsed();
     let delta = f64::from(elapsed.subsec_nanos()) / 1e9 + elapsed.as_secs() as f64;
     // Throttle update speed
-    if delta >= 0.016 {
+    if delta >= 0.0083 {
       last_time = time::Instant::now();
       dispatcher.dispatch(&w);
       w.maintain();
