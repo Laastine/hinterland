@@ -10,7 +10,7 @@ uniform b_VsLocals {
   mat4 u_Proj;
 };
 
-uniform b_CharacterSprite {
+layout (std140) uniform b_CharacterSprite {
   float x_div;
   float y_div;
   int a_row;
