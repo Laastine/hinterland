@@ -1,8 +1,8 @@
-extern crate clap;
+extern crate getopts;
 #[macro_use]
 extern crate gfx;
 
-use clap::{App, Arg};
+use getopts::Options;
 
 use crate::game::constants::{GAME_TITLE, GAME_VERSION};
 use crate::gfx_app::GameOptions;
@@ -21,22 +21,40 @@ mod character;
 mod shaders;
 mod zombie;
 
+fn print_usage() {
+  println!("USAGE:\nhinterland [FLAGS]\n\nFLAGS:\n-f, --frame_rate\t\tPrint current frame rate to console\n-h, --help\t\t\tPrints help information\n-v, --version\t\t\tPrints version information\n-w, --windowed_mode\t\tRun game in windowed mode");
+}
+
+fn print_version() {
+  println!("{} - {}", GAME_TITLE, GAME_VERSION)
+}
+
 pub fn main() {
-  let matches = App::new(GAME_TITLE)
-    .version(GAME_VERSION)
-    .author("Laastine <mikko.kaistnen@kapsi.fi>")
-    .about("Hinterland - Isometric shooter game")
-    .arg(Arg::with_name("windowed_mode")
-      .short("w")
-      .long("windowed_mode")
-      .help("Run game in windowed mode"))
-    .arg(Arg::with_name("frame_rate")
-      .short("f")
-      .long("frame_rate")
-      .help("Print current frame rate to console"))
-    .get_matches();
-  let game_opt = GameOptions::new(matches.is_present("windowed_mode"),
-        matches.is_present("frame_rate"));
+  let args = std::env::args().collect::<Vec<String>>();
+  let mut opts = Options::new();
+  opts.optflag("w", "windowed_mode", "Run game in windowed mode");
+  opts.optflag("f", "frame_rate", "Print current frame rate to console");
+  opts.optflag("h", "help", "Prints help information");
+  opts.optflag("v", "version", "Prints version information");
+
+  let matches = match opts.parse(&args[1..]) {
+    Ok(matching_args) => { matching_args }
+    Err(err) => { panic!(err.to_string()) }
+  };
+
+  if matches.opt_present("help") {
+    print_usage();
+    return;
+  }
+
+  if matches.opt_present("version") {
+    print_version();
+    return;
+  }
+
+  let game_opt = GameOptions::new(
+    matches.opt_present("windowed_mode"),
+    matches.opt_present("frame_rate"));
   let mut window = gfx_app::WindowContext::new(game_opt);
   gfx_app::init::run(&mut window);
 }
