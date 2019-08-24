@@ -16,6 +16,7 @@ mod critter;
 pub mod graphics;
 mod hud;
 mod terrain_object;
+mod terrain_shape;
 mod terrain;
 mod character;
 mod shaders;

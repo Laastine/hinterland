@@ -15,7 +15,6 @@ use crate::shaders::{Position, Projection, tilemap_pipeline, TilemapSettings, Ti
 pub mod path_finding;
 mod path_finding_test;
 pub mod tile_map;
-pub mod terrain_shapes;
 
 fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
   ((point_x - point_y), (point_x + point_y) / (16.0 / 9.0))

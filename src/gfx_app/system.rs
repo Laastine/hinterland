@@ -4,7 +4,7 @@ use gfx;
 use specs;
 use specs::prelude::{Read, WriteStorage};
 
-use crate::bullet;
+use crate::{bullet, terrain_shape};
 use crate::character;
 use crate::critter::CharacterSprite;
 use crate::game::constants::{CURRENT_AMMO_TEXT, HUD_TEXTS, GAME_VERSION};
@@ -26,6 +26,7 @@ pub struct DrawSystem<D: gfx::Device> {
   zombie_system: zombie::ZombieDrawSystem<D::Resources>,
   bullet_system: bullet::BulletDrawSystem<D::Resources>,
   terrain_object_system: [terrain_object::TerrainObjectDrawSystem<D::Resources>; 3],
+  terrain_shape_system: terrain_shape::TerrainShapeDrawSystem<D::Resources>,
   text_system: [hud::TextDrawSystem<D::Resources>; 3],
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
@@ -54,6 +55,7 @@ impl<D: gfx::Device> DrawSystem<D> {
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::House),
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::Tree)
       ],
+      terrain_shape_system: terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone()),
       text_system: [
         hud::TextDrawSystem::new(factory, &HUD_TEXTS, GAME_VERSION, rtv.clone(), dsv.clone()),
         hud::TextDrawSystem::new(factory, &HUD_TEXTS, CURRENT_AMMO_TEXT, rtv.clone(), dsv.clone()),
@@ -88,6 +90,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
   where D: gfx::Device,
         D::CommandBuffer: Send {
   type SystemData = (WriteStorage<'a, terrain::TerrainDrawable>,
+                     WriteStorage<'a, terrain_shape::TerrainShapeDrawable>,
                      WriteStorage<'a, character::CharacterDrawable>,
                      WriteStorage<'a, CharacterSprite>,
                      WriteStorage<'a, hud::hud_objects::HudObjects>,
@@ -96,7 +99,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
                      WriteStorage<'a, terrain_object::terrain_objects::TerrainObjects>,
                      Read<'a, DeltaTime>);
 
-  fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut hud_objects, mut zombies, mut bullets, mut terrain_objects, dt): Self::SystemData) {
+  fn run(&mut self, (mut terrain, mut terrain_shape, mut character, mut character_sprite, mut hud_objects, mut zombies, mut bullets, mut terrain_objects, dt): Self::SystemData) {
     use specs::join::Join;
     let mut encoder = self.encoder_queue.receiver
       .recv()
@@ -118,9 +121,11 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 16.0 / 256.0, 20.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
-    for (t, c, cs, hds, zs, bs, obj) in (&mut terrain, &mut character, &mut character_sprite, &mut hud_objects,
+    for (t, ts, c, cs, hds, zs, bs, obj) in (&mut terrain, &mut terrain_shape, &mut character, &mut character_sprite, &mut hud_objects,
                                          &mut zombies, &mut bullets, &mut terrain_objects).join() {
       self.terrain_system.draw(t, time_passed,  &mut encoder);
+
+      self.terrain_shape_system.draw(ts, time_passed, &mut encoder);
 
       for hud in &mut hds.objects {
         self.text_system[0].draw(hud, &mut encoder);

@@ -4,7 +4,7 @@ use gfx;
 use specs::{Builder, prelude::DispatcherBuilder, shred::World, world::WorldExt};
 
 use crate::audio::AudioSystem;
-use crate::bullet;
+use crate::{bullet, terrain_shape};
 use crate::bullet::bullets::Bullets;
 use crate::bullet::collision::CollisionSystem;
 use crate::character;
@@ -46,6 +46,7 @@ fn setup_world(world: &mut World, dimensions: Dimensions) {
   world.register::<character::CharacterDrawable>();
   world.register::<hud::hud_objects::HudObjects>();
   world.register::<terrain_object::terrain_objects::TerrainObjects>();
+  world.register::<terrain_shape::terrain_shape_objects::TerrainShapeObjects>();
   world.register::<Zombies>();
   world.register::<Bullets>();
   world.register::<CharacterSprite>();
@@ -63,6 +64,7 @@ fn setup_world(world: &mut World, dimensions: Dimensions) {
     .with(character::CharacterDrawable::new())
     .with(hud::hud_objects::HudObjects::new())
     .with(terrain_object::terrain_objects::TerrainObjects::new())
+    .with(terrain_shape::terrain_shape_objects::TerrainShapeObjects::new())
     .with(Zombies::new())
     .with(Bullets::new())
     .with(CharacterSprite::new())
@@ -99,6 +101,7 @@ fn dispatch_loop<W, D, F>(window: &mut W,
     .with(hud::PreDrawSystem, "draw-prep-hud", &[])
     .with(terrain_system, "terrain-system", &[])
     .with(terrain_object::PreDrawSystem, "draw-prep-terrain_object", &["terrain-system"])
+    .with(terrain_shape::PreDrawSystem, "draw-prep-terrain_shape_object", &["terrain-system"])
     .with(character_system, "character-system", &[])
     .with(mouse_system, "mouse-system", &[])
     .with(audio_system, "audio-system", &[])
