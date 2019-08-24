@@ -74,13 +74,16 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     let vertex_data: Vec<VertexData> =
       plane.shared_vertex_iter()
         .map(|vertex| {
+          let tile_x = TILES_PCS_W as f32;
+          let tile_y = TILES_PCS_H as f32;
           let (raw_x, raw_y) = cartesian_to_isometric(vertex.pos.x, vertex.pos.y);
-          let vertex_x = (TILE_SIZE * (TILES_PCS_W as f32) / 2.0) * raw_x;
-          let vertex_y = (TILE_SIZE * (TILES_PCS_H as f32) / 2.0) * raw_y;
+          let vertex_x = (TILE_SIZE * (tile_x as f32) / 1.5) * raw_x;
+          let vertex_y = (TILE_SIZE * (tile_y as f32) / 1.5) * raw_y;
 
           let (u_pos, v_pos) = ((raw_x / 2.0 - raw_y) / 2.0 + 0.5, (raw_x / 2.0 + raw_y) / 2.0 + 0.5);
-          let tile_map_x = u_pos * TILES_PCS_W as f32;
-          let tile_map_y = v_pos * TILES_PCS_H as f32;
+          let tile_map_x = u_pos * tile_x as f32;
+          let tile_map_y = v_pos * tile_y as f32;
+
           VertexData::new([vertex_x, vertex_y], [tile_map_x, tile_map_y])
         })
         .collect();
