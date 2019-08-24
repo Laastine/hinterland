@@ -100,39 +100,48 @@ impl TerrainDrawSystem {
     let vertex_size = mem::size_of::<Vertex>();
     let (vertex_data, index_data) = create_vertices();
     let vertex_buf = device
-      .create_buffer_mapped(vertex_data.len(), wgpu::BufferUsageFlags::VERTEX)
+      .create_buffer_mapped(vertex_data.len(), wgpu::BufferUsage::VERTEX)
       .fill_from_slice(&vertex_data);
 
     let index_buf = device
-      .create_buffer_mapped(index_data.len(), wgpu::BufferUsageFlags::INDEX)
+      .create_buffer_mapped(index_data.len(), wgpu::BufferUsage::INDEX)
       .fill_from_slice(&index_data);
 
     let bind_group_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
       bindings: &[
         wgpu::BindGroupLayoutBinding {
           binding: 0,
-          visibility: wgpu::ShaderStageFlags::VERTEX,
-          ty: wgpu::BindingType::UniformBuffer,
+          visibility: wgpu::ShaderStage::VERTEX,
+          ty: wgpu::BindingType::UniformBuffer {
+            dynamic: false
+          },
         },
         wgpu::BindGroupLayoutBinding {
           binding: 1,
-          visibility: wgpu::ShaderStageFlags::FRAGMENT,
-          ty: wgpu::BindingType::SampledTexture,
+          visibility: wgpu::ShaderStage::FRAGMENT,
+          ty: wgpu::BindingType::SampledTexture {
+            multisampled: false,
+            dimension: wgpu::TextureViewDimension::D2,
+          },
         },
         wgpu::BindGroupLayoutBinding {
           binding: 2,
-          visibility: wgpu::ShaderStageFlags::FRAGMENT,
+          visibility: wgpu::ShaderStage::FRAGMENT,
           ty: wgpu::BindingType::Sampler,
         },
         wgpu::BindGroupLayoutBinding {
           binding: 3,
-          visibility: wgpu::ShaderStageFlags::VERTEX | wgpu::ShaderStageFlags::FRAGMENT,
-          ty: wgpu::BindingType::UniformBuffer,
+          visibility: wgpu::ShaderStage::VERTEX | wgpu::ShaderStage::FRAGMENT,
+          ty: wgpu::BindingType::UniformBuffer {
+            dynamic: false
+          },
         },
         wgpu::BindGroupLayoutBinding {
           binding: 4,
-          visibility: wgpu::ShaderStageFlags::VERTEX,
-          ty: wgpu::BindingType::UniformBuffer,
+          visibility: wgpu::ShaderStage::VERTEX,
+          ty: wgpu::BindingType::UniformBuffer {
+            dynamic: false
+          },
         }
       ],
     });
@@ -152,14 +161,16 @@ impl TerrainDrawSystem {
     };
     let texture = device.create_texture(&wgpu::TextureDescriptor {
       size: texture_extent,
-      array_size: 1,
+      array_layer_count: 1,
+      mip_level_count: 1,
+      sample_count: 1,
       dimension: wgpu::TextureDimension::D2,
       format: wgpu::TextureFormat::Rgba8Unorm,
-      usage: wgpu::TextureUsageFlags::SAMPLED | wgpu::TextureUsageFlags::TRANSFER_DST,
+      usage: wgpu::TextureUsage::SAMPLED | wgpu::TextureUsage::COPY_DST,
     });
     let terrain_texture = texture.create_default_view();
     let temp_buf = device
-      .create_buffer_mapped(img.len(), wgpu::BufferUsageFlags::TRANSFER_SRC)
+      .create_buffer_mapped(img.len(), wgpu::BufferUsage::COPY_SRC)
       .fill_from_slice(img.into_raw().as_slice());
 
     init_encoder.copy_buffer_to_texture(
@@ -171,8 +182,8 @@ impl TerrainDrawSystem {
       },
       wgpu::TextureCopyView {
         texture: &texture,
-        level: 0,
-        slice: 0,
+        mip_level: 0,
+        array_layer: 0,
         origin: wgpu::Origin3d {
           x: 0.0,
           y: 0.0,
@@ -183,23 +194,21 @@ impl TerrainDrawSystem {
     );
 
     let sampler = device.create_sampler(&wgpu::SamplerDescriptor {
-      r_address_mode: wgpu::AddressMode::ClampToEdge,
-      s_address_mode: wgpu::AddressMode::ClampToEdge,
-      t_address_mode: wgpu::AddressMode::ClampToEdge,
+      address_mode_u: wgpu::AddressMode::ClampToEdge,
+      address_mode_v: wgpu::AddressMode::ClampToEdge,
+      address_mode_w: wgpu::AddressMode::ClampToEdge,
       mag_filter: wgpu::FilterMode::Nearest,
       min_filter: wgpu::FilterMode::Linear,
       mipmap_filter: wgpu::FilterMode::Nearest,
       lod_min_clamp: -100.0,
       lod_max_clamp: 100.0,
-      max_anisotropy: 0,
       compare_function: wgpu::CompareFunction::Always,
-      border_color: wgpu::BorderColor::TransparentBlack,
     });
 
     let projection_buf = device
       .create_buffer(&wgpu::BufferDescriptor {
         size: 1,
-        usage: wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_SRC,
+        usage: wgpu::BufferUsage::UNIFORM | wgpu::BufferUsage::COPY_SRC,
       });
 
     let terrain = tile_map::Terrain::new();
@@ -207,12 +216,12 @@ impl TerrainDrawSystem {
     let terrain_buf = device
       .create_buffer_mapped(
         4096,
-        wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_SRC)
+        wgpu::BufferUsage::UNIFORM | wgpu::BufferUsage::COPY_SRC)
       .fill_from_slice(&terrain.tiles.as_slice());
 
     let terrain_position = Position::origin();
     let position_buf = device
-      .create_buffer_mapped(1, wgpu::BufferUsageFlags::UNIFORM | wgpu::BufferUsageFlags::TRANSFER_SRC)
+      .create_buffer_mapped(1, wgpu::BufferUsage::UNIFORM | wgpu::BufferUsage::COPY_SRC)
       .fill_from_slice(&[terrain_position]);
 
     let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
@@ -250,37 +259,37 @@ impl TerrainDrawSystem {
       ],
     });
 
-    let vs_bytes = load_glsl("src/shaders/terrain.v.glsl", ShaderStage::Vertex);
-    let fs_bytes = load_glsl("src/shaders/terrain.f.glsl", ShaderStage::Fragment);
+    let vs_bytes = load_glsl(include_str!("../shaders/terrain.v.glsl"), ShaderStage::Vertex);
+    let fs_bytes = load_glsl(include_str!("../shaders/terrain.f.glsl"), ShaderStage::Fragment);
     let vs_module = device.create_shader_module(&vs_bytes);
     let fs_module = device.create_shader_module(&fs_bytes);
 
     let pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
       layout: &pipeline_layout,
-      vertex_stage: wgpu::PipelineStageDescriptor {
+      vertex_stage: wgpu::ProgrammableStageDescriptor {
         module: &vs_module,
         entry_point: "main",
       },
-      fragment_stage: wgpu::PipelineStageDescriptor {
+      fragment_stage: Some(wgpu::ProgrammableStageDescriptor {
         module: &fs_module,
         entry_point: "main",
-      },
-      rasterization_state: wgpu::RasterizationStateDescriptor {
+      }),
+      rasterization_state: Some(wgpu::RasterizationStateDescriptor {
         front_face: wgpu::FrontFace::Cw,
         cull_mode: wgpu::CullMode::Back,
         depth_bias: 0,
         depth_bias_slope_scale: 0.0,
         depth_bias_clamp: 0.0,
-      },
+      }),
       primitive_topology: wgpu::PrimitiveTopology::TriangleList,
       color_states: &[wgpu::ColorStateDescriptor {
         format: sc_desc.format,
-        color: wgpu::BlendDescriptor::REPLACE,
-        alpha: wgpu::BlendDescriptor::REPLACE,
-        write_mask: wgpu::ColorWriteFlags::ALL,
+        color_blend: wgpu::BlendDescriptor::REPLACE,
+        alpha_blend: wgpu::BlendDescriptor::REPLACE,
+        write_mask: wgpu::ColorWrite::ALL,
       }],
       depth_stencil_state: Some(wgpu::DepthStencilStateDescriptor {
-        format: wgpu::TextureFormat::D32Float,
+        format: wgpu::TextureFormat::R32Float,
         depth_write_enabled: true,
         depth_compare: wgpu::CompareFunction::Less,
         stencil_front: wgpu::StencilStateFaceDescriptor::IGNORE,
@@ -290,22 +299,24 @@ impl TerrainDrawSystem {
       }),
       index_format: wgpu::IndexFormat::Uint16,
       vertex_buffers: &[wgpu::VertexBufferDescriptor {
-        stride: vertex_size as u32,
+        stride: vertex_size as wgpu::BufferAddress,
         step_mode: wgpu::InputStepMode::Vertex,
         attributes: &[
           wgpu::VertexAttributeDescriptor {
-            attribute_index: 0,
+            shader_location: 0,
             format: wgpu::VertexFormat::Float4,
             offset: 0,
           },
           wgpu::VertexAttributeDescriptor {
-            attribute_index: 1,
+            shader_location: 1,
             format: wgpu::VertexFormat::Float2,
             offset: 4 * 4,
           },
         ],
       }],
       sample_count: 1,
+      sample_mask: 1,
+      alpha_to_coverage_enabled: false,
     });
 
     let init_command_buf = init_encoder.finish();
@@ -325,9 +336,9 @@ impl TerrainDrawSystem {
   pub fn draw(&mut self,
               render_pass: &mut wgpu::RenderPass) {
     render_pass.set_pipeline(&self.pipeline);
-    render_pass.set_bind_group(0, &self.bind_group);
+    render_pass.set_bind_group(0, &self.bind_group, &[]);
     render_pass.set_index_buffer(&self.index_buf, 0);
-    render_pass.set_vertex_buffers(&[(&self.vertex_buf, 0)]);
+    render_pass.set_vertex_buffers(0, &[(&self.vertex_buf, 0)]);
     render_pass.draw_indexed(0..self.index_count as u32, 0, 0..1);
   }
 }

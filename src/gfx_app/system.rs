@@ -1,6 +1,6 @@
 use std::{mem, thread, time};
 use std::time::{Duration, Instant};
-
+use raw_window_handle::HasRawWindowHandle;
 use crossbeam_channel as channel;
 use specs::{Read, WriteStorage};
 use wgpu::{CommandBuffer, CommandEncoder, Device, SwapChain, SwapChainDescriptor};
@@ -17,7 +17,7 @@ use crate::zombie::{ZombieDrawable, ZombieDrawSystem};
 use crate::zombie::zombies::Zombies;
 
 pub const COLOR_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Bgra8Unorm;
-pub const DEPTH_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::D32Float;
+pub const DEPTH_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::R32Float;
 
 pub struct ScreenTargets<'a> {
   pub extent: wgpu::Extent3d,
@@ -45,22 +45,22 @@ impl DrawSystem {
     let size = {
       let window = window_context.get_window();
       window
-        .get_inner_size()
-        .unwrap()
-        .to_physical(window.get_hidpi_factor())
+        .inner_size()
+        .to_physical(window.hidpi_factor())
     };
 
     let instance = wgpu::Instance::new();
-    let adapter = instance.get_adapter(&wgpu::AdapterDescriptor {
+    let adapter = instance.request_adapter(&wgpu::RequestAdapterOptions {
       power_preference: wgpu::PowerPreference::Default,
     });
-    let mut device = adapter.create_device(&wgpu::DeviceDescriptor {
+    let mut device = adapter.request_device(&wgpu::DeviceDescriptor {
       extensions: wgpu::Extensions {
         anisotropic_filtering: false,
       },
+      limits: Default::default()
     });
 
-    let surface = instance.create_surface(&window_context.get_window());
+    let surface = instance.create_surface(window_context.get_window().raw_window_handle());
 
     let extent = wgpu::Extent3d {
       width: size.width as u32,
@@ -68,18 +68,21 @@ impl DrawSystem {
       depth: 1,
     };
     let sc_desc = wgpu::SwapChainDescriptor {
-      usage: wgpu::TextureUsageFlags::OUTPUT_ATTACHMENT,
+      usage: wgpu::TextureUsage::OUTPUT_ATTACHMENT,
       format: wgpu::TextureFormat::Bgra8Unorm,
       width: extent.width,
       height: extent.height,
+      present_mode: wgpu::PresentMode::Vsync
     };
     let depth_target = device
       .create_texture(&wgpu::TextureDescriptor {
         size: extent,
-        array_size: 1,
+        array_layer_count: 1,
+        mip_level_count: 1,
+        sample_count: 1,
         dimension: wgpu::TextureDimension::D2,
-        format: wgpu::TextureFormat::D32Float,
-        usage: wgpu::TextureUsageFlags::OUTPUT_ATTACHMENT,
+        format: wgpu::TextureFormat::R32Float,
+        usage: wgpu::TextureUsage::OUTPUT_ATTACHMENT,
       })
       .create_default_view();
 
@@ -107,7 +110,7 @@ impl DrawSystem {
 
   fn update_terrain<'a>(&mut self, encoder: &'a mut CommandEncoder, drawable: &mut TerrainDrawable) {
     let new_projection_buf = self.device
-      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
+      .create_buffer_mapped(1, wgpu::BufferUsage::COPY_SRC)
       .fill_from_slice(&[drawable.projection]);
 
     encoder.copy_buffer_to_buffer(
@@ -119,7 +122,7 @@ impl DrawSystem {
     );
 
     let new_position_buf = self.device
-      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
+      .create_buffer_mapped(1, wgpu::BufferUsage::COPY_SRC)
       .fill_from_slice(&[drawable.position]);
 
     encoder.copy_buffer_to_buffer(
@@ -133,7 +136,7 @@ impl DrawSystem {
 
   fn update_character<'a>(&mut self, encoder: &'a mut CommandEncoder, drawable: &mut CharacterDrawable) {
     let new_projection_buf = self.device
-      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
+      .create_buffer_mapped(1, wgpu::BufferUsage::COPY_SRC)
       .fill_from_slice(&[drawable.projection]);
 
     encoder.copy_buffer_to_buffer(
@@ -145,7 +148,7 @@ impl DrawSystem {
     );
 
     let new_position_buf = self.device
-      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
+      .create_buffer_mapped(1, wgpu::BufferUsage::COPY_SRC)
       .fill_from_slice(&[drawable.position]);
 
     encoder.copy_buffer_to_buffer(
@@ -157,7 +160,7 @@ impl DrawSystem {
     );
 
     let new_character_sprite_buf = self.device
-      .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
+      .create_buffer_mapped(1, wgpu::BufferUsage::COPY_SRC)
       .fill_from_slice(&[drawable.character_sprite]);
 
     encoder.copy_buffer_to_buffer(
@@ -172,7 +175,7 @@ impl DrawSystem {
   fn update_zombie<'a>(&mut self, encoder: &'a mut CommandEncoder, zs: &mut Zombies) {
     for drawable in &mut zs.zombies {
       let new_projection_buf = self.device
-        .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
+        .create_buffer_mapped(1, wgpu::BufferUsage::COPY_SRC)
         .fill_from_slice(&[drawable.projection]);
 
       encoder.copy_buffer_to_buffer(
@@ -184,7 +187,7 @@ impl DrawSystem {
       );
 
       let new_position_buf = self.device
-        .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
+        .create_buffer_mapped(1, wgpu::BufferUsage::COPY_SRC)
         .fill_from_slice(&[drawable.position]);
 
       encoder.copy_buffer_to_buffer(
@@ -196,7 +199,7 @@ impl DrawSystem {
       );
 
       let new_character_sprite_buf = self.device
-        .create_buffer_mapped(1, wgpu::BufferUsageFlags::TRANSFER_SRC)
+        .create_buffer_mapped(1, wgpu::BufferUsage::COPY_SRC)
         .fill_from_slice(&[drawable.character_sprite]);
 
       encoder.copy_buffer_to_buffer(
@@ -280,6 +283,7 @@ impl<'a> specs::prelude::System<'a> for DrawSystem {
           encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
             color_attachments: &[wgpu::RenderPassColorAttachmentDescriptor {
               attachment: &targets.color,
+              resolve_target: None,
               load_op: wgpu::LoadOp::Clear,
               store_op: wgpu::StoreOp::Store,
               clear_color: wgpu::Color {

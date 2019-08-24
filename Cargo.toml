@@ -15,9 +15,11 @@ nalgebra = "0.18.0"
 num = "0.2.0"
 pathfinding = "1.1.12"
 rand = "0.6.5"
+raw-window-handle = "0.1.2"
 specs = "0.14.3"
 tiled = "0.8.0"
-wgpu = "0.2.3"
+wgpu = "0.3.0"
+winit = "0.20.0-alpha3"
 
 [features]
 default = ["wgpu/metal"]
