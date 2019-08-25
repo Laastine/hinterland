@@ -1,3 +1,5 @@
+use crate::game::constants::TILE_WIDTH;
+
 #[allow(dead_code)]
 const IMPASSABLE_TILES: [[i32; 2]; 12] = [[1, 1], [2, 2], [2, 3], [2, 4], [2, 5], [3, 0], [3, 5], [4, 0], [4, 2], [4, 3], [4, 4], [4, 5]];
 
@@ -14,7 +16,7 @@ fn path_finding_test_1() {
     .collect();
 
   assert_eq!(expected_result_1,
-             calc_route(Position::new(0.0, -Y_OFFSET), Position::new(0.0, -Y_OFFSET + 5.0 * 46.0), &IMPASSABLE_TILES.to_vec())
+             calc_route(Position::new(0.0, -Y_OFFSET), Position::new(0.0, -Y_OFFSET + 5.0 * TILE_WIDTH), &IMPASSABLE_TILES.to_vec())
                .map_or_else(|| vec![],
                             |(f, _)| f),
              "path_finding_test_1");
@@ -33,7 +35,7 @@ fn path_finding_test_2() {
     .collect();
 
   assert_eq!(expected_result,
-             calc_route(Position::new(0.0, -Y_OFFSET + 3.0 * 46.0), Position::new(0.0, -Y_OFFSET + 5.0 * 46.0), &IMPASSABLE_TILES.to_vec())
+             calc_route(Position::new(0.0, -Y_OFFSET + 3.0 * TILE_WIDTH), Position::new(0.0, -Y_OFFSET + 5.0 * TILE_WIDTH), &IMPASSABLE_TILES.to_vec())
                .map_or_else(|| vec![],
                             |(f, _)| f),
              "path_finding_test_2");
