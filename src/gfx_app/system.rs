@@ -90,7 +90,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
   where D: gfx::Device,
         D::CommandBuffer: Send {
   type SystemData = (WriteStorage<'a, terrain::TerrainDrawable>,
-                     WriteStorage<'a, terrain_shape::TerrainShapeDrawable>,
+                     WriteStorage<'a, terrain_shape::terrain_shape_objects::TerrainShapeObjects>,
                      WriteStorage<'a, character::CharacterDrawable>,
                      WriteStorage<'a, CharacterSprite>,
                      WriteStorage<'a, hud::hud_objects::HudObjects>,
@@ -121,11 +121,13 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 16.0 / 256.0, 20.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
-    for (t, ts, c, cs, hds, zs, bs, obj) in (&mut terrain, &mut terrain_shape, &mut character, &mut character_sprite, &mut hud_objects,
+    for (t, t_shape, c, cs, hds, zs, bs, obj) in (&mut terrain, &mut terrain_shape, &mut character, &mut character_sprite, &mut hud_objects,
                                          &mut zombies, &mut bullets, &mut terrain_objects).join() {
       self.terrain_system.draw(t, time_passed,  &mut encoder);
 
-      self.terrain_shape_system.draw(ts, time_passed, &mut encoder);
+      for ts in &mut t_shape.objects {
+        self.terrain_shape_system.draw(ts, time_passed, &mut encoder);
+      }
 
       for hud in &mut hds.objects {
         self.text_system[0].draw(hud, &mut encoder);
