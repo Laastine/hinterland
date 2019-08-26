@@ -40,9 +40,9 @@ pub struct Terrain {
 
 impl Terrain {
   pub fn new() -> Terrain {
-    let mut map_data = Vec::with_capacity(TILE_MAP_BUF_LENGTH);
+    let mut map_data = Vec::with_capacity(TILES_PCS_H * TILES_PCS_W);
 
-    for _ in 0..TILE_MAP_BUF_LENGTH {
+    for _ in 0..(TILES_PCS_H * TILES_PCS_W) {
       map_data.push(TileMapData::new_empty());
     }
 
