@@ -8,7 +8,7 @@ use crate::character::controls::CharacterInputState;
 use crate::game::constants::{ASPECT_RATIO, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::graphics::{camera::CameraInputState, can_move_to_tile, coords_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix}};
-use crate::graphics::mesh::Mesh;
+use crate::graphics::mesh::TexturedMesh;
 use crate::graphics::texture::{load_texture, Texture};
 use crate::shaders::{Position, Projection, tilemap_pipeline, TilemapSettings, Time, VertexData};
 
@@ -97,7 +97,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     let tile_sheet_bytes = &include_bytes!("../../assets/maps/terrain.png")[..];
     let tile_texture = load_texture(factory, tile_sheet_bytes);
 
-    let mesh = Mesh::new(factory, &vertex_data.as_slice(), index_data.as_slice(), Texture::new(tile_texture, None));
+    let mesh = TexturedMesh::new(factory, &vertex_data.as_slice(), index_data.as_slice(), Texture::new(tile_texture, None));
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, tilemap_pipeline::new())
       .expect("Terrain shader loading error");

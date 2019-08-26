@@ -12,7 +12,7 @@ use crate::game::constants::{AMMO_POSITIONS, ASPECT_RATIO, CHARACTER_SHEET_TOTAL
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::gfx_app::mouse_controls::MouseInputState;
 use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, get_orientation_from_center, orientation::{Orientation, Stance}, overlaps, texture::load_texture};
-use crate::graphics::mesh::RectangularMesh;
+use crate::graphics::mesh::RectangularTexturedMesh;
 use crate::graphics::texture::Texture;
 use crate::shaders::{CharacterSheet, critter_pipeline, Position, Projection};
 use crate::terrain_object::{terrain_objects::TerrainObjects, TerrainObjectDrawable, TerrainTexture};
@@ -120,7 +120,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
     let char_texture = load_texture(factory, charter_bytes);
 
     let rect_mesh =
-      RectangularMesh::new(factory, Texture::new(char_texture, None), Point2::new(20.0, 28.0));
+      RectangularTexturedMesh::new(factory, Texture::new(char_texture, None), Point2::new(20.0, 28.0), None, None);
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, critter_pipeline::new())
       .expect("Character shader loading error");

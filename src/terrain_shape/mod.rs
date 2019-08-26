@@ -1,15 +1,16 @@
+use cgmath::Point2;
+use specs::{Read, ReadStorage, WriteStorage};
+
+use crate::character::controls::CharacterInputState;
 use crate::game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
 use crate::gfx_app::{ColorFormat, DepthFormat};
-use crate::graphics::dimensions::{get_projection, get_view_matrix, Dimensions};
-use crate::graphics::orientation::Orientation;
-use crate::shaders::{Position, Projection, static_element_pipeline, Time};
-use crate::graphics::texture::{load_texture, Texture};
-use crate::graphics::mesh::RectangularMesh;
-use cgmath::Point2;
-use crate::character::controls::CharacterInputState;
-use crate::terrain_shape::terrain_shape_objects::TerrainShapeObjects;
 use crate::graphics::camera::CameraInputState;
-use specs::{Read, WriteStorage, ReadStorage};
+use crate::graphics::dimensions::{Dimensions, get_projection, get_view_matrix};
+use crate::graphics::mesh::{RectangularTexturedMesh};
+use crate::graphics::orientation::Orientation;
+use crate::graphics::texture::{load_texture, Texture};
+use crate::shaders::{Position, Projection, static_element_pipeline, Time};
+use crate::terrain_shape::terrain_shape_objects::TerrainShapeObjects;
 
 pub mod terrain_shape_objects;
 
@@ -61,7 +62,12 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
     let terrain_shape_bytes = include_bytes!("../../assets/maps/shape.png");
     let terrain_shape_texture = load_texture(factory, terrain_shape_bytes);
 
-    let rect_mesh = RectangularMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(80.0, 80.0));
+    let rect_mesh = RectangularTexturedMesh::new(factory,
+                                             Texture::new(terrain_shape_texture, None),
+                                             Point2::new(36.0, 36.0),
+                                                Some(45.0),
+                                             Some(Orientation::Down)
+    );
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, static_element_pipeline::new())
       .expect("Terrain shape shader loading error");

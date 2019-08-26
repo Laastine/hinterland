@@ -22,7 +22,7 @@ use crate::graphics::{get_nearest_random_tile_position,
                       orientation_to_direction,
                       overlaps};
 use crate::graphics::dimensions::{Dimensions, get_projection, get_view_matrix};
-use crate::graphics::mesh::RectangularMesh;
+use crate::graphics::mesh::RectangularTexturedMesh;
 use crate::graphics::texture::{load_texture, Texture};
 use crate::shaders::{CharacterSheet, critter_pipeline, Position, Projection};
 use crate::terrain::path_finding::calc_next_movement;
@@ -170,7 +170,7 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
     let char_texture = load_texture(factory, zombie_bytes);
 
     let rect_mesh =
-      RectangularMesh::new(factory, Texture::new(char_texture, None), Point2::new(25.0, 35.0));
+      RectangularTexturedMesh::new(factory, Texture::new(char_texture, None), Point2::new(25.0, 35.0), None, None);
 
     let pso =
       factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, critter_pipeline::new())

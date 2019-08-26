@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use crate::game::constants::TILE_WIDTH;
 
 #[allow(dead_code)]

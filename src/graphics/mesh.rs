@@ -5,6 +5,7 @@ use gfx;
 use gfx::Resources;
 use gfx::traits::FactoryExt;
 
+use crate::graphics::orientation::Orientation;
 use crate::graphics::texture::Texture;
 use crate::shaders::VertexData;
 
@@ -17,6 +18,34 @@ fn rectangle_mesh(w: f32, h: f32) -> [VertexData; 4] {
     VertexData::new([w, h], [1.0, 0.0]),
     VertexData::new([-w, h], [0.0, 0.0]),
   ]
+}
+
+fn edit_vertices(w: f32, h: f32, rotation: Option<f32>, orientation: Option<Orientation>) -> Vec<VertexData> {
+  let rot = rotation.unwrap_or(0.0);
+
+  rectangle_mesh(w, h).to_vec().iter()
+    .map(|el| {
+      let cos = Angle::cos(Deg(rot));
+      let sin = Angle::sin(Deg(rot));
+      let x_skew = match orientation {
+        Some(Orientation::Right) => Angle::tan(Deg(10.0)),
+        Some(Orientation::Left) => Angle::tan(Deg(-10.0)),
+        _ => 0.0,
+      };
+
+
+      let y_skew = match orientation {
+        Some(Orientation::Up) => Angle::tan(Deg(10.0)),
+        Some(Orientation::Down) => Angle::tan(Deg(-10.0)),
+        _ => 0.0,
+      };
+
+      let edited_vertex_data =
+        Matrix2::<f32>::new(1.0, y_skew, x_skew, 1.0) *
+          (Matrix2::<f32>::new(cos, -sin, sin, cos) * Vector2::<f32>::new(el.pos[0] as f32, el.pos[1] as f32));
+      VertexData { pos: [edited_vertex_data.x, edited_vertex_data.y], uv: el.uv }
+    })
+    .collect::<Vec<VertexData>>()
 }
 
 #[derive(Clone)]
@@ -34,20 +63,11 @@ impl<R> PlainMesh<R> where R: gfx::Resources {
     }
   }
 
-  pub fn new_with_data<F>(factory: &mut F, size: Point2<f32>, rotation: Option<f32>) -> PlainMesh<R> where F: gfx::Factory<R> {
+  pub fn new_with_data<F>(factory: &mut F, size: Point2<f32>, rotation: Option<f32>, orientation: Option<Orientation>) -> PlainMesh<R> where F: gfx::Factory<R> {
     let w = size.x;
     let h = size.y;
-    let rot = rotation.unwrap_or(0.0);
 
-    let vertex_data = rectangle_mesh(w, h).to_vec().iter()
-      .map(|el| {
-        let cos = Angle::cos(Deg(rot));
-        let sin = Angle::sin(Deg(rot));
-        let rotated =
-          Matrix2::<f32>::new(cos, -sin, sin, cos) * Vector2::<f32>::new(el.pos[0] as f32, el.pos[1] as f32);
-        VertexData { pos: [rotated.x, rotated.y], uv: el.uv }
-      })
-      .collect::<Vec<VertexData>>();
+    let vertex_data = edit_vertices(w, h, rotation, orientation);
 
     let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&vertex_data[..], DEFAULT_INDEX_DATA);
     PlainMesh {
@@ -58,35 +78,41 @@ impl<R> PlainMesh<R> where R: gfx::Resources {
 }
 
 #[derive(Clone)]
-pub struct Mesh<R> where R: Resources {
+pub struct TexturedMesh<R> where R: Resources {
   pub slice: gfx::Slice<R>,
   pub vertex_buffer: gfx::handle::Buffer<R, VertexData>,
   pub texture: Texture<R>,
 }
 
 #[derive(Clone)]
-pub struct RectangularMesh<R> where R: Resources {
-  pub mesh: Mesh<R>,
+pub struct RectangularTexturedMesh<R> where R: Resources {
+  pub mesh: TexturedMesh<R>,
   pub size: Point2<f32>,
 }
 
-impl<R> RectangularMesh<R> where R: gfx::Resources {
-  pub fn new<F>(factory: &mut F, texture: Texture<R>, size: Point2<f32>) -> RectangularMesh<R> where F: gfx::Factory<R> {
+impl<R> RectangularTexturedMesh<R> where R: gfx::Resources {
+  pub fn new<F>(factory: &mut F,
+                texture: Texture<R>,
+                size: Point2<f32>,
+                rotation: Option<f32>,
+                orientation: Option<Orientation>) -> RectangularTexturedMesh<R> where F: gfx::Factory<R> {
     let w = size.x;
     let h = size.y;
 
-    let mesh = Mesh::new(factory, &rectangle_mesh(w, h), &DEFAULT_INDEX_DATA, texture);
-    RectangularMesh {
+    let vertex_data = edit_vertices(w, h, rotation, orientation);
+
+    let mesh = TexturedMesh::new(factory, &vertex_data, &DEFAULT_INDEX_DATA, texture);
+    RectangularTexturedMesh {
       mesh,
       size,
     }
   }
 }
 
-impl<R> Mesh<R> where R: gfx::Resources {
-  pub fn new<F>(factory: &mut F, vertices: &[VertexData], indices: &[u16], texture: Texture<R>) -> Mesh<R> where F: gfx::Factory<R> {
+impl<R> TexturedMesh<R> where R: gfx::Resources {
+  pub fn new<F>(factory: &mut F, vertices: &[VertexData], indices: &[u16], texture: Texture<R>) -> TexturedMesh<R> where F: gfx::Factory<R> {
     let mesh = PlainMesh::new(factory, vertices, indices);
-    Mesh {
+    TexturedMesh {
       slice: mesh.slice,
       vertex_buffer: mesh.vertex_buffer,
       texture,

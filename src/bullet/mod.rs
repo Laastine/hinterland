@@ -91,7 +91,7 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
     where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
-    let mesh = PlainMesh::new_with_data(factory, Point2::new(2.4, 0.8), None);
+    let mesh = PlainMesh::new_with_data(factory, Point2::new(2.4, 0.8), None, None);
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, bullet_pipeline::new())
       .expect("Bullet shader loading error");
