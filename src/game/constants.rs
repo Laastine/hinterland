@@ -7,7 +7,6 @@ pub const TILE_SIZE: f32 = 32.0;
 
 pub const Y_OFFSET: f32 = TILES_PCS_W as f32 / 2.0 * TILE_WIDTH;
 
-pub const TILE_MAP_BUF_LENGTH: usize = 4096;
 pub const CHARACTER_BUF_LENGTH: usize = 224;
 
 pub const RESOLUTION_X: u32 = 1600;
