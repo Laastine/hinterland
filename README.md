@@ -8,7 +8,7 @@ Download from [Github releases](https://github.com/Laastine/hinterland/releases)
 
 ## Preview
 
-<img src="assets/hinterland-gl-2018-09-21.gif">
+<img src="assets/hinterland-gl-2019-08-28.gif">
 
 ## Build & Run
 
@@ -39,7 +39,7 @@ FLAGS:
 
 ## Development
 
-Run windowed mode with `cargo run --features "windowed godmode framerate"`
+Run windowed mode with `cargo run --features godmode`
 
 ## External asset licence list
 
