@@ -21,15 +21,13 @@ pub struct TerrainShapeDrawable {
   projection: Projection,
   pub position: Position,
   previous_position: Position,
-  orientation: Orientation,
 }
 
 impl TerrainShapeDrawable {
-  pub fn new(position: Position, orientation: Orientation) -> TerrainShapeDrawable {
+  pub fn new(position: Position) -> TerrainShapeDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
     let projection = get_projection(view, ASPECT_RATIO);
     TerrainShapeDrawable {
-      orientation,
       position,
       previous_position: Position::origin(),
       projection,
