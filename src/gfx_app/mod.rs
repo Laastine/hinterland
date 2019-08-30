@@ -29,20 +29,18 @@ pub const DEPTH_FORMAT_VALUE: SurfaceType = SurfaceType::D24_S8;
 #[derive(Debug)]
 pub struct GameOptions {
   windowed_mode: bool,
-  frame_rate: bool,
 }
 
 impl Display for GameOptions {
   fn fmt(&self, f: &mut Formatter) -> Result {
-    write!(f, "{}", format!("windowed_mode={}\nframe_rate={}", self.windowed_mode, self.frame_rate))
+    write!(f, "{}", format!("windowed_mode={}", self.windowed_mode))
   }
 }
 
 impl GameOptions {
-  pub fn new(windowed_mode: bool, frame_rate: bool) -> GameOptions {
+  pub fn new(windowed_mode: bool) -> GameOptions {
     GameOptions {
       windowed_mode,
-      frame_rate,
     }
   }
 }
@@ -153,7 +151,6 @@ pub trait Window<D: gfx::Device, F: gfx::Factory<D::Resources>> {
   fn get_depth_stencil_view(&mut self) -> DepthStencilView<D::Resources, DepthFormat>;
   fn poll_events(&mut self) -> WindowStatus;
   fn is_windowed(&self) -> bool;
-  fn print_frame_rate(&self) -> bool;
 }
 
 impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
@@ -175,14 +172,6 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
 
   fn set_controls(&mut self, controls: controls::TilemapControls) {
     self.controls = Some(controls);
-  }
-
-  fn is_windowed(&self) -> bool {
-    self.game_options.windowed_mode || cfg!(feature = "windowed")
-  }
-
-  fn print_frame_rate(&self) -> bool {
-    self.game_options.frame_rate || cfg!(feature = "framerate")
   }
 
   fn get_viewport_size(&mut self) -> (f32, f32) {
@@ -254,6 +243,10 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
       };
     });
     game_status
+  }
+
+  fn is_windowed(&self) -> bool {
+    self.game_options.windowed_mode
   }
 }
 

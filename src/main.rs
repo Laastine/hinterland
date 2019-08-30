@@ -22,7 +22,7 @@ mod shaders;
 mod zombie;
 
 fn print_usage() {
-  println!("USAGE:\nhinterland [FLAGS]\n\nFLAGS:\n-f, --frame_rate\t\tPrint current frame rate to console\n-h, --help\t\t\tPrints help information\n-v, --version\t\t\tPrints version information\n-w, --windowed_mode\t\tRun game in windowed mode");
+  println!("USAGE:\nhinterland [FLAGS]\n\nFLAGS:\n-h, --help\t\t\tPrints help information\n-v, --version\t\t\tPrints version information\n-w, --windowed_mode\t\tRun game in windowed mode");
 }
 
 fn print_version() {
@@ -33,7 +33,6 @@ pub fn main() {
   let args = std::env::args().collect::<Vec<String>>();
   let mut opts = Options::new();
   opts.optflag("w", "windowed_mode", "Run game in windowed mode");
-  opts.optflag("f", "frame_rate", "Print current frame rate to console");
   opts.optflag("h", "help", "Prints help information");
   opts.optflag("v", "version", "Prints version information");
 
@@ -52,9 +51,7 @@ pub fn main() {
     return;
   }
 
-  let game_opt = GameOptions::new(
-    matches.opt_present("windowed_mode"),
-    matches.opt_present("frame_rate"));
+  let game_opt = GameOptions::new(matches.opt_present("windowed_mode"));
   let mut window = gfx_app::WindowContext::new(game_opt);
   gfx_app::init::run(&mut window);
 }

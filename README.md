@@ -22,7 +22,6 @@ USAGE:
     hinterland [FLAGS]
 
 FLAGS:
-    -f, --frame_rate       Print current frame rate to console
     -h, --help             Prints help information
     -V, --version          Prints version information
     -w, --windowed_mode    Run game in windowed mode
@@ -39,7 +38,7 @@ FLAGS:
 
 ## Development
 
-Run windowed mode with `cargo run --features godmode`
+Run windowed mode with `cargo run --features "godmode framerate -- -w`
 
 ## External asset licence list
 

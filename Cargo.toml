@@ -27,4 +27,3 @@ tiled = "0.8.0"
 [features]
 godmode = []
 framerate = []
-windowed = []
