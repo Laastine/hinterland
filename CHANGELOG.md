@@ -9,7 +9,6 @@ Note:
 ## v0.3.12
   - Add lighting to game (day and night cycle)
   - Print config on start
-  - Raise FPS cap to 120
   - Fix Windows build
 
 ## v0.3.11
