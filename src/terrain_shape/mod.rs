@@ -62,9 +62,9 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
 
     let rect_mesh = RectangularTexturedMesh::new(factory,
                                              Texture::new(terrain_shape_texture, None),
-                                             Point2::new(36.0, 36.0),
-                                                Some(45.0),
-                                             Some(Orientation::Down)
+                                             Point2::new(35.0, 35.0),
+                                                Some(20.0),
+                                             Some(Orientation::Right)
     );
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, static_element_pipeline::new())

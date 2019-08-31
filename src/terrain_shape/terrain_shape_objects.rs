@@ -11,7 +11,7 @@ impl TerrainShapeObjects {
   pub fn new() -> TerrainShapeObjects {
     TerrainShapeObjects {
       objects: vec![
-        TerrainShapeDrawable::new(Position::new(0.0, 255.0)),
+        TerrainShapeDrawable::new(Position::new(-15.0, 234.0)),
       ]
     }
   }
