@@ -23,7 +23,7 @@ USAGE:
 
 FLAGS:
     -h, --help             Prints help information
-    -V, --version          Prints version information
+    -v, --version          Prints version information
     -w, --windowed_mode    Run game in windowed mode
 ```
 
