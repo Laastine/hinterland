@@ -3,8 +3,8 @@
 [![Build Status](https://travis-ci.org/Laastine/hinterland.svg?branch=master)](https://travis-ci.org/Laastine/hinterland)
 [![Build status](https://ci.appveyor.com/api/projects/status/q30iw99u5f3ua237?svg=true&branch=master)](https://ci.appveyor.com/project/Laastine/hinterland)
 
-Isometric shooter game written in Rust. Shoot zombies, collect ammo and survive.<br> Works on Linux, MacOS and Window.<br/>
-Download from [Github releases](https://github.com/Laastine/hinterland/releases) page.
+Isometric shooter game written in Rust. Shoot zombies, collect ammo and survive.<br> Works on Linux, macOS and Windows.<br/>
+Download precompiled binary from [Github releases](https://github.com/Laastine/hinterland/releases) page.
 
 ## Preview
 
@@ -29,16 +29,18 @@ FLAGS:
 
 ## Controls
 
-`W,A,S,D` - Character move<br/>
+`w,a,s,d` - Character move<br/>
 `Ctrl + Mouse left` - Fire<br/>
-`R` - Reload weapon (10 bullets per mag)<br/>
-`Z` - zoom in<br/>
-`X` - zoom out<br/>
+`r` - Reload weapon (10 bullets per mag)<br/>
+`z` - zoom in<br/>
+`x` - zoom out<br/>
 `Esc` - exit
 
 ## Development
 
 Run windowed mode with `cargo run --features "godmode framerate -- -w`
+
+`cargo test` - run unit tests
 
 ## External asset licence list
 
