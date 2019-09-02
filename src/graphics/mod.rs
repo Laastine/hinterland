@@ -111,8 +111,8 @@ pub fn tile_to_coords(tile: Point2<i32>) -> Position {
 }
 
 fn round(number: f32, precision: usize) -> f32 {
-  let ten = 10.0f64;
-  let divider = ten.powf(precision as f64) as f32;
+  let ten: f32 = 10.0;
+  let divider = ten.powf(precision as f32);
   (number * divider).round() / divider
 }
 
