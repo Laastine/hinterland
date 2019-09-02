@@ -116,7 +116,7 @@ fn round(number: f32, precision: usize) -> f32 {
   (number * divider).round() / divider
 }
 
-pub fn add_random_offset_to_screen_pos(pos: Position) -> Position {
+pub fn get_nearest_random_tile_position(pos: Position) -> Position {
   fn iter(pos: Position) -> Position {
     let offset = Position::new(get_rand_from_range(-2, 2) as f32, get_rand_from_range(-2, 2) as f32);
     let offset_point = Position::new(

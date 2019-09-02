@@ -10,7 +10,7 @@ use crate::data;
 use crate::game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE, ZOMBIE_SHEET_TOTAL_WIDTH, ZOMBIE_STILL_SPRITE_OFFSET};
 use crate::game::get_random_bool;
 use crate::gfx_app::{ColorFormat, DepthFormat};
-use crate::graphics::{add_random_offset_to_screen_pos,
+use crate::graphics::{get_nearest_random_tile_position,
                       calc_hypotenuse,
                       camera::CameraInputState,
                       can_move_to_tile,
@@ -112,7 +112,7 @@ impl ZombieDrawable {
     if self.last_decision + 2 < game_time {
       self.stance = Stance::Walking;
       self.last_decision = game_time;
-      let end_point = add_random_offset_to_screen_pos(zombie_pos);
+      let end_point = get_nearest_random_tile_position(zombie_pos);
       let dir = calc_next_movement(zombie_pos, end_point) as f32;
       self.movement_direction = direction_movement(dir);
       self.direction = orientation_to_direction(dir);
