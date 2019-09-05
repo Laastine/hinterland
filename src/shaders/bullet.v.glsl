@@ -17,9 +17,9 @@ uniform b_BulletRotation {
 };
 
 void main() {
-  vec4 rot_pos = mat4(cos(a_rotation),  -sin(a_rotation),  0.0,   0.0,
-                      sin(a_rotation),  cos(a_rotation),   0.0,   0.0,
-                      0.0,              0.0,               1.0,   0.0,
-                      0.0,              0.0,               0.0,   1.0) * vec4(a_Pos, 1.0);
-  gl_Position = vec4(a_position, 0.0, 0.0) + rot_pos * u_Proj * u_View * u_Model;
+  vec3 rot_pos = mat3(cos(a_rotation),  -sin(a_rotation),  0.0,
+                      sin(a_rotation),  cos(a_rotation),   0.0,
+                      0.0,              0.0,               1.0) * a_Pos;
+
+  gl_Position = vec4(a_position, 0.0, 0.0) + vec4(rot_pos, 1.0) * u_Proj * u_View * u_Model;
 }
