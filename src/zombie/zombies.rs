@@ -52,7 +52,6 @@ impl Zombies {
         ZombieDrawable::new(Position::new(-900.0, 10.0)),
         ZombieDrawable::new(Position::new(10.0, 900.0)),
         ZombieDrawable::new(Position::new(10.0, -900.0)),
-
         // 6
         ZombieDrawable::new(Position::new(1000.0, 10.0)),
         ZombieDrawable::new(Position::new(-1000.0, 10.0)),

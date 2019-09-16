@@ -7,7 +7,7 @@ use specs::prelude::{Read, WriteStorage};
 use crate::{bullet, terrain_shape};
 use crate::character;
 use crate::critter::CharacterSprite;
-use crate::game::constants::{CURRENT_AMMO_TEXT, HUD_TEXTS, GAME_VERSION};
+use crate::game::constants::{CURRENT_AMMO_TEXT, GAME_VERSION, HUD_TEXTS};
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::gfx_app::renderer::EncoderQueue;
 use crate::graphics::{DeltaTime, orientation::Stance};
@@ -16,6 +16,7 @@ use crate::hud;
 use crate::terrain;
 use crate::terrain_object;
 use crate::terrain_object::TerrainTexture;
+use crate::terrain_shape::TerrainShapes;
 use crate::zombie;
 
 pub struct DrawSystem<D: gfx::Device> {
@@ -26,7 +27,7 @@ pub struct DrawSystem<D: gfx::Device> {
   zombie_system: zombie::ZombieDrawSystem<D::Resources>,
   bullet_system: bullet::BulletDrawSystem<D::Resources>,
   terrain_object_system: [terrain_object::TerrainObjectDrawSystem<D::Resources>; 3],
-  terrain_shape_system: terrain_shape::TerrainShapeDrawSystem<D::Resources>,
+  terrain_shape_system: [terrain_shape::TerrainShapeDrawSystem<D::Resources>; 7],
   text_system: [hud::TextDrawSystem<D::Resources>; 3],
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
@@ -55,7 +56,15 @@ impl<D: gfx::Device> DrawSystem<D> {
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::House),
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::Tree)
       ],
-      terrain_shape_system: terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone()),
+      terrain_shape_system: [
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainShapes::Right),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainShapes::DownRight),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainShapes::Down),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainShapes::DownLeft),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainShapes::Left),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainShapes::UpLeft),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainShapes::UpRight),
+      ],
       text_system: [
         hud::TextDrawSystem::new(factory, &HUD_TEXTS, GAME_VERSION, rtv.clone(), dsv.clone()),
         hud::TextDrawSystem::new(factory, &HUD_TEXTS, CURRENT_AMMO_TEXT, rtv.clone(), dsv.clone()),
@@ -125,10 +134,6 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
                                          &mut zombies, &mut bullets, &mut terrain_objects).join() {
       self.terrain_system.draw(t, time_passed,  &mut encoder);
 
-      for ts in &mut t_shape.objects {
-        self.terrain_shape_system.draw(ts, time_passed, &mut encoder);
-      }
-
       for hud in &mut hds.objects {
         self.text_system[0].draw(hud, &mut encoder);
         self.text_system[1].draw(hud, &mut encoder);
@@ -178,6 +183,18 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
           .partial_cmp(&Drawables::get_vertical_pos(a))
           .expect("Z-axis sorting failed")
       });
+
+      for ts in &t_shape.objects {
+        match ts.get_shape() {
+          TerrainShapes::Right => self.terrain_shape_system[0].draw(ts, time_passed, &mut encoder),
+          TerrainShapes::DownRight => self.terrain_shape_system[1].draw(ts, time_passed, &mut encoder),
+          TerrainShapes::Down => self.terrain_shape_system[2].draw(ts, time_passed, &mut encoder),
+          TerrainShapes::DownLeft => self.terrain_shape_system[3].draw(ts, time_passed, &mut encoder),
+          TerrainShapes::Left => self.terrain_shape_system[4].draw(ts, time_passed, &mut encoder),
+          TerrainShapes::UpLeft => self.terrain_shape_system[5].draw(ts, time_passed, &mut encoder),
+          TerrainShapes::UpRight => self.terrain_shape_system[6].draw(ts, time_passed, &mut encoder),
+        }
+      }
 
       for e in &mut drawables {
         match *e {

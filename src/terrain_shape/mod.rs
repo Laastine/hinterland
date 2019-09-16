@@ -6,7 +6,7 @@ use crate::game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::graphics::camera::CameraInputState;
 use crate::graphics::dimensions::{Dimensions, get_projection, get_view_matrix};
-use crate::graphics::mesh::{RectangularTexturedMesh};
+use crate::graphics::mesh::RectangularTexturedMesh;
 use crate::graphics::orientation::Orientation;
 use crate::graphics::texture::{load_texture, Texture};
 use crate::shaders::{Position, Projection, static_element_pipeline, Time};
@@ -17,20 +17,33 @@ pub mod terrain_shape_objects;
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/static_element.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/static_element.f.glsl");
 
+#[derive(Clone, PartialEq)]
+pub enum TerrainShapes {
+  Right,
+  DownRight,
+  Down,
+  DownLeft,
+  Left,
+  UpLeft,
+  UpRight,
+}
+
 pub struct TerrainShapeDrawable {
   projection: Projection,
   pub position: Position,
   previous_position: Position,
+  shape: TerrainShapes
 }
 
 impl TerrainShapeDrawable {
-  pub fn new(position: Position) -> TerrainShapeDrawable {
+  pub fn new(position: Position, shape: TerrainShapes) -> TerrainShapeDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
     let projection = get_projection(view, ASPECT_RATIO);
     TerrainShapeDrawable {
       position,
       previous_position: Position::origin(),
       projection,
+      shape
     }
   }
 
@@ -39,9 +52,13 @@ impl TerrainShapeDrawable {
     self.position = self.position + ci.movement - self.previous_position;
     self.previous_position = ci.movement;
   }
+
+  pub fn get_shape(&self) -> &TerrainShapes {
+    &self.shape
+  }
 }
 
-impl specs::prelude::Component for TerrainShapeDrawable{
+impl specs::prelude::Component for TerrainShapeDrawable {
   type Storage = specs::storage::VecStorage<TerrainShapeDrawable>;
 }
 
@@ -53,6 +70,7 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>,
+                shape: TerrainShapes,
   ) -> TerrainShapeDrawSystem<R>
     where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
@@ -60,12 +78,15 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
     let terrain_shape_bytes = include_bytes!("../../assets/maps/shape.png");
     let terrain_shape_texture = load_texture(factory, terrain_shape_bytes);
 
-    let rect_mesh = RectangularTexturedMesh::new(factory,
-                                             Texture::new(terrain_shape_texture, None),
-                                             Point2::new(35.0, 35.0),
-                                                Some(20.0),
-                                             Some(Orientation::Right)
-    );
+    let rect_mesh = match shape {
+      TerrainShapes::Right => RectangularTexturedMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(35.0, 35.0), Some(20.0), Some(Orientation::Right)),
+      TerrainShapes::DownRight => RectangularTexturedMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(35.0, 35.0), Some(20.0), Some(Orientation::Right)),
+      TerrainShapes::Down => RectangularTexturedMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(35.0, 35.0), Some(20.0), Some(Orientation::Right)),
+      TerrainShapes::DownLeft => RectangularTexturedMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(35.0, 35.0), Some(20.0), Some(Orientation::Right)),
+      TerrainShapes::Left => RectangularTexturedMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(35.0, 35.0), Some(20.0), Some(Orientation::Right)),
+      TerrainShapes::UpLeft => RectangularTexturedMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(35.0, 35.0), Some(20.0), Some(Orientation::Right)),
+      TerrainShapes::UpRight => RectangularTexturedMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(35.0, 35.0), Some(20.0), Some(Orientation::Right)),
+    };
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, static_element_pipeline::new())
       .expect("Terrain shape shader loading error");
@@ -105,7 +126,7 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
                      WriteStorage<'a, TerrainShapeObjects>,
                      Read<'a, Dimensions>);
 
-  fn run(&mut self, (camera_input,character_input, mut terrain_shape_objects, dim): Self::SystemData) {
+  fn run(&mut self, (camera_input, character_input, mut terrain_shape_objects, dim): Self::SystemData) {
     use specs::join::Join;
 
     for (camera, ci, ts_obj) in (&camera_input, &character_input, &mut terrain_shape_objects).join() {
