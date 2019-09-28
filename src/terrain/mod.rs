@@ -17,7 +17,7 @@ mod path_finding_test;
 pub mod tile_map;
 
 fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
-  ((point_x - point_y), (point_x + point_y) / 1.78)
+  ((point_x - point_y), (point_x + point_y) / (16.0 / 9.0))
 }
 
 pub struct TerrainDrawable {
@@ -77,10 +77,9 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
           let vertex_x = (TILE_SIZE * (TILES_PCS_W as f32) / 2.0) * raw_x;
           let vertex_y = (TILE_SIZE * (TILES_PCS_H as f32) / 2.0) * raw_y;
 
-          let (u_pos, v_pos) = ((raw_x / 4.0 - raw_y / 2.25) + 0.5, (raw_x / 4.0 + raw_y / 2.25) + 0.5);
+          let (u_pos, v_pos) = ((raw_x / 2.0 - raw_y) / 2.0 + 0.5, (raw_x / 2.0 + raw_y) / 2.0 + 0.5);
           let tile_map_x = u_pos * TILES_PCS_W as f32;
           let tile_map_y = v_pos * TILES_PCS_H as f32;
-
           VertexData::new([vertex_x, vertex_y], [tile_map_x, tile_map_y])
         })
         .collect();
