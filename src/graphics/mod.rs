@@ -4,7 +4,7 @@ use num::{Num, NumCast};
 
 use crate::bullet::BulletDrawable;
 use crate::character::CharacterDrawable;
-use crate::game::{constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_WIDTH, TILES_PCS_H, TILES_PCS_W, Y_OFFSET}, get_rand_from_range};
+use crate::game::{constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, Y_OFFSET}, get_rand_from_range};
 use crate::gfx_app::{mouse_controls::MouseInputState};
 use crate::graphics::{dimensions::Dimensions, orientation::Orientation};
 use crate::shaders::Position;
@@ -100,13 +100,13 @@ pub fn can_move_to_tile(screen_pos: Position) -> bool {
 
 pub fn coords_to_tile(position: Position) -> Point2<i32> {
   let pos = Point2::new(-position.x(), position.y() + Y_OFFSET);
-  Point2::new(((pos.x + pos.y) / TILE_WIDTH) as i32, ((pos.y - pos.x) / TILE_WIDTH) as i32)
+  Point2::new(((pos.x + pos.y) / TILE_SIZE) as i32, ((pos.y - pos.x) / TILE_SIZE) as i32)
 }
 
 pub fn tile_to_coords(tile: Point2<i32>) -> Position {
   let new_tile = Point2::new(tile.x as f32, tile.y as f32);
-  let x = round(new_tile.x * TILE_WIDTH - new_tile.y / TILE_WIDTH, 3);
-  let y = round(new_tile.y * TILE_WIDTH - new_tile.x / TILE_WIDTH, 3);
+  let x = round(new_tile.x * TILE_SIZE - new_tile.y / TILE_SIZE, 3);
+  let y = round(new_tile.y * TILE_SIZE - new_tile.x / TILE_SIZE, 3);
   Position::new(-x, y - Y_OFFSET)
 }
 
@@ -120,8 +120,8 @@ pub fn get_nearest_random_tile_position(pos: Position) -> Position {
   fn iter(pos: Position) -> Position {
     let offset = Position::new(get_rand_from_range(-2, 2) as f32, get_rand_from_range(-2, 2) as f32);
     let offset_point = Position::new(
-      round(offset.x() * TILE_WIDTH - offset.y() / TILE_WIDTH, 3),
-      round(offset.y() * TILE_WIDTH - offset.y() / TILE_WIDTH, 3),
+      round(offset.x() * TILE_SIZE - offset.y() / TILE_SIZE, 3),
+      round(offset.y() * TILE_SIZE - offset.y() / TILE_SIZE, 3),
     );
     pos + offset_point
   }
