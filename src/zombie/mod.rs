@@ -170,7 +170,7 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
     let char_texture = load_texture(factory, zombie_bytes);
 
     let rect_mesh =
-      RectangularTexturedMesh::new(factory, Texture::new(char_texture, None), Point2::new(25.0, 35.0), None, None);
+      RectangularTexturedMesh::new(factory, Texture::new(char_texture, None), Point2::new(25.0, 35.0), None, None, None);
 
     let pso =
       factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, critter_pipeline::new())

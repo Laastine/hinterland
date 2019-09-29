@@ -20,29 +20,47 @@ fn rectangle_mesh(w: f32, h: f32) -> [VertexData; 4] {
   ]
 }
 
-fn edit_vertices(w: f32, h: f32, rotation: Option<f32>, orientation: Option<Orientation>) -> Vec<VertexData> {
+fn edit_vertices(w: f32, h: f32, scale: Option<Matrix2<f32>>, rotation: Option<f32>, orientation: Option<Orientation>) -> Vec<VertexData> {
+  let scale_matrix = scale.unwrap_or_else(|| Matrix2::new(1.0, 0.0, 0.0, 1.0));
+
   let rot = rotation.unwrap_or(0.0);
+
+  let rot_x = 15.0;
+  let rot_y = 15.0;
 
   rectangle_mesh(w, h).to_vec().iter()
     .map(|el| {
       let cos = Angle::cos(Deg(rot));
       let sin = Angle::sin(Deg(rot));
+
       let x_skew = match orientation {
-        Some(Orientation::Right) => Angle::tan(Deg(10.0)),
-        Some(Orientation::Left) => Angle::tan(Deg(-10.0)),
+        Some(Orientation::Right) => Angle::tan(Deg(-rot_x)),
+        Some(Orientation::Left) => Angle::tan(Deg(rot_x)),
+        Some(Orientation::DownLeft) => Angle::tan(Deg(-rot_x)),
+        Some(Orientation::DownRight) => Angle::tan(Deg(-rot_x)),
+        Some(Orientation::UpLeft) => Angle::tan(Deg(rot_x)),
+        Some(Orientation::UpRight) => Angle::tan(Deg(-rot_x)),
         _ => 0.0,
       };
-
 
       let y_skew = match orientation {
-        Some(Orientation::Up) => Angle::tan(Deg(10.0)),
-        Some(Orientation::Down) => Angle::tan(Deg(-10.0)),
+        Some(Orientation::Up) => Angle::tan(Deg(-rot_y)),
+        Some(Orientation::Down) => Angle::tan(Deg(rot_y)),
+        Some(Orientation::DownRight) => Angle::tan(Deg(-rot_y)),
+        Some(Orientation::UpLeft) => Angle::tan(Deg(rot_y)),
+        Some(Orientation::UpRight) => Angle::tan(Deg(-rot_y)),
         _ => 0.0,
       };
+      let skew_matrix = Matrix2::<f32>::new(1.0, y_skew, x_skew, 1.0);
+      let rotation_matrix = Matrix2::<f32>::new(cos, -sin, sin, cos);
+      let translate = Vector2::<f32>::new(-10.0, 5.0);
 
       let edited_vertex_data =
-        Matrix2::<f32>::new(1.0, y_skew, x_skew, 1.0) *
-          (Matrix2::<f32>::new(cos, -sin, sin, cos) * Vector2::<f32>::new(el.pos[0] as f32, el.pos[1] as f32));
+        translate +
+          skew_matrix *
+            (scale_matrix *
+              (rotation_matrix * Vector2::<f32>::new(el.pos[0] as f32, el.pos[1] as f32)));
+
       VertexData { pos: [edited_vertex_data.x, edited_vertex_data.y], uv: el.uv }
     })
     .collect::<Vec<VertexData>>()
@@ -63,11 +81,11 @@ impl<R> PlainMesh<R> where R: gfx::Resources {
     }
   }
 
-  pub fn new_with_data<F>(factory: &mut F, size: Point2<f32>, rotation: Option<f32>, orientation: Option<Orientation>) -> PlainMesh<R> where F: gfx::Factory<R> {
+  pub fn new_with_data<F>(factory: &mut F, size: Point2<f32>, scale: Option<Matrix2<f32>>, rotation: Option<f32>, orientation: Option<Orientation>) -> PlainMesh<R> where F: gfx::Factory<R> {
     let w = size.x;
     let h = size.y;
 
-    let vertex_data = edit_vertices(w, h, rotation, orientation);
+    let vertex_data = edit_vertices(w, h, scale, rotation, orientation);
 
     let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&vertex_data[..], DEFAULT_INDEX_DATA);
     PlainMesh {
@@ -94,12 +112,13 @@ impl<R> RectangularTexturedMesh<R> where R: gfx::Resources {
   pub fn new<F>(factory: &mut F,
                 texture: Texture<R>,
                 size: Point2<f32>,
+                scale: Option<Matrix2<f32>>,
                 rotation: Option<f32>,
                 orientation: Option<Orientation>) -> RectangularTexturedMesh<R> where F: gfx::Factory<R> {
     let w = size.x;
     let h = size.y;
 
-    let vertex_data = edit_vertices(w, h, rotation, orientation);
+    let vertex_data = edit_vertices(w, h, scale, rotation, orientation);
 
     let mesh = TexturedMesh::new(factory, &vertex_data, &DEFAULT_INDEX_DATA, texture);
     RectangularTexturedMesh {

@@ -120,7 +120,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
     let char_texture = load_texture(factory, charter_bytes);
 
     let rect_mesh =
-      RectangularTexturedMesh::new(factory, Texture::new(char_texture, None), Point2::new(20.0, 28.0), None, None);
+      RectangularTexturedMesh::new(factory, Texture::new(char_texture, None), Point2::new(20.0, 28.0), None, None, None);
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, critter_pipeline::new())
       .expect("Character shader loading error");

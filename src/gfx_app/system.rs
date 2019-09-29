@@ -10,13 +10,12 @@ use crate::critter::CharacterSprite;
 use crate::game::constants::{CURRENT_AMMO_TEXT, GAME_VERSION, HUD_TEXTS};
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::gfx_app::renderer::EncoderQueue;
-use crate::graphics::{DeltaTime, orientation::Stance};
+use crate::graphics::{DeltaTime, orientation::{Orientation, Stance}};
 use crate::graphics::Drawables;
 use crate::hud;
 use crate::terrain;
 use crate::terrain_object;
 use crate::terrain_object::TerrainTexture;
-use crate::terrain_shape::TerrainShapes;
 use crate::zombie;
 
 pub struct DrawSystem<D: gfx::Device> {
@@ -57,13 +56,13 @@ impl<D: gfx::Device> DrawSystem<D> {
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::Tree)
       ],
       terrain_shape_system: [
-        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainShapes::Right),
-        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainShapes::DownRight),
-        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainShapes::Down),
-        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainShapes::DownLeft),
-        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainShapes::Left),
-        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainShapes::UpLeft),
-        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainShapes::UpRight),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::Right),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::DownRight),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::Down),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::DownLeft),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::Left),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::UpLeft),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::UpRight),
       ],
       text_system: [
         hud::TextDrawSystem::new(factory, &HUD_TEXTS, GAME_VERSION, rtv.clone(), dsv.clone()),
@@ -186,13 +185,14 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
 
       for ts in &t_shape.objects {
         match ts.get_shape() {
-          TerrainShapes::Right => self.terrain_shape_system[0].draw(ts, time_passed, &mut encoder),
-          TerrainShapes::DownRight => self.terrain_shape_system[1].draw(ts, time_passed, &mut encoder),
-          TerrainShapes::Down => self.terrain_shape_system[2].draw(ts, time_passed, &mut encoder),
-          TerrainShapes::DownLeft => self.terrain_shape_system[3].draw(ts, time_passed, &mut encoder),
-          TerrainShapes::Left => self.terrain_shape_system[4].draw(ts, time_passed, &mut encoder),
-          TerrainShapes::UpLeft => self.terrain_shape_system[5].draw(ts, time_passed, &mut encoder),
-          TerrainShapes::UpRight => self.terrain_shape_system[6].draw(ts, time_passed, &mut encoder),
+          Orientation::Right => self.terrain_shape_system[0].draw(ts, time_passed, &mut encoder),
+          Orientation::DownRight => self.terrain_shape_system[1].draw(ts, time_passed, &mut encoder),
+          Orientation::Down => self.terrain_shape_system[2].draw(ts, time_passed, &mut encoder),
+          Orientation::DownLeft => self.terrain_shape_system[3].draw(ts, time_passed, &mut encoder),
+          Orientation::Left => self.terrain_shape_system[4].draw(ts, time_passed, &mut encoder),
+          Orientation::UpLeft => self.terrain_shape_system[5].draw(ts, time_passed, &mut encoder),
+          Orientation::UpRight => self.terrain_shape_system[6].draw(ts, time_passed, &mut encoder),
+          _ => (),
         }
       }
 

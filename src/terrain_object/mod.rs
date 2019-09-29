@@ -74,7 +74,7 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
 
     let terrain_object_texture = load_texture(factory, texture_bytes);
 
-    let mesh = RectangularTexturedMesh::new(factory, Texture::new(terrain_object_texture, None), texture_size, None, None);
+    let mesh = RectangularTexturedMesh::new(factory, Texture::new(terrain_object_texture, None), texture_size, None, None, None);
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, static_element_pipeline::new())
       .expect("Terrain object shader loading error");

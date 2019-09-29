@@ -1,4 +1,4 @@
-use cgmath::Point2;
+use cgmath::{Point2, Matrix2};
 use specs::{Read, ReadStorage, WriteStorage};
 
 use crate::character::controls::CharacterInputState;
@@ -17,33 +17,22 @@ pub mod terrain_shape_objects;
 const SHADER_VERT: &[u8] = include_bytes!("../shaders/static_element.v.glsl");
 const SHADER_FRAG: &[u8] = include_bytes!("../shaders/static_element.f.glsl");
 
-#[derive(Clone, PartialEq)]
-pub enum TerrainShapes {
-  Right,
-  DownRight,
-  Down,
-  DownLeft,
-  Left,
-  UpLeft,
-  UpRight,
-}
-
 pub struct TerrainShapeDrawable {
   projection: Projection,
   pub position: Position,
   previous_position: Position,
-  shape: TerrainShapes
+  orientation: Orientation,
 }
 
 impl TerrainShapeDrawable {
-  pub fn new(position: Position, shape: TerrainShapes) -> TerrainShapeDrawable {
+  pub fn new(position: Position, orientation: Orientation) -> TerrainShapeDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
     let projection = get_projection(view, ASPECT_RATIO);
     TerrainShapeDrawable {
       position,
       previous_position: Position::origin(),
       projection,
-      shape
+      orientation,
     }
   }
 
@@ -53,8 +42,8 @@ impl TerrainShapeDrawable {
     self.previous_position = ci.movement;
   }
 
-  pub fn get_shape(&self) -> &TerrainShapes {
-    &self.shape
+  pub fn get_shape(&self) -> &Orientation {
+    &self.orientation
   }
 }
 
@@ -70,7 +59,7 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
   pub fn new<F>(factory: &mut F,
                 rtv: gfx::handle::RenderTargetView<R, ColorFormat>,
                 dsv: gfx::handle::DepthStencilView<R, DepthFormat>,
-                shape: TerrainShapes,
+                shape: Orientation,
   ) -> TerrainShapeDrawSystem<R>
     where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
@@ -78,14 +67,20 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
     let terrain_shape_bytes = include_bytes!("../../assets/maps/shape.png");
     let terrain_shape_texture = load_texture(factory, terrain_shape_bytes);
 
+    let size = Point2::new(38.0, 38.0);
+    let texture = Texture::new(terrain_shape_texture, None);
+    let rotation = Some(38.0);
+    let scale = Some(Matrix2::new(1.0, 0.0, 0.0, 2.0/3.0));
+
     let rect_mesh = match shape {
-      TerrainShapes::Right => RectangularTexturedMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(35.0, 35.0), Some(20.0), Some(Orientation::Right)),
-      TerrainShapes::DownRight => RectangularTexturedMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(35.0, 35.0), Some(20.0), Some(Orientation::Right)),
-      TerrainShapes::Down => RectangularTexturedMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(35.0, 35.0), Some(20.0), Some(Orientation::Right)),
-      TerrainShapes::DownLeft => RectangularTexturedMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(35.0, 35.0), Some(20.0), Some(Orientation::Right)),
-      TerrainShapes::Left => RectangularTexturedMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(35.0, 35.0), Some(20.0), Some(Orientation::Right)),
-      TerrainShapes::UpLeft => RectangularTexturedMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(35.0, 35.0), Some(20.0), Some(Orientation::Right)),
-      TerrainShapes::UpRight => RectangularTexturedMesh::new(factory, Texture::new(terrain_shape_texture, None), Point2::new(35.0, 35.0), Some(20.0), Some(Orientation::Right)),
+      Orientation::Right => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::Right)),
+      Orientation::DownRight => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::DownRight)),
+      Orientation::Down => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::Down)),
+      Orientation::DownLeft => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::DownLeft)),
+      Orientation::Left => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::Left)),
+      Orientation::UpLeft => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::UpLeft)),
+      Orientation::UpRight => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::UpRight)),
+      _ => RectangularTexturedMesh::new(factory, texture, size, None, None, None)
     };
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, static_element_pipeline::new())

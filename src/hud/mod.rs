@@ -70,7 +70,7 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
 
     let texture = texture_cache[current_text].clone();
 
-    let rect_mesh = RectangularTexturedMesh::new(factory, texture, Point2::new(1.0, 1.0), None, None);
+    let rect_mesh = RectangularTexturedMesh::new(factory, texture, Point2::new(1.0, 1.0), None, None, None);
 
     let pipeline_data = text_pipeline::Data {
       vbuf: rect_mesh.mesh.vertex_buffer,
