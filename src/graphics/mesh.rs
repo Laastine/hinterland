@@ -53,7 +53,7 @@ fn edit_vertices(w: f32, h: f32, scale: Option<Matrix2<f32>>, rotation: Option<f
       };
       let skew_matrix = Matrix2::<f32>::new(1.0, y_skew, x_skew, 1.0);
       let rotation_matrix = Matrix2::<f32>::new(cos, -sin, sin, cos);
-      let translate = Vector2::<f32>::new(-20.0, -20.0);
+      let translate = Vector2::<f32>::new(-14.0, -27.0);
 
       let edited_vertex_data =
         translate +

@@ -67,9 +67,9 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
     let terrain_shape_bytes = include_bytes!("../../assets/maps/shape.png");
     let terrain_shape_texture = load_texture(factory, terrain_shape_bytes);
 
-    let size = Point2::new(40.0, 40.0);
+    let size = Point2::new(42.0, 42.0);
     let texture = Texture::new(terrain_shape_texture, None);
-    let rotation = Some(38.0);
+    let rotation = Some(42.0);
     let scale = Some(Matrix2::new(1.0, 0.0, 0.0, 2.0/3.0));
 
     let rect_mesh = match shape {

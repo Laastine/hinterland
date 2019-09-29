@@ -79,7 +79,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
           let vertex_x = (TILE_SIZE * (tile_x as f32) / 1.5) * raw_x;
           let vertex_y = (TILE_SIZE * (tile_y as f32) / 1.666) * raw_y;
 
-          let (u_pos, v_pos) = ((raw_x / 2.0 - raw_y) / 2.0 + 0.5, (raw_x / 2.0 + raw_y) / 2.0 + 0.5);
+          let (u_pos, v_pos) = ((raw_x / 4.0 - raw_y / 2.25) + 0.5, (raw_x / 4.0 + raw_y / 2.25) + 0.5);
           let tile_map_x = u_pos * tile_x as f32;
           let tile_map_y = v_pos * tile_y as f32;
 
