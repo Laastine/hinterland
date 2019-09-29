@@ -133,7 +133,7 @@ pub fn get_nearest_random_tile_position(pos: Position) -> Position {
   }
 }
 
-pub fn calc_hypotenuse(a: f32, b: f32) -> f32 {
+pub fn distance(a: f32, b: f32) -> f32 {
   (a.powf(2.0) + b.powf(2.0)).sqrt()
 }
 

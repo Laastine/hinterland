@@ -11,7 +11,7 @@ use crate::game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OF
 use crate::game::get_random_bool;
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::graphics::{get_nearest_random_tile_position,
-                      calc_hypotenuse,
+                      distance,
                       camera::CameraInputState,
                       can_move_to_tile,
                       direction,
@@ -76,7 +76,7 @@ impl ZombieDrawable {
 
     let x_y_distance_to_player = self.position - offset_delta;
 
-    let distance_to_player = calc_hypotenuse(x_y_distance_to_player.x().abs(), x_y_distance_to_player.y().abs());
+    let distance_to_player = distance(x_y_distance_to_player.x().abs(), x_y_distance_to_player.y().abs());
 
     let is_alive = self.health > 0.0 && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
 
