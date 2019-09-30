@@ -18,13 +18,14 @@ pub struct TerrainShapeObjects {
 
 impl TerrainShapeObjects {
   pub fn new() -> TerrainShapeObjects {
+    let mut objects = Vec::new();
+
+    for idx in -60..65 {
+      objects.push(TerrainShapeDrawable::new(set_position(idx, -idx+4), Orientation::DownLeft))
+    }
+
     TerrainShapeObjects {
-      objects: vec![
-        TerrainShapeDrawable::new(set_position(-1, 5), Orientation::DownLeft),
-        TerrainShapeDrawable::new(set_position(0, 4), Orientation::DownLeft),
-        TerrainShapeDrawable::new(set_position(1, 3), Orientation::DownLeft),
-        TerrainShapeDrawable::new(set_position(2, 2), Orientation::DownLeft),
-      ]
+      objects
     }
   }
 }
