@@ -44,7 +44,7 @@ impl CharacterInputState {
       let horizontal_move = self.movement + Position::new(x, 0.0);
       if let Some(y) = css.y_move {
         let horizontal_movement = Position::new(x / 1.5, 0.0);
-        let vertical_movement = Position::new(0.0, y / 1.5);
+        let vertical_movement = Position::new(0.0, y / 1.666);
         if !self.is_colliding || can_move_to_tile(self.movement + horizontal_movement + vertical_movement) {
           self.movement = self.movement + horizontal_movement + vertical_movement;
           camera.movement = camera.movement + horizontal_movement - vertical_movement;
