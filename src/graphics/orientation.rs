@@ -10,7 +10,7 @@ pub enum Orientation {
   DownLeft,
   Down,
   DownRight,
-  Still,
+  Normal,
 }
 
 impl Display for Orientation {
@@ -24,7 +24,7 @@ impl Display for Orientation {
       Orientation::DownLeft => write!(f, "DownLeft"),
       Orientation::Down => write!(f, "Down"),
       Orientation::DownRight => write!(f, "DownRight"),
-      Orientation::Still => write!(f, "Still"),
+      Orientation::Normal => write!(f, "Normal"),
     }
   }
 }

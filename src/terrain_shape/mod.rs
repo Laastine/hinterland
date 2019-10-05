@@ -72,13 +72,13 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
     let rotation = match shape {
       Orientation::DownLeft => Some(44.0),
       Orientation::DownRight => Some(45.0),
-      Orientation::Still => Some(43.0),
+      Orientation::Normal => Some(43.0),
       _ => None
     };
     let scale = match shape {
       Orientation::DownLeft => Some(Matrix2::new(1.0, 0.0, 0.0, 0.9)),
       Orientation::DownRight => Some(Matrix2::new(1.0, 0.0, 0.0, 0.9)),
-      Orientation::Still => Some(Matrix2::new(1.05, 0.0, 0.0, 0.6)),
+      Orientation::Normal => Some(Matrix2::new(1.05, 0.0, 0.0, 0.6)),
       _ => Some(Matrix2::new(1.0, 0.0, 0.0, 1.0)),
     };
 
@@ -90,7 +90,7 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
       Orientation::Left => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::Left)),
       Orientation::UpLeft => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::UpLeft)),
       Orientation::UpRight => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::UpRight)),
-      Orientation::Still => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::Still)),
+      Orientation::Normal => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::Normal)),
       _ => RectangularTexturedMesh::new(factory, texture, size, None, None, None)
     };
 

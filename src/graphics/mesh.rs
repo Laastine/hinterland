@@ -46,7 +46,7 @@ fn edit_vertices(w: f32, h: f32, scale: Option<Matrix2<f32>>, rotation: Option<f
       let skew_matrix = Matrix2::<f32>::new(1.0, y_skew, x_skew, 1.0);
       let rotation_matrix = Matrix2::<f32>::new(cos, -sin, sin, cos);
       let translate = match orientation {
-        Some(Orientation::Still) => Vector2::<f32>::new(5.0, 2.0),
+        Some(Orientation::Normal) => Vector2::<f32>::new(5.0, 2.0),
         Some(Orientation::DownLeft) => Vector2::<f32>::new(10.0, -20.0),
         Some(Orientation::DownRight) => Vector2::<f32>::new(3.0, -17.0),
         _ => Vector2::<f32>::new(0.0, 0.0),

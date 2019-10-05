@@ -63,7 +63,7 @@ impl<D: gfx::Device> DrawSystem<D> {
         terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::Left),
         terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::UpLeft),
         terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::UpRight),
-        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::Still),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::Normal),
       ],
       text_system: [
         hud::TextDrawSystem::new(factory, &HUD_TEXTS, GAME_VERSION, rtv.clone(), dsv.clone()),
@@ -193,7 +193,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
           Orientation::Left => self.terrain_shape_system[4].draw(ts, time_passed, &mut encoder),
           Orientation::UpLeft => self.terrain_shape_system[5].draw(ts, time_passed, &mut encoder),
           Orientation::UpRight => self.terrain_shape_system[6].draw(ts, time_passed, &mut encoder),
-          Orientation::Still => self.terrain_shape_system[7].draw(ts, time_passed, &mut encoder),
+          Orientation::Normal => self.terrain_shape_system[7].draw(ts, time_passed, &mut encoder),
           _ => (),
         }
       }

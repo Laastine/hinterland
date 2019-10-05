@@ -199,16 +199,16 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
       Stance::Still => {
         (drawable.direction as usize * 4 + drawable.zombie_idx)
       }
-      Stance::Walking if drawable.orientation != Orientation::Still => {
+      Stance::Walking if drawable.orientation != Orientation::Normal => {
         (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
       }
-      Stance::Running if drawable.orientation != Orientation::Still => {
+      Stance::Running if drawable.orientation != Orientation::Normal => {
         (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
       }
-      Stance::NormalDeath if drawable.orientation != Orientation::Still => {
+      Stance::NormalDeath if drawable.orientation != Orientation::Normal => {
         (drawable.direction as usize * 6 + drawable.zombie_death_idx + NORMAL_DEATH_SPRITE_OFFSET)
       }
-      Stance::CriticalDeath if drawable.orientation != Orientation::Still => {
+      Stance::CriticalDeath if drawable.orientation != Orientation::Normal => {
         (drawable.direction as usize * 8 + drawable.zombie_death_idx)
       }
       _ => {
