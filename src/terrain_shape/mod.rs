@@ -64,13 +64,23 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
     where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
-    let terrain_shape_bytes = include_bytes!("../../assets/maps/shape.png");
+    let terrain_shape_bytes = include_bytes!("../../assets/maps/debug.png");
     let terrain_shape_texture = load_texture(factory, terrain_shape_bytes);
 
     let size = Point2::new(42.0, 42.0);
     let texture = Texture::new(terrain_shape_texture, None);
-    let rotation = Some(42.0);
-    let scale = Some(Matrix2::new(1.0, 0.0, 0.0, 2.0/3.0));
+    let rotation = match shape {
+      Orientation::DownLeft => Some(44.0),
+      Orientation::DownRight => Some(45.0),
+      Orientation::Still => Some(43.0),
+      _ => None
+    };
+    let scale = match shape {
+      Orientation::DownLeft => Some(Matrix2::new(1.0, 0.0, 0.0, 0.9)),
+      Orientation::DownRight => Some(Matrix2::new(1.0, 0.0, 0.0, 0.9)),
+      Orientation::Still => Some(Matrix2::new(1.05, 0.0, 0.0, 0.6)),
+      _ => Some(Matrix2::new(1.0, 0.0, 0.0, 1.0)),
+    };
 
     let rect_mesh = match shape {
       Orientation::Right => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::Right)),
@@ -80,10 +90,12 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
       Orientation::Left => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::Left)),
       Orientation::UpLeft => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::UpLeft)),
       Orientation::UpRight => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::UpRight)),
+      Orientation::Still => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::Still)),
       _ => RectangularTexturedMesh::new(factory, texture, size, None, None, None)
     };
 
-    let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, static_element_pipeline::new())
+    let pso = factory
+      .create_pipeline_simple(SHADER_VERT, SHADER_FRAG, static_element_pipeline::new())
       .expect("Terrain shape shader loading error");
 
     let pipeline_data = static_element_pipeline::Data {

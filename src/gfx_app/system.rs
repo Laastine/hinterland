@@ -26,7 +26,7 @@ pub struct DrawSystem<D: gfx::Device> {
   zombie_system: zombie::ZombieDrawSystem<D::Resources>,
   bullet_system: bullet::BulletDrawSystem<D::Resources>,
   terrain_object_system: [terrain_object::TerrainObjectDrawSystem<D::Resources>; 3],
-  terrain_shape_system: [terrain_shape::TerrainShapeDrawSystem<D::Resources>; 7],
+  terrain_shape_system: [terrain_shape::TerrainShapeDrawSystem<D::Resources>; 8],
   text_system: [hud::TextDrawSystem<D::Resources>; 3],
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
@@ -63,6 +63,7 @@ impl<D: gfx::Device> DrawSystem<D> {
         terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::Left),
         terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::UpLeft),
         terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::UpRight),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::Still),
       ],
       text_system: [
         hud::TextDrawSystem::new(factory, &HUD_TEXTS, GAME_VERSION, rtv.clone(), dsv.clone()),
@@ -192,6 +193,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
           Orientation::Left => self.terrain_shape_system[4].draw(ts, time_passed, &mut encoder),
           Orientation::UpLeft => self.terrain_shape_system[5].draw(ts, time_passed, &mut encoder),
           Orientation::UpRight => self.terrain_shape_system[6].draw(ts, time_passed, &mut encoder),
+          Orientation::Still => self.terrain_shape_system[7].draw(ts, time_passed, &mut encoder),
           _ => (),
         }
       }
