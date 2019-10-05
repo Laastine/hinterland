@@ -64,7 +64,7 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
     where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
-    let terrain_shape_bytes = include_bytes!("../../assets/maps/debug.png");
+    let terrain_shape_bytes = include_bytes!("../../assets/maps/shape.png");
     let terrain_shape_texture = load_texture(factory, terrain_shape_bytes);
 
     let size = Point2::new(42.0, 42.0);

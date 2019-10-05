@@ -26,7 +26,6 @@ fn edit_vertices(w: f32, h: f32, scale: Option<Matrix2<f32>>, rotation: Option<f
   let rot = rotation.unwrap_or(0.0);
 
   let rot_y = 20.0;
-  let rot_x = 15.0;
 
   rectangle_mesh(w, h).to_vec().iter()
     .map(|el| {
@@ -34,7 +33,6 @@ fn edit_vertices(w: f32, h: f32, scale: Option<Matrix2<f32>>, rotation: Option<f
       let sin = Angle::sin(Deg(rot));
 
       let x_skew = match orientation {
-//        Some(Orientation::DownRight) => Angle::tan(Deg(rot_x)),
         _ => 0.0,
       };
 
