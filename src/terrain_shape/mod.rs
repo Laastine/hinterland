@@ -72,17 +72,19 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
 
     let rotation = match shape {
       Orientation::UpLeft => Some(0.0),
+      Orientation::UpRight => Some(0.0),
       Orientation::DownLeft => Some(45.0),
       Orientation::DownRight => Some(45.0),
-      Orientation::Normal => Some(43.0),
+      Orientation::Normal => Some(45.0),
       _ => None,
     };
 
     let scale = match shape {
-      Orientation::UpLeft => Some(Matrix2::new(0.77, 0.0, 0.0, 0.4)),
+      Orientation::UpLeft => Some(Matrix2::new(0.77, 0.0, 0.0, 0.42)),
+      Orientation::UpRight => Some(Matrix2::new(0.77, 0.0, 0.0, 0.42)),
       Orientation::DownLeft => Some(Matrix2::new(1.1, 0.0, 0.0, 0.9)),
       Orientation::DownRight => Some(Matrix2::new(1.1, 0.0, 0.0, 0.9)),
-      Orientation::Normal => Some(Matrix2::new(1.1, 0.0, 0.0, 0.52)),
+      Orientation::Normal => Some(Matrix2::new(1.1, 0.0, 0.0, 0.5)),
       _ => Some(Matrix2::new(1.0, 0.0, 0.0, 1.0)),
     };
 
