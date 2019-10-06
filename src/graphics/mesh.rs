@@ -25,7 +25,8 @@ fn edit_vertices(w: f32, h: f32, scale: Option<Matrix2<f32>>, rotation: Option<f
 
   let rot = rotation.unwrap_or(0.0);
 
-  let rot_y = 20.0;
+  let rot_x = 45.0;
+  let rot_y = 22.0;
 
   rectangle_mesh(w, h).to_vec().iter()
     .map(|el| {
@@ -33,20 +34,22 @@ fn edit_vertices(w: f32, h: f32, scale: Option<Matrix2<f32>>, rotation: Option<f
       let sin = Angle::sin(Deg(rot));
 
       let x_skew = match orientation {
+        Some(Orientation::UpLeft) => Angle::tan(Deg(rot_x)),
         _ => 0.0,
       };
 
       let y_skew = match orientation {
-        Some(Orientation::DownRight) => Angle::tan(Deg(-rot_y+2.0)),
-        Some(Orientation::DownLeft) => Angle::tan(Deg(rot_y)),
+        Some(Orientation::DownRight) => Angle::tan(Deg(-rot_y)),
+        Some(Orientation::DownLeft) => Angle::tan(Deg(rot_y-2.0)),
         _ => 0.0,
       };
       let skew_matrix = Matrix2::<f32>::new(1.0, y_skew, x_skew, 1.0);
       let rotation_matrix = Matrix2::<f32>::new(cos, -sin, sin, cos);
       let translate = match orientation {
-        Some(Orientation::Normal) => Vector2::<f32>::new(5.0, 2.0),
-        Some(Orientation::DownLeft) => Vector2::<f32>::new(10.0, -20.0),
-        Some(Orientation::DownRight) => Vector2::<f32>::new(3.0, -17.0),
+        Some(Orientation::UpLeft) => Vector2::<f32>::new(2.0, -20.0),
+        Some(Orientation::DownLeft) => Vector2::<f32>::new(9.0, -18.0),
+        Some(Orientation::DownRight) => Vector2::<f32>::new(4.0, -18.0),
+        Some(Orientation::Normal) => Vector2::<f32>::new(5.0, 1.0),
         _ => Vector2::<f32>::new(0.0, 0.0),
       };
 

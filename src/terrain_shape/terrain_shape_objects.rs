@@ -23,6 +23,7 @@ impl TerrainShapeObjects {
 //    for idx in -4..4 {
 //      objects.push(TerrainShapeDrawable::new(set_position(idx, -idx+4), Orientation::DownLeft))
 //    }
+    objects.push(TerrainShapeDrawable::new(set_position(0,6), Orientation::UpLeft));
     objects.push(TerrainShapeDrawable::new(set_position(0,4), Orientation::DownLeft));
     objects.push(TerrainShapeDrawable::new(set_position(1,5), Orientation::Normal));
     objects.push(TerrainShapeDrawable::new(set_position(2,4), Orientation::DownRight));
