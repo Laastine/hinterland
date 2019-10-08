@@ -6,7 +6,7 @@ use crate::game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::graphics::camera::CameraInputState;
 use crate::graphics::dimensions::{Dimensions, get_projection, get_view_matrix};
-use crate::graphics::mesh::RectangularTexturedMesh;
+use crate::graphics::mesh::{RectangularTexturedMesh, Geometry};
 use crate::graphics::orientation::Orientation;
 use crate::graphics::texture::{load_texture, Texture};
 use crate::shaders::{Position, Projection, static_element_pipeline, Time};
@@ -85,19 +85,20 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
       Orientation::DownLeft => Some(Matrix2::new(1.1, 0.0, 0.0, 0.9)),
       Orientation::DownRight => Some(Matrix2::new(1.1, 0.0, 0.0, 0.9)),
       Orientation::Normal => Some(Matrix2::new(1.1, 0.0, 0.0, 0.5)),
+      Orientation::Down => Some(Matrix2::new(2.0, 0.0, 0.0, 0.2)),
       _ => Some(Matrix2::new(1.0, 0.0, 0.0, 1.0)),
     };
 
     let rect_mesh = match shape {
-      Orientation::Right => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::Right)),
-      Orientation::DownRight => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::DownRight)),
-      Orientation::Down => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::Down)),
-      Orientation::DownLeft => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::DownLeft)),
-      Orientation::Left => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::Left)),
-      Orientation::UpLeft => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::UpLeft)),
-      Orientation::UpRight => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::UpRight)),
-      Orientation::Normal => RectangularTexturedMesh::new(factory, texture, size, scale, rotation, Some(Orientation::Normal)),
-      _ => RectangularTexturedMesh::new(factory, texture, size, None, None, None)
+      Orientation::Right => RectangularTexturedMesh::new(factory, texture, Geometry::Triangle, size, scale, rotation, Some(Orientation::Right)),
+      Orientation::DownRight => RectangularTexturedMesh::new(factory, texture, Geometry::Rectangle, size, scale, rotation, Some(Orientation::DownRight)),
+      Orientation::Down => RectangularTexturedMesh::new(factory, texture, Geometry::Triangle, size, scale, rotation, Some(Orientation::Down)),
+      Orientation::DownLeft => RectangularTexturedMesh::new(factory, texture, Geometry::Rectangle, size, scale, rotation, Some(Orientation::DownLeft)),
+      Orientation::Left => RectangularTexturedMesh::new(factory, texture, Geometry::Triangle, size, scale, rotation, Some(Orientation::Left)),
+      Orientation::UpLeft => RectangularTexturedMesh::new(factory, texture, Geometry::Rectangle, size, scale, rotation, Some(Orientation::UpLeft)),
+      Orientation::UpRight => RectangularTexturedMesh::new(factory, texture, Geometry::Rectangle, size, scale, rotation, Some(Orientation::UpRight)),
+      Orientation::Normal => RectangularTexturedMesh::new(factory, texture, Geometry::Rectangle, size, scale, rotation, Some(Orientation::Normal)),
+      _ => RectangularTexturedMesh::new(factory, texture, Geometry::Rectangle, size, None, None, None)
     };
 
     let pso = factory

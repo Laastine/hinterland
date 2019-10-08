@@ -11,6 +11,19 @@ use crate::shaders::VertexData;
 
 const DEFAULT_INDEX_DATA: &[u16] = &[0, 1, 2, 2, 3, 0];
 
+pub enum Geometry {
+  Triangle,
+  Rectangle,
+}
+
+fn triangle_mesh(w: f32, h: f32) -> [VertexData; 3] {
+  [
+    VertexData::new([-w, -h], [-1.0, -1.0]),
+    VertexData::new([0.0, 0.0], [0.0, 0.0]),
+    VertexData::new([w, -h], [1.0, -1.0]),
+  ]
+}
+
 fn rectangle_mesh(w: f32, h: f32) -> [VertexData; 4] {
   [
     VertexData::new([-w, -h], [0.0, 1.0]),
@@ -20,7 +33,17 @@ fn rectangle_mesh(w: f32, h: f32) -> [VertexData; 4] {
   ]
 }
 
-fn edit_vertices(w: f32, h: f32, scale: Option<Matrix2<f32>>, rotation: Option<f32>, orientation: Option<Orientation>) -> Vec<VertexData> {
+fn edit_vertices(w: f32,
+                 h: f32,
+                 geometry: Geometry,
+                 scale: Option<Matrix2<f32>>,
+                 rotation: Option<f32>,
+                 orientation: Option<Orientation>) -> Vec<VertexData> {
+  let mesh = match geometry {
+    Geometry::Rectangle => rectangle_mesh(w, h).to_vec(),
+    Geometry::Triangle => triangle_mesh(w, h).to_vec(),
+  };
+
   let scale_matrix = scale.unwrap_or_else(|| Matrix2::new(1.0, 0.0, 0.0, 1.0));
 
   let rot = rotation.unwrap_or(0.0);
@@ -28,7 +51,7 @@ fn edit_vertices(w: f32, h: f32, scale: Option<Matrix2<f32>>, rotation: Option<f
   let rot_x = 50.0;
   let rot_y = 22.0;
 
-  rectangle_mesh(w, h).to_vec().iter()
+  mesh.iter()
     .map(|el| {
       let cos = Angle::cos(Deg(rot));
       let sin = Angle::sin(Deg(rot));
@@ -52,6 +75,7 @@ fn edit_vertices(w: f32, h: f32, scale: Option<Matrix2<f32>>, rotation: Option<f
         Some(Orientation::DownLeft) => Vector2::<f32>::new(5.0, -16.0),
         Some(Orientation::DownRight) => Vector2::<f32>::new(4.0, -18.0),
         Some(Orientation::Normal) => Vector2::<f32>::new(3.0, 0.0),
+        Some(Orientation::Down) => Vector2::<f32>::new(6.0, -100.0),
         _ => Vector2::<f32>::new(0.0, 0.0),
       };
 
@@ -85,7 +109,7 @@ impl<R> PlainMesh<R> where R: gfx::Resources {
     let w = size.x;
     let h = size.y;
 
-    let vertex_data = edit_vertices(w, h, scale, rotation, orientation);
+    let vertex_data = edit_vertices(w, h, Geometry::Rectangle, scale, rotation, orientation);
 
     let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&vertex_data[..], DEFAULT_INDEX_DATA);
     PlainMesh {
@@ -102,6 +126,17 @@ pub struct TexturedMesh<R> where R: Resources {
   pub texture: Texture<R>,
 }
 
+impl<R> TexturedMesh<R> where R: gfx::Resources {
+  pub fn new<F>(factory: &mut F, vertices: &[VertexData], indices: &[u16], texture: Texture<R>) -> TexturedMesh<R> where F: gfx::Factory<R> {
+    let mesh = PlainMesh::new(factory, vertices, indices);
+    TexturedMesh {
+      slice: mesh.slice,
+      vertex_buffer: mesh.vertex_buffer,
+      texture,
+    }
+  }
+}
+
 #[derive(Clone)]
 pub struct RectangularTexturedMesh<R> where R: Resources {
   pub mesh: TexturedMesh<R>,
@@ -111,6 +146,7 @@ pub struct RectangularTexturedMesh<R> where R: Resources {
 impl<R> RectangularTexturedMesh<R> where R: gfx::Resources {
   pub fn new<F>(factory: &mut F,
                 texture: Texture<R>,
+                geometry: Geometry,
                 size: Point2<f32>,
                 scale: Option<Matrix2<f32>>,
                 rotation: Option<f32>,
@@ -118,23 +154,12 @@ impl<R> RectangularTexturedMesh<R> where R: gfx::Resources {
     let w = size.x;
     let h = size.y;
 
-    let vertex_data = edit_vertices(w, h, scale, rotation, orientation);
+    let vertex_data = edit_vertices(w, h, geometry, scale, rotation, orientation);
 
     let mesh = TexturedMesh::new(factory, &vertex_data, &DEFAULT_INDEX_DATA, texture);
     RectangularTexturedMesh {
       mesh,
       size,
-    }
-  }
-}
-
-impl<R> TexturedMesh<R> where R: gfx::Resources {
-  pub fn new<F>(factory: &mut F, vertices: &[VertexData], indices: &[u16], texture: Texture<R>) -> TexturedMesh<R> where F: gfx::Factory<R> {
-    let mesh = PlainMesh::new(factory, vertices, indices);
-    TexturedMesh {
-      slice: mesh.slice,
-      vertex_buffer: mesh.vertex_buffer,
-      texture,
     }
   }
 }
