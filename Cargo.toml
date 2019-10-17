@@ -21,7 +21,7 @@ rand = "0.7.2"
 rodio = "0.9.0"
 rusttype = "0.8.1"
 specs = "0.15.1"
-tiled = "0.8.0"
+tiled = "0.8.1"
 
 [features]
 godmode = []
