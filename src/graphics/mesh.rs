@@ -56,14 +56,12 @@ fn edit_vertices(w: f32,
       let x_skew = match orientation {
         Some(Orientation::UpLeft) => Angle::tan(Deg(50.0)),
         Some(Orientation::UpRight) => Angle::tan(Deg(-50.0)),
-//        Some(Orientation::Left) => Angle::tan(Deg(2.0)),
         _ => 0.0,
       };
 
       let y_skew = match orientation {
         Some(Orientation::DownRight) => Angle::tan(Deg(-22.0)),
         Some(Orientation::DownLeft) => Angle::tan(Deg(20.0)),
-//        Some(Orientation::Right) => Angle::tan(Deg(20.0)),
         _ => 0.0,
       };
       let skew_matrix = Matrix2::<f32>::new(1.0, y_skew, x_skew, 1.0);
@@ -74,12 +72,11 @@ fn edit_vertices(w: f32,
         Some(Orientation::DownLeft) => Vector2::<f32>::new(5.0, -16.0),
         Some(Orientation::DownRight) => Vector2::<f32>::new(4.0, -18.0),
         Some(Orientation::Normal) => Vector2::<f32>::new(3.0, 0.0),
-        // LEFT
         Some(Orientation::Left) => Vector2::<f32>::new(-45.0, -36.0),
-
-        Some(Orientation::Right) => Vector2::<f32>::new(70.0, -26.0),
+        Some(Orientation::Right) => Vector2::<f32>::new(60.0, -40.0),
         Some(Orientation::Down) => Vector2::<f32>::new(6.0, -100.0),
-        _ => Vector2::<f32>::new(0.0, 0.0),
+        Some(Orientation::Up) => Vector2::<f32>::new(0.0, 0.0),
+        None => Vector2::<f32>::new(0.0, 0.0),
       };
 
       let edited_vertex_data =

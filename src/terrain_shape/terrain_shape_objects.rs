@@ -20,9 +20,6 @@ impl TerrainShapeObjects {
   pub fn new() -> TerrainShapeObjects {
     let mut objects = Vec::new();
 
-//    for idx in -4..4 {
-//      objects.push(TerrainShapeDrawable::new(set_position(idx, -idx+4), Orientation::DownLeft))
-//    }
     objects.push(TerrainShapeDrawable::new(set_position(2,6), Orientation::UpRight));
     objects.push(TerrainShapeDrawable::new(set_position(0,6), Orientation::UpLeft));
     objects.push(TerrainShapeDrawable::new(set_position(1,5), Orientation::Normal));
