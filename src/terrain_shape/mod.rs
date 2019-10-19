@@ -1,4 +1,4 @@
-use cgmath::{Point2, Matrix2};
+use cgmath::{Matrix2, Point2};
 use specs::{Read, ReadStorage, WriteStorage};
 
 use crate::character::controls::CharacterInputState;
@@ -6,7 +6,7 @@ use crate::game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::graphics::camera::CameraInputState;
 use crate::graphics::dimensions::{Dimensions, get_projection, get_view_matrix};
-use crate::graphics::mesh::{RectangularTexturedMesh, Geometry};
+use crate::graphics::mesh::{Geometry, RectangularTexturedMesh};
 use crate::graphics::orientation::Orientation;
 use crate::graphics::texture::{load_texture, Texture};
 use crate::shaders::{Position, Projection, static_element_pipeline, Time};
@@ -76,7 +76,8 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
       Orientation::Normal => Some(45.0),
       Orientation::Left => Some(90.0),
       Orientation::Right => Some(270.0),
-      Orientation::Up | Orientation::Down => Some(0.0),
+      Orientation::Up => Some(180.0),
+      Orientation::Down => Some(0.0),
     };
 
     let scale = match shape {
@@ -87,7 +88,7 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
       Orientation::Normal => Some(Matrix2::new(1.1, 0.0, 0.0, 0.5)),
       Orientation::Left => Some(Matrix2::new(0.4, 0.0, 0.0, 0.4)),
       Orientation::Right => Some(Matrix2::new(0.05, 0.0, 0.0, 0.4)),
-      Orientation::Up => Some(Matrix2::new(1.0, 0.0, 0.0, 1.0)),
+      Orientation::Up => Some(Matrix2::new(0.77, 0.0, 0.0, 0.1)),
       Orientation::Down => Some(Matrix2::new(0.75, 0.0, 0.0, 1.75)),
     };
 
@@ -100,7 +101,7 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
       Orientation::Normal => RectangularTexturedMesh::new(factory, texture, Geometry::Rectangle, size, scale, rotation, Some(Orientation::Normal)),
       Orientation::Left => RectangularTexturedMesh::new(factory, texture, Geometry::Triangle, size, scale, rotation, Some(Orientation::Left)),
       Orientation::Right => RectangularTexturedMesh::new(factory, texture, Geometry::Triangle, size, scale, rotation, Some(Orientation::Right)),
-      Orientation::Up =>  RectangularTexturedMesh::new(factory, texture, Geometry::Rectangle, size, None, None, None),
+      Orientation::Up =>  RectangularTexturedMesh::new(factory, texture, Geometry::Triangle, size, scale, rotation, Some(Orientation::Up)),
     };
 
     let pso = factory

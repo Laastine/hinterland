@@ -18,9 +18,9 @@ pub enum Geometry {
 
 fn triangle_mesh(w: f32, h: f32) -> [VertexData; 3] {
   [
-    VertexData::new([-w * 2.0, -h], [-1.0, -1.0]),
+    VertexData::new([-w * 2.0, -h], [-2.0, -1.0]),
     VertexData::new([0.0, 0.0], [0.0, 0.0]),
-    VertexData::new([w * 2.0, -h], [1.0, -1.0]),
+    VertexData::new([w * 2.0, -h], [2.0, -1.0]),
   ]
 }
 
@@ -75,7 +75,7 @@ fn edit_vertices(w: f32,
         Some(Orientation::Left) => Vector2::<f32>::new(-47.0, -36.0),
         Some(Orientation::Right) => Vector2::<f32>::new(58.0, -40.0),
         Some(Orientation::Down) => Vector2::<f32>::new(-1.0, 7.0),
-        Some(Orientation::Up) => Vector2::<f32>::new(0.0, 0.0),
+        Some(Orientation::Up) => Vector2::<f32>::new(-2.0, -8.0),
         None => Vector2::<f32>::new(0.0, 0.0),
       };
 
