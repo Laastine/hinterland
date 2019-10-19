@@ -67,23 +67,23 @@ fn edit_vertices(w: f32,
       let skew_matrix = Matrix2::<f32>::new(1.0, y_skew, x_skew, 1.0);
       let rotation_matrix = Matrix2::<f32>::new(cos, -sin, sin, cos);
       let translate = match orientation {
-        Some(Orientation::UpLeft) => Vector2::<f32>::new(2.0, -20.0),
-        Some(Orientation::UpRight) => Vector2::<f32>::new(0.0, -22.0),
-        Some(Orientation::DownLeft) => Vector2::<f32>::new(5.0, -16.0),
-        Some(Orientation::DownRight) => Vector2::<f32>::new(4.0, -18.0),
-        Some(Orientation::Normal) => Vector2::<f32>::new(3.0, 0.0),
-        Some(Orientation::Left) => Vector2::<f32>::new(-45.0, -36.0),
-        Some(Orientation::Right) => Vector2::<f32>::new(60.0, -40.0),
-        Some(Orientation::Down) => Vector2::<f32>::new(6.0, -100.0),
+        Some(Orientation::UpLeft) => Vector2::<f32>::new(0.0, -20.0),
+        Some(Orientation::UpRight) => Vector2::<f32>::new(-2.0, -22.0),
+        Some(Orientation::DownLeft) => Vector2::<f32>::new(0.0, -14.0),
+        Some(Orientation::DownRight) => Vector2::<f32>::new(-4.0, -14.0),
+        Some(Orientation::Normal) => Vector2::<f32>::new(-4.0, 4.0),
+        Some(Orientation::Left) => Vector2::<f32>::new(-47.0, -36.0),
+        Some(Orientation::Right) => Vector2::<f32>::new(58.0, -40.0),
+        Some(Orientation::Down) => Vector2::<f32>::new(-1.0, 7.0),
         Some(Orientation::Up) => Vector2::<f32>::new(0.0, 0.0),
         None => Vector2::<f32>::new(0.0, 0.0),
       };
 
       let edited_vertex_data =
         translate +
-          scale_matrix *
+          (scale_matrix *
             (skew_matrix *
-              (rotation_matrix * Vector2::<f32>::new(el.pos[0] as f32, el.pos[1] as f32)));
+              (rotation_matrix * Vector2::<f32>::new(el.pos[0] as f32, el.pos[1] as f32))));
 
       VertexData { pos: [edited_vertex_data.x, edited_vertex_data.y], uv: el.uv }
     })

@@ -74,21 +74,21 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
       Orientation::UpLeft | Orientation::UpRight => Some(0.0),
       Orientation::DownLeft | Orientation::DownRight => Some(45.0),
       Orientation::Normal => Some(45.0),
-      Orientation::Left => Some(85.0),
-      Orientation::Right => Some(260.0),
+      Orientation::Left => Some(90.0),
+      Orientation::Right => Some(270.0),
       Orientation::Up | Orientation::Down => Some(0.0),
     };
 
     let scale = match shape {
-      Orientation::UpLeft => Some(Matrix2::new(0.77, 0.0, 0.0, 0.42)),
-      Orientation::UpRight => Some(Matrix2::new(0.77, 0.0, 0.0, 0.42)),
+      Orientation::UpLeft => Some(Matrix2::new(0.7, 0.0, 0.0, 0.42)),
+      Orientation::UpRight => Some(Matrix2::new(0.7, 0.0, 0.0, 0.4)),
       Orientation::DownLeft => Some(Matrix2::new(1.1, 0.0, 0.0, 0.9)),
       Orientation::DownRight => Some(Matrix2::new(1.1, 0.0, 0.0, 0.9)),
       Orientation::Normal => Some(Matrix2::new(1.1, 0.0, 0.0, 0.5)),
-      Orientation::Down => Some(Matrix2::new(0.5, 0.0, 0.0, 0.25)),
       Orientation::Left => Some(Matrix2::new(0.4, 0.0, 0.0, 0.4)),
-      Orientation::Right => Some(Matrix2::new(0.1, 0.0, 0.0, 0.35)),
+      Orientation::Right => Some(Matrix2::new(0.05, 0.0, 0.0, 0.4)),
       Orientation::Up => Some(Matrix2::new(1.0, 0.0, 0.0, 1.0)),
+      Orientation::Down => Some(Matrix2::new(0.75, 0.0, 0.0, 1.75)),
     };
 
     let rect_mesh = match shape {
