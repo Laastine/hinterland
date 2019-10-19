@@ -76,6 +76,8 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
       Orientation::DownLeft => Some(45.0),
       Orientation::DownRight => Some(45.0),
       Orientation::Normal => Some(45.0),
+      Orientation::Left => Some(85.0),
+      Orientation::Right => Some(-50.0),
       _ => None,
     };
 
@@ -85,7 +87,9 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
       Orientation::DownLeft => Some(Matrix2::new(1.1, 0.0, 0.0, 0.9)),
       Orientation::DownRight => Some(Matrix2::new(1.1, 0.0, 0.0, 0.9)),
       Orientation::Normal => Some(Matrix2::new(1.1, 0.0, 0.0, 0.5)),
-      Orientation::Down => Some(Matrix2::new(2.0, 0.0, 0.0, 0.2)),
+      Orientation::Down => Some(Matrix2::new(0.5, 0.0, 0.0, 0.25)),
+      Orientation::Left => Some(Matrix2::new(0.4, 0.0, 0.0, 0.4)),
+      Orientation::Right => Some(Matrix2::new(0.4, 0.0, 0.0, 0.4)),
       _ => Some(Matrix2::new(1.0, 0.0, 0.0, 1.0)),
     };
 
