@@ -8,7 +8,7 @@ use crate::terrain_shape::TerrainShapeDrawable;
 fn set_position(x: isize, y: isize) -> Position {
   Position::new(
     TILE_SIZE * x as f32,
-    TILE_SIZE * 0.9 * y as f32
+    TILE_SIZE * 0.9 * y as f32,
   )
 }
 
@@ -18,22 +18,21 @@ pub struct TerrainShapeObjects {
 
 impl TerrainShapeObjects {
   pub fn new() -> TerrainShapeObjects {
-    let mut objects = Vec::new();
-
-    objects.push(TerrainShapeDrawable::new(set_position(1,5), Orientation::Normal));
-    objects.push(TerrainShapeDrawable::new(set_position(0,6), Orientation::UpLeft));
-    objects.push(TerrainShapeDrawable::new(set_position(2,6), Orientation::UpRight));
-    objects.push(TerrainShapeDrawable::new(set_position(0,5), Orientation::Left));
-    objects.push(TerrainShapeDrawable::new(set_position(2,5), Orientation::Right));
-    objects.push(TerrainShapeDrawable::new(set_position(0,4), Orientation::DownLeft));
-    objects.push(TerrainShapeDrawable::new(set_position(2,4), Orientation::DownRight));
-    objects.push(TerrainShapeDrawable::new(set_position(1,4), Orientation::Down));
-    objects.push(TerrainShapeDrawable::new(set_position(1,6), Orientation::Up));
-
-
     TerrainShapeObjects {
-      objects
+      objects: Vec::new(),
     }
+  }
+
+  pub fn small_hill(&mut self, x: isize, y: isize) {
+    self.objects.push(TerrainShapeDrawable::new(set_position(x, y), Orientation::Normal));
+    self.objects.push(TerrainShapeDrawable::new(set_position(x - 1, y + 1), Orientation::UpLeft));
+    self.objects.push(TerrainShapeDrawable::new(set_position(x + 1, y + 1), Orientation::UpRight));
+    self.objects.push(TerrainShapeDrawable::new(set_position(x - 1, y), Orientation::Left));
+    self.objects.push(TerrainShapeDrawable::new(set_position(x + 1, y), Orientation::Right));
+    self.objects.push(TerrainShapeDrawable::new(set_position(x - 1, y - 1), Orientation::DownLeft));
+    self.objects.push(TerrainShapeDrawable::new(set_position(x + 1, y - 1), Orientation::DownRight));
+    self.objects.push(TerrainShapeDrawable::new(set_position(x, y - 1), Orientation::Down));
+    self.objects.push(TerrainShapeDrawable::new(set_position(x, y + 1), Orientation::Up));
   }
 }
 

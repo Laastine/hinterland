@@ -3,8 +3,8 @@ use std::time;
 use gfx;
 use specs::{Builder, prelude::DispatcherBuilder, shred::World, world::WorldExt};
 
-use crate::audio::AudioSystem;
 use crate::{bullet, terrain_shape};
+use crate::audio::AudioSystem;
 use crate::bullet::bullets::Bullets;
 use crate::bullet::collision::CollisionSystem;
 use crate::character;
@@ -59,12 +59,15 @@ fn setup_world(world: &mut World, dimensions: Dimensions) {
   world.insert(DeltaTime(0.0));
   world.insert(GameTime(0));
 
+  let mut hills = terrain_shape::terrain_shape_objects::TerrainShapeObjects::new();
+  hills.small_hill(1, 5);
+
   world.create_entity()
     .with(terrain::TerrainDrawable::new())
     .with(character::CharacterDrawable::new())
     .with(hud::hud_objects::HudObjects::new())
     .with(terrain_object::terrain_objects::TerrainObjects::new())
-    .with(terrain_shape::terrain_shape_objects::TerrainShapeObjects::new())
+    .with(hills)
     .with(Zombies::new())
     .with(Bullets::new())
     .with(CharacterSprite::new())
