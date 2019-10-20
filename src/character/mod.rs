@@ -87,7 +87,7 @@ impl CharacterDrawable {
   }
 
   fn ammo_pick_up(&mut self, movement: Position, objs: &mut Vec<TerrainObjectDrawable>, idx: usize) {
-    if objs[idx].object_type == TerrainTexture::Ammo && overlaps(movement, movement - objs[idx].position, 20.0, 20.0) {
+    if objs.len() > idx && objs[idx].object_type == TerrainTexture::Ammo && overlaps(movement, movement - objs[idx].position, 20.0, 20.0) {
       self.stats.magazines = 2;
       objs.remove(idx);
     }
