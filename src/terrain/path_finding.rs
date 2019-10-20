@@ -1,7 +1,7 @@
 use cgmath::Point2;
 use pathfinding::{directed::astar::astar, utils::absdiff};
 
-use crate::game::constants::{TERRAIN_OBJECTS, TILES_PCS_H, TILES_PCS_W};
+use crate::game::constants::{TILES_PCS_H, TILES_PCS_W, TERRAIN_OBJECTS};
 use crate::game::get_rand_from_range;
 use crate::graphics::coords_to_tile;
 use crate::shaders::Position;

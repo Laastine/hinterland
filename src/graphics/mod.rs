@@ -4,7 +4,8 @@ use num::{Num, NumCast};
 
 use crate::bullet::BulletDrawable;
 use crate::character::CharacterDrawable;
-use crate::game::{constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, Y_OFFSET}, get_rand_from_range};
+use crate::game::{constants::{RESOLUTION_Y, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, Y_OFFSET}, get_rand_from_range};
+use crate::game::constants::{AMMO_POSITIONS, HOUSE_POSITIONS, TREE_POSITIONS, TERRAIN_OBJECTS};
 use crate::gfx_app::{mouse_controls::MouseInputState};
 use crate::graphics::{dimensions::Dimensions, orientation::Orientation};
 use crate::shaders::Position;
@@ -84,7 +85,7 @@ pub fn can_move(screen_pos: Position) -> bool {
   is_within_map_borders(Point2::new(point.x as f32, point.y as f32))
 }
 
-pub fn is_not_terrain_object<T>(pos: Point2<T>) -> bool
+fn is_not_terrain_object<T>(pos: Point2<T>) -> bool
   where T: NumCast + Num, i32: std::cmp::PartialEq<T> {
   !TERRAIN_OBJECTS.iter().any(|e| (e[0] == pos.x) && (e[1] == pos.y))
 }
@@ -96,6 +97,15 @@ fn is_map_tile(pos: Point2<i32>) -> bool {
 pub fn can_move_to_tile(screen_pos: Position) -> bool {
   let tile_pos = coords_to_tile(screen_pos);
   is_not_terrain_object(tile_pos) && is_map_tile(tile_pos)
+}
+
+pub fn set_position(x: i32, y: i32) -> Position {
+  let x_val = x as f32;
+  let y_val = y as f32;
+  Position::new(
+    TILE_SIZE * x_val,
+    TILE_SIZE * 0.9 * y_val,
+  )
 }
 
 pub fn coords_to_tile(position: Position) -> Point2<i32> {
