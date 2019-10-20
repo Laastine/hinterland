@@ -71,13 +71,11 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
     let texture = Texture::new(terrain_shape_texture, None);
 
     let rotation = match shape {
-      Orientation::UpLeft | Orientation::UpRight => Some(0.0),
-      Orientation::DownLeft | Orientation::DownRight => Some(45.0),
-      Orientation::Normal => Some(45.0),
+      Orientation::UpLeft | Orientation::UpRight | Orientation::Down => Some(0.0),
+      Orientation::DownLeft | Orientation::DownRight | Orientation::Normal => Some(45.0),
       Orientation::Left => Some(90.0),
       Orientation::Right => Some(270.0),
       Orientation::Up => Some(180.0),
-      Orientation::Down => Some(0.0),
     };
 
     let scale = match shape {

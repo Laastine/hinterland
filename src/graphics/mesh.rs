@@ -18,9 +18,9 @@ pub enum Geometry {
 
 fn triangle_mesh(w: f32, h: f32) -> [VertexData; 3] {
   [
-    VertexData::new([-w * 2.0, -h], [-2.0, -1.0]),
-    VertexData::new([0.0, 0.0], [0.0, 0.0]),
-    VertexData::new([w * 2.0, -h], [2.0, -1.0]),
+    VertexData::new([-w * 2.0, -h], [0.0, 0.0]),
+    VertexData::new([0.0, 0.0], [0.5, 1.0]),
+    VertexData::new([w * 2.0, -h], [0.0, 1.0]),
   ]
 }
 
@@ -151,10 +151,7 @@ impl<R> RectangularTexturedMesh<R> where R: gfx::Resources {
                 scale: Option<Matrix2<f32>>,
                 rotation: Option<f32>,
                 orientation: Option<Orientation>) -> RectangularTexturedMesh<R> where F: gfx::Factory<R> {
-    let w = size.x;
-    let h = size.y;
-
-    let vertex_data = edit_vertices(w, h, geometry, scale, rotation, orientation);
+    let vertex_data = edit_vertices(size.x, size.y, geometry, scale, rotation, orientation);
 
     let mesh = TexturedMesh::new(factory, &vertex_data, &DEFAULT_INDEX_DATA, texture);
     RectangularTexturedMesh {
