@@ -23,6 +23,7 @@ use crate::terrain;
 use crate::terrain_object;
 use crate::zombie;
 use crate::zombie::zombies::Zombies;
+use crate::game::constants::SMALL_HILLS;
 
 pub fn run<W, D, F>(window: &mut W)
   where W: Window<D, F>,
@@ -60,7 +61,10 @@ fn setup_world(world: &mut World, dimensions: Dimensions) {
   world.insert(GameTime(0));
 
   let mut hills = terrain_shape::terrain_shape_objects::TerrainShapeObjects::new();
-  hills.small_hill(1, 5);
+
+  for hill in SMALL_HILLS.iter() {
+    hills.small_hill(hill[0], hill[1]);
+  }
 
   world.create_entity()
     .with(terrain::TerrainDrawable::new())

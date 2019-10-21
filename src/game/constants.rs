@@ -50,6 +50,8 @@ pub const TERRAIN_OBJECTS: [[i32; 2]; 23] = [
   [ 80, 64 ], [ 58, 81 ], [ 61, 89 ], [ 49, 85 ], [ 48, 77 ]
 ];
 
+pub const SMALL_HILLS: [[i32; 2]; 1] = [[1, 5]];
+
 pub const GAME_VERSION: &str = "v0.3.12";
 
 pub const HUD_TEXTS: [&str; 15] = [GAME_VERSION, "Ammo 0", "Ammo 1", "Ammo 2", "Ammo 3",
