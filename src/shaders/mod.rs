@@ -158,6 +158,10 @@ impl Position {
   pub fn y(self) -> f32 {
     self.position[1]
   }
+
+  pub fn offset(self, x: f32, y:f32) -> Position {
+    Position::new(self.position[0] + x, self.position[1] + y)
+  }
 }
 
 impl Add for Position {
