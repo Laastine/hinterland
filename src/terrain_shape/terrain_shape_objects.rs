@@ -1,9 +1,7 @@
 use specs;
 
-use crate::game::constants::TILE_SIZE;
 use crate::graphics::orientation::Orientation;
 use crate::graphics::set_position;
-use crate::shaders::Position;
 use crate::terrain_shape::TerrainShapeDrawable;
 
 pub struct TerrainShapeObjects {
