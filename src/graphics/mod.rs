@@ -1,15 +1,17 @@
+use std::f32;
+
 use cgmath;
 use cgmath::{Angle, Deg, Point2};
 use num::{Num, NumCast};
 
 use crate::bullet::BulletDrawable;
 use crate::character::CharacterDrawable;
-use crate::game::{constants::{RESOLUTION_Y, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, Y_OFFSET}, get_rand_from_range};
-use crate::game::constants::{AMMO_POSITIONS, HOUSE_POSITIONS, TREE_POSITIONS, TERRAIN_OBJECTS};
+use crate::game::{constants::{TERRAIN_OBJECTS, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, RESOLUTION_Y, Y_OFFSET}, get_rand_from_range};
 use crate::gfx_app::{mouse_controls::MouseInputState};
 use crate::graphics::{dimensions::Dimensions, orientation::Orientation};
 use crate::shaders::Position;
 use crate::terrain_object::TerrainObjectDrawable;
+use crate::terrain_shape::TerrainShapeDrawable;
 use crate::zombie::ZombieDrawable;
 
 pub mod camera;
@@ -99,6 +101,26 @@ pub fn can_move_to_tile(screen_pos: Position) -> bool {
   is_not_terrain_object(tile_pos) && is_map_tile(tile_pos)
 }
 
+pub fn check_terrain_elevation(screen_pos: Position, objects: &[TerrainShapeDrawable]) -> f32 {
+  let tile_pos = coords_to_tile(screen_pos);
+  let nearest_hill = objects.iter()
+    .map(|x| {
+      position_distance(x.position.offset(TILE_SIZE, TILE_SIZE), Position::new(tile_pos.x as f32, tile_pos.y as f32))
+    })
+    .fold(100_000_000f32, |mut min, val| {
+      if val < min {
+        min = val;
+      }
+      min
+    });
+
+  if nearest_hill < TILE_SIZE {
+    (nearest_hill - TILE_SIZE).abs()
+  } else {
+    0.0
+  }
+}
+
 pub fn set_position(x: i32, y: i32) -> Position {
   let x_val = x as f32;
   let y_val = y as f32;
@@ -145,6 +167,11 @@ pub fn get_nearest_random_tile_position(pos: Position) -> Position {
 
 pub fn distance(a: f32, b: f32) -> f32 {
   (a.powf(2.0) + b.powf(2.0)).sqrt()
+}
+
+fn position_distance(a: Position, b: Position) -> f32 {
+  let d = a - b;
+  distance(d.x(), d.y())
 }
 
 pub enum Drawables<'b> {

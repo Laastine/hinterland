@@ -11,12 +11,14 @@ use crate::data;
 use crate::game::constants::{AMMO_POSITIONS, ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE};
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::gfx_app::mouse_controls::MouseInputState;
-use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, get_orientation_from_center, orientation::{Orientation, Stance}, overlaps, texture::load_texture};
+use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, get_orientation_from_center, orientation::{Orientation, Stance}, overlaps, texture::load_texture, check_terrain_elevation};
 use crate::graphics::mesh::{RectangularTexturedMesh, Geometry};
 use crate::graphics::texture::Texture;
 use crate::shaders::{CharacterSheet, critter_pipeline, Position, Projection};
 use crate::terrain_object::{terrain_objects::TerrainObjects, TerrainObjectDrawable, TerrainTexture};
 use crate::zombie::{ZombieDrawable, zombies::Zombies};
+use crate::terrain_shape::terrain_shape_objects::TerrainShapeObjects;
+use crate::terrain_shape::TerrainShapeDrawable;
 
 pub mod controls;
 mod character_stats;
@@ -50,7 +52,9 @@ impl CharacterDrawable {
   }
 
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &MouseInputState,
-                dimensions: &Dimensions, objs: &mut Vec<TerrainObjectDrawable>, zombies: &[ZombieDrawable]) {
+                dimensions: &Dimensions, objs: &mut Vec<TerrainObjectDrawable>, zombies: &[ZombieDrawable], terrain_shapes: &[TerrainShapeDrawable]) {
+    self.position = Position::new(0.0, check_terrain_elevation(self.position, terrain_shapes));
+
     self.projection = *world_to_clip;
 
     fn zombie_not_dead(z: &ZombieDrawable) -> bool {
@@ -187,14 +191,16 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
                      ReadStorage<'a, MouseInputState>,
                      WriteStorage<'a, TerrainObjects>,
                      ReadStorage<'a, Zombies>,
+                     ReadStorage<'a, TerrainShapeObjects>,
                      Read<'a, Dimensions>);
 
-  fn run(&mut self, (mut character, camera_input, character_input, mouse_input, mut terrain_objects, zombies, dim): Self::SystemData) {
+  fn run(&mut self, (mut character, camera_input, character_input, mouse_input, mut terrain_objects, zombies, terrain_shapes, dim): Self::SystemData) {
     use specs::join::Join;
 
-    for (c, camera, ci, mi, to, zs) in (&mut character, &camera_input, &character_input, &mouse_input, &mut terrain_objects, &zombies).join() {
+    for (c, camera, ci, mi, to, zs, ts) in
+        (&mut character, &camera_input, &character_input, &mouse_input, &mut terrain_objects, &zombies, &terrain_shapes).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      c.update(&world_to_clip, ci, mi, &dim, &mut to.objects, &zs.zombies);
+      c.update(&world_to_clip, ci, mi, &dim, &mut to.objects, &zs.zombies, &ts.objects);
     }
   }
 }
