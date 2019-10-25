@@ -8,7 +8,7 @@ use specs::prelude::{Read, ReadStorage, WriteStorage};
 use crate::character::{character_stats::CharacterStats, controls::CharacterInputState};
 use crate::critter::{CharacterSprite, CritterData};
 use crate::data;
-use crate::game::constants::{AMMO_POSITIONS, ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE};
+use crate::game::constants::{AMMO_POSITIONS, ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE, SMALL_HILLS};
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::gfx_app::mouse_controls::MouseInputState;
 use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, get_orientation_from_center, orientation::{Orientation, Stance}, overlaps, texture::load_texture, check_terrain_elevation};
@@ -17,8 +17,6 @@ use crate::graphics::texture::Texture;
 use crate::shaders::{CharacterSheet, critter_pipeline, Position, Projection};
 use crate::terrain_object::{terrain_objects::TerrainObjects, TerrainObjectDrawable, TerrainTexture};
 use crate::zombie::{ZombieDrawable, zombies::Zombies};
-use crate::terrain_shape::terrain_shape_objects::TerrainShapeObjects;
-use crate::terrain_shape::TerrainShapeDrawable;
 
 pub mod controls;
 mod character_stats;
@@ -52,10 +50,10 @@ impl CharacterDrawable {
   }
 
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, mouse_input: &MouseInputState,
-                dimensions: &Dimensions, objs: &mut Vec<TerrainObjectDrawable>, zombies: &[ZombieDrawable], terrain_shapes: &[TerrainShapeDrawable]) {
-    self.position = Position::new(0.0, check_terrain_elevation(self.position, terrain_shapes));
-
+                dimensions: &Dimensions, objs: &mut Vec<TerrainObjectDrawable>, zombies: &[ZombieDrawable]) {
     self.projection = *world_to_clip;
+
+    self.position.position[1]  = check_terrain_elevation(ci.movement, &SMALL_HILLS);
 
     fn zombie_not_dead(z: &ZombieDrawable) -> bool {
       z.stance != Stance::NormalDeath &&
@@ -191,16 +189,15 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
                      ReadStorage<'a, MouseInputState>,
                      WriteStorage<'a, TerrainObjects>,
                      ReadStorage<'a, Zombies>,
-                     ReadStorage<'a, TerrainShapeObjects>,
                      Read<'a, Dimensions>);
 
-  fn run(&mut self, (mut character, camera_input, character_input, mouse_input, mut terrain_objects, zombies, terrain_shapes, dim): Self::SystemData) {
+  fn run(&mut self, (mut character, camera_input, character_input, mouse_input, mut terrain_objects, zombies, dim): Self::SystemData) {
     use specs::join::Join;
 
-    for (c, camera, ci, mi, to, zs, ts) in
-        (&mut character, &camera_input, &character_input, &mouse_input, &mut terrain_objects, &zombies, &terrain_shapes).join() {
+    for (c, camera, ci, mi, to, zs) in
+        (&mut character, &camera_input, &character_input, &mouse_input, &mut terrain_objects, &zombies).join() {
       let world_to_clip = dim.world_to_projection(camera);
-      c.update(&world_to_clip, ci, mi, &dim, &mut to.objects, &zs.zombies, &ts.objects);
+      c.update(&world_to_clip, ci, mi, &dim, &mut to.objects, &zs.zombies);
     }
   }
 }

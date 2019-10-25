@@ -159,7 +159,7 @@ impl Position {
     self.position[1]
   }
 
-  pub fn offset(self, x: f32, y:f32) -> Position {
+  pub fn tile_center(self, x: f32, y:f32) -> Position {
     let new_x = if self.position[0] < 0.0 { self.position[0] - x } else { self.position[0] + x };
     let new_y = if self.position[1] < 0.0 { self.position[1] - y } else { self.position[1] + y };
     Position::new(new_x, new_y)
