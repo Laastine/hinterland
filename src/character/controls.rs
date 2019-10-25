@@ -27,7 +27,7 @@ impl CharacterInputState {
   pub fn update(&mut self, camera: &mut CameraInputState, css: &CharacterControlSystem) {
     if css.y_move.is_none() && css.x_move.is_none() {
       self.orientation = Orientation::Normal;
-    } else if css.x_move.is_none() {
+    } else if css.x_move.is_none() {                  // Horizontal/vertical movement
       if let Some(y) = css.y_move {
         let vertical_movement = self.movement + Position::new(0.0, y);
         if !self.is_colliding || can_move_to_tile(vertical_movement) {
@@ -40,7 +40,7 @@ impl CharacterInputState {
           };
         }
       }
-    } else if let Some(x) = css.x_move {
+    } else if let Some(x) = css.x_move {        // Diagonal movement
       let horizontal_move = self.movement + Position::new(x, 0.0);
       if let Some(y) = css.y_move {
         let horizontal_movement = Position::new(x / 1.5, 0.0);
