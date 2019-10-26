@@ -77,13 +77,13 @@ pub fn overlaps(area: Position, el: Position, width: f32, height: f32) -> bool {
     area.y() + height > el.y()
 }
 
-pub fn is_within_map_borders(point: Point2<f32>) -> bool {
-  point.x >= 0.0 && point.x < (TILES_PCS_W as f32 - 1f32) && point.y >= 0.0 && point.y < (TILES_PCS_H as f32 - 1f32)
+pub fn is_within_map_borders(point: Point2<usize>) -> bool {
+  point.x < (TILES_PCS_W - 1) && point.y < (TILES_PCS_H - 1)
 }
 
 pub fn can_move(screen_pos: Position) -> bool {
   let point = coords_to_tile(screen_pos);
-  is_within_map_borders(Point2::new(point.x as f32, point.y as f32))
+  is_within_map_borders(Point2::new(point.x as usize, point.y as usize))
 }
 
 fn is_not_terrain_object<T>(pos: Point2<T>) -> bool
