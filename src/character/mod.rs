@@ -53,7 +53,7 @@ impl CharacterDrawable {
                 dimensions: &Dimensions, objs: &mut Vec<TerrainObjectDrawable>, zombies: &[ZombieDrawable]) {
     self.projection = *world_to_clip;
 
-    self.position.position[1]  = check_terrain_elevation(ci.movement, &SMALL_HILLS);
+    self.position.position[1] = check_terrain_elevation(ci.movement, &SMALL_HILLS);
 
     fn zombie_not_dead(z: &ZombieDrawable) -> bool {
       z.stance != Stance::NormalDeath &&
