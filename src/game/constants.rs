@@ -50,7 +50,7 @@ pub const TERRAIN_OBJECTS: [[i32; 2]; 23] = [
   [ 80, 64 ], [ 58, 81 ], [ 61, 89 ], [ 49, 85 ], [ 48, 77 ]
 ];
 
-pub const SMALL_HILLS: [[i32; 2]; 1] = [[2, 2]];
+pub const SMALL_HILLS: [[i32; 2]; 4] = [[4, 2], [19, -2], [-14, -24], [30, 43]];
 
 pub const GAME_VERSION: &str = "v0.3.12";
 

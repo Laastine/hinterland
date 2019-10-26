@@ -101,13 +101,14 @@ pub fn can_move_to_tile(screen_pos: Position) -> bool {
 }
 
 pub fn check_terrain_elevation(critter_pos: Position, objects: &[[i32; 2]]) -> f32 {
+  let offset = TILE_SIZE / 2.0;
   let nearest_hill = objects.iter()
-    .map(|x|
+    .map(|x| {
       position_distance(
         critter_pos,
-        Position::new(-x[0] as f32, -x[1] as f32).tile_center(TILE_SIZE * 1.5, TILE_SIZE * 1.0)
+        Position::new(TILE_SIZE * -x[0] as f32, TILE_SIZE * -x[1] as f32).tile_center(0.0, offset)
       )
-    )
+    })
     .fold(100_000_000f32, |mut min, val| {
       if val < min {
         min = val;
@@ -115,8 +116,8 @@ pub fn check_terrain_elevation(critter_pos: Position, objects: &[[i32; 2]]) -> f
       min
     });
 
-  if nearest_hill < TILE_SIZE*2.0 {
-    (nearest_hill - TILE_SIZE*2.0).abs()
+  if nearest_hill < TILE_SIZE * 2.0 {
+    (nearest_hill - TILE_SIZE * 2.0).abs()
   } else {
     0.0
   }
