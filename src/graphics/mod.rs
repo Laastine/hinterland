@@ -136,15 +136,8 @@ pub fn set_position(x: i32, y: i32) -> Position {
 }
 
 pub fn coords_to_tile(position: Position) -> Point2<i32> {
-  let pos = Point2::new(-position.x(), 1.0 / Y_MODIFIER * position.y() + Y_OFFSET);
+  let pos = Point2::new(-position.x(), position.y() / Y_MODIFIER + Y_OFFSET);
   Point2::new(((pos.x + pos.y) / TILE_WIDTH) as i32, ((pos.y - pos.x) / TILE_WIDTH) as i32)
-}
-
-pub fn tile_to_coords(tile: Point2<i32>) -> Position {
-  let new_tile = Point2::new(tile.x as f32, tile.y as f32);
-  let x = round(new_tile.x * TILE_WIDTH - new_tile.y / TILE_SIZE, 3);
-  let y = round(new_tile.y * TILE_WIDTH - new_tile.x / TILE_SIZE, 3);
-  Position::new(-x, y - Y_OFFSET)
 }
 
 fn round(number: f32, precision: usize) -> f32 {

@@ -37,18 +37,16 @@ pub const ZOMBIE_STILL_SPRITE_OFFSET: usize = 32;
 pub const NORMAL_DEATH_SPRITE_OFFSET: usize = 64;
 
 // Object positions
-pub const AMMO_POSITIONS: [[i32; 2]; 4] = [ [ -13, -12 ], [ -15, 8 ], [ 16, -8 ], [ -1, 11 ] ];
-pub const HOUSE_POSITIONS: [[i32; 2]; 2] = [[-1, 13], [10, 5]];
+pub const AMMO_POSITIONS: [[i32; 2]; 4] = [ [ -13, -12 ], [ -15, 8 ], [ 16, -8 ], [ 1, 14 ] ];
+pub const HOUSE_POSITIONS: [[i32; 2]; 2] = [[1, 17], [10, 5]];
 pub const TREE_POSITIONS: [[i32; 2]; 5] = [[-11, -5], [8, -8], [-14, -11], [-18, -2], [-14, 3]];
 
-pub const TERRAIN_OBJECTS: [[i32; 2]; 23] = [
-  [ 68, 50 ], [ 69, 50 ], [ 70, 50 ], // House B
-  [ 68, 49 ], [ 69, 49 ], [ 70, 49 ], // House B
-  [ 68, 48 ], [ 69, 48 ], [ 70, 48 ], // House B
-  [ 50, 52 ], [ 51, 52 ], [ 52, 52 ], // House A
-  [ 50, 53 ], [ 51, 53 ], [ 52, 53 ], // House A
-  [ 50, 54 ], [ 51, 54 ], [ 52, 54 ], // House A
-  [ 80, 64 ], [ 58, 81 ], [ 61, 89 ], [ 49, 85 ], [ 48, 77 ]
+pub const TERRAIN_OBJECTS: [[i32; 2]; 13] = [
+    [ 55, 54 ], [ 56, 54 ],   // House A
+    [ 55, 55 ], [ 56, 55 ],   // House A
+    [ 66, 57 ], [ 67, 57 ],   // House B
+    [ 66, 56 ], [ 67, 56 ],   // House B
+    [ 72, 65 ], [ 61, 73 ], [ 63, 77 ], [ 56, 70 ], [ 56, 74 ]  // Trees
 ];
 
 pub const SMALL_HILLS: [[i32; 2]; 4] = [[4, 2], [19, -2], [-14, -24], [30, 43]];

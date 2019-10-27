@@ -68,7 +68,7 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
 
     let (texture_size, texture_bytes) = match texture {
       TerrainTexture::Ammo => (Point2::new(5.0, 7.0), &include_bytes!("../../assets/maps/ammo.png")[..]),
-      TerrainTexture::House => (Point2::new(120.0, 120.0), &include_bytes!("../../assets/maps/house.png")[..]),
+      TerrainTexture::House => (Point2::new(125.0, 125.0), &include_bytes!("../../assets/maps/house.png")[..]),
       TerrainTexture::Tree => (Point2::new(120.0, 120.0), &include_bytes!("../../assets/maps/tree.png")[..]),
     };
 
