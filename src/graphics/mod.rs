@@ -7,6 +7,7 @@ use num::{Num, NumCast};
 use crate::bullet::BulletDrawable;
 use crate::character::CharacterDrawable;
 use crate::game::{constants::{RESOLUTION_Y, TERRAIN_OBJECTS, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, Y_OFFSET}, get_rand_from_range};
+use crate::game::constants::TILE_WIDTH;
 use crate::gfx_app::{mouse_controls::MouseInputState};
 use crate::graphics::{dimensions::Dimensions, orientation::Orientation};
 use crate::shaders::Position;
@@ -19,6 +20,8 @@ mod graphics_test;
 pub mod mesh;
 pub mod orientation;
 pub mod texture;
+
+const Y_MODIFIER: f32 = 0.9;
 
 #[derive(Default)]
 pub struct DeltaTime(pub f64);
@@ -92,7 +95,7 @@ fn is_not_terrain_object<T>(pos: Point2<T>) -> bool
 }
 
 fn is_map_tile(pos: Point2<i32>) -> bool {
-  pos.x > 0 && pos.y > 0 && pos.x < (TILES_PCS_W - 1) as i32 && pos.y < (TILES_PCS_H - 1) as i32
+  pos.x > 0 && pos.y > 0 && pos.x < (TILES_PCS_W - 2) as i32 && pos.y < (TILES_PCS_H - 2) as i32
 }
 
 pub fn can_move_to_tile(screen_pos: Position) -> bool {
@@ -128,19 +131,19 @@ pub fn set_position(x: i32, y: i32) -> Position {
   let y_val = y as f32;
   Position::new(
     TILE_SIZE * x_val,
-    TILE_SIZE * 0.9 * y_val,
+    TILE_SIZE * Y_MODIFIER * y_val,
   )
 }
 
 pub fn coords_to_tile(position: Position) -> Point2<i32> {
-  let pos = Point2::new(-position.x(), position.y() + Y_OFFSET);
-  Point2::new(((pos.x + pos.y) / TILE_SIZE) as i32, ((pos.y - pos.x) / TILE_SIZE) as i32)
+  let pos = Point2::new(-position.x(), 1.0 / Y_MODIFIER * position.y() + Y_OFFSET);
+  Point2::new(((pos.x + pos.y) / TILE_WIDTH) as i32, ((pos.y - pos.x) / TILE_WIDTH) as i32)
 }
 
 pub fn tile_to_coords(tile: Point2<i32>) -> Position {
   let new_tile = Point2::new(tile.x as f32, tile.y as f32);
-  let x = round(new_tile.x * TILE_SIZE - new_tile.y / TILE_SIZE, 3);
-  let y = round(new_tile.y * TILE_SIZE - new_tile.x / TILE_SIZE, 3);
+  let x = round(new_tile.x * TILE_WIDTH - new_tile.y / TILE_SIZE, 3);
+  let y = round(new_tile.y * TILE_WIDTH - new_tile.x / TILE_SIZE, 3);
   Position::new(-x, y - Y_OFFSET)
 }
 
@@ -154,8 +157,8 @@ pub fn get_nearest_random_tile_position(pos: Position) -> Position {
   fn iter(pos: Position) -> Position {
     let offset = Position::new(get_rand_from_range(-2, 2) as f32, get_rand_from_range(-2, 2) as f32);
     let offset_point = Position::new(
-      round(offset.x() * TILE_SIZE - offset.y() / TILE_SIZE, 3),
-      round(offset.y() * TILE_SIZE - offset.y() / TILE_SIZE, 3),
+      round(offset.x() * TILE_WIDTH - offset.y() / TILE_WIDTH * Y_MODIFIER, 3),
+      round(offset.y() * TILE_WIDTH - offset.y() / TILE_WIDTH * Y_MODIFIER, 3),
     );
     pos + offset_point
   }

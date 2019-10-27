@@ -2,8 +2,9 @@ pub const TILES_PCS_W: usize = 128;
 pub const TILES_PCS_H: usize = 128;
 
 pub const TILE_SIZE: f32 = 48.0;
+pub const TILE_WIDTH: f32 = TILE_SIZE * 2.0;
 
-pub const Y_OFFSET: f32 = TILES_PCS_W as f32 / 2.0 * TILE_SIZE;
+pub const Y_OFFSET: f32 = TILES_PCS_W as f32 / 2.0 * TILE_WIDTH;
 
 pub const CHARACTER_BUF_LENGTH: usize = 224;
 
