@@ -40,12 +40,12 @@ fn find_next_best_endpoint<'c>(end_point: &'c Point2<i32>, impassable_tiles: &[[
 
 pub fn calc_route(start_point: Position, end_point: Position, impassable_tiles: &[[i32; 2]]) -> Option<(Vec<Point2<i32>>, i32)> {
   let mut neighbour_tiles = vec![];
-  let end_point_with_offset = coords_to_tile(end_point);
+  let end_tile = coords_to_tile(end_point);
+  let start_tile = coords_to_tile(start_point);
 
-  let start = coords_to_tile(start_point);
-  let end = find_next_best_endpoint(&end_point_with_offset, &impassable_tiles, &mut neighbour_tiles);
+  let end = find_next_best_endpoint(&end_tile, &impassable_tiles, &mut neighbour_tiles);
 
-  astar(&start,
+  astar(&start_tile,
         |p: &Point2<i32>| tiles(*p, &impassable_tiles),
         |p: &Point2<i32>| absdiff(p.x, end.x) + absdiff(p.y, end.y),
         |p: &Point2<i32>| p.x == end.x && p.y == end.y)
