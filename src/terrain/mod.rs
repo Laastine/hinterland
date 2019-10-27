@@ -13,7 +13,6 @@ use crate::graphics::texture::{load_texture, Texture};
 use crate::shaders::{Position, Projection, tilemap_pipeline, TilemapSettings, Time, VertexData};
 
 pub mod path_finding;
-mod path_finding_test;
 pub mod tile_map;
 
 fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
