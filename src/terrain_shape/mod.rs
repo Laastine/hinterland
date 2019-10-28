@@ -1,4 +1,4 @@
-use cgmath::{Matrix2, Point2};
+use cgmath::{Point2, Matrix2};
 use specs::{Read, ReadStorage, WriteStorage};
 
 use crate::character::controls::CharacterInputState;
@@ -84,8 +84,8 @@ impl<R: gfx::Resources> TerrainShapeDrawSystem<R> {
       Orientation::DownLeft => Some(Matrix2::new(1.1, 0.0, 0.0, 0.9)),
       Orientation::DownRight => Some(Matrix2::new(1.1, 0.0, 0.0, 0.9)),
       Orientation::Normal => Some(Matrix2::new(1.1, 0.0, 0.0, 0.5)),
-      Orientation::Left => Some(Matrix2::new(0.4, 0.0, 0.0, 0.4)),
-      Orientation::Right => Some(Matrix2::new(0.05, 0.0, 0.0, 0.4)),
+      Orientation::Left => Some(Matrix2::new(1.25, 0.0, 0.0, 0.38)),
+      Orientation::Right => Some(Matrix2::new(1.25, 0.0, 0.0, 0.38)),
       Orientation::Up => Some(Matrix2::new(0.77, 0.0, 0.0, 0.1)),
       Orientation::Down => Some(Matrix2::new(0.75, 0.0, 0.0, 1.75)),
     };
