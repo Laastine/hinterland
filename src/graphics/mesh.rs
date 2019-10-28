@@ -9,8 +9,7 @@ use crate::graphics::orientation::Orientation;
 use crate::graphics::texture::Texture;
 use crate::shaders::VertexData;
 
-const DEFAULT_INDEX_DATA: &[u16] = &[0, 1, 2, 2, 3, 0];
-
+#[derive(Clone, Copy)]
 pub enum Geometry {
   Triangle,
   Rectangle,
@@ -18,9 +17,9 @@ pub enum Geometry {
 
 fn triangle_mesh(w: f32, h: f32) -> [VertexData; 3] {
   [
-    VertexData::new([-w * 2.0, -h], [0.0, 0.0]),
     VertexData::new([0.0, 0.0], [0.5, 1.0]),
-    VertexData::new([w * 2.0, -h], [0.0, 1.0]),
+    VertexData::new([w * 2.0, -h], [1.0, 0.0]),
+    VertexData::new([-w * 2.0, -h], [0.0, 0.0]),
   ]
 }
 
@@ -78,12 +77,13 @@ fn edit_vertices(w: f32,
         Some(Orientation::Up) => Vector2::<f32>::new(-2.0, -8.0),
         None => Vector2::<f32>::new(0.0, 0.0),
       };
+      let transformation_vec =
+        scale_matrix *
+          (skew_matrix *
+            (rotation_matrix));
 
       let edited_vertex_data =
-        translate +
-          (scale_matrix *
-            (skew_matrix *
-              (rotation_matrix * Vector2::<f32>::new(el.pos[0] as f32, el.pos[1] as f32))));
+        translate + transformation_vec * Vector2::<f32>::new(el.pos[0] as f32, el.pos[1] as f32);
 
       VertexData { pos: [edited_vertex_data.x, edited_vertex_data.y], uv: el.uv }
     })
@@ -111,7 +111,9 @@ impl<R> PlainMesh<R> where R: gfx::Resources {
 
     let vertex_data = edit_vertices(w, h, Geometry::Rectangle, scale, rotation, orientation);
 
-    let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&vertex_data[..], DEFAULT_INDEX_DATA);
+    let indices: &[u16] = &[0, 1, 2, 2, 3, 0];
+
+    let (vertex_buffer, slice) = factory.create_vertex_buffer_with_slice(&vertex_data[..], indices);
     PlainMesh {
       slice,
       vertex_buffer,
@@ -153,7 +155,12 @@ impl<R> RectangularTexturedMesh<R> where R: gfx::Resources {
                 orientation: Option<Orientation>) -> RectangularTexturedMesh<R> where F: gfx::Factory<R> {
     let vertex_data = edit_vertices(size.x, size.y, geometry, scale, rotation, orientation);
 
-    let mesh = TexturedMesh::new(factory, &vertex_data, &DEFAULT_INDEX_DATA, texture);
+    let indices = match geometry {
+      Geometry::Rectangle => vec![0, 1, 2, 2, 3, 0],
+      Geometry::Triangle => vec![0, 1, 2, 0],
+    };
+
+    let mesh = TexturedMesh::new(factory, &vertex_data, &indices.as_slice(), texture);
     RectangularTexturedMesh {
       mesh,
       size,
