@@ -106,13 +106,19 @@ fn direction_movement_test() {
 #[test]
 fn tile_to_coords_test() {
   use cgmath::Point2;
-  use crate::game::constants::Y_OFFSET;
-  use crate::graphics::{coords_to_tile, tile_to_coords};
+  use crate::graphics::coords_to_tile;
   use crate::shaders::Position;
 
-  let map_center = Position::new(0.0, -Y_OFFSET);
+  let up = Position::new(0.0, -5385.0);
+  let down = Position::new(0.0, 5385.0);
+  let right = Position::new(-5995.0, 0.0);
+  let left = Position::new(5995.0, 0.0);
 
-  assert_eq!(map_center, tile_to_coords(Point2::new(0, 0)), "tile_to_coords_test");
+  assert_eq!(coords_to_tile(up), Point2::new(1, 1), "Up corner");
 
-  assert_eq!(map_center, tile_to_coords(coords_to_tile(map_center)), "tile_to_coords <-> coords_to_tile")
+  assert_eq!(coords_to_tile(down), Point2::new(126, 126), "Down corner");
+
+  assert_eq!(coords_to_tile(right), Point2::new(126, 1), "Right corner");
+
+  assert_eq!(coords_to_tile(left), Point2::new(1, 126), "Left corner");
 }

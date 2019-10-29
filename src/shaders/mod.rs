@@ -9,6 +9,18 @@ gfx_defines! {
     data: [f32; 4] = "data",
   }
 
+  constant Position {
+    position: [f32; 2] = "a_position",
+  }
+
+  constant Rotation {
+    rotation: f32 = "a_rotation",
+  }
+
+  constant Time {
+    time_modulo: f32 = "a_time",
+  }
+
   constant TilemapSettings {
     world_size: [f32; 2] = "u_WorldSize",
     tilesheet_size: [f32; 2] = "u_TilesheetSize",
@@ -24,18 +36,6 @@ gfx_defines! {
     y_div: f32 = "y_div",
     row_idx: u32 = "a_row",
     index: f32 = "a_index",
-  }
-
-  constant Position {
-    position: [f32; 2] = "a_position",
-  }
-
-  constant Rotation {
-    rotation: f32 = "a_rotation",
-  }
-
-  constant Time {
-    time_modulo: f32 = "a_time",
   }
 
   pipeline bullet_pipeline {
@@ -157,6 +157,12 @@ impl Position {
 
   pub fn y(self) -> f32 {
     self.position[1]
+  }
+
+  pub fn tile_center(self, x: f32, y:f32) -> Position {
+    let new_x = if self.position[0] < 0.0 { self.position[0] - x } else { self.position[0] + x };
+    let new_y = if self.position[1] < 0.0 { self.position[1] - y } else { self.position[1] + y };
+    Position::new(new_x, new_y)
   }
 }
 

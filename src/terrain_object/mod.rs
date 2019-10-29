@@ -7,7 +7,7 @@ use crate::character::controls::CharacterInputState;
 use crate::game::constants::{ASPECT_RATIO, VIEW_DISTANCE};
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, texture::load_texture};
-use crate::graphics::mesh::RectangularMesh;
+use crate::graphics::mesh::{RectangularTexturedMesh, Geometry};
 use crate::graphics::texture::Texture;
 use crate::shaders::{Position, Projection, static_element_pipeline, Time};
 use crate::terrain_object::terrain_objects::TerrainObjects;
@@ -68,13 +68,13 @@ impl<R: gfx::Resources> TerrainObjectDrawSystem<R> {
 
     let (texture_size, texture_bytes) = match texture {
       TerrainTexture::Ammo => (Point2::new(5.0, 7.0), &include_bytes!("../../assets/maps/ammo.png")[..]),
-      TerrainTexture::House => (Point2::new(120.0, 120.0), &include_bytes!("../../assets/maps/house.png")[..]),
+      TerrainTexture::House => (Point2::new(125.0, 125.0), &include_bytes!("../../assets/maps/house.png")[..]),
       TerrainTexture::Tree => (Point2::new(120.0, 120.0), &include_bytes!("../../assets/maps/tree.png")[..]),
     };
 
     let terrain_object_texture = load_texture(factory, texture_bytes);
 
-    let mesh = RectangularMesh::new(factory, Texture::new(terrain_object_texture, None), texture_size);
+    let mesh = RectangularTexturedMesh::new(factory, Texture::new(terrain_object_texture, None), Geometry::Rectangle, texture_size, None, None, None);
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, static_element_pipeline::new())
       .expect("Terrain object shader loading error");

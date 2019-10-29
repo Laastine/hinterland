@@ -18,7 +18,7 @@ impl CharacterInputState {
   pub fn new() -> CharacterInputState {
     CharacterInputState {
       movement: Position::origin(),
-      orientation: Orientation::Still,
+      orientation: Orientation::Normal,
       is_colliding: false,
       is_shooting: false,
     }
@@ -26,8 +26,8 @@ impl CharacterInputState {
 
   pub fn update(&mut self, camera: &mut CameraInputState, css: &CharacterControlSystem) {
     if css.y_move.is_none() && css.x_move.is_none() {
-      self.orientation = Orientation::Still;
-    } else if css.x_move.is_none() {
+      self.orientation = Orientation::Normal;
+    } else if css.x_move.is_none() {                  // Horizontal/vertical movement
       if let Some(y) = css.y_move {
         let vertical_movement = self.movement + Position::new(0.0, y);
         if !self.is_colliding || can_move_to_tile(vertical_movement) {
@@ -36,15 +36,15 @@ impl CharacterInputState {
           self.orientation = match y {
             y if y < 0.0 => Orientation::Up,
             y if y > 0.0 => Orientation::Down,
-            _ => Orientation::Still,
+            _ => Orientation::Normal,
           };
         }
       }
-    } else if let Some(x) = css.x_move {
+    } else if let Some(x) = css.x_move {        // Diagonal movement
       let horizontal_move = self.movement + Position::new(x, 0.0);
       if let Some(y) = css.y_move {
         let horizontal_movement = Position::new(x / 1.5, 0.0);
-        let vertical_movement = Position::new(0.0, y / 1.5);
+        let vertical_movement = Position::new(0.0, y / 1.666);
         if !self.is_colliding || can_move_to_tile(self.movement + horizontal_movement + vertical_movement) {
           self.movement = self.movement + horizontal_movement + vertical_movement;
           camera.movement = camera.movement + horizontal_movement - vertical_movement;
@@ -54,7 +54,7 @@ impl CharacterInputState {
             (x, y) if x > 0.0 && y < 0.0 => Orientation::UpLeft,
             (x, y) if x < 0.0 && y > 0.0 => Orientation::DownRight,
             (x, y) if x < 0.0 && y < 0.0 => Orientation::UpRight,
-            _ => Orientation::Still,
+            _ => Orientation::Normal,
           };
         }
       } else if css.y_move.is_none() && !self.is_colliding || can_move_to_tile(horizontal_move) {
@@ -64,7 +64,7 @@ impl CharacterInputState {
         self.orientation = match x {
           x if x < 0.0 => Orientation::Right,
           x if x > 0.0 => Orientation::Left,
-          _ => Orientation::Still,
+          _ => Orientation::Normal,
         };
       }
     }

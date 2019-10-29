@@ -8,12 +8,11 @@ use crate::character::controls::CharacterInputState;
 use crate::game::constants::{ASPECT_RATIO, TILE_SIZE, TILES_PCS_H, TILES_PCS_W, VIEW_DISTANCE};
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::graphics::{camera::CameraInputState, can_move_to_tile, coords_to_tile, dimensions::{Dimensions, get_projection, get_view_matrix}};
-use crate::graphics::mesh::Mesh;
+use crate::graphics::mesh::TexturedMesh;
 use crate::graphics::texture::{load_texture, Texture};
 use crate::shaders::{Position, Projection, tilemap_pipeline, TilemapSettings, Time, VertexData};
 
 pub mod path_finding;
-mod path_finding_test;
 pub mod tile_map;
 
 fn cartesian_to_isometric(point_x: f32, point_y: f32) -> (f32, f32) {
@@ -73,13 +72,16 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     let vertex_data: Vec<VertexData> =
       plane.shared_vertex_iter()
         .map(|vertex| {
+          let tile_x = TILES_PCS_W as f32;
+          let tile_y = TILES_PCS_H as f32;
           let (raw_x, raw_y) = cartesian_to_isometric(vertex.pos.x, vertex.pos.y);
-          let vertex_x = (TILE_SIZE * (TILES_PCS_W as f32) / 2.0) * raw_x;
-          let vertex_y = (TILE_SIZE * (TILES_PCS_H as f32) / 2.0) * raw_y;
+          let vertex_x = (TILE_SIZE * (tile_x as f32) / 1.5) * raw_x;
+          let vertex_y = (TILE_SIZE * (tile_y as f32) / 1.666) * raw_y;
 
-          let (u_pos, v_pos) = ((raw_x / 2.0 - raw_y) / 2.0 + 0.5, (raw_x / 2.0 + raw_y) / 2.0 + 0.5);
-          let tile_map_x = u_pos * TILES_PCS_W as f32;
-          let tile_map_y = v_pos * TILES_PCS_H as f32;
+          let (u_pos, v_pos) = ((raw_x / 4.0 - raw_y / 2.25) + 0.5, (raw_x / 4.0 + raw_y / 2.25) + 0.5);
+          let tile_map_x = u_pos * tile_x as f32;
+          let tile_map_y = v_pos * tile_y as f32;
+
           VertexData::new([vertex_x, vertex_y], [tile_map_x, tile_map_y])
         })
         .collect();
@@ -94,7 +96,7 @@ impl<R: gfx::Resources> TerrainDrawSystem<R> {
     let tile_sheet_bytes = &include_bytes!("../../assets/maps/terrain.png")[..];
     let tile_texture = load_texture(factory, tile_sheet_bytes);
 
-    let mesh = Mesh::new(factory, &vertex_data.as_slice(), index_data.as_slice(), Texture::new(tile_texture, None));
+    let mesh = TexturedMesh::new(factory, &vertex_data.as_slice(), index_data.as_slice(), Texture::new(tile_texture, None));
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, tilemap_pipeline::new())
       .expect("Terrain shader loading error");

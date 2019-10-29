@@ -1,9 +1,10 @@
+use std::f32;
+use std::f32::consts::PI;
+
 use cgmath::Point2;
 use gfx;
 use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
-use std::f32::consts::PI;
-use std::f32;
 
 use crate::bullet::bullets::Bullets;
 use crate::bullet::collision::Collision;
@@ -38,7 +39,7 @@ impl BulletDrawable {
   pub fn new(position: Position, movement_direction: Point2<f32>, direction: f32) -> BulletDrawable {
     let view = get_view_matrix(VIEW_DISTANCE);
     let projection = get_projection(view, ASPECT_RATIO);
-    let rotation = Rotation::new( direction * PI / 180.0);
+    let rotation = Rotation::new(direction * PI / 180.0);
     BulletDrawable {
       projection,
       position,
@@ -91,7 +92,7 @@ impl<R: gfx::Resources> BulletDrawSystem<R> {
     where F: gfx::Factory<R> {
     use gfx::traits::FactoryExt;
 
-    let mesh = PlainMesh::new_with_data(factory, Point2::new(2.4, 0.8), None);
+    let mesh = PlainMesh::new_with_data(factory, Point2::new(2.4, 0.8), None, None, None);
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, bullet_pipeline::new())
       .expect("Bullet shader loading error");

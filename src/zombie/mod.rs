@@ -7,22 +7,12 @@ use crate::bullet::{BulletDrawable, bullets::Bullets};
 use crate::character::controls::CharacterInputState;
 use crate::critter::CritterData;
 use crate::data;
-use crate::game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE, ZOMBIE_SHEET_TOTAL_WIDTH, ZOMBIE_STILL_SPRITE_OFFSET};
+use crate::game::constants::{ASPECT_RATIO, NORMAL_DEATH_SPRITE_OFFSET, SMALL_HILLS, SPRITE_OFFSET, VIEW_DISTANCE, ZOMBIE_SHEET_TOTAL_WIDTH, ZOMBIE_STILL_SPRITE_OFFSET};
 use crate::game::get_random_bool;
 use crate::gfx_app::{ColorFormat, DepthFormat};
-use crate::graphics::{get_nearest_random_tile_position,
-                      calc_hypotenuse,
-                      camera::CameraInputState,
-                      can_move_to_tile,
-                      direction,
-                      direction_movement,
-                      direction_movement_180,
-                      GameTime,
-                      orientation::{Orientation, Stance},
-                      orientation_to_direction,
-                      overlaps};
+use crate::graphics::{camera::CameraInputState, can_move_to_tile, check_terrain_elevation, direction, direction_movement, direction_movement_180, distance, GameTime, get_nearest_random_tile_position, orientation::{Orientation, Stance}, orientation_to_direction, overlaps};
 use crate::graphics::dimensions::{Dimensions, get_projection, get_view_matrix};
-use crate::graphics::mesh::RectangularMesh;
+use crate::graphics::mesh::{Geometry, RectangularTexturedMesh};
 use crate::graphics::texture::{load_texture, Texture};
 use crate::shaders::{CharacterSheet, critter_pipeline, Position, Projection};
 use crate::terrain::path_finding::calc_next_movement;
@@ -37,6 +27,7 @@ pub struct ZombieDrawable {
   projection: Projection,
   pub position: Position,
   previous_position: Position,
+  previous_elevation: f32,
   orientation: Orientation,
   pub stance: Stance,
   direction: Orientation,
@@ -61,6 +52,7 @@ impl ZombieDrawable {
       direction: Orientation::Left,
       last_decision: -2,
       movement_direction: Point2::new(0.0, 0.0),
+      previous_elevation: 0.0,
       zombie_idx: 0,
       zombie_death_idx: 0,
       movement_speed: 0.0,
@@ -71,12 +63,14 @@ impl ZombieDrawable {
   pub fn update(&mut self, world_to_clip: &Projection, ci: &CharacterInputState, game_time: u64) {
     self.projection = *world_to_clip;
 
+    let elevated_pos_y = check_terrain_elevation(ci.movement - self.position, &SMALL_HILLS);
+
     let offset_delta = ci.movement - self.previous_position;
     self.previous_position = ci.movement;
 
     let x_y_distance_to_player = self.position - offset_delta;
 
-    let distance_to_player = calc_hypotenuse(x_y_distance_to_player.x().abs(), x_y_distance_to_player.y().abs());
+    let distance_to_player = distance(x_y_distance_to_player.x().abs(), x_y_distance_to_player.y().abs());
 
     let is_alive = self.health > 0.0 && self.stance != Stance::NormalDeath && self.stance != Stance::CriticalDeath;
 
@@ -97,8 +91,10 @@ impl ZombieDrawable {
       self.movement_direction = Point2::new(0.0, 0.0);
     }
 
-    self.position = Position::new(self.movement_direction.x * self.movement_speed,
-                                  self.movement_direction.y * self.movement_speed) + self.position + offset_delta;
+    self.position = Position::new(self.position.position[0] + self.movement_direction.x * self.movement_speed,
+                                  self.position.position[1] + (elevated_pos_y - self.previous_elevation) + self.movement_direction.y * self.movement_speed) + offset_delta;
+    self.previous_elevation = elevated_pos_y;
+
   }
 
   fn idle_direction_movement(&mut self, zombie_pos: Position, game_time: i64) {
@@ -170,7 +166,7 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
     let char_texture = load_texture(factory, zombie_bytes);
 
     let rect_mesh =
-      RectangularMesh::new(factory, Texture::new(char_texture, None), Point2::new(25.0, 35.0));
+      RectangularTexturedMesh::new(factory, Texture::new(char_texture, None), Geometry::Rectangle, Point2::new(25.0, 35.0), None, None, None);
 
     let pso =
       factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, critter_pipeline::new())
@@ -199,16 +195,16 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
       Stance::Still => {
         (drawable.direction as usize * 4 + drawable.zombie_idx)
       }
-      Stance::Walking if drawable.orientation != Orientation::Still => {
+      Stance::Walking if drawable.orientation != Orientation::Normal => {
         (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
       }
-      Stance::Running if drawable.orientation != Orientation::Still => {
+      Stance::Running if drawable.orientation != Orientation::Normal => {
         (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
       }
-      Stance::NormalDeath if drawable.orientation != Orientation::Still => {
+      Stance::NormalDeath if drawable.orientation != Orientation::Normal => {
         (drawable.direction as usize * 6 + drawable.zombie_death_idx + NORMAL_DEATH_SPRITE_OFFSET)
       }
-      Stance::CriticalDeath if drawable.orientation != Orientation::Still => {
+      Stance::CriticalDeath if drawable.orientation != Orientation::Normal => {
         (drawable.direction as usize * 8 + drawable.zombie_death_idx)
       }
       _ => {

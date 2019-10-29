@@ -8,11 +8,11 @@ use specs::prelude::{Read, ReadStorage, WriteStorage};
 use crate::character::{character_stats::CharacterStats, controls::CharacterInputState};
 use crate::critter::{CharacterSprite, CritterData};
 use crate::data;
-use crate::game::constants::{AMMO_POSITIONS, ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE};
+use crate::game::constants::{AMMO_POSITIONS, ASPECT_RATIO, CHARACTER_SHEET_TOTAL_WIDTH, RUN_SPRITE_OFFSET, SPRITE_OFFSET, VIEW_DISTANCE, SMALL_HILLS};
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::gfx_app::mouse_controls::MouseInputState;
-use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, get_orientation_from_center, orientation::{Orientation, Stance}, overlaps, texture::load_texture};
-use crate::graphics::mesh::RectangularMesh;
+use crate::graphics::{camera::CameraInputState, dimensions::{Dimensions, get_projection, get_view_matrix}, get_orientation_from_center, orientation::{Orientation, Stance}, overlaps, texture::load_texture, check_terrain_elevation};
+use crate::graphics::mesh::{RectangularTexturedMesh, Geometry};
 use crate::graphics::texture::Texture;
 use crate::shaders::{CharacterSheet, critter_pipeline, Position, Projection};
 use crate::terrain_object::{terrain_objects::TerrainObjects, TerrainObjectDrawable, TerrainTexture};
@@ -53,6 +53,8 @@ impl CharacterDrawable {
                 dimensions: &Dimensions, objs: &mut Vec<TerrainObjectDrawable>, zombies: &[ZombieDrawable]) {
     self.projection = *world_to_clip;
 
+    self.position.position[1] = check_terrain_elevation(ci.movement - self.position, &SMALL_HILLS);
+
     fn zombie_not_dead(z: &ZombieDrawable) -> bool {
       z.stance != Stance::NormalDeath &&
         z.stance != Stance::CriticalDeath
@@ -87,7 +89,7 @@ impl CharacterDrawable {
   }
 
   fn ammo_pick_up(&mut self, movement: Position, objs: &mut Vec<TerrainObjectDrawable>, idx: usize) {
-    if objs[idx].object_type == TerrainTexture::Ammo && overlaps(movement, movement - objs[idx].position, 20.0, 20.0) {
+    if objs.len() > idx && objs[idx].object_type == TerrainTexture::Ammo && overlaps(movement, movement - objs[idx].position, 20.0, 20.0) {
       self.stats.magazines = 2;
       objs.remove(idx);
     }
@@ -120,7 +122,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
     let char_texture = load_texture(factory, charter_bytes);
 
     let rect_mesh =
-      RectangularMesh::new(factory, Texture::new(char_texture, None), Point2::new(20.0, 28.0));
+      RectangularTexturedMesh::new(factory, Texture::new(char_texture, None), Geometry::Rectangle, Point2::new(20.0, 28.0), None, None, None);
 
     let pso = factory.create_pipeline_simple(SHADER_VERT, SHADER_FRAG, critter_pipeline::new())
       .expect("Character shader loading error");
@@ -145,7 +147,7 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
 
   fn get_next_sprite(&self, character_idx: usize, character_fire_idx: usize, drawable: &mut CharacterDrawable) -> CharacterSheet {
     let sprite_idx =
-      if drawable.orientation == Orientation::Still && drawable.stance == Stance::Walking {
+      if drawable.orientation == Orientation::Normal && drawable.stance == Stance::Walking {
         (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET)
       } else if drawable.stance == Stance::Walking {
         drawable.direction = drawable.orientation;
@@ -192,7 +194,8 @@ impl<'a> specs::prelude::System<'a> for PreDrawSystem {
   fn run(&mut self, (mut character, camera_input, character_input, mouse_input, mut terrain_objects, zombies, dim): Self::SystemData) {
     use specs::join::Join;
 
-    for (c, camera, ci, mi, to, zs) in (&mut character, &camera_input, &character_input, &mouse_input, &mut terrain_objects, &zombies).join() {
+    for (c, camera, ci, mi, to, zs) in
+        (&mut character, &camera_input, &character_input, &mouse_input, &mut terrain_objects, &zombies).join() {
       let world_to_clip = dim.world_to_projection(camera);
       c.update(&world_to_clip, ci, mi, &dim, &mut to.objects, &zs.zombies);
     }

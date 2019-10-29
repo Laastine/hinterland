@@ -4,13 +4,13 @@ use gfx;
 use specs;
 use specs::prelude::{Read, WriteStorage};
 
-use crate::bullet;
+use crate::{bullet, terrain_shape};
 use crate::character;
 use crate::critter::CharacterSprite;
-use crate::game::constants::{CURRENT_AMMO_TEXT, HUD_TEXTS, GAME_VERSION};
+use crate::game::constants::{CURRENT_AMMO_TEXT, GAME_VERSION, HUD_TEXTS};
 use crate::gfx_app::{ColorFormat, DepthFormat};
 use crate::gfx_app::renderer::EncoderQueue;
-use crate::graphics::{DeltaTime, orientation::Stance};
+use crate::graphics::{DeltaTime, orientation::{Orientation, Stance}};
 use crate::graphics::Drawables;
 use crate::hud;
 use crate::terrain;
@@ -26,6 +26,7 @@ pub struct DrawSystem<D: gfx::Device> {
   zombie_system: zombie::ZombieDrawSystem<D::Resources>,
   bullet_system: bullet::BulletDrawSystem<D::Resources>,
   terrain_object_system: [terrain_object::TerrainObjectDrawSystem<D::Resources>; 3],
+  terrain_shape_system: [terrain_shape::TerrainShapeDrawSystem<D::Resources>; 9],
   text_system: [hud::TextDrawSystem<D::Resources>; 3],
   encoder_queue: EncoderQueue<D>,
   game_time: Instant,
@@ -53,6 +54,17 @@ impl<D: gfx::Device> DrawSystem<D> {
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::Ammo),
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::House),
         terrain_object::TerrainObjectDrawSystem::new(factory, rtv.clone(), dsv.clone(), TerrainTexture::Tree)
+      ],
+      terrain_shape_system: [
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::Right),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::DownRight),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::Down),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::DownLeft),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::Left),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::UpLeft),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::UpRight),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::Normal),
+        terrain_shape::TerrainShapeDrawSystem::new(factory, rtv.clone(), dsv.clone(), Orientation::Up),
       ],
       text_system: [
         hud::TextDrawSystem::new(factory, &HUD_TEXTS, GAME_VERSION, rtv.clone(), dsv.clone()),
@@ -88,6 +100,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
   where D: gfx::Device,
         D::CommandBuffer: Send {
   type SystemData = (WriteStorage<'a, terrain::TerrainDrawable>,
+                     WriteStorage<'a, terrain_shape::terrain_shape_objects::TerrainShapeObjects>,
                      WriteStorage<'a, character::CharacterDrawable>,
                      WriteStorage<'a, CharacterSprite>,
                      WriteStorage<'a, hud::hud_objects::HudObjects>,
@@ -96,7 +109,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
                      WriteStorage<'a, terrain_object::terrain_objects::TerrainObjects>,
                      Read<'a, DeltaTime>);
 
-  fn run(&mut self, (mut terrain, mut character, mut character_sprite, mut hud_objects, mut zombies, mut bullets, mut terrain_objects, dt): Self::SystemData) {
+  fn run(&mut self, (mut terrain, mut terrain_shape, mut character, mut character_sprite, mut hud_objects, mut zombies, mut bullets, mut terrain_objects, dt): Self::SystemData) {
     use specs::join::Join;
     let mut encoder = self.encoder_queue.receiver
       .recv()
@@ -118,7 +131,7 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
     encoder.clear(&self.render_target_view, [16.0 / 256.0, 16.0 / 256.0, 20.0 / 256.0, 1.0]);
     encoder.clear_depth(&self.depth_stencil_view, 1.0);
 
-    for (t, c, cs, hds, zs, bs, obj) in (&mut terrain, &mut character, &mut character_sprite, &mut hud_objects,
+    for (t, t_shape, c, cs, hds, zs, bs, obj) in (&mut terrain, &mut terrain_shape, &mut character, &mut character_sprite, &mut hud_objects,
                                          &mut zombies, &mut bullets, &mut terrain_objects).join() {
       self.terrain_system.draw(t, time_passed,  &mut encoder);
 
@@ -171,6 +184,20 @@ impl<'a, D> specs::prelude::System<'a> for DrawSystem<D>
           .partial_cmp(&Drawables::get_vertical_pos(a))
           .expect("Z-axis sorting failed")
       });
+
+      for ts in &t_shape.objects {
+        match ts.get_shape() {
+          Orientation::Right => self.terrain_shape_system[0].draw(ts, time_passed, &mut encoder),
+          Orientation::DownRight => self.terrain_shape_system[1].draw(ts, time_passed, &mut encoder),
+          Orientation::Down => self.terrain_shape_system[2].draw(ts, time_passed, &mut encoder),
+          Orientation::DownLeft => self.terrain_shape_system[3].draw(ts, time_passed, &mut encoder),
+          Orientation::Left => self.terrain_shape_system[4].draw(ts, time_passed, &mut encoder),
+          Orientation::UpLeft => self.terrain_shape_system[5].draw(ts, time_passed, &mut encoder),
+          Orientation::UpRight => self.terrain_shape_system[6].draw(ts, time_passed, &mut encoder),
+          Orientation::Normal => self.terrain_shape_system[7].draw(ts, time_passed, &mut encoder),
+          Orientation::Up => self.terrain_shape_system[8].draw(ts, time_passed, &mut encoder),
+        }
+      }
 
       for e in &mut drawables {
         match *e {

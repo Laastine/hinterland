@@ -9,9 +9,10 @@ use specs::{ReadStorage, WriteStorage};
 use crate::character::CharacterDrawable;
 use crate::gfx_app::ColorFormat;
 use crate::gfx_app::DepthFormat;
-use crate::graphics::{mesh::RectangularMesh};
+use crate::graphics::{mesh::RectangularTexturedMesh};
 use crate::graphics::texture::{text_texture, Texture};
 use crate::shaders::{Position, text_pipeline};
+use crate::graphics::mesh::Geometry;
 
 pub mod font;
 pub mod hud_objects;
@@ -70,7 +71,7 @@ impl<R: gfx::Resources> TextDrawSystem<R> {
 
     let texture = texture_cache[current_text].clone();
 
-    let rect_mesh = RectangularMesh::new(factory, texture, Point2::new(1.0, 1.0));
+    let rect_mesh = RectangularTexturedMesh::new(factory, texture, Geometry::Rectangle, Point2::new(1.0, 1.0), None, None, None);
 
     let pipeline_data = text_pipeline::Data {
       vbuf: rect_mesh.mesh.vertex_buffer,
