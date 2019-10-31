@@ -82,10 +82,10 @@ impl ZombieDrawable {
         self.direction = orientation_to_direction(dir);
         self.movement_direction = direction_movement(dir);
         self.stance = Stance::Running;
-        self.movement_speed = 2.4 * self.health;
+        self.movement_speed = 2.0 * self.health;
       } else {
         self.idle_direction_movement(zombie_pos, game_time as i64);
-        self.movement_speed = 1.2 * self.health;
+        self.movement_speed = self.health;
       }
     } else {
       self.movement_direction = Point2::new(0.0, 0.0);
