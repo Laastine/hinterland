@@ -8,7 +8,7 @@ Download precompiled binary from [Github releases](https://github.com/Laastine/h
 
 ## Preview
 
-<img src="assets/hinterland-gl-2019-08-28.gif">
+<img src="assets/preview-gifs/hinterland-gl-2019-10-31.gif">
 
 ## Build & Run
 
