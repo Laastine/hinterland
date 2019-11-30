@@ -49,7 +49,7 @@ pub const TERRAIN_OBJECTS: [[i32; 2]; 13] = [
     [ 72, 65 ], [ 61, 73 ], [ 63, 77 ], [ 56, 70 ], [ 56, 74 ]  // Trees
 ];
 
-pub const SMALL_HILLS: [[i32; 2]; 4] = [[4, 2], [19, -2], [-14, -24], [30, 43]];
+pub const SMALL_HILLS: [[i32; 2]; 3] = [[4, 2], [20, -2], [-14, -6]];
 
 pub const GAME_VERSION: &str = "v0.3.12";
 
