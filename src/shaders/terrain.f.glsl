@@ -24,7 +24,7 @@ uniform b_TimeModulo {
   float a_time;
 };
 
-const float PI = 3.1415926535897932384626433832795;
+const float PI = 3.14159;
 const vec3 lightOrigPos = vec3(-200.0, 150.0, 0.0);
 const vec3 Normal = vec3(0.0, 1.0, 0.0);
 const vec3 lightColor = vec3(0.8, 0.5, 0.5);
@@ -66,6 +66,9 @@ void main() {
   vec3 diffuse = diff * lightColor;
 
   vec4 tex = texture(t_TileSheet, uvCoords);
-  tex *= vec4(diffuse + ambientColor, 0.0);
+  tex *= vec4(diffuse + ambientColor, 1.0);
+  if(tex.a < 0.1) {
+    discard;
+  }
   Target0 = tex;
 }
