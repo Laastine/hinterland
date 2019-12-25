@@ -13,7 +13,7 @@ pub enum Collision {
 }
 
 impl<'a> specs::prelude::System<'a> for CollisionSystem {
-  type SystemData = (WriteStorage<'a, Bullets>);
+  type SystemData = WriteStorage<'a, Bullets>;
 
   fn run(&mut self, mut bullets: Self::SystemData) {
     use specs::join::Join;

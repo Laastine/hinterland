@@ -58,7 +58,7 @@ impl CameraControlSystem {
 }
 
 impl<'a> specs::prelude::System<'a> for CameraControlSystem {
-  type SystemData = (WriteStorage<'a, CameraInputState>);
+  type SystemData = WriteStorage<'a, CameraInputState>;
   fn run(&mut self, mut map_input: Self::SystemData) {
     use specs::join::Join;
 
