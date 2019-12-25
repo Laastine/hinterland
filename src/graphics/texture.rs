@@ -56,8 +56,7 @@ pub fn text_texture<'a, R, F, S: BuildHasher>(factory: &mut F,
   texts.iter().for_each(|text| {
     let (texture_size, texture_data) = draw_text(&font, text_texture_height, text);
     let texture = load_raw_texture(factory, &texture_data.as_slice(), texture_size);
-    let texture_element = Texture::new(texture, None);
-    texture_cache.insert(text.to_string(), texture_element.clone());
+    texture_cache.insert((*text).to_string(), Texture::new(texture, None));
   });
   texture_cache
 }
