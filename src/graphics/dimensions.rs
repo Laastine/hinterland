@@ -1,4 +1,3 @@
-use cgmath;
 use cgmath::{Matrix4, Point3, Vector3};
 
 use crate::graphics::camera::CameraInputState;

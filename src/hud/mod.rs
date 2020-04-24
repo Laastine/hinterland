@@ -1,9 +1,7 @@
 use std::collections::HashMap;
 
 use cgmath::Point2;
-use gfx;
 use rusttype::FontCollection;
-use specs;
 use specs::{ReadStorage, WriteStorage};
 
 use crate::character::CharacterDrawable;

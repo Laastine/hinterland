@@ -1,4 +1,3 @@
-use specs;
 
 use crate::game::constants::{AMMO_POSITIONS, HOUSE_POSITIONS, TREE_POSITIONS};
 use crate::terrain_object::{TerrainObjectDrawable, TerrainTexture};

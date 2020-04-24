@@ -1,8 +1,6 @@
 use std::{fs::File, io::BufReader, io::prelude::*, path::Path, string::String, vec::Vec};
 
-use json;
 use json::JsonValue;
-use tiled;
 use tiled::Map;
 
 use crate::critter::CritterData;

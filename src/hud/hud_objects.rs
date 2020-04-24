@@ -1,4 +1,3 @@
-use specs;
 
 use crate::game::constants::{CURRENT_AMMO_TEXT, CURRENT_MAGAZINE_TEXT, GAME_VERSION};
 use crate::hud::TextDrawable;

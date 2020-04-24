@@ -1,5 +1,4 @@
 use crossbeam_channel as channel;
-use specs;
 use specs::prelude::{Read, WriteStorage};
 
 use crate::character::CharacterDrawable;

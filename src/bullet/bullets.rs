@@ -1,4 +1,3 @@
-use specs;
 
 use crate::bullet::{BulletDrawable, collision::Collision};
 use crate::graphics::direction_movement;

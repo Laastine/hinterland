@@ -1,7 +1,5 @@
 use std::time::Instant;
 
-use gfx;
-use specs;
 use specs::prelude::{Read, WriteStorage};
 
 use crate::{bullet, terrain_shape};

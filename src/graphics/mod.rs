@@ -1,6 +1,5 @@
 use std::f32;
 
-use cgmath;
 use cgmath::{Angle, Deg, Point2};
 use num::{Num, NumCast};
 

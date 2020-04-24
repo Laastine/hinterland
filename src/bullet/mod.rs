@@ -2,8 +2,6 @@ use std::f32;
 use std::f32::consts::PI;
 
 use cgmath::Point2;
-use gfx;
-use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 
 use crate::bullet::bullets::Bullets;

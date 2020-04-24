@@ -4,7 +4,6 @@ use std::io::Cursor;
 
 use cgmath::Point2;
 use gfx::{Factory, format::Rgba8, handle::ShaderResourceView, Resources, texture::{AaMode, Kind, Mipmap, Size}};
-use image;
 use rusttype::Font;
 
 use crate::gfx_app::ColorFormat;

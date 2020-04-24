@@ -1,5 +1,4 @@
 use crossbeam_channel as channel;
-use specs;
 use specs::prelude::WriteStorage;
 
 use crate::game::constants::VIEW_DISTANCE;

@@ -1,5 +1,4 @@
 use num::Integer;
-use rand;
 use rand::distributions::uniform::SampleUniform;
 use rand::Rng;
 

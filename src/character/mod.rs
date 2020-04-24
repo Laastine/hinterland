@@ -1,8 +1,4 @@
-use std;
-
 use cgmath::Point2;
-use gfx;
-use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 
 use crate::character::{character_stats::CharacterStats, controls::CharacterInputState};

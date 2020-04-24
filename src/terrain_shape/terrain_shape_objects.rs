@@ -1,4 +1,3 @@
-use specs;
 
 use crate::graphics::orientation::Orientation;
 use crate::graphics::set_position;

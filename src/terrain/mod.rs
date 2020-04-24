@@ -1,7 +1,5 @@
 use cgmath::Point2;
 use genmesh::{generators::{IndexedPolygon, Plane, SharedVertex}, Triangulate, Vertices};
-use gfx;
-use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 
 use crate::character::controls::CharacterInputState;

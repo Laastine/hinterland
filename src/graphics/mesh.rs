@@ -1,7 +1,6 @@
 use cgmath::{Matrix2, Point2, Vector2};
 use cgmath::Angle;
 use cgmath::Deg;
-use gfx;
 use gfx::Resources;
 use gfx::traits::FactoryExt;
 

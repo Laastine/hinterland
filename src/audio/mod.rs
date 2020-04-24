@@ -1,9 +1,7 @@
 use std::{fs::File, io::BufReader};
 
 use crossbeam_channel as channel;
-use rodio;
 use rodio::Sink;
-use specs;
 use specs::prelude::ReadStorage;
 
 use crate::character::{CharacterDrawable, controls::CharacterInputState};

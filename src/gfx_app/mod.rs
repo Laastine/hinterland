@@ -1,9 +1,6 @@
-use gfx;
 use gfx::format::SurfaceType;
 use gfx::handle::{DepthStencilView, RenderTargetView};
 use gfx::memory::Typed;
-use gfx_device_gl;
-use glutin;
 use glutin::{KeyboardInput, MouseButton, PossiblyCurrent, WindowedContext};
 use glutin::dpi::LogicalSize;
 use glutin::ElementState::{Pressed, Released};

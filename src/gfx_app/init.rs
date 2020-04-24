@@ -1,6 +1,5 @@
 use std::time;
 
-use gfx;
 use specs::{Builder, prelude::DispatcherBuilder, shred::World, world::WorldExt};
 
 use crate::{bullet, terrain_shape};

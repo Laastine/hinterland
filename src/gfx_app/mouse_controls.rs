@@ -1,6 +1,5 @@
 use cgmath::Point2;
 use crossbeam_channel as channel;
-use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 
 use crate::bullet::bullets::Bullets;

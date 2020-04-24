@@ -1,7 +1,8 @@
-use std;
 use std::{fmt::{Display, Formatter, Result}, ops::{Add, Sub}};
 
 use cgmath::BaseFloat;
+#[allow(clippy::useless_attribute)]
+#[allow(clippy::single_component_path_imports)]
 use gfx;
 
 gfx_defines! {

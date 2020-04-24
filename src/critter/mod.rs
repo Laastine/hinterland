@@ -1,5 +1,3 @@
-use specs;
-
 pub struct CharacterSprite {
   pub character_idx: usize,
   pub character_fire_idx: usize,
