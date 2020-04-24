@@ -73,7 +73,7 @@ impl WindowContext {
         .with_decorations(false)
     } else {
       let monitor = {
-        events_loop.get_available_monitors().nth(0).expect("No monitor found")
+        events_loop.get_available_monitors().next().expect("No monitor found")
       };
       let monitor_resolution = monitor.get_dimensions();
 
@@ -178,7 +178,7 @@ impl Window<gfx_device_gl::Device, gfx_device_gl::Factory> for WindowContext {
     if self.game_options.windowed_mode {
       (RESOLUTION_X as f32, RESOLUTION_Y as f32)
     } else {
-      let monitor = self.events_loop.get_available_monitors().nth(0).expect("No monitor found");
+      let monitor = self.events_loop.get_available_monitors().next().expect("No monitor found");
       let monitor_resolution = monitor.get_dimensions();
       (monitor_resolution.width as f32, monitor_resolution.height as f32)
     }

@@ -36,7 +36,7 @@ pub fn flip_y_axel(point: Point2<f32>) -> Point2<f32> {
 pub fn direction(start_point: Point2<f32>, end_point: Point2<f32>) -> f32 {
   let theta = Angle::atan2(end_point.y - start_point.y, end_point.x - start_point.x);
   let Deg(angle) = theta;
-  if angle < 0.0 { (360.0 + angle) } else { angle }
+  if angle < 0.0 { 360.0 + angle } else { angle }
 }
 
 pub fn direction_movement(direction: f32) -> Point2<f32> {

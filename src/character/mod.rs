@@ -148,12 +148,12 @@ impl<R: gfx::Resources> CharacterDrawSystem<R> {
   fn get_next_sprite(&self, character_idx: usize, character_fire_idx: usize, drawable: &mut CharacterDrawable) -> CharacterSheet {
     let sprite_idx =
       if drawable.orientation == Orientation::Normal && drawable.stance == Stance::Walking {
-        (drawable.direction as usize * 28 + RUN_SPRITE_OFFSET)
+        drawable.direction as usize * 28 + RUN_SPRITE_OFFSET
       } else if drawable.stance == Stance::Walking {
         drawable.direction = drawable.orientation;
-        (drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET)
+        drawable.orientation as usize * 28 + character_idx + RUN_SPRITE_OFFSET
       } else {
-        (drawable.orientation as usize * 8 + character_fire_idx)
+        drawable.orientation as usize * 8 + character_fire_idx
       } as usize;
 
     let elements_x = CHARACTER_SHEET_TOTAL_WIDTH / (self.data[sprite_idx].data[2] + SPRITE_OFFSET);

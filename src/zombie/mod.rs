@@ -1,6 +1,4 @@
 use cgmath::Point2;
-use gfx;
-use specs;
 use specs::prelude::{Read, ReadStorage, WriteStorage};
 
 use crate::bullet::{BulletDrawable, bullets::Bullets};
@@ -193,23 +191,23 @@ impl<R: gfx::Resources> ZombieDrawSystem<R> {
   fn get_next_sprite(&self, drawable: &mut ZombieDrawable) -> CharacterSheet {
     let sprite_idx = match drawable.stance {
       Stance::Still => {
-        (drawable.direction as usize * 4 + drawable.zombie_idx)
+        drawable.direction as usize * 4 + drawable.zombie_idx
       }
       Stance::Walking if drawable.orientation != Orientation::Normal => {
-        (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
+        drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET
       }
       Stance::Running if drawable.orientation != Orientation::Normal => {
-        (drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
+        drawable.direction as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET
       }
       Stance::NormalDeath if drawable.orientation != Orientation::Normal => {
-        (drawable.direction as usize * 6 + drawable.zombie_death_idx + NORMAL_DEATH_SPRITE_OFFSET)
+        drawable.direction as usize * 6 + drawable.zombie_death_idx + NORMAL_DEATH_SPRITE_OFFSET
       }
       Stance::CriticalDeath if drawable.orientation != Orientation::Normal => {
-        (drawable.direction as usize * 8 + drawable.zombie_death_idx)
+        drawable.direction as usize * 8 + drawable.zombie_death_idx
       }
       _ => {
         drawable.direction = drawable.orientation;
-        (drawable.orientation as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET)
+        drawable.orientation as usize * 8 + drawable.zombie_idx + ZOMBIE_STILL_SPRITE_OFFSET
       }
     } as usize;
 
