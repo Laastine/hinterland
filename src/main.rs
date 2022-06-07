@@ -39,7 +39,7 @@ pub fn main() {
 
   let matches = match opts.parse(&args[1..]) {
     Ok(matching_args) => { matching_args }
-    Err(err) => { panic!(err.to_string()) }
+    Err(err) => { panic!("{}", err.to_string()) }
   };
 
   if matches.opt_present("help") {
